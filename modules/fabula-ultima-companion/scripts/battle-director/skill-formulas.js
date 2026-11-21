@@ -1563,6 +1563,22 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "HAS_ARCANE_WEAPON":   return hasEquippedWeaponOfType(actor, "arcane") ? 1 : 0;
       case "HAS_MELEE_WEAPON":    return hasEquippedWeaponOfType(actor, "melee") ? 1 : 0;
       case "HAS_RANGED_WEAPON":   return hasEquippedWeaponOfType(actor, "ranged") ? 1 : 0;
+      // Transforming weapons (Lionheart, 2026-11-21). WEAPON_FORM — the active form
+      // index (0 = base) of the weapon this skill/passive is contained in, else of
+      // the main-hand weapon; 0 when it has no forms. TRANSFORMED_TO_FORM — on a
+      // creature_transforms_weapon payload, the form just entered when the weapon
+      // that transformed is this row's carrier weapon (or the row has no carrier
+      // weapon); -1 otherwise / off that trigger.
+      case "WEAPON_FORM": {
+        const w = carrierWeaponOf(actor, skill) ?? mainHandWeaponOf(actor);
+        return Number(w?.flags?.["fabula-ultima-companion"]?.activeForm ?? 0) || 0;
+      }
+      case "TRANSFORMED_TO_FORM": {
+        if (payload?.transformedItemUuid == null || payload?.formIndex == null) return -1;
+        const w = carrierWeaponOf(actor, skill);
+        if (w && w.uuid !== payload.transformedItemUuid && w.id !== payload.transformedItemId) return -1;
+        return Number(payload.formIndex) || 0;
+      }
       // Weapon-family gate: 1 if an equipped weapon's Category is "firearm"
       // (matches the `category`/`weapon_type` field, not the range). Used by
       // Bullet Break's "with a ranged firearm weapon you have equipped" RAW gate.
@@ -2692,6 +2708,35 @@ function weaponFamilyOf(item) {
   return String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
 }
 
+// A field of the weapon's ACTIVE form (weapon_forms prop / weaponForms flag), or
+// null when on the base form or the form leaves the field blank.
+function activeFormOverride(item, field) {
+  const idx = Number(item?.flags?.["fabula-ultima-companion"]?.activeForm ?? 0) || 0;
+  if (idx <= 0) return null;
+  const raw = item?.system?.props?.weapon_forms;
+  const forms = (raw && typeof raw === "object" && Object.keys(raw).length) ? Object.values(raw)
+    : (Array.isArray(item?.flags?.["fabula-ultima-companion"]?.weaponForms) ? item.flags["fabula-ultima-companion"].weaponForms : []);
+  const v = forms[idx]?.[field];
+  return (v === undefined || v === null || String(v).trim() === "") ? null : v;
+}
+
+// The weapon Item a contained skill/passive belongs to (its CSB container), or null.
+function carrierWeaponOf(actor, skill) {
+  const cid = String(skill?.system?.container ?? "").trim();
+  if (!cid) return null;
+  const it = skill?.parent?.items?.get?.(cid) ?? actor?.items?.get?.(cid) ?? null;
+  return String(it?.system?.props?.item_type ?? "").toLowerCase() === "weapon" ? it : null;
+}
+
+// The weapon Item worn in the main hand (slot prop holds its NAME), or null.
+function mainHandWeaponOf(actor) {
+  const name = actor?.system?.props?.main_hand;
+  if (!name) return null;
+  const list = (actor.items?.contents ?? []).filter((i) => i?.name === name
+    && String(i?.system?.props?.item_type ?? "").toLowerCase() === "weapon" && !i?.system?.container);
+  return list.find((i) => i.system?.props?.isEquipped === true) ?? list[0] ?? null;
+}
+
 function hasEquippedWeaponOfType(actor, weaponType) {
   if (!actor) return false;
   const wanted = String(weaponType ?? "").toLowerCase();
@@ -2706,7 +2751,8 @@ function hasEquippedWeaponOfType(actor, weaponType) {
     // HAS_MELEE_WEAPON work (via weapon_range) alongside HAS_ARCANE_WEAPON
     // and other family gates (via category).
     const cat = weaponFamilyOf(item);
-    const range = String(p.weapon_range ?? "").toLowerCase();
+    // A transforming weapon's active form may change its range (Lionheart Gun = Ranged).
+    const range = String(activeFormOverride(item, "weapon_range") ?? p.weapon_range ?? "").toLowerCase();
     if (cat === wanted || range === wanted) return true;
   }
   // "You are treated as having an <X> weapon equipped" (Red Tunic): a live

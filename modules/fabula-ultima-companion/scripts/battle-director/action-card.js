@@ -5737,11 +5737,24 @@ function buildEffectSectionHTML({ descriptionHtml }) {
       </fieldset>`;
 }
 
+// timed_strikes (Renzokuken) preview: the per-strike TRIGGER / otherwise values
+// and the whole range, fumble (no triggers) → perfect (all + finisher). Numbers
+// are before affinity (each strike checks the target's affinity on its own).
+function buildTimedStrikesPreviewHTML(ts) {
+  const el = escapeHtml(String(ts.element ?? "physical"));
+  const fin = ts.finisher > 0 ? ` · ${escapeHtml(ts.finisherLabel || "Finisher")} <b>${ts.finisher}</b> on ${ts.count}/${ts.count}` : "";
+  return `<div class="fud-bf-timed-strikes" data-fud-timed-strikes="${ts.min}-${ts.max}" style="margin:6px 0;padding:6px 10px;border:1px solid rgba(122,106,85,.6);border-radius:8px;background:rgba(255,250,240,.6);font-size:12px;line-height:1.45;">
+    <div style="font-weight:800;letter-spacing:.04em;">${ts.count} strikes · no roll · ${el}</div>
+    <div>TRIGGER <b>${ts.hit}</b> · otherwise <b>${ts.miss}</b> per strike${fin}</div>
+    <div>Total <b>${ts.min}–${ts.max}</b> <span style="opacity:.7">(swing ${ts.swing}${ts.hr != null ? `, HR ${ts.hr}` : ""}; before affinity)</span></div>
+  </div>`;
+}
+
 function buildSkillCard(payload) {
   const {
     attacker, skillName, skillImg, skillType, skillRange,
     damageType, hasDamage, hasHealing, rawCost, targets, roll, damage,
-    perTargetResults, descriptionHtml, defenseTargetType,
+    perTargetResults, descriptionHtml, defenseTargetType, timedStrikes,
   } = payload ?? {};
 
   // Visual identity (title icon, subtitle, "Spell" label) — driven by
@@ -5814,6 +5827,7 @@ function buildSkillCard(payload) {
   // with buildAttackCard via buildEffectSectionHTML so keywords/statuses render
   // identically wherever a description appears.
   const descHTML = tryBuild("skillEffect", () => buildEffectSectionHTML({ descriptionHtml }));
+  const timedHTML = timedStrikes ? tryBuild("skillTimedStrikes", () => buildTimedStrikesPreviewHTML(timedStrikes)) : "";
 
   // Portrait slots: use perTargetResults if we have damage rows,
   // otherwise synthesise from targets so a no-damage skill still gets
@@ -5835,6 +5849,7 @@ function buildSkillCard(payload) {
       ${tryBuild("skillAttacker", () => buildAttackerHTML({ attacker, targets }))}
       ${accuracyHTML}
       ${damageHTML}
+      ${timedHTML}
       ${perTargetHTML}
       ${descHTML}
     `,
@@ -5929,7 +5944,7 @@ const ACTION_CARD_RENDER_KEYS = [
   // Skill / Spell:
   "skillName", "skillImg", "skillType", "defenseTargetType", "skillRange",
   "skillTarget", "damageType", "hasDamage", "hasHealing", "rawCost",
-  "costSerialized", "descriptionHtml",
+  "costSerialized", "descriptionHtml", "timedStrikes",
   // Ultima actions (Domination / Escape / Recovery):
   "ultimaCost", "dominanceCost",
   "reason",

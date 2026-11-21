@@ -20,6 +20,8 @@
 import { log, warn } from "./logger.js";
 import { watchGone } from "./player-presence.js";
 import { stageOf } from "./director-camera.js";
+import { readTimedStrikeConfig, strikeDamage, finisherDamage } from "./timed-strikes-rules.js";
+import { resolveOutgoingDamageParts } from "./skill-formulas.js";
 import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock, shouldReverseHeal, isHealReversedActor, isReviveKillImmune, rowIgnoresUndead } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
@@ -32,6 +34,7 @@ import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
+import { resolveAttackerWeapon, attrDieSize } from "./snapshot.js";
 import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX, targetsKnockedOutAlly, grappleHoldCap } from "./snapshot.js";
 import { tokensGrappledBy } from "./grappled.js";
 import { INVENTORY_ACTION_TAG } from "./skill-intent.js";
@@ -4938,6 +4941,141 @@ async function applyDestroySummonEffect(row, ctx) {
 //   notify_abort   — truthy → stop the chain after notifying (default true: a
 //                    stub branch has nothing more to do)
 // Headless (passive/no-DOM) → no toast, message logged; still returns ok.
+// The swing of a timed_strikes row (shared by the card preview and the apply):
+// the caster's main-hand weapon damage with HR = half the higher of the two
+// CURRENT accuracy dice of the active form (user 2026-11-21: Sword MIG/WLP,
+// d10/d8 → HR 5, floored — there is no roll) + flat outgoing bonuses ONCE, or
+// the row's strike_swing formula. Synchronous (the preview is sync).
+function computeTimedStrikeSwing(row, caster, payload = null, skill = null, round = 0) {
+  const weapon = caster ? resolveAttackerWeapon(caster, { which: "main" }) : null;
+  const element = String(row.damage_element ?? "").trim().toLowerCase() || String(weapon?.damageType ?? "physical").toLowerCase();
+  const rangeKind = /melee/i.test(weapon?.range ?? "") ? "melee" : (/rang/i.test(weapon?.range ?? "") ? "ranged" : null);
+  const weaponKey = String(weapon?.weaponType ?? "").toLowerCase() || null;
+  let swing, swingParts = [];
+  const swingFormula = String(row.strike_swing ?? "").trim();
+  if (swingFormula) {
+    const resolver = buildSkillResolver({ actor: caster, payload, skill, round });
+    swing = Math.max(0, Math.floor(Number(evaluateFormula(swingFormula, resolver, 0)) || 0));
+  } else {
+    // No roll: HR = floor(max(die A1, die A2) / 2) for the active form's pair.
+    const HR = weapon ? Math.floor(Math.max(attrDieSize(caster, weapon.A1), attrDieSize(caster, weapon.A2)) / 2) : 0;
+    swingParts = caster ? (resolveOutgoingDamageParts({ actor: caster, props: caster.system?.props ?? null, kind: rangeKind, elementType: element, weaponKey }) ?? []) : [];
+    const outgoing = swingParts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+    swing = Math.max(0, Math.floor(HR + (Number(weapon?.damageBonus ?? 0) || 0) + outgoing));
+  }
+  return { weapon, element, rangeKind, weaponKey, swing, swingParts,
+    hr: swingFormula ? null : (weapon ? Math.floor(Math.max(attrDieSize(caster, weapon.A1), attrDieSize(caster, weapon.A2)) / 2) : 0) };
+}
+
+// Card preview for timed_strikes (needs the caster: pctx.casterActor, passed by
+// action-profile.gatherEffectPreviews). Pre-affinity numbers per strike, plus
+// the fumble (0 triggers) → perfect (all triggers + finisher) total.
+function previewTimedStrikes(row, pctx = {}) {
+  const caster = pctx.casterActor ?? null;
+  if (!caster) return null;
+  const cfg = readTimedStrikeConfig(row);
+  const { element, swing, hr } = computeTimedStrikeSwing(row, caster, null, null, 0);
+  const hit = strikeDamage(swing, true, cfg), miss = strikeDamage(swing, false, cfg);
+  const finisher = cfg.finisherMult > 0 ? finisherDamage(swing, cfg) : 0;
+  return {
+    type: "timed_strikes", valence: "harmful", source: row.effect_label, targetRef: row.target_ref ?? "action_targets",
+    element, swing, hr, count: cfg.count, hit, miss, finisher, finisherLabel: cfg.finisherLabel || null,
+    min: miss * cfg.count, max: hit * cfg.count + finisher,
+  };
+}
+
+// ── timed_strikes ────────────────────────────────────────────────────────
+//
+// N weapon strikes on the target(s), each scaled by a timing gauge the ACTING
+// player plays (Lionheart's Renzokuken, 2026-11-21). No accuracy roll: the move
+// is auto-hit (never misses, never crits). Per strike:
+//   round(swing × strike_hit_mult) on a TRIGGER, round(swing × strike_miss_mult)
+//   otherwise; a perfect set adds a finisher round(swing × finisher_mult).
+// swing = the caster's main-hand weapon damage with HR = half the higher of the
+// active form's two current accuracy dice (floored; user ruling 2026-11-21 —
+// there is no roll), with the caster's flat outgoing bonuses (extra_damage_mod_* — Powerful Shot etc.)
+// folded in ONCE. Each strike is then dealt with damage_skip_outgoing, so those
+// bonuses are never re-added per strike; affinity (VU/RS/IM/AB), damage
+// reduction and weapon efficiency still apply to every strike. An optional
+// strike_swing formula replaces the computed swing.
+// Row fields: strike_count, strike_hit_mult, strike_miss_mult, finisher_mult,
+//   finisher_label, gauge_title, gauge_sweep_ms, gauge_zone ("70-92"),
+//   gauge_gap_ms, auto_rate (0.7), damage_element (blank = weapon element),
+//   strike_swing (formula, optional), target_ref (default action_targets).
+// The gauge: timed-strike-gauge.js (player client judges; auto at auto_rate in
+// the sim or without an active player). Result stashed on
+// ctx.payload._chainVars.timed_strike_hits / _total for later chain rows.
+async function applyTimedStrikesEffect(row, ctx) {
+  if (ctx?.captureMode || ctx?.mode === "preview") return { ok: true, kind: "timed_strikes", skipped: true };
+  const R = await import("./timed-strikes-rules.js");
+  const cfg = R.readTimedStrikeConfig(row);
+  const caster = ctx.reactorActor ?? ctx.liveAttacker ?? null;
+  if (!caster) return { ok: false, kind: "timed_strikes", reason: "no-caster" };
+  const targetRef = row.target_ref || "action_targets";
+  const targetResult = await resolveTargetRef(targetRef, ctx);
+  if (!targetResult.ok || !targetResult.tokens?.length) {
+    return { ok: false, kind: "timed_strikes", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
+  }
+
+  // ── swing (computed once) ──
+  const { weapon, element, rangeKind, weaponKey, swing, swingParts, hr } = computeTimedStrikeSwing(row, caster, ctx.payload, ctx.skill, ctx.dCombat?.round ?? 0);
+  log(`skill-effects.timed_strikes: ${caster.name} swing ${swing} (HR ${hr} [${weapon?.A1}/${weapon?.A2}], weapon ${weapon?.name ?? "none"} +${weapon?.damageBonus ?? 0}`
+    + `${swingParts.length ? `, outgoing ${swingParts.map((p) => `${p.source}:${p.amount}`).join(" ")}` : ""}) ${element} ${rangeKind ?? "-"} ${weaponKey ?? "-"}`);
+
+  const strikeRow = (amount, label) => ({
+    effect_kind: "deal_damage", effect_label: label, damage_amount: String(amount), damage_element: element,
+    damage_cause: "damage", damage_range: rangeKind ?? "", damage_weapon_type: weaponKey ?? "", damage_skip_outgoing: true,
+    target_ref: targetRef, attacker_name: caster.name,
+  });
+  const alive = () => targetResult.tokens.some((t) => (readPropNum(t.actor, ["current_hp", "hp"]) ?? 0) > 0);
+  const strikes = [];
+  let total = 0;
+  let ctl = null;
+  const deal = async (amount, label, meta) => {
+    if (amount <= 0 || !alive()) { strikes.push({ ...meta, amount, dealt: 0, skipped: true }); return; }
+    const sr = strikeRow(amount, label);
+    const r = await dealDamageApply(sr, ctx, describeDealDamage(sr, ctx));
+    const dealt = (r?.applied ?? []).reduce((s, a) => s + (Number(a.ruled ?? a.amount) || 0), 0);
+    total += dealt;
+    strikes.push({ ...meta, amount, dealt, affinity: (r?.applied ?? []).map((a) => a.affinity).join("/") });
+    try { ctl?.setTotal?.(total); } catch (_) {}
+  };
+
+  // ── the gauge ──
+  const sim = SimMode.active;
+  const ownerUserId = sim ? null : (ctx.remotePrompt?.targetUserId ?? null);
+  const owner = ownerUserId ? game.users?.get(ownerUserId) : null;
+  const presentation = sim ? SimMode.config?.pace === "watch" : (typeof document !== "undefined");
+  const { runTimedStrikeGauge } = await import("./timed-strike-gauge.js");
+  const run = await runTimedStrikeGauge({
+    ownerUserId: (owner && !owner.isGM) ? ownerUserId : null,
+    presentation,
+    spec: { title: cfg.title || ctx.skill?.name || "Timed strikes", icon: ctx.skill?.img ?? null, actorName: caster.name,
+      count: cfg.count, sweepMs: cfg.sweepMs, zone: cfg.zone, gapMs: cfg.gapMs, autoRate: cfg.autoRate },
+    onStrike: async (i, hit) => {
+      await deal(R.strikeDamage(swing, hit, cfg), `${row.effect_label ?? "timed"}_s${i + 1}`, { i, hit });
+    },
+  });
+  ctl = run.ctl;
+  try { ctl?.setTotal?.(total); } catch (_) {}
+  const hits = run.hits.filter(Boolean).length;
+  let finisher = null;
+  if (hits >= cfg.count && cfg.finisherMult > 0) {
+    await deal(R.finisherDamage(swing, cfg), `${row.effect_label ?? "timed"}_finisher`, { i: cfg.count, hit: true, finisher: cfg.finisherLabel || "Finisher" });
+    finisher = strikes[strikes.length - 1];
+  }
+  const tier = R.tierOf(hits, cfg.count);
+  try { ctl?.finish?.({ tier, total }); } catch (e) { warn("skill-effects.timed_strikes: finish threw", e); }
+  log(`skill-effects.timed_strikes: ${caster.name} ${ctx.skill?.name ?? ""} — ${tier} ${hits}/${cfg.count} (${run.judgedBy}) swing ${swing}: `
+    + strikes.map((s) => `${s.finisher ? s.finisher : `#${s.i + 1}`}${s.hit ? "T" : "-"}=${s.amount}>${s.dealt}${s.affinity ? `[${s.affinity}]` : ""}`).join(" ")
+    + ` total ${total}`);
+  try {
+    ctx.payload = ctx.payload ?? {};
+    ctx.payload._chainVars = { ...(ctx.payload._chainVars ?? {}), timed_strike_hits: hits, timed_strike_total: total };
+  } catch (_) {}
+  return { ok: true, kind: "timed_strikes", swing, hits, count: cfg.count, tier, total, strikes, finisher, judgedBy: run.judgedBy };
+}
+
 async function applyNotifyEffect(row, ctx) {
   const message = String(row.notify_message ?? "").trim();
   const type = String(row.notify_type ?? "info").trim().toLowerCase();
@@ -5405,6 +5543,7 @@ const EFFECT_KIND_DISPATCH = {
   consume_item:        applyConsumeItemEffect,
   encyclopedia_record: applyEncyclopediaRecordEffect,
   notify:              applyNotifyEffect,
+  timed_strikes:       applyTimedStrikesEffect,
   adjust_damage:       (row) => ({ ok: true, kind: "adjust_damage", applied: [], reason: "data-only" }),
   // check_buff: a PASSIVE marker, not an executed effect. It declares "+N to a
   // named action's Check" (check_buff_action = csv of action_commands, e.g.
@@ -5563,6 +5702,7 @@ export const EFFECT_KIND_LABELS = {
   consume_item:        "Consume Item (spend one unit of a carried consumable — Life Charm)",
   encyclopedia_record: "Encyclopedia Record",
   notify:              "Notify (show a message — stub / info)",
+  timed_strikes:       "Timed Strikes (N weapon strikes, each scaled by a player timing gauge — Renzokuken)",
   adjust_damage:       "Adjust Damage",
   check_buff:          "Check Buff (passive +N to a named action's Check — read at COMPUTE, e.g. +2 Study)",
   change_damage_element: "Change Damage Element (override in-flight element)",
@@ -5615,6 +5755,9 @@ function _valenceForResource(resource, amount) {
 const EFFECT_KIND_PREVIEW = {
   // Pure plumbing — produces a token list, nothing visible on the card.
   targeting: () => null,
+
+  // Renzokuken's per-strike numbers + fumble→perfect range (see previewTimedStrikes).
+  timed_strikes: (row, pctx) => previewTimedStrikes(row, pctx),
 
   // add_target augments the action's target set; the host (Barrage) renders the
   // extra rows. Surface a neutral marker so a chain audit can list it.
@@ -6775,6 +6918,14 @@ function describeDealDamage(row, ctx = {}) {
     // HP-only damage that ignores the victim's Shield (see applyDamageToTarget's
     // skipShield). Default off.
     skipShield: row.damage_skip_shield === true || String(row.damage_skip_shield ?? "").trim().toLowerCase() === "true",
+    // Weapon-strike identity for effect damage (timed_strikes / Renzokuken): the
+    // range ("melee"/"ranged") feeds range-keyed incoming DR and the weapon family
+    // ("sword") the target's weapon efficiency. Blank = ambient effect damage.
+    damageRange: String(row.damage_range ?? "").trim().toLowerCase() || null,
+    damageWeaponType: String(row.damage_weapon_type ?? "").trim().toLowerCase() || null,
+    // The amount already carries the dealer's outgoing bonuses (a pre-computed
+    // weapon swing) — skip the outgoing pass so they are not added per strike.
+    skipOutgoing: row.damage_skip_outgoing === true || String(row.damage_skip_outgoing ?? "").trim().toLowerCase() === "true",
   };
 }
 
@@ -6945,7 +7096,7 @@ async function dealDamageApply(row, ctx, d) {
       }
       if (_srcActor && _srcActor.id === actor.id) _srcActor = null;
       let _outgoing = amount;
-      if (_srcActor) {
+      if (_srcActor && !d.skipOutgoing) {
         try {
           const _c = globalThis.FUCompanion?.api?.applyDamage?.compute?.({
             baseDamage: amount,
@@ -6972,6 +7123,7 @@ async function dealDamageApply(row, ctx, d) {
         : d.damageKeywords;
       const ruled = isMp ? null : computeIncomingDamage(actor, {
         base: _outgoing, element, ignoreAffinity, keywords: _kw,
+        range: d.damageRange, weaponType: d.damageWeaponType,
       });
       const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
       const subjectSnapshot = captureSubjectSnapshot(actor);
@@ -6990,7 +7142,8 @@ async function dealDamageApply(row, ctx, d) {
         logContext: { attackerName, element, sourceType: "effect", sink: battleLogSink },
         skipShield: d.skipShield,
       });
-      applied.push({ actorUuid: actor.uuid, amount, element, final: res?.finalValue ?? null, direction: res?.valueDirection });
+      applied.push({ actorUuid: actor.uuid, amount, element, final: res?.finalValue ?? null, direction: res?.valueDirection,
+        affinity: isMp ? "NE" : (ruled?.affinity ?? "NE"), ruled: isMp ? amount : (ruled?.damage ?? null) });
 
       // Resource-ledger (cause taxonomy): itemize this hit onto the running
       // director's post-commit ledger so the Start-of-Turn transaction's settle

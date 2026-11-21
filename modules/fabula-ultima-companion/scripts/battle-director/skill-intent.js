@@ -178,7 +178,8 @@ function hasTargetDamage(skill) {
   for (const key of Object.keys(table)) {
     const row = table[key];
     if (!row || row.$deleted) continue;
-    if (row.effect_kind !== "deal_damage") continue;
+    // timed_strikes (Renzokuken) deals its damage through deal_damage strikes.
+    if (row.effect_kind !== "deal_damage" && row.effect_kind !== "timed_strikes") continue;
     if (TARGET_DAMAGE_REFS.has(String(row.target_ref ?? "").trim().toLowerCase())) return true;
   }
   return false;

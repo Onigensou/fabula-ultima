@@ -234,8 +234,9 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
   const entry = weaponList.find((w) => w?.name === handName) ?? null;
 
   // Attribute pair. Empty/SHI means no usable weapon in this hand.
-  const A1 = String(isMain ? (props.main_attrib_1 ?? "") : (props.off_attrib_1 ?? "")).toUpperCase();
-  const A2 = String(isMain ? (props.main_attrib_2 ?? "") : (props.off_attrib_2 ?? "")).toUpperCase();
+  // `let`: a weapon form may re-project the pair (Lionheart: Sword MIG+WLP / Gun DEX+INS).
+  let A1 = String(isMain ? (props.main_attrib_1 ?? "") : (props.off_attrib_1 ?? "")).toUpperCase();
+  let A2 = String(isMain ? (props.main_attrib_2 ?? "") : (props.off_attrib_2 ?? "")).toUpperCase();
   if (!A1 || A1 === "SHI" || A1 === "UNDEFINED") return null;
 
   // Accuracy bonus + damage bonus + damage type per hand. The off-hand
@@ -253,7 +254,7 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     isMain ? (props.weapon1_damagetype ?? "Physical") : (props.weapon2_damagetype ?? "Physical")
   );
 
-  const range = String(entry?.weapon_range ?? "Melee");
+  let range = String(entry?.weapon_range ?? "Melee");
   let weaponType = String(entry?.weapon_type ?? entry?.category ?? entry?.type ?? "");
 
   // Resolve the live weapon Item. The entry's `uuid` field is canonical (the
@@ -317,6 +318,14 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
       const fAcc = Number(form.check_bonus);
       if (Number.isFinite(fDmg)) damageBonus += (fDmg - baseDmg);
       if (Number.isFinite(fAcc)) checkBonus  += (fAcc - baseAcc);
+      // Transforming weapons (Lionheart, 2026-11-21): a form may also swap the
+      // accuracy attribute pair and the range. Absolute overrides; blank keeps.
+      const fa1 = String(form.rolled_atr1 ?? "").trim().toUpperCase();
+      const fa2 = String(form.rolled_atr2 ?? "").trim().toUpperCase();
+      if (fa1 && fa1 !== "-") A1 = fa1;
+      if (fa2 && fa2 !== "-") A2 = fa2;
+      const fr = String(form.weapon_range ?? "").trim();
+      if (fr) range = fr;
     }
   } catch (e) { warn("resolveAttackerWeapon: weapon-form overlay failed", e); }
 

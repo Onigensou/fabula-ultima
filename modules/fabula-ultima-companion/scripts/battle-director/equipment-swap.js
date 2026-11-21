@@ -313,7 +313,36 @@ function weaponFormsOf(item) {
     weaponType: String(f?.weapon_type ?? ""),
     damageBonus: Number(f?.damage_bonus ?? 0) || 0,
     checkBonus: Number(f?.check_bonus ?? 0) || 0,
+    // Transforming weapons (Lionheart): optional per-form accuracy pair + range.
+    attackStat: (f?.rolled_atr1 && f?.rolled_atr2) ? `${String(f.rolled_atr1).toUpperCase()}+${String(f.rolled_atr2).toUpperCase()}` : null,
+    range: f?.weapon_range ? String(f.weapon_range) : null,
   }));
+}
+
+// After a form change in combat, tell the wielder's reactions about it:
+// `creature_transforms_weapon` (subject = the wielder). A weapon's own passive
+// can then react to ITS transform (Lionheart: entering Gun form grants a
+// Cartridge + 15 Shield) via the TRANSFORMED_TO_FORM identifier. Forced pass
+// only, GM + in-combat only — out of combat a transform is just a stat swap.
+async function dispatchWeaponTransformed(actor, item, fromIdx, toIdx) {
+  try {
+    if (!game.user?.isGM) return;
+    const director = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+    const dc = director?.dCombat;
+    if (!dc?.started || dc.ended) return;
+    const token = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid)
+      ?? canvas?.tokens?.placeables?.find((t) => t.actor?.id === actor.id) ?? null;
+    if (!token) return;
+    const { dispatchReactionMenu } = await import("./standalone-reactions.js");
+    await dispatchReactionMenu({
+      director, reactor: token.actor ?? actor, token, trigger: "creature_transforms_weapon",
+      payload: {
+        trigger: "creature_transforms_weapon", transformedItemUuid: item.uuid, transformedItemId: item.id,
+        formIndex: toIdx, fromFormIndex: fromIdx, sourceActorUuid: null, round: dc.round ?? null,
+      },
+      scope: null, scene: null, phase: "forced",
+    });
+  } catch (e) { warn("dispatchWeaponTransformed threw", e); }
 }
 function activeFormOf(item) {
   return Number(item?.flags?.[FLAG_NS]?.activeForm ?? 0) || 0;
@@ -347,6 +376,7 @@ export async function applyWeaponForm(actor, slotKey, formIdx) {
     return { changed: false, ...base };
   }
   log(`applyWeaponForm: ${actor.name}'s ${item.name} → ${forms[idx].label} (form ${idx})`);
+  await dispatchWeaponTransformed(actor, item, cur, idx);
   return { changed: true, fromIdx: cur, ...base };
 }
 

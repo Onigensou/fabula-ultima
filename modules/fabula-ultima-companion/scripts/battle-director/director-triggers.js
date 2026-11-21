@@ -197,6 +197,10 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // false by the time it fires — mirrors the used-weapon bypass).
   "creature_equips_item",
   "creature_unequips_item",
+  // Weapon transform (Lionheart, 2026-11-21) — fired by equipment-swap.applyWeaponForm
+  // after a transforming weapon changes form in combat (subject = the wielder).
+  // Payload: transformedItemUuid, formIndex, fromFormIndex (→ TRANSFORMED_TO_FORM).
+  "creature_transforms_weapon",
   // Soul Tithe (Fragment Eater, 2026-11-19) — a Soul Fragment was destroyed for
   // any reason except battle-end cleanup (party kill, eaten, Beheading). Fanned
   // out to every combatant by defeat-reactor.emitBattlefieldObjectTrigger;
@@ -238,6 +242,7 @@ export const STANDALONE_TRIGGERS = new Set([
   "turn_end",
   "creature_equips_item",
   "creature_unequips_item",
+  "creature_transforms_weapon",
 ]);
 
 // ── Phase classification — single source of truth for UI routing ────
@@ -345,6 +350,7 @@ export const TRIGGER_PHASE = Object.freeze({
   "turn_end":                   "standalone",
   "creature_equips_item":       "standalone",
   "creature_unequips_item":     "standalone",
+  "creature_transforms_weapon": "standalone",
 });
 
 // Convenience accessors derived from TRIGGER_PHASE.

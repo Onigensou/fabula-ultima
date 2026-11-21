@@ -399,6 +399,20 @@ export async function scriptedBundleFor(director, snap) {
     }
   } catch (e) { warn("[SIM] scripted: free-action grant check threw", e); }
 
+  // Same board-state gate the skill picker dims on (availability_formula —
+  // "Sword form only", "Numen already active"). The picker never offers such a
+  // skill to a player, so a directive must not cast it either.
+  try {
+    const af = String(item.system?.props?.availability_formula ?? "").trim();
+    if (af) {
+      const { buildSkillResolver, evaluateFormula } = await import("../skill-formulas.js");
+      if (!evaluateFormula(af, buildSkillResolver({ actor: actorDoc, payload: null, skill: item, round: 0 }), 1)) {
+        SimMode.note("scripted", `${baseName(actorDoc.name)} can't use "${item.name}" (${String(item.system?.props?.availability_reason ?? "").trim() || "unavailable"}) — brain decides`);
+        return null;
+      }
+    }
+  } catch (e) { warn("[SIM] scripted: availability check threw", e); }
+
   if (!canAffordItem(actorDoc, item).ok) {
     SimMode.note("scripted", `${baseName(actorDoc.name)} can't afford "${item.name}" — brain decides`);
     return null;
