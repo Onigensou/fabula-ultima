@@ -72,15 +72,18 @@ function ensureStyle() {
 .fu-tsg.on { opacity: 1; transform: translate(-50%, 0); }
 .fu-tsg.anchored { bottom: auto; transform: translateY(12px); }
 .fu-tsg.anchored.on { transform: none; }
-.fu-tsg-head { display: flex; align-items: center; gap: 8px; }
+.fu-tsg-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.fu-tsg-head > * { flex: none; white-space: nowrap; }
 .fu-tsg-icon { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px #b7935a; border: 0; }
 .fu-tsg-title { font: 900 11px "Inter", "Signika", sans-serif; letter-spacing: .16em; text-transform: uppercase; color: #7a6a55; }
-.fu-tsg-res { font: 900 15px "Inter", "Signika", sans-serif; letter-spacing: .08em; color: #c2410c; }
-.fu-tsg.done .fu-tsg-res { animation: fuTsgPop 380ms cubic-bezier(.2,1.5,.4,1); }
+/* the mockup's spot (right after the title); it pops from its left edge so it never grows into the title,
+   and the slack before the pips covers the overshoot (6 pips + the long "· PERFECT" line) */
+.fu-tsg-res { font: 900 14px "Inter", "Signika", sans-serif; letter-spacing: .05em; color: #c2410c; transform-origin: left center; display: inline-block; }
+.fu-tsg.done .fu-tsg-res { animation: fuTsgPop 380ms cubic-bezier(.2,1.3,.4,1); }
 .fu-tsg.perfect .fu-tsg-res { color: #b8860b; text-shadow: 0 0 8px rgba(255,210,90,.8); }
-@keyframes fuTsgPop { 0% { transform: scale(.4); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
-.fu-tsg-pips { display: flex; gap: 9px; margin-left: auto; padding-right: 4px; }
-.fu-tsg-pip { display: block; width: 15px; height: 10px; background: #15110c; box-shadow: inset 0 0 0 1px rgba(122,106,85,.9); }
+@keyframes fuTsgPop { 0% { transform: scale(.4); } 70% { transform: scale(1.08); } 100% { transform: scale(1); } }
+.fu-tsg-pips { display: flex; gap: 7px; margin-left: auto; padding-right: 4px; }
+.fu-tsg-pip { display: block; width: 13px; height: 10px; background: #15110c; box-shadow: inset 0 0 0 1px rgba(122,106,85,.9); }
 .fu-tsg-pip.now { box-shadow: inset 0 0 0 2px #b7935a, 0 0 6px rgba(213,182,122,.9); animation: fuTsgBlink 500ms steps(2) infinite; }
 @keyframes fuTsgBlink { 50% { background: rgba(120,130,255,.75); } }
 .fu-tsg-pip.hit { background: linear-gradient(180deg, #fff0a8, #ffb21e 60%, #c86a08); box-shadow: 0 0 8px rgba(255,190,60,.9), inset 0 0 0 1px #fff3c0; }
