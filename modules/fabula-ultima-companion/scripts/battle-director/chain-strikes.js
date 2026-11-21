@@ -178,12 +178,23 @@ export function volleyPrimary(primary, volley) {
 // A volley shot's reaction damage ops on one creature: a flat add / subtract
 // (a "+6 per hit" carried by a reaction) is counted once for that creature and
 // shared over the shots aimed at it. Multiply, set, cap, element / keyword ops
-// and final-stage formula bonuses stay per shot, unchanged.
+// stay per shot, unchanged; a final-stage formula op is shared later, once
+// its per-shot amount is known (volleyFinalShare).
 export function volleyShareOps(ops, volley, uuid) {
   if (!volley || !Array.isArray(ops) || !ops.length) return ops;
   return ops.map((o) => ((o?.op === "add" || o?.op === "subtract") && !o.finalFormula
     ? { ...o, amount: volleyTargetShare(volley, uuid, Number(o.amount) || 0), volleyTotal: Number(o.amount) || 0 }
     : o));
+}
+
+// A volley shot's share of a FINAL-stage bonus (Vital Strike: + DEX die when
+// the hit would put the target into Crisis). The engine still evaluates the
+// formula per shot, against that shot's own predicted damage; a flat add /
+// subtract amount is then counted once for the creature and this shot keeps its
+// share (same split as volleyTargetShare). A multiply stays per shot.
+export function volleyFinalShare(op, amount, volley, uuid) {
+  if (!volley || !(op === "add" || op === "subtract")) return amount;
+  return volleyTargetShare(volley, uuid, amount);
 }
 
 // Small seeded PRNG (mulberry32) — deterministic tests and replays. The engine

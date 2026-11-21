@@ -388,6 +388,22 @@ eq("seek is a separate chain", isSeparateChain({ count: 3, mode: "seek" }), true
     [["add", 2], ["multiply", 1.5], ["subtract", 1], ["keyword", null], ["add", 0]]);
   eq("the op keeps its full amount for the log", volleyShareOps(ops, v1, "A")[0].volleyTotal, 6);
   eq("no volley: ops untouched", volleyShareOps(ops, null, "A"), ops);
+
+  // Final-stage bonus (Vital Strike: + DEX die when THIS shot would put the target
+  // into Crisis): still evaluated per shot, then counted once for the creature.
+  const { volleyFinalShare } = await import("./chain-strikes.js");
+  const solo = { count: 5, mode: "volley", strikeTargets: [["A"], ["A"], ["A"], ["A"], ["A"]] };
+  const vs = (amountPerShot) => [1, 2, 3, 4, 5].map((k) => volleyFinalShare("add", amountPerShot, volleyShotContext(solo, k), "A"));
+  eq("Vital Strike d12 over 5 shots", vs(12), [3, 3, 2, 2, 2]);
+  eq("Vital Strike d12 totals the die once", vs(12).reduce((a, b) => a + b, 0), 12);
+  eq("Fatal Precision d12+5 totals 17 once", vs(17).reduce((a, b) => a + b, 0), 17);
+  // Each shot decides its own condition: only shots whose formula gave 12 take a share.
+  const earned = [false, false, true, true, true];
+  eq("only shots that earned it take their share", [1, 2, 3, 4, 5].reduce((sum, k, i) =>
+    sum + (earned[i] ? volleyFinalShare("add", 12, volleyShotContext(solo, k), "A") : 0), 0), 6);
+  eq("a missed shot loses its share", vs(12).filter((_, i) => i !== 0).reduce((a, b) => a + b, 0), 9);
+  eq("a final multiply stays per shot", volleyFinalShare("multiply", 1.5, volleyShotContext(solo, 2), "A"), 1.5);
+  eq("not a volley: the full bonus", volleyFinalShare("add", 12, null, "A"), 12);
 }
 
 console.log(`chain-strikes: ${passed} passed, ${failed} failed`);

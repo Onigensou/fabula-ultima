@@ -28,7 +28,7 @@ import { applyClassAffinityAndMult, applyKeywordAffinity, hasCrush, hasExpose,
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck, decideHit, buildCheckDistribution, checkHitChance } from "./check.js";
 import { applyGmDamageInput, gmDamageInput, applyGmPrimaryOverrides } from "./gm-card-override.js";
-import { volleyShotContext, volleyPrimary, volleyShareOps } from "./chain-strikes.js";
+import { volleyShotContext, volleyPrimary, volleyShareOps, volleyFinalShare } from "./chain-strikes.js";
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp, describeGrant,
   getConditionAffinityFor } from "./skill-effects.js";
@@ -630,7 +630,8 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     const targetOpsAll = keywordOps.length ? [...reactionOps, ...keywordOps] : reactionOps;
     // Volley: a flat add/subtract reaction op on this creature (a +6 per hit) is
     // counted once for it and shared over the shots aimed at it. Multiply ops,
-    // element / keyword ops and final-stage (formula) bonuses stay per shot.
+    // element / keyword ops stay per shot; a final-stage (formula) bonus is sized per
+    // shot and then shared (volleyFinalShare, in the final-stage fold below).
     const targetOps = volley ? volleyShareOps(targetOpsAll, volley, e.tokenUuid) : targetOpsAll;
 
     // Affinity helper (MP damage / status-only → NE). Forced-VU is ATTACK-only
@@ -864,7 +865,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
           skill: o.finalContext?.skill ?? null,
           round: ctx?.round ?? 0,
         });
-        const finalAmount = Math.floor(Number(evaluateFormula(o.finalFormula, finalResolver, 0)) || 0);
+        const fullAmount = Math.floor(Number(evaluateFormula(o.finalFormula, finalResolver, 0)) || 0);
+        // Volley: the bonus is still sized per shot (its condition reads THIS
+        // shot's predicted damage), but a flat add / subtract is counted once for
+        // the creature: this shot takes only its share (volleyFinalShare).
+        const finalAmount = volley ? volleyFinalShare(o.op, fullAmount, volley, e.tokenUuid) : fullAmount;
         if (finalAmount === 0) continue;
         const nextRaw = Math.max(0, Math.floor(applyDamageOp(rawDamage, o.op, finalAmount)));
         if (nextRaw === rawDamage) continue;
@@ -879,7 +884,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
           }).value;
         }
         if (reactionBreakdown) {
-          reactionBreakdown.ops = [...reactionBreakdown.ops, { op: o.op, amount: finalAmount, source: o.source, finalStage: true }];
+          reactionBreakdown.ops = [...reactionBreakdown.ops, { op: o.op, amount: finalAmount, source: o.source, finalStage: true, ...(finalAmount !== fullAmount ? { volleyTotal: fullAmount } : {}) }];
           reactionBreakdown.to = rawDamage;
           reactionBreakdown.baseBonus = rawDamage - reactionBreakdown.from;
         }
