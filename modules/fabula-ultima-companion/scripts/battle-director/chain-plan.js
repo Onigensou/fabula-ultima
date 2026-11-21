@@ -63,7 +63,13 @@ export function chainSpecFor({ kind = null, skillItem = null, weapon = null, isC
   }
   // Per-strike elements (a separate Chain only; a one-roll Chain is one hit of one element).
   const elements = spec && spec.mode !== "single" ? strikeElementsOf(skillItem) : null;
-  return elements ? { ...spec, elements } : spec;
+  // Perfect: every strike lands → the attack deals × this (carrier-attack.js; the
+  // pseudo-weapon carries it, or a skill's own carrierAttack flag). Separate Chains only.
+  const perfectMult = spec && spec.mode !== "single"
+    ? Number((kind === "Attack" ? weapon?.chainPerfectMult : null) ?? skillItem?.flags?.[CHAIN_FLAG_NS]?.carrierAttack?.perfectMult ?? 1)
+    : 1;
+  const out = elements ? { ...spec, elements } : spec;
+  return out && Number.isFinite(perfectMult) && perfectMult > 1 ? { ...out, perfectMult } : out;
 }
 
 // ── per-strike elements ──────────────────────────────────────────────────────
@@ -334,6 +340,11 @@ export async function buildChainPlan(director, ar, rng = Math.random) {
       const byUuid = new Map((rows ?? []).map((r) => [r?.tokenUuid, r]));
       walker.step({ index: k, roll: rollLite(roll), targets }, (strike, uuid) => evaluateRow(byUuid.get(uuid), arK));
     }
+    // Perfect (every strike landed): one extra gold hit, shown after the last strike.
+    if (Number(spec.perfectMult) > 1) {
+      const pf = walker.perfect(spec.perfectMult);
+      if (pf) log(`Chain ${spec.count}: Perfect ×${spec.perfectMult} — ` + pf.outcomes.map((o) => `+${o.amount}`).join(", "));
+    }
   } finally {
     if (useTally) for (const [key, val] of tallyBase) {
       if (val === undefined) dc.hitsOnTargets.delete(key); else dc.hitsOnTargets.set(key, val);
@@ -415,6 +426,7 @@ function toPlainPlan(result, { spec, meta, ar }) {
     const m = meta.get(uuid) ?? {};
     const landedStrikes = [];
     for (const s of result.strikes) {
+      if (s.perfect) continue;   // not a strike: no per-strike riders / ledger line of its own
       const o = (s.outcomes ?? []).find((x) => x.tokenUuid === uuid);
       if (!o || !["hit", "absorb", "immune"].includes(o.kind)) continue;
       landedStrikes.push({
@@ -439,7 +451,8 @@ function toPlainPlan(result, { spec, meta, ar }) {
     count: spec.count,
     mode: spec.mode,
     beatMs: fallbackBeatMs(spec.count),
-    strikes: result.strikes.map((s) => ({ index: s.index, roll: s.roll, outcomes: s.outcomes })),
+    strikes: result.strikes.map((s) => ({ index: s.index, roll: s.roll, outcomes: s.outcomes, ...(s.perfect ? { perfect: true, mult: s.mult } : {}) })),
+    perfect: result.strikes.some((s) => s.perfect),
     perTarget,
     landed: result.landed,
     hitTokenUuids,

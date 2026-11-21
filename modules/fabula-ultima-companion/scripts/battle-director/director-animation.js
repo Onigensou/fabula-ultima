@@ -91,7 +91,9 @@ export async function resolveAnimationSpec(ar, { allowDefault = false } = {}) {
   }
 
   // 2. Skill / Spell / Item action — fetch the backing item by UUID.
-  const skillUuid = ar.skillUuid ?? null;
+  // A carrier attack (carrier-attack.js: Sonic Blow) is an Attack whose own
+  // cinematic lives on the skill, not on the weapon it borrows.
+  const skillUuid = ar.skillUuid ?? ar.weapon?.animationItemUuid ?? null;
   if (skillUuid) {
     try {
       const item = await fromUuid(skillUuid);

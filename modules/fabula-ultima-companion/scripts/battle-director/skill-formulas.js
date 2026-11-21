@@ -1658,6 +1658,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const w = carrierWeaponOf(actor, skill) ?? mainHandWeaponOf(actor);
         return Number(w?.flags?.["fabula-ultima-companion"]?.activeForm ?? 0) || 0;
       }
+      // WEAPON_TRANSFORM_FREE — 1 while that weapon (carrier, else main hand) has
+      // forms and its free transform is not spent this round (the Equipment
+      // action's once-per-round marker, equipment-swap.js transformFreeUsedRound).
+      // Gunblade's after-action transform reads it (2026-11-21).
+      case "WEAPON_TRANSFORM_FREE": {
+        const w = carrierWeaponOf(actor, skill) ?? mainHandWeaponOf(actor);
+        const f = w?.flags?.["fabula-ultima-companion"] ?? {};
+        const raw = w?.system?.props?.weapon_forms;
+        const n = (raw && typeof raw === "object" && Object.keys(raw).length) ? Object.keys(raw).length : (Array.isArray(f.weaponForms) ? f.weaponForms.length : 0);
+        if (n < 2) return 0;
+        const used = Number(f.transformFreeUsedRound);
+        return Number.isFinite(used) && used === (Number(round ?? 0) || 0) ? 0 : 1;
+      }
       case "TRANSFORMED_TO_FORM": {
         if (payload?.transformedItemUuid == null || payload?.formIndex == null) return -1;
         const w = carrierWeaponOf(actor, skill);

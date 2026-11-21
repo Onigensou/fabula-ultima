@@ -1195,6 +1195,8 @@ export function anyTargetDeniesCritOpportunity(ar) {
 // `deny_own_crit_opportunity` rule — "critical successes by these attacks do not
 // generate any Opportunity" (Sonic Blow's marker). Read at the same RESOLVE stamp.
 export function attackerDeniesOwnCritOpportunity(ar) {
+  // A carrier attack whose crits grant none (carrier-attack.js: Sonic Blow).
+  if (ar?.weapon?.noCritOpportunity === true) return true;
   const uuid = ar?.attackerActorRef ?? ar?.attacker?.actorUuid ?? null;
   if (!uuid) return false;
   let actor = null;

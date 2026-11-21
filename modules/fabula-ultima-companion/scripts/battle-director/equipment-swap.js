@@ -380,6 +380,19 @@ export async function applyWeaponForm(actor, slotKey, formIdx) {
   return { changed: true, fromIdx: cur, ...base };
 }
 
+// The hand ("main" | "off") that holds this weapon Item, or null when it is not in hand.
+export function weaponSlotOfItem(actor, item) {
+  if (!actor || !item) return null;
+  const worn = resolveWornItems(actor);
+  if (worn.main?.id === item.id) return "main";
+  if (worn.off?.id === item.id) return "off";
+  return null;
+}
+// How many forms the weapon in that hand has (0 when none).
+export function weaponFormCount(actor, slotKey) {
+  return weaponFormsOf(equippedWeaponInSlot(actor, slotKey))?.length ?? 0;
+}
+
 // Apply a { main, off } → formIndex selection map (the shape the Equipment card
 // collects). Skips slots not present / not finite. Returns { changed, changes[] }.
 export async function applyWeaponFormSelections(actor, selections) {

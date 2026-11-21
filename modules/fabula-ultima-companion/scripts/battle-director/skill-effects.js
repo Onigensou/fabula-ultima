@@ -4994,6 +4994,43 @@ function previewTimedStrikes(row, pctx = {}) {
   };
 }
 
+// ── transform_weapon ─────────────────────────────────────────────────────
+//
+// Transform the weapon that carries this row (its CSB container; else the
+// reactor's main hand) to another form — the same write the Equipment card's
+// form chips make (equipment-swap.applyWeaponForm: activeForm flag +
+// creature_transforms_weapon) — and spend that weapon's free transform for the
+// round (transformFreeUsedRound), so a transform before the action and one after
+// it share ONE allowance. Gunblade's "before OR after an action" (the Transform
+// keyword) uses it from a turn_end ask row (2026-11-21).
+// Row fields: weapon_form ("next" = cycle, default; or a form index),
+//   spend_free_transform (default true).
+async function applyTransformWeaponEffect(row, ctx) {
+  if (ctx?.captureMode || ctx?.mode === "preview") return { ok: true, kind: "transform_weapon", skipped: true };
+  const actor = ctx.reactorActor ?? null;
+  if (!actor) return { ok: false, kind: "transform_weapon", reason: "no-actor" };
+  const { applyWeaponForm, weaponSlotOfItem, weaponFormCount } = await import("./equipment-swap.js");
+  const cid = String(ctx.skill?.system?.container ?? "").trim();
+  const carrier = cid ? (actor.items?.get?.(cid) ?? null) : null;
+  const slot = carrier ? weaponSlotOfItem(actor, carrier) : "main";
+  if (!slot) return { ok: false, kind: "transform_weapon", reason: "weapon-not-in-hand" };
+  const item = carrier ?? null;
+  const n = weaponFormCount(actor, slot);
+  if (n < 2) return { ok: false, kind: "transform_weapon", reason: "no-forms" };
+  const cur = Number(item?.flags?.["fabula-ultima-companion"]?.activeForm ?? 0) || 0;
+  const raw = String(row.weapon_form ?? "next").trim().toLowerCase();
+  const to = raw === "next" || raw === "" ? (cur + 1) % n : Math.max(0, Math.min(n - 1, Number(raw) | 0));
+  const r = await applyWeaponForm(actor, slot, to);
+  const spend = !(row.spend_free_transform === false || String(row.spend_free_transform ?? "").trim().toLowerCase() === "false");
+  const round = Number(ctx.dCombat?.round ?? ctx.director?.dCombat?.round ?? 0) || 0;
+  if (r.changed && spend) {
+    const it = actor.items?.find?.((i) => i.name === r.weaponName && !i.system?.container) ?? item;
+    try { await it?.setFlag?.("fabula-ultima-companion", "transformFreeUsedRound", round); } catch (e) { warn("skill-effects.transform_weapon: free-use stamp failed", e); }
+  }
+  log(`skill-effects.transform_weapon: ${actor.name}'s ${r.weaponName ?? "weapon"} → ${r.formLabel ?? to} (${r.changed ? "changed" : "unchanged"})`);
+  return { ok: true, kind: "transform_weapon", changed: !!r.changed, formIdx: to, formLabel: r.formLabel ?? null, weaponName: r.weaponName ?? null };
+}
+
 // ── timed_strikes ────────────────────────────────────────────────────────
 //
 // N weapon strikes on the target(s), each scaled by a timing gauge the ACTING
@@ -5592,6 +5629,7 @@ const EFFECT_KIND_DISPATCH = {
   encyclopedia_record: applyEncyclopediaRecordEffect,
   notify:              applyNotifyEffect,
   timed_strikes:       applyTimedStrikesEffect,
+  transform_weapon:    applyTransformWeaponEffect,
   adjust_damage:       (row) => ({ ok: true, kind: "adjust_damage", applied: [], reason: "data-only" }),
   // check_buff: a PASSIVE marker, not an executed effect. It declares "+N to a
   // named action's Check" (check_buff_action = csv of action_commands, e.g.
@@ -5751,6 +5789,7 @@ export const EFFECT_KIND_LABELS = {
   encyclopedia_record: "Encyclopedia Record",
   notify:              "Notify (show a message — stub / info)",
   timed_strikes:       "Timed Strikes (N weapon strikes, each scaled by a player timing gauge — Renzokuken)",
+  transform_weapon:    "Transform Weapon (switch this weapon to another form, spending its free transform — Gunblade)",
   adjust_damage:       "Adjust Damage",
   check_buff:          "Check Buff (passive +N to a named action's Check — read at COMPUTE, e.g. +2 Study)",
   change_damage_element: "Change Damage Element (override in-flight element)",
