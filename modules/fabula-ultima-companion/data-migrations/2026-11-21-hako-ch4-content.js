@@ -319,13 +319,15 @@ const OLDER = [
         { effect_kind: "apply_ae", effect_label: "ku_slow", condition_formula: "TARGET_AE_COUNT_SLOW == 0", ae_template_ref: "Slow", ae_duplicate_mode: "replace_same_status", target_ref: "trigger_subject" },
       ]),
       reaction_config_table: table([{ reaction_trigger: "creature_deals_damage", reaction_passive_mode: "on", reaction_source: "self", reaction_requires_weapon_used: true, condition_formula: "DAMAGE_IS_HP == 1", reaction_effect_ref: "ku_hit" }]) } },
-  // Tommy Gun (user 2026-11-21, Uncommon budget): a spray — up to 5 targets, five
-  // separate shots each on a random one of them, each (HR + 4) × 0.25 Physical, each rolling its own accuracy (user 11-21:
-  // ×0.5 was ~2.3–2.8× a normal shot because flat bonuses repeat per strike).
-  { name: "Tommy Gun", props: { item_rarity: "Uncommon", damage_bonus: "4", skill_target: "Up to 5 creatures", action_keywords: "chain 5 random" },
+  // Tommy Gun (user 2026-11-21, Uncommon budget): a spray — up to 5 targets, a
+  // Chain 5 VOLLEY: five shots each on a random one of them, each rolling its own
+  // accuracy for (HR + 4) × 0.25 Physical, with the wielder's flat damage bonuses
+  // (Powerful Shot +10, reaction +N) counted ONCE and shared across the five shots
+  // (user 11-21: as a random Chain those bonuses repeated on every strike).
+  { name: "Tommy Gun", props: { item_rarity: "Uncommon", damage_bonus: "4", skill_target: "Up to 5 creatures", action_keywords: "chain 5 volley" },
     text: () => ul(
-      `Attacks with this weapon gain ${J("ChnStrikeKeyw0rd", "Chain")} <strong>5</strong>: five separate shots, each against a random creature among your targets.`,
-      "Each shot rolls its own accuracy and deals <strong>a quarter</strong> of the damage.",
+      `Attacks with this weapon gain ${J("ChnStrikeKeyw0rd", "Chain")} <strong>5</strong> Volley: five shots, each against a random creature among your targets.`,
+      "Each shot rolls its own accuracy and deals <strong>a quarter</strong> of the damage; damage bonuses are shared across the shots.",
     ),
     // Halving via the attacker flag Bane uses (damage_dealt_mult_attack), which
     // action-profile applies to EVERY Chain strike's own damage roll. An outgoing
@@ -553,6 +555,26 @@ async function restockHako(out) {
   out.push(`~ Hako restocked: ${n}/${ROSTER.length} listings`);
 }
 
+// ── 3d. Chain keyword journal: the Volley mode ──────────────────────────────
+// The Chain journal page (tools/safe-edit/bin/_create-chain-keyword-journal.js)
+// gains the Volley bullet, same words as keyword-registry.js. Skipped once the
+// page mentions Volley, so a hand edit afterwards is kept.
+const CHAIN_JOURNAL = "ChnStrikeKeyw0rd";
+const CHAIN_PAGE = "ChnStrikeDescPg1";
+const CHAIN_VOLLEY_LI = "<li><p><strong>Chain (x) Volley</strong>: x shots, each on a random target, that each make their own Accuracy Check. Damage bonuses are counted once and shared across the shots, so a shot that misses loses its share.</p></li>";
+const CHAIN_OTHERS_LI = "<li><p>Other creatures' effects treat a Chain as one action:";
+async function chainVolleyJournal(out) {
+  const page = game.journal.get(CHAIN_JOURNAL)?.pages.get(CHAIN_PAGE);
+  if (!page) { out.push("! Chain journal page missing"); return; }
+  const content = String(page.text?.content ?? "");
+  if (/volley/i.test(content)) { out.push("= Chain journal already lists Volley"); return; }
+  const at = content.indexOf(CHAIN_OTHERS_LI);
+  const next = at >= 0 ? content.slice(0, at) + CHAIN_VOLLEY_LI + content.slice(at) : content.replace(/<\/ul>\s*$/, CHAIN_VOLLEY_LI + "</ul>");
+  if (next === content) { out.push("! Chain journal: no place for the Volley line"); return; }
+  await page.update({ "text.content": next });
+  out.push("~ Chain journal: Volley mode listed");
+}
+
 // ── Entry ────────────────────────────────────────────────────────────────────
 export async function migrate(game, log = () => {}) {
   const out = [];
@@ -564,6 +586,7 @@ export async function migrate(game, log = () => {}) {
   await updateOlder(out);
   await authorWeighted(out);
   await companionItems(out);
+  await chainVolleyJournal(out);
   await restockHako(out);
   for (const l of out) log(l);
   return { applied: true, summary: out.join(" | ") };
