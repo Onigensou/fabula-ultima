@@ -26,6 +26,7 @@ const C = {
   PF_WHITE: 0.6, PF_WHITE_IN: 70, PF_WHITE_OUT: 160, PF_FX_AT: 76.2, PF_FX_SCALE: 1.485, PF_FX_RATE: 1.4,
   PF_FX_FILTER: 'sepia(.6) saturate(2.2) hue-rotate(-18deg) brightness(1.25)',
   PF_HIT_AT: 243.9, PF_RAYS: { n: 30, r0: 30, r1: 520, ms: 380, rgb: '255,236,200' }, PF_SPARKS: 26, PF_SHAKE: 11, PF_SHAKE_MS: 340,
+  PF_CHROMA_AT: 243.1, PF_CHROMA_PX: 5, PF_CHROMA_MS: 240, PF_CHROMA_PUNCH: 1.25,   // spec chroma(5, 240) at +243.1
   PF_UNDIM_AT: 946.7, PF_UNDIM_MS: 400, PF_BEAT_END: 946.8, NO_PF_BEAT: 100,
   HOME_MS: 520, HOME_HOP: 14, HOME_TAIL: 450,       // backHome quiet: NO jump sound (approved v2)
   GOLD: '255,214,120', PINK: '255,120,190',
@@ -81,6 +82,24 @@ function impactRays(at, pt, o) { const rays = Array.from({ length: o.n }, () => 
     c.fillStyle = 'rgba(' + (o.rgb || '255,255,255') + ',' + (a * 0.85) + ')'; for (const r of rays) { const an = r[0], w = r[1], k = r[2];
       c.beginPath(); c.moveTo(x + Math.cos(an) * R0, y + Math.sin(an) * R0); c.lineTo(x + Math.cos(an - w) * R1 * k, y + Math.sin(an - w) * R1 * k); c.lineTo(x + Math.cos(an + w) * R1 * k, y + Math.sin(an + w) * R1 * k); c.fill(); } } }); }
 const flashAt = (at, color, peak, inMs, outMs) => m.flash(at, inMs, outMs, color, peak);
+// mockup chroma(px, ms, punch): an RGB split (red +px, blue -px) with a contrast / saturate punch on the whole view,
+// easing out. Same SVG filter as the mockup (#lhCA), applied to the board view + the timeline overlay; px are mockup
+// stage px (1682 wide) scaled to the view.
+const CHROMA_ID = 'oni-sb-chroma';
+function chromaFilter() { try { if (document.getElementById(CHROMA_ID)) return true; const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.style.position = 'absolute'; svg.style.pointerEvents = 'none';
+  svg.innerHTML = '<filter id="' + CHROMA_ID + '" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset id="' + CHROMA_ID + '-r" in="r" dx="0" result="r2"/><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="b"/><feOffset id="' + CHROMA_ID + '-b" in="b" dx="0" result="b2"/><feBlend in="r2" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b2" mode="screen"/></filter>';
+  document.body.appendChild(svg); return true; } catch (e) { return false; } }
+function chroma(at, px, ms, punch) {
+  const els = () => [canvas.app && canvas.app.view, document.querySelector('.oni-timeline-overlay')].filter(Boolean);
+  const clear = () => { for (const el of els()) el.style.filter = ''; };
+  once(at, () => { if (!chromaFilter()) return; TR(at, { type: 'chroma', px, ms }); setTimeout(clear, ms + 120); });
+  m.hold(at, at + ms, (e) => { const r = document.getElementById(CHROMA_ID + '-r'), b = document.getElementById(CHROMA_ID + '-b'); if (!r || !b) return;
+    const k = 1 - X.out(Math.min(1, e / ms)), view = canvas.app && canvas.app.view, sc = view ? view.getBoundingClientRect().width / 1682 : 1;
+    r.setAttribute('dx', (px * k * sc).toFixed(2)); b.setAttribute('dx', (-px * k * sc).toFixed(2));
+    const fl = 'url(#' + CHROMA_ID + ') contrast(' + (1 + (punch - 1) * k).toFixed(3) + ') saturate(' + (1 + (punch - 1) * 1.6 * k).toFixed(3) + ')';
+    for (const el of els()) el.style.filter = fl; });
+  once(at + ms, clear);
+}
 const HIT = (at, ev) => { TR(at, Object.assign({ type: 'hit' }, ev || {})); once(at, () => oni.hit({ paced: true })); };
 
 // ── 8 strikes: the RO Sonic Blow sound + effect, then each strike rolled by the game ──
@@ -130,6 +149,7 @@ if (perfect) {
   sparks(ph, cen, C.PF_SPARKS, C.GOLD, 1.3);
   shake(ph, C.PF_SHAKE, C.PF_SHAKE_MS);
   HIT(ph, { i: 'perfect', kind: 'hit', crit: true });
+  chroma(B3 + C.PF_CHROMA_AT, C.PF_CHROMA_PX, C.PF_CHROMA_MS, C.PF_CHROMA_PUNCH);
   B4 = B3 + C.PF_BEAT_END;
 }
 
