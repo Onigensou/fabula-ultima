@@ -18,8 +18,9 @@
  *      the one-companion gate in shared/companion-rule.js) + a contained
  *      Summon Spirit Hawk (20 MP; unavailable while you have a companion).
  *      Kindred Spirit: Snipe 20 → the hawk's free Dive Strike on the target.
- *      Kindred Feather: +1 Accuracy + Protect (Spirit Hawk).
- *      Hunter Boots: text only (tracking is narrative; no hazard-halving key exists).
+ *      Kindred Feather: Protect (Spirit Hawk) (its +1 Accuracy effect already existed).
+ *      Hunter Boots: unchanged (its +2 tracking check_buff already existed; no
+ *      hazard-halving key exists in the dungeon or conflict hazard code).
  *   4. Equipment Set "Warden of the Wilds": 2pc Marked Prey · 3pc Keen Talons ·
  *      4pc Twin Dive — text-only owner skills the hawk reads through
  *      SUMMONER_SKILL_LEVEL_<NAME>.
@@ -64,7 +65,7 @@ const ID = {
   markAe: "HkWdHuntMarkAE01",
   mantlePsv: "HkWdMantlePsv001", mantleSummon: "HkWdMantleSumm01",
   spiritPsv: "HkWdKSpiritPsv01",
-  featherAcc: "HkWdFeatherAcc01", featherProtect: "HkWdFeathProtect",
+  featherProtect: "HkWdFeathProtect",
   talon: "HkWdHawkTalon001", dive: "HkWdHawkDive0001", bond: "HkWdHawkBond0001",
   flight: "HkWdHawkFlight01", flightAe: "HkWdHawkFlyAE001", marker: "HkWdHawkMarkAE01",
 };
@@ -383,15 +384,11 @@ async function authorPieces(out) {
     } }), out);
   }
 
-  // Kindred Feather — +1 Accuracy (equip-gated) + Protect (Spirit Hawk).
+  // Kindred Feather — Protect (Spirit Hawk). Its +1 Accuracy already ships as the
+  // equip-gated "Attacks +1 Accuracy" effect (check_mod_melee + check_mod_ranged).
   const feather = game.items.get(PIECE.feather);
   const protect = game.items.get(PROTECT);
   if (feather && protect) {
-    if (!feather.effects.get(ID.featherAcc)) {
-      await feather.createEmbeddedDocuments("ActiveEffect", [{ _id: ID.featherAcc, name: "Kindred Feather: Accuracy", img: feather.img, transfer: true, disabled: false,
-        changes: [{ key: "check_mod_accuracy", mode: 2, priority: 20, value: "${isEquipped ? 1 : 0}$" }], flags: { [M]: { [FLAG]: "feather-accuracy" } } }], { keepId: true });
-      out.push("+ Kindred Feather: +1 Accuracy effect");
-    }
     const pet = foundry.utils.deepClone(protect.system.props.effect_table ?? {});
     for (const r of Object.values(pet)) {
       if (r?.effect_label === "protect_incoming") r.target_filter = "AE_COUNT_SPIRIT_HAWK > 0";
