@@ -157,3 +157,48 @@ Driven through the real UI: `scripts/sandbox-repl.mjs`.
 - Small UI note: in the Skill menu the left preview card kept showing "Birth of the Cruel: Dismiss" after Sonic Blow was selected. Probably stale preview from the programmatic row click; not checked with a mouse.
 
 Teardown: sandbox server stopped, junctions removed (0 reparse points left), sandbox folder deleted, browsers closed.
+
+## Round 4 (11-22): the two push blockers
+Setup: same sandbox (real Foundry server :30152, copy of the real world, code at ea92a618 = 9624e583 + untrack).
+
+### A. Sonic Blow 33 s ANIMATION timeout: environmental (a CPU-starved test client), no code change
+- **Cause:**
+  - The round-3 GM was meant to run "headless, canvas off", but the canvas was actually on: `noCanvas: false`, Training Ground rendered with software WebGL at **2.6 FPS**.
+  - The main thread was **99.6 % busy with no battle running**: 33 long tasks of ~330 ms in a 10 s idle window, 9958 ms total.
+  - Sonic Blow's chain plan (built at ANIMATION entry) recomputes each of the 7 strikes and yields to the event loop several times per strike. Each yield queued behind a ~330 ms frame, so each strike took ~3.2 s and the 7 strikes took ~22 s.
+  - That plus the cinematic went past the 35 s failsafe.
+  - The animation itself still reached its gate in that run (gate +5.1 s after the plan).
+- **Control, same starved headless GM:** Nox Viper "Poison Fang" ×3 (oni.timeline live board, single strike, no chain plan). ANIMATION took 5.2 / 6.4 / 4.9 s, all by INTERNAL_DONE, no timeout.
+  - So the animation path survives starvation. Only the 7-strike recompute stretches.
+- **GPU-visible GM (60 FPS), Sonic Blow cast in the sim:**
+
+  | cast | chain plan (7 strikes) | gate resolved after ANIMATION start | ANIMATION → RESOLVE |
+  |---|---|---|---|
+  | 1 | 28 ms (strikes 0→25 ms) | 1428 ms | 2163 ms, INTERNAL_DONE |
+  | 2 | 19 ms (0→17 ms) | 737 ms | 1489 ms, INTERNAL_DONE |
+  | 3 (timeline traced) | 19 ms | 741 ms | 1477 ms, INTERNAL_DONE |
+
+  - Cast 3 `__SB_TRACE`: 36 events, beats `Dash in@0`, `8 strikes@564.5`, `Perfect@1758.7`, `Back@1849.6`. The last event `homeEnd` came at **2397.7 ms (planned 2418.5)**, so the whole timeline played.
+  - The gate releases RESOLVE at ~0.74 s while the cinematic finishes on its own.
+- **Skipped animation** (GM window reported hidden for over 5 s, no other viewers = the fast-forward path):
+  - ANIMATION → RESOLVE in **0 ms** (INTERNAL_DONE), 0 trace events (script never ran).
+  - The volley still resolved (`Chain 8: 2 / MISS / MISS / 2 / …`, applied 4) and the battle went on to the next action at once. No stall.
+  - With other viewers connected the GM never skips (by design, in director-animation.js): the script runs and players see it, and only the GM's own render speed matters.
+- **Heads-up, not a blocker:** the per-strike yields scale with how busy the host's main thread is. At the measured real-host load (~30 FPS, see host perf notes) that is roughly 10 yields × 7 strikes × ≤33 ms ≈ ≤2.3 s worst case, well inside 35 s.
+- **Harness note:** the canvas-off flag in my untracked sandbox REPL did not take effect. Runner results are unaffected; the snapshot runner sets canvas off correctly.
+
+### B. +10 flat bonus (36 instead of 66): not reproducible, so a harness race, not an engine bug
+- Snapshot runner, `--code ea92a618`, Blanche +10 melee AE:
+
+  | order | runs | volley totals |
+  |---|---|---|
+  | E1 alone | 2 | 66 / 66 |
+  | F + E1 | 2 | 66 / 66 |
+  | F → E0 → E1 (the round-3 failing order) | 1 | 66 |
+
+  - New `e1Diag` snapshot at declaration: the clone's `extra_damage_mod_melee` = 10 and the AE is present, in all runs.
+- The two earlier 36s lost the AE/prop between setup and COMPUTE in that run. The engine reads the bonus at COMPUTE and again in each strike recompute, and gives 66 whenever the bonus is on the actor.
+- Check change: an `E1`-only selector plus the `e1Diag` capture.
+
+### C. Sandbox scripts untracked
+- ea92a618 `git rm --cached` tools/fvtt-playwright/scripts/sandbox-*.mjs; kept on disk (gitignored folder).

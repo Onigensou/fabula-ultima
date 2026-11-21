@@ -86,7 +86,7 @@ async function sonicRun(label, card, strikes, opts = {}) {
   if (opts.setup) await opts.setup(zarg, foe);
   // opts.atDeclare(foeName): runs when the scripted Sonic Blow is declared (the clone's HP right before the card)
   const SMd = sim.mode, origDecl = SMd.recordDeclaration.bind(SMd);
-  if (opts.atDeclare) SMd.recordDeclaration = (k, sg) => { try { if (/Sonic Blow/.test(String(sg))) opts.atDeclare(foe.name); } catch {} return origDecl(k, sg); };
+  if (opts.atDeclare) SMd.recordDeclaration = (k, sg) => { try { if (/Sonic Blow/.test(String(sg))) opts.atDeclare(foe.name, zarg.name); } catch {} return origDecl(k, sg); };
   globalThis.__FU_CHAIN_FORCED_DICE__ = strikes;
   globalThis.__SB_TRACE = [];
   // frame gaps + long tasks (perf), wall-clock ms like the trace's wall field
@@ -184,11 +184,11 @@ if (want("F")) {
   await attackRun("F3 gunblade crit, no wellspring", "Blanche", "mODVDmjIfozcfERi", [[6, 12, 6, 12]], { setup: nw });
 }
 // ── Sonic Blow edges (no wellspring, so the hits stay Physical) ──
-if (want("E") || want("K")) {
+if (want("E") || want("K") || want("E1")) {
   const hit = O.hit || { rA: 10, rB: 9 }, all = Array(7).fill(hit);
   // a flat damage bonus (+10 melee): counted once, ×2, shared over the 8 hits
   if (want("E")) await sonicRun("E0 sonic baseline (Blanche)", hit, all, { caster: "Blanche", setup: async (z) => { await noWellspring(z); } });
-  if (want("E")) await sonicRun("E1 sonic +10 flat", hit, all, { caster: "Blanche", setup: async (z) => { await noWellspring(z); await z.createEmbeddedDocuments("ActiveEffect", [{ name: "SG test +10 melee", changes: [{ key: "system.props.extra_damage_mod_melee", mode: 2, value: "10" }], flags: { [NS]: { sgTest: true } } }]); } });
+  if (want("E") || want("E1")) await sonicRun("E1 sonic +10 flat", hit, all, { caster: "Blanche", atDeclare: (fn, cn) => { const dc = bd.getActiveDirector?.()?.dCombat; const c = (dc?.combatants ?? []).find((x) => String(x.name ?? "").startsWith(cn)); const a = c?.tokenUuid ? fromUuidSync(c.tokenUuid)?.actor : null; out.e1Diag = { atDeclare: { name: a?.name, prop: a?.system?.props?.extra_damage_mod_melee, aes: (a?.effects ?? []).filter((e) => /SG test/.test(e.name)).map((e) => ({ name: e.name, disabled: e.disabled, changes: e.changes })), real: game.actors.find((x) => x.name === cn && x.hasPlayerOwner)?.system?.props?.extra_damage_mod_melee } }; }, setup: async (z) => { await noWellspring(z); await z.createEmbeddedDocuments("ActiveEffect", [{ name: "SG test +10 melee", changes: [{ key: "system.props.extra_damage_mod_melee", mode: 2, value: "10" }], flags: { [NS]: { sgTest: true } } }]); } });
   const clearFlat = async (z) => { const ids = z.effects.filter((e) => e.flags?.[NS]?.sgTest).map((e) => e.id); if (ids.length) await z.deleteEmbeddedDocuments("ActiveEffect", ids); };
   if (want("E")) for (const [lab, aff] of [["E2 sonic vs Resistant", "RS"], ["E3 sonic vs Vulnerable", "VU"]]) {
     let old = null;
