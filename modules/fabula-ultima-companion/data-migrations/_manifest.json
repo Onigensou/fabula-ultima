@@ -680,6 +680,10 @@
     {
       "key": "2026-11-21-hako-ch4-content",
       "path": "data-migrations/2026-11-21-hako-ch4-content.js"
+    },
+    {
+      "key": "2026-11-21-warden-hawk-author",
+      "path": "data-migrations/2026-11-21-warden-hawk-author.js"
     }
   ]
 }
