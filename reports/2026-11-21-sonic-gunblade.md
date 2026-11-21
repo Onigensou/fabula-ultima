@@ -40,3 +40,71 @@ Approved mockup: `E:\Art(New Com)\DND\Fabula Ultima\Resource\Animation\Sonic Kat
   - Sonic Blow on a player client, where the skill menu rewrites it into an Attack card.
   - Gunblade on an NPC.
   - The turn_end ask prompt on a real player client.
+
+## Round 2 (11-22, after the session)
+
+### 1. The Perfect beat's late gold hit: test-harness artifact, not a render stall
+Four GPU runs since (frame gaps + long tasks recorded): no frame gap over 50 ms, no long task, and the gold hit within 0–15 ms of the spec. The +509 ms in the first run came from the check itself: the sim returned while the hop home was still playing, and the next scenario's setup (weapon swap, document writes) blocked the page. The check now waits 2.5 s after each sim.
+
+### 2. Chroma split ported
+The mockup's #lhCA SVG filter: red +5 px, blue −5 px, contrast/saturate punch 1.25, 240 ms ease-out, at Perfect +243.1. It goes on the board view and the timeline overlay, and is cleared afterwards.
+
+### 3. Valley 3D side-by-sides (full-page frames) + timing diff
+- Valley_Battlemap001 (3D "camera" stage), Keren vs Dire Orc as in the mockup.
+- Full-page screenshots through a new runner hook `window.__runnerShot` (worktree `tools/snapshot-runner/bin/run.mjs`).
+- Diff, timing-only run (no screenshots, they perturb timing): `spec/sonic-blow-game-diff.json`. Every beat, all 8 strikes, the Perfect hit, the chroma split and the hop end are within ±20 ms. Sound sequence + volumes and clip scales / rates / filters are identical.
+- Side-by-sides (mockup stage left, game frame right): `spec/side-by-side/sb-8of8-{strike3,strike8,perfect,hophome}.jpg`, `sb-miss.jpg`; raw game frames in `spec/game-shots/`.
+- Remaining differences, all owned by other systems:
+  - the game frame is the GM's view (GM tool strip, AI panel instead of the player HUD);
+  - BD's hurt tint on the target;
+  - BD's own damage numbers (the Dire Orc reads WEAK! in the game);
+  - the camera framing of the live 3D stage;
+  - the namecard + MP beat is the action card;
+  - the hop home uses the measured 545.7 ms (nominal 520).
+
+### 4. Gunblade animations: dropped (another session's pilot); the default attack animation plays
+Gunblade item ids and fields are unchanged in this round.
+
+### 5. Fire conversion proved (Inner Wellspring removed: its ask retypes every hit to bolt on this snapshot)
+| Roll | Result |
+|---|---|
+| 5/4 = 9 (odd) | 23 **fire** (5 + 8 + 10) |
+| 5/5 = 10 (even) | 13 Physical |
+| 6/6 crit | 24 **fire** (shown 48 VU) |
+
+Note: the Gunblade's Fire and an Inner Wellspring retype are both element ops on the same hit; the last one folded wins (the wellspring, when its holder accepts it).
+
+### 6. Before-action transform through the real Equipment card / turn-end ask on a player client
+Not possible in the runner: it has one client, and broadcasts / player-routed prompts are dropped (runner README). It needs a real Foundry server (Staging World or Planning World) and the `tools/fvtt-playwright` multiclient rig with a player user. The GM-side ask (sim auto-accept) and the shared once-per-round gate are proven (round-1 notes).
+
+### 7. Edge playtests (Blanche, Inner Wellspring removed, so the hits stay Physical; dice 10/9 ×8)
+| Case | Hits | Perfect | Total |
+|---|---|---|---|
+| Baseline | 3 each (= floor(15 × 0.25)) | +12 | 36 |
+| +10 melee flat bonus | 6,6,6,6,5,5,5,5 (20 = 2 × 10 shared) | +22 | 66 |
+| vs Resistant (Physical) | 2 each | +8 | 24 |
+| vs Vulnerable | 6 each | +24 | 72 |
+| Perfect kills (target HP set to 30 at declaration) | 8 hits leave 6 HP | the gold hit drops it (30 → 0) | — |
+
+- Player-client cast: not runnable here (see 6). The DECLARE rewrite runs on the GM for any bundle, player or AI.
+- Gunblade on an NPC: NPCs attack with attack items, not equipped weapons, so it does not apply.
+
+### 8. Review of 4ae73480 (will_deal_damage subject re-scan now carries the roll)
+Rows on `creature_will_deal_damage` gated on the roll, world-wide:
+
+| Item | Gate | Mode |
+|---|---|---|
+| Arcana Avant (Passive) | ATTACK_CHECK_RESULT ≥ 20 | force |
+| Gae Bolg (Passive) | ATTACK_IS_CRIT | on; held by Blacksmith Shade |
+| Lucky Mallet (Passive) | ATTACK_IS_CRIT | on |
+| Minotaurus Axe (Passive) | HIT_MARGIN ≥ 5 | on |
+
+(The old Sonic Katar row is removed by the migration.)
+
+Runner, base `8a41eb0e` vs branch, same forced dice:
+- **Damage was already right on main.** The ops fold at the card: Lucky Mallet crit 27, Minotaurus 50, Gae Bolg crit 54, before affinity, the same on both.
+- **What changes is the RESOLVE fire.** Main logs `card reaction "…" not fired — 0 hit targets (no cost/effect)` for all four. The branch fires each (the passive card shows "on-hit bonus"), so any cost and non-damage step in those chains now runs.
+  - None of the four has a cost.
+  - Lucky Mallet's Crush and Arcana Avant's ignore_absorption are keyword ops folded at the card either way.
+  - Visible effect for players: the passive cards now appear.
+- **Data/text mismatch, not touched:** Gae Bolg's text says "200% damage", its row multiplies ×3.
