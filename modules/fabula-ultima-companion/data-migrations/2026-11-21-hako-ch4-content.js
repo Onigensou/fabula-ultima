@@ -347,7 +347,9 @@ const OLDER = [
           reaction_config_table: table([
             { reaction_trigger: "creature_takes_damage", reaction_source: "self", reaction_passive_mode: "force",
               condition_formula: "INCOMING_DAMAGE > 0", reaction_effect_ref: "rw_bank" },
-            { reaction_trigger: "round_end", reaction_source: "self", reaction_passive_mode: "force", reaction_passive_target: "self",
+            // round_end has no subject creature: an empty source (Bamboo Copter's
+            // conflict_start form), not "self", or the source filter refuses it.
+            { reaction_trigger: "round_end", reaction_source: "", reaction_passive_mode: "force", reaction_passive_target: "self",
               condition_formula: "AE_COUNT_DELAYED_DAMAGE > 0", reaction_effect_ref: "rw_pay" },
           ]),
         } } } },
