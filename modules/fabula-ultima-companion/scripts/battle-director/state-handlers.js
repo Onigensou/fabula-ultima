@@ -120,6 +120,7 @@ import { isBattlefieldObject } from "./battlefield-object.js";
 import { holdsKnockoutRevive } from "./knockout-revive.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
+import { volleyShotContext } from "./chain-strikes.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
 import { beginHitCounter, endHitCounter } from "./hit-counter.js";
 import { emitBattlerPose } from "./battler-pose.js";
@@ -5533,7 +5534,7 @@ const Compute = {
         // reflects the pick. DISPLAY-ONLY (never sets hasDamage / applies damage).
         ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars, menuPicks: preActivateMenuPicks, grant: arForProfile.freeActionGrant ?? null },
       });
-      const skillProj = projectProfileToActionResult(profile, arForProfile, allTargets);
+      let skillProj = projectProfileToActionResult(profile, arForProfile, allTargets);
       // Surface the check_die_swap note on the roll so the accuracy card shows it.
       if (arForProfile.dieSwap && skillProj.roll) skillProj.roll = { ...skillProj.roll, dieSwap: arForProfile.dieSwap };
       // Menu-picked skills: show the CHOSEN option's description on the card's Effect
@@ -5591,6 +5592,18 @@ const Compute = {
       // pin covers attacks/spells only; a damaging Chain that rolls a check counts whatever the skill type.
       const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(allTargets, "", _chainCasterActor, "attack").map((e) => e.tokenUuid) : [];
       const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, allTargets.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
+      // A volley Chain is only known now: re-derive the card (strike 1) with its
+      // shot's share of the flat bonuses (chain-strikes.js volleyShotContext).
+      // Same dice and inputs, so only the volley share changes.
+      if (_chainDraw?.spec?.mode === "volley") {
+        const vProfile = await computeActionProfile({
+          view, ar: arForProfile, attacker, targets: allTargets, dice,
+          ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars, menuPicks: preActivateMenuPicks, grant: arForProfile.freeActionGrant ?? null,
+            volley: volleyShotContext(_chainDraw.spec, 1) },
+        });
+        skillProj = projectProfileToActionResult(vProfile, arForProfile, allTargets);
+        if (arForProfile.dieSwap && skillProj.roll) skillProj.roll = { ...skillProj.roll, dieSwap: arForProfile.dieSwap };
+      }
       const _chainNarrow = _chainDraw?.keep
         ? narrowToTargets({ targets: allTargets, perTargetResults: skillProj.perTargetResults ?? [], hitTokenUuids: skillProj.hitTokenUuids ?? null }, _chainDraw.keep)
         : null;
@@ -5690,7 +5703,7 @@ const Compute = {
           attacker, weapon: weaponEff, targets: targetSnapshots, dice: { rA: c.rA, rB: c.rB },
           ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, multiAttackKeepHr: !!director.ctx.multiAttackKeepHr, grant: attackGrant },
         });
-        const delta = projectProfileToActionResult(profile, null, targetSnapshots);
+        let delta = projectProfileToActionResult(profile, null, targetSnapshots);
         // An NPC attack item can print a cost (Asura's 30 MP Overflow, Tempered
         // Banestrix's 10 MP Carrion Feast). RESOLVE debits only `costSerialized`,
         // which this branch never set, so those costs were silently free. Priced
@@ -5718,6 +5731,17 @@ const Compute = {
           ? null : chainSpecFor({ kind: "Attack", weapon, isCheck: true, hasDamage: true, evalCount: _atkChainEval });
         const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(targetSnapshots, "", liveActor, "attack").map((e) => e.tokenUuid) : [];
         const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, targetSnapshots.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
+        // Volley: re-derive the card (strike 1) with its shot's share of the flat
+        // bonuses — see the Skill branch. Same dice, same grant.
+        if (_chainDraw?.spec?.mode === "volley") {
+          const vProfile = await computeActionProfile({
+            view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
+            attacker, weapon: weaponEff, targets: targetSnapshots, dice: { rA: c.rA, rB: c.rB },
+            ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, multiAttackKeepHr: !!director.ctx.multiAttackKeepHr, grant: attackGrant,
+              volley: volleyShotContext(_chainDraw.spec, 1) },
+          });
+          delta = projectProfileToActionResult(vProfile, null, targetSnapshots);
+        }
         const _chainNarrow = _chainDraw?.keep
           ? narrowToTargets({ targets: targetSnapshots, perTargetResults: delta.perTargetResults ?? [], hitTokenUuids: delta.hitTokenUuids ?? null }, _chainDraw.keep)
           : null;

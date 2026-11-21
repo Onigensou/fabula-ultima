@@ -27,11 +27,13 @@ const GM = "JQGNzKpDPHJmcUIW";
 const ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/dream_within_a_dream.png";
 
 // Both Chains under one keyword (user, 2026-10-29): the default is one roll
-// shown as x hits; Separate / Random / Pick roll each hit.
+// shown as x hits; Separate / Random / Pick roll each hit. Volley (2026-11-21):
+// random shots that each roll, with the damage bonuses shared across them.
 const RULES = "<ul>"
   + "<li><p>This action lands <strong>x</strong> hits on one Action Card. It makes one Accuracy Check and deals its damage once, shared out across the hits.</p></li>"
   + "<li><p><strong>Chain (x) Separate</strong>: each hit makes its own Accuracy Check and deals its own damage. The action's own effects apply on every hit that lands, and a creature reduced to 0 HP loses the hits still aimed at it. Each hit can be a critical success, but the action grants at most one Opportunity.</p></li>"
   + "<li><p><strong>Chain (x) Random</strong> and <strong>Chain (x) Pick</strong> are separate hits: each on a random target, or shared out over the picked targets in the order they were picked.</p></li>"
+  + "<li><p><strong>Chain (x) Volley</strong>: x shots, each on a random target, that each make their own Accuracy Check. Damage bonuses are counted once and shared across the shots, so a shot that misses loses its share.</p></li>"
   + "<li><p>Other creatures' effects treat a Chain as one action: a creature is hit if any hit landed on it, and missed only if every hit missed.</p></li>"
   + "</ul>";
 
