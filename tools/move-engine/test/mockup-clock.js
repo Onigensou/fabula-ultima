@@ -38,7 +38,10 @@ const SPEC = opt("--spec", "C:/Users/Oni/AppData/Local/FoundryVTT/worktrees/soni
   }, [key, tune]);
 
   const out = { engine: ver, page: PAGE, runs: {} };
-  for (const [key, tune] of [["sonicblow", { result: 1 }], ["gb_sword", { roll: 1 }]]) {
+  // the stage geometry, so test/game-dry.js can build a board shaped like the mockup's
+  out.actors = await page.evaluate(() => Object.fromEntries(["keren", "orc"].map((k) => { const a = ACT[k]; return [k, { x: a.x, y: a.y, hb: a.hb, wb: a.wb, s: a.s, kind: a.kind }]; })));
+  out.preset = await page.evaluate(() => ({ horizon: TG.horizon, strength: TG.strength, refRow: TG.refRow, minScale: TG.minScale, maxScale: TG.maxScale }));
+  for (const [key, tune] of [["sonicblow", { result: 1 }], ["gb_sword", { roll: 1 }], ["gb_gun", { roll: 1 }], ["gb_tf", { dir: 0 }], ["sk_attack", { result: 1 }]]) {
     const runs = [];
     for (let r = 0; r < RUNS; r++) runs.push(await play(key, tune));
     out.runs[key] = runs.map((x) => x.trace);

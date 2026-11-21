@@ -23,11 +23,11 @@ async function camHome(ms) { CD.on = false; CD.follow = null; CD.punch = 0; awai
 const twoShot = () => { const pa = center(WA()), pt = center(ORC); return { x: (pa.x + pt.x) / 2, y: (pa.y + pt.y) / 2 - 8 }; };
 function lhReset() { CD.on = false; CD.follow = null; CD.punch = 0; CD.tgt = { x: W / 2, y: H / 2, z: 1, r: 0 }; $("shake").style.filter = ""; }
 // chromatic split + contrast punch on the field (SVG filter: R shifted one way, B the other)
-{ const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("width", "0"); s.setAttribute("height", "0"); s.style.position = "absolute";
+if (!document.getElementById("lhCA")) { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("width", "0"); s.setAttribute("height", "0"); s.style.position = "absolute";
   s.innerHTML = `<filter id="lhCA" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset id="lhCAr" in="r" dx="0" result="r2"/>
     <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="b"/>
     <feOffset id="lhCAb" in="b" dx="0" result="b2"/><feBlend in="r2" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b2" mode="screen"/></filter>`; document.body.appendChild(s); }
-function chroma(px, ms = 180, punch = 1.25) { if (FAST || px <= 0) return Promise.resolve(); const sh = $("shake"), r = $("lhCAr"), b = $("lhCAb");
+function chroma(px, ms = 180, punch = 1.25) { if (!FAST) traceEv("chroma", { px, ms, punch }); if (FAST || px <= 0) return Promise.resolve(); const sh = $("shake"), r = $("lhCAr"), b = $("lhCAb");
   return tween(ms, EASE.out, (t) => { const k = 1 - t; r.setAttribute("dx", (px * k).toFixed(2)); b.setAttribute("dx", (-px * k).toFixed(2));
     sh.style.filter = `url(#lhCA) contrast(${1 + (punch - 1) * k}) saturate(${1 + (punch - 1) * 1.6 * k})`; }).then(() => { sh.style.filter = ""; }); }
 // a pixelfx clip (three layers: back under the battlers, front over, light added on top)
