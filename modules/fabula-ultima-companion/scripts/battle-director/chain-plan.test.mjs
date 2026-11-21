@@ -251,6 +251,26 @@ eq("row: element falls back to the action's", ev({ hit: true, damage: 5 }, { dam
   eq("pick mode untouched (the author chose)", pinProvokerStrike({ spec: { count: 2, mode: "pick", strikeTargets: [["h"], ["k"]] }, keep: ["h", "k"] }, ["b"]).spec.strikeTargets, [["h"], ["k"]]);
 }
 
+// ── volley ───────────────────────────────────────────────────────────────────
+{
+  const { pinProvokerStrike, strikeArFor } = await import("./chain-plan.js");
+  eq("weapon volley chain", chainSpecFor({ kind: "Attack", weapon: { actionKeywords: "chain 5 volley" } }), { count: 5, mode: "volley" });
+  eq("no check: volley refused", chainSpecFor({ kind: "Skill", skillItem: skill("chain 5 volley"), isCheck: false, hasDamage: true }), null);
+  const d = drawChainTargets({ count: 5, mode: "volley" }, ["A", "B", "C"], makeRng(3));
+  eq("volley draws a target per shot", d.spec.strikeTargets.length === 5 && d.spec.strikeTargets.every((l) => l.length === 1), true);
+  eq("volley narrows the card to the drawn set", [...d.keep].sort(), [...new Set(d.spec.strikeTargets.flat())].sort());
+  eq("volley pins a provoker like random",
+    pinProvokerStrike({ spec: { count: 3, mode: "volley", strikeTargets: [["h"], ["k"], ["k"]] }, keep: ["h", "k"] }, ["b"]).spec.strikeTargets,
+    [["b"], ["k"], ["k"]]);
+  const spec = { count: 3, mode: "volley", strikeTargets: [["A"], ["A"], ["B"]] };
+  const ar = { x: 1 };
+  eq("volley strike 1 is the card", strikeArFor(ar, spec, 1), ar);
+  eq("volley strike 2 carries its shot", strikeArFor(ar, spec, 2), { x: 1, _volley: { shots: 3, shot: 1, targets: { A: { shots: 2, shot: 1 }, B: { shots: 1, shot: null } } } });
+  eq("volley strike + element", strikeArFor(ar, { ...spec, elements: ["ice", "fire"] }, 3)._strikeElement, "fire");
+  eq("volley strike 3 shot index", strikeArFor(ar, spec, 3)._volley.targets.B, { shots: 1, shot: 0 });
+  eq("random strikes carry no volley", strikeArFor(ar, { ...spec, mode: "random" }, 2), ar);
+}
+
 console.log(`chain-plan: ${passed} passed, ${failed} failed`);
 if (failed) process.exitCode = 1;
 process.exit();

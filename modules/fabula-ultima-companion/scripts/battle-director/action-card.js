@@ -7579,7 +7579,9 @@ function chainBulletHTML(chain, targets) {
     const n = Number(chain?.count) || 0;
     if (n < 2 || chain?.hidden || chain?.mode === "single") return "";
     // One keyword for players; the tooltip says how THIS Chain resolves.
-    let tip = `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
+    let tip = chain.mode === "volley"
+      ? `Chain ${n} Volley: ${n} shots on one card — each rolls its own Accuracy Check; damage bonuses are shared across the shots.`
+      : `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
     if (Array.isArray(chain.strikeTargets) && chain.strikeTargets.length) {
       const nameOf = new Map((Array.isArray(targets) ? targets : []).map((t) => [t?.tokenUuid, t?.name ?? "?"]));
       const counts = new Map();
@@ -7587,7 +7589,7 @@ function chainBulletHTML(chain, targets) {
       tip += ` Strikes: ${[...counts].map(([u, c]) => `${nameOf.get(u) ?? "?"} ×${c}`).join(", ")}.`;
       if (chain.mode === "seek") tip += " A strike on a creature already at 0 HP seeks another target.";
     }
-    const mode = (chain.mode === "random" || chain.mode === "seek") ? " (Random)" : chain.mode === "pick" ? " (Pick)" : "";
+    const mode = (chain.mode === "random" || chain.mode === "seek") ? " (Random)" : chain.mode === "pick" ? " (Pick)" : chain.mode === "volley" ? " (Volley)" : "";
     return `<span class="bullet fud-bf-chain-bullet" title="${escapeHtml(tip)}"><i class="fa-solid fa-burst" aria-hidden="true"></i>Chain ×${n}${mode}</span>`;
   } catch { return ""; }
 }

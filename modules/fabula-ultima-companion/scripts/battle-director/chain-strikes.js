@@ -2,7 +2,7 @@
 //
 // A Chain N action is ONE action card and N hits. By default (bare `chain N`)
 // it is one roll shown as N hits — planSingleChain below. A SEPARATE Chain
-// (`separate` / `random` / `pick`) is N strikes: strike 1 is the roll the card
+// (`separate` / `random` / `pick` / `seek` / `volley`) is N strikes: strike 1 is the roll the card
 // shows; strikes 2..N are rolled when the card is confirmed and stay hidden
 // until they land. Every separate strike rolls its own accuracy and damage, so
 // each one can miss, crit, or be stopped on its own.
@@ -37,16 +37,20 @@
 //              by an earlier hit goes to a random target still standing
 //              instead of being lost (user, 2026-11-06: Rumbling Staves'
 //              Thunderstorm). See redirectSeek().
+//   volley   — like random (each shot on a random card target, each rolling its
+//              own accuracy), but the attacker's FLAT damage bonuses are counted
+//              ONCE and shared across the shots (user, 2026-11-21: Tommy Gun).
+//              See splitVolleyFlat() / volleyShotContext().
 // A one-roll Chain can add `hidden` (`chain 8 hidden`): a pure presentation
 // split the player is not told about, so the action card shows no Chain badge.
-export const CHAIN_MODES = Object.freeze(["single", "separate", "random", "pick", "seek"]);
+export const CHAIN_MODES = Object.freeze(["single", "separate", "random", "pick", "seek", "volley"]);
 // 30: Zarg's Meteor Shower volley is a 24-hit one-roll Chain (Zero Power overhaul, 2026-11-06).
 export const CHAIN_MAX = 30;
 
 // Keyword forms accepted on an item's `action_keywords` list (already split
 // and lowercased by the caller, or a raw string):
 //   "chain 3", "chain(3)", "chain x3", "chain:3", "chain 3 separate",
-//   "chain 3 random", "chain 3 pick", "chain 3 seek", "chain 8 hidden"
+//   "chain 3 random", "chain 3 pick", "chain 3 seek", "chain 5 volley", "chain 8 hidden"
 //   "chain {FORMULA}" (+ any mode word) - the count is a skill formula, evaluated
 //   when the action is COMPUTED (chain-plan.js chainSpecFor `evalCount`), e.g. Keren's
 //   Last Den of Cinders: one hit per summon strike + the blast + the last hit. The
@@ -54,8 +58,8 @@ export const CHAIN_MAX = 30;
 //   (the keyword list splits on commas). Returns { count: null, formula, mode }.
 // The bare word "chain" without a count is NOT a Chain — it is ignored, so a
 // stray label can never turn an action into a multi-strike one.
-const CHAIN_RX = /^chain\s*[:x(]?\s*(\d+)\s*\)?(?:\s*[:,]?\s*(separate|random|pick|seek|hidden))?$/;
-const CHAIN_FORMULA_RX = /^chain\s*\{([^{}]+)\}(?:\s*[:,]?\s*(separate|random|pick|seek|hidden))?$/i;
+const CHAIN_RX = /^chain\s*[:x(]?\s*(\d+)\s*\)?(?:\s*[:,]?\s*(separate|random|pick|seek|volley|hidden))?$/;
+const CHAIN_FORMULA_RX = /^chain\s*\{([^{}]+)\}(?:\s*[:,]?\s*(separate|random|pick|seek|volley|hidden))?$/i;
 
 export function parseChainKeyword(keywords) {
   const list = Array.isArray(keywords)
@@ -93,6 +97,106 @@ export function isSeparateChain(spec) {
   return !!spec && spec.mode !== "single";
 }
 
+// Modes whose strikes are drawn one target each from the card's targets.
+export function isDrawnChainMode(mode) {
+  return mode === "random" || mode === "seek" || mode === "volley";
+}
+
+// ── Volley: flat bonuses counted once, shared across the shots ─────────────
+// One shot's share of a flat bonus `total` split over `shots` shots: the floor
+// per shot, the remainder going to the earliest shots, so the shares always add
+// up to the total exactly (10 over 5 = 2,2,2,2,2; 7 over 5 = 2,2,1,1,1). A
+// negative total splits the same way with its sign. `shot` is 0-based.
+export function splitVolleyFlat(total, shots, shot) {
+  const T = Math.trunc(Number(total) || 0);
+  const n = Math.max(1, Math.floor(Number(shots) || 1));
+  const k = Math.max(0, Math.floor(Number(shot) || 0));
+  if (k >= n || T === 0) return 0;
+  const sign = T < 0 ? -1 : 1;
+  const a = Math.abs(T);
+  return sign * (Math.floor(a / n) + (k < a % n ? 1 : 0));
+}
+
+// What the damage engine needs to price volley shot k (1-based):
+//   shots / shot — the action-wide split, for the attacker's own flat bonuses
+//                  (outgoing damage parts): counted once for the ACTION and
+//                  shared over all its shots;
+//   targets      — per creature, how many shots are aimed at it and which of
+//                  them this one is: a per-target flat bonus (a reaction's +6
+//                  on that creature) is counted once for THAT creature and
+//                  shared over the shots aimed at it. `shot` is null when shot
+//                  k is not aimed at the creature (its card row then shows its
+//                  first share).
+// Null for anything but a volley Chain.
+export function volleyShotContext(spec, k = 1) {
+  if (!spec || spec.mode !== "volley" || !(Number(spec.count) >= 2)) return null;
+  const shots = Math.floor(Number(spec.count));
+  const idx = Math.min(shots, Math.max(1, Math.floor(Number(k) || 1))) - 1;
+  const lists = Array.isArray(spec.strikeTargets) && spec.strikeTargets.length ? spec.strikeTargets : null;
+  const targets = {};
+  if (lists) {
+    lists.forEach((list, i) => {
+      for (const u of list ?? []) {
+        if (!u) continue;
+        const t = targets[u] ?? (targets[u] = { shots: 0, shot: null });
+        if (i === idx) t.shot = t.shots;
+        t.shots++;
+      }
+    });
+  }
+  return { shots, shot: idx, targets };
+}
+
+// One creature's share of a per-target flat bonus (see volleyShotContext).
+// Falls back to the action-wide split when the shots were never drawn per creature.
+export function volleyTargetShare(volley, uuid, total) {
+  if (!volley) return Number(total) || 0;
+  const t = uuid ? volley.targets?.[uuid] : null;
+  if (!t || !(t.shots > 0)) return splitVolleyFlat(total, volley.shots, volley.shot);
+  return splitVolleyFlat(total, t.shots, t.shot ?? 0);
+}
+
+// A volley shot's flat-bonus split for the damage engine (action-profile):
+//   primary: { damageBonus, grantDamageBonus, outgoingTotal } — damageBonus is
+//            the weapon's / skill's own bonus plus any free-action grant's.
+// The shot's base is (HR + ownBonus) × the attacker's damage_dealt_mult, then
+// + flatShare (not multiplied again). The ATTACKER's flat bonuses are the
+// outgoing damage parts (Powerful Shot +10, extra_damage_mod_*) and the grant's
+// damage; they are totalled once and split over every shot of the action.
+export function volleyPrimary(primary, volley) {
+  if (!volley) return null;
+  const grant = Number(primary?.grantDamageBonus) || 0;
+  const flatTotal = (Number(primary?.outgoingTotal) || 0) + grant;
+  return {
+    shots: volley.shots, shot: volley.shot, targets: volley.targets ?? {},
+    ownBonus: (Number(primary?.damageBonus) || 0) - grant,
+    flatTotal,
+    flatShare: splitVolleyFlat(flatTotal, volley.shots, volley.shot),
+  };
+}
+
+// A volley shot's reaction damage ops on one creature: a flat add / subtract
+// (a "+6 per hit" carried by a reaction) is counted once for that creature and
+// shared over the shots aimed at it. Multiply, set, cap, element / keyword ops
+// stay per shot, unchanged; a final-stage formula op is shared later, once
+// its per-shot amount is known (volleyFinalShare).
+export function volleyShareOps(ops, volley, uuid) {
+  if (!volley || !Array.isArray(ops) || !ops.length) return ops;
+  return ops.map((o) => ((o?.op === "add" || o?.op === "subtract") && !o.finalFormula
+    ? { ...o, amount: volleyTargetShare(volley, uuid, Number(o.amount) || 0), volleyTotal: Number(o.amount) || 0 }
+    : o));
+}
+
+// A volley shot's share of a FINAL-stage bonus (Vital Strike: + DEX die when
+// the hit would put the target into Crisis). The engine still evaluates the
+// formula per shot, against that shot's own predicted damage; a flat add /
+// subtract amount is then counted once for the creature and this shot keeps its
+// share (same split as volleyTargetShare). A multiply stays per shot.
+export function volleyFinalShare(op, amount, volley, uuid) {
+  if (!volley || !(op === "add" || op === "subtract")) return amount;
+  return volleyTargetShare(volley, uuid, amount);
+}
+
 // Small seeded PRNG (mulberry32) — deterministic tests and replays. The engine
 // passes Math.random; tests pass makeRng(seed).
 export function makeRng(seed = 1) {
@@ -109,6 +213,7 @@ export function makeRng(seed = 1) {
 //   same   — every strike hits every card target (Chain on an AoE hits them all).
 //   random — each strike hits ONE target drawn from `pool` (with replacement).
 //   seek   — drawn the same way as random (the redirect happens at RESOLVE).
+//   volley — drawn the same way as random.
 //   pick   — the strikes go round-robin over the creatures the player picked,
 //            in pick order: pick one and every strike lands on it, pick two
 //            for Chain 3 and it is A, B, A. (No new picker: the normal target
@@ -118,7 +223,7 @@ export function makeRng(seed = 1) {
 export function assignStrikeTargets({ count, mode = "same", cardTargets = [], pool = [], picks = [], rng = Math.random } = {}) {
   const n = Math.max(0, Math.floor(Number(count) || 0));
   const strikeTargets = [];
-  if ((mode === "random" || mode === "seek") && pool.length) {
+  if (isDrawnChainMode(mode) && pool.length) {
     for (let i = 0; i < n; i++) strikeTargets.push([pool[Math.floor(rng() * pool.length) % pool.length]]);
   } else if (mode === "pick" && picks.length) {
     for (let i = 0; i < n; i++) strikeTargets.push([picks[i % picks.length]]);

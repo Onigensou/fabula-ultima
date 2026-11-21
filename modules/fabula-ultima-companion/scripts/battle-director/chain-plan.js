@@ -10,7 +10,7 @@
 // only splits the card's own result into N shown hits (planSingleChain), and
 // RESOLVE treats it as one hit — every passive fires once.
 //
-// A SEPARATE Chain (`separate` / `random` / `pick`) shows strike 1 on the card;
+// A SEPARATE Chain (`separate` / `random` / `pick` / `seek` / `volley`) shows strike 1 on the card;
 // this module rolls and resolves strikes 2..N when the card is confirmed:
 //
 // Strike 1 IS the confirmed card: its roll, reactions, Invoke and GM edits are
@@ -27,12 +27,17 @@
 // Statuses from a strike land with the commit, so they never change a later
 // strike (user rule, 2026-10-29). HP, shield, blockers and the attacker's
 // hits-this-turn tally (Champion Gloves) DO carry from strike to strike.
+//
+// A VOLLEY Chain is a random Chain whose attacker's flat damage bonuses are
+// counted once and shared across the shots: each strike's record carries
+// `_volley` (volleyShotContext), which action-profile's damage pass reads to
+// price that shot's share. Strike 1 (the card) reads it from `ar.chain`.
 
 import { log, warn } from "./logger.js";
 import {
   parseChainKeyword, resolveChainCount, assignStrikeTargets, createStrikeWalker, redirectSeek,
   breakdownForTarget, summarizeTarget, fallbackBeatMs,
-  planSingleChain, singleBreakdown,
+  planSingleChain, singleBreakdown, isDrawnChainMode, volleyShotContext,
 } from "./chain-strikes.js";
 
 // ── keyword ────────────────────────────────────────────────────────────────
@@ -77,11 +82,14 @@ export function strikeElementsOf(skillItem) {
 }
 // The action record strike k (1-based) is re-derived from: the card's own for strike 1
 // or when no element is set for k; else the card with that strike's damage type.
+// A volley strike also carries its shot's share context (`_volley`, strike 2..N).
 export function strikeArFor(ar, spec, k) {
+  const volley = k > 1 ? volleyShotContext(spec, k) : null;
+  const base = volley ? { ...ar, _volley: volley } : ar;
   const list = Array.isArray(spec?.elements) ? spec.elements : null;
-  if (!list || k <= 1) return ar;
+  if (!list || k <= 1) return base;
   const el = list[Math.min(k, list.length) - 1];
-  return el ? { ...ar, damageType: el, _strikeElement: el } : ar;
+  return el ? { ...base, damageType: el, _strikeElement: el } : base;
 }
 
 // Random and pick modes assign each strike's target when the action is
@@ -94,7 +102,7 @@ export function strikeArFor(ar, spec, k) {
 // the survivor's card row (buildChainPlan).
 export function drawChainTargets(spec, targetUuids, rng = Math.random) {
   if (!spec) return null;
-  const draws = spec.mode === "random" || spec.mode === "pick" || spec.mode === "seek";
+  const draws = isDrawnChainMode(spec.mode) || spec.mode === "pick";
   if (!draws || !targetUuids?.length) return { spec, keep: null };
   const { strikeTargets, cardTargets } = assignStrikeTargets({
     count: spec.count, mode: spec.mode, pool: targetUuids, picks: targetUuids, cardTargets: targetUuids, rng,
@@ -109,7 +117,7 @@ export function drawChainTargets(spec, targetUuids, rng = Math.random) {
 // skill, which the plain attack/spell pin would skip). `draw` = drawChainTargets' result.
 export function pinProvokerStrike(draw, provokerUuids = []) {
   const spec = draw?.spec;
-  if (!spec || !(spec.mode === "random" || spec.mode === "seek")) return draw;
+  if (!spec || !isDrawnChainMode(spec.mode)) return draw;
   const list = Array.isArray(spec.strikeTargets) ? spec.strikeTargets : null;
   const pins = (provokerUuids ?? []).filter(Boolean);
   if (!list?.length || !pins.length) return draw;
