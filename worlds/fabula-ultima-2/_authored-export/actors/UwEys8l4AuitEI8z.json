@@ -1732,7 +1732,8 @@
                   },
                   "2": {
                     "effect_kind": "negate_action",
-                    "effect_label": "pressure_lose"
+                    "effect_label": "pressure_lose",
+                    "negate_is_cost_failure": true
                   }
                 },
                 "name": "Pressure",

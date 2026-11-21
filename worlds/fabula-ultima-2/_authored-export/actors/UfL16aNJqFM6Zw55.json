@@ -15,6 +15,12 @@
     "fabula-ultima-companion": {
       "affinity_class_magic": "NA",
       "affinity_class_strike": "NA",
+      "battleOpening": "nidhogg-awakening",
+      "battleStand": {
+        "back": 110,
+        "keepSize": true,
+        "x": 0
+      },
       "bossCycle": {
         "carryRoundEffects": true,
         "clearStatusesOnDown": true,
@@ -32,7 +38,7 @@
         "transition": {
           "first": "nidhogg-fall-first",
           "repeat": "nidhogg-fall-repeat",
-          "return": null
+          "return": "nidhogg-return"
         },
         "voidWhileExposed": true
       },
@@ -72,6 +78,746 @@
   },
   "folder": "4gMC1IxdJlF59BSi",
   "img": "worlds/fabula-ultima-2/assets/Beastiary/Nidhoggr_Standard.png",
+  "items": [
+    {
+      "_id": "b2rXFpq4TjJQ4ub9",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795098160243,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "fY1L3bfiZ1nCDG8P",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1795098160302,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_9",
+              "mode": 5,
+              "priority": 90,
+              "value": "aeAffinityCap(\"NA\")"
+            }
+          ],
+          "description": "<p>This creature has lost its <strong>poison</strong> Resistance, Immunity and Absorption until the end of the round (or until Nidhogg falls).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "fY1L3bfiZ1nCDG8P",
+              "originalParentId": "b2rXFpq4TjJQ4ub9",
+              "originalUuid": "Actor.UfL16aNJqFM6Zw55.Item.b2rXFpq4TjJQ4ub9.ActiveEffect.fY1L3bfiZ1nCDG8P"
+            },
+            "fabula-ultima-companion": {
+              "category": "debuff",
+              "endsOnCutRound": true,
+              "lifetimeMode": "round_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+          "name": "Soul Master",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-soul-master"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Soul Master",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "availability_formula": "",
+          "check_bonus": "",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Every creature <strong>hit</strong> by one of Nidhogg's attacks, skills or spells <em>(whatever damage it takes, even none)</em> loses its <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> <strong>Resistance</strong>, <strong>Immunity</strong> and <strong>Absorption</strong> until the end of the round, or until <strong>Nidhogg falls</strong>. A Poison <strong>Vulnerability</strong> is <strong>not</strong> lost.</p><p>The action that lands the hit is <strong>not</strong> affected; only the damage that comes after it is.</p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Soul Master",
+              "effect_kind": "apply_ae",
+              "effect_label": "sm_strip",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Soul Master",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HIT_COUNT > 0",
+              "reaction_effect_ref": "sm_strip",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_trigger": "creature_completes_attack"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "ACTION_IS_ATTACK == 0 && HIT_COUNT > 0",
+              "reaction_effect_ref": "sm_strip",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "",
+          "rolled_atr2": "",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "fHPY0kZb37N089Wk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795099150755,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Tail Stab",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_SWINGF.wav\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Hit_PiercingB.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_HitBlowL.ogg",
+          "animation_script": "<p>// Tail Stab — generated by tools/anim-studio/lib/nidhogg-signatures.js</p><p>// Re-run: node tools/anim-studio/lib/nidhogg-signatures.js --out &lt;file&gt;</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"peakMs\":580,\"staggerMs\":200,\"gateLagMs\":160,\"reach\":100,\"angle\":0.3,\"pixel\":3,\"totalTimeoutMs\":10000,\"sfx\":[{\"at\":380,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_SWINGF.wav\",\"v\":0.6}],\"hitSfx\":[{\"dt\":-10,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Hit_PiercingB.ogg\",\"v\":0.75},{\"dt\":0,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_HitBlowL.ogg\",\"v\":0.5}]};</p><p>const ANIM_KEY = \"oni.nidhogg.tail-stab\";</p><p>const TAG = \"[ONI][Anim][Tail Stab]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>function hitMap() {</p><p>  try {</p><p>    const d = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();</p><p>    const r = d?.ctx?.actionResult?.perTargetResults;</p><p>    if (!Array.isArray(r) || !r.length) return null;</p><p>    const o = {};</p><p>    for (const x of r) if (x?.tokenUuid) o[x.tokenUuid] = x.hit !== false;</p><p>    return o;</p><p>  } catch (_) { return null; }</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>const readyHook = doneHook + '.ready';</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>// Tail Stab · Nidhogg (inner script, every client).</p><p>// He coils his tail back, then snaps it forward over his back (his 3D rig's tailStrike, the strike at 0.58 s); with</p><p>// the snap a bundle of his soul-green streaks drives down into the target from his side and a long star flares at</p><p>// the point with a pierce ring and sparks, under a green bloom; a little of his soul fire stays burning at the</p><p>// wound for ~0.6 s (CotM's merged soul-flame puff field: rising puffs + light, hot at the base). A missed target gets no streak and no impact sound. oni.hit per target as</p><p>// the point lands; the damage gate (fireDone) a beat after the last target.</p><p>// Pixel FX: stock pixelfx melee/thrust (vendored under pixel-entrance/pixelfx/fx/melee, recoloured, rotated to come</p><p>// down from his side), one frame per target at K screen px per effect px, the point on the target's drawn chest</p><p>// (3D camera: drawnMeshBounds). Every sound goes through oni.sfx. No backticks in this file.</p><p>const cfg = ctx.params.cfg || {};</p><p>const hits = ctx.params.hits || null;</p><p>const caster = ctx.casterToken;</p><p>const targets = (ctx.targetTokens || []).filter((t) =&gt; t &amp;&amp; !t.destroyed &amp;&amp; t.mesh);</p><p>const readyHook = ctx.params.readyHook;</p><p>const ready = () =&gt; { if (readyHook) { try { Hooks.callAll(readyHook); } catch (e) {} } };</p><p>let gated = false;</p><p>const gate = () =&gt; { if (gated) return; gated = true; oni.fireDone(); };</p><p>if (!caster || !caster.mesh || !canvas || !canvas.ready) { ready(); gate(); return; }</p><p></p><p>const route = (p) =&gt; { try { return foundry.utils.getRoute(p); } catch (e) { return \"/\" + p; } };</p><p>const PXD = \"modules/fabula-ultima-companion/scripts/battle-director/pixel-entrance/pixelfx/\";</p><p>let PX = null, FXM = null, SL = null;</p><p>try {</p><p>  PX = await import(route(PXD + \"core/index.js\"));</p><p>  FXM = await import(route(PXD + \"fx/melee/thrust.js\"));</p><p>  SL = await import(route(\"modules/fabula-ultima-companion/scripts/conflict-event/soul-fx/soul-fx-lib.js\"));</p><p>} catch (e) { console.warn(\"[ONI][Tail Stab] pixel fx unavailable\", e); }</p><p></p><p>// ── timing (ms from the start) ──</p><p>const rigT = oni.rig.timing ? oni.rig.timing(\"tailStrike\") : null;</p><p>const PEAK = (rigT &amp;&amp; rigT.peakMs) || cfg.peakMs || 580;</p><p>const RIG_END = (rigT &amp;&amp; rigT.durationMs) || 1520;</p><p>const OUT_MS = 70;                                        // the stock thrust's point arrives 0.07 s in</p><p>const STAG = cfg.staggerMs != null ? cfg.staggerMs : 200;</p><p>const FX_MS = 750;</p><p>const LINGER = cfg.lingerMs != null ? cfg.lingerMs / 1000 : 0.6;  // the soul flame keeps burning at the wound (s)</p><p>const FLAME_END = OUT_MS + 100 + LINGER * 1000 + 320;             // last puff gone, ms after fxAt</p><p>const GATE_LAG = cfg.gateLagMs != null ? cfg.gateLagMs : 160;</p><p>const TG = targets.map((t, i) =&gt; {</p><p>  const hitAt = PEAK + i * STAG;</p><p>  return { tok: t, i, hitAt, fxAt: hitAt - OUT_MS, hit: hits ? hits[t.document.uuid] !== false : true, fx: null, done: false };</p><p>});</p><p>const LAST = TG.length ? TG[TG.length - 1].hitAt : PEAK;</p><p>const GATE = LAST + GATE_LAG;</p><p>const TOTAL = Math.max(cfg.totalMs || 0, RIG_END + 50, TG.length ? TG[TG.length - 1].fxAt + Math.max(FX_MS, FLAME_END) + 50 : 0);</p><p>if (cfg.debug) globalThis.__nidPlan = { move: \"tail-stab\", PEAK, GATE, TOTAL, hits: TG.map((g) =&gt; ({ name: g.tok.name, at: g.hitAt, hit: g.hit })) };</p><p></p><p>// ── space ──</p><p>const S3 = () =&gt; globalThis.__ONI_BATTLE_STAGE_3D__ || null;</p><p>let D = 1;</p><p>try { const v = globalThis.FUCompanion.api.camera.restViewFor(canvas.scene); if (v &amp;&amp; v.scale &gt; 0) D = v.scale; } catch (e) {}</p><p>if (!(D &gt; 0)) D = canvas.stage.scale.x || 1;</p><p>const bodyBox = (tok) =&gt; {</p><p>  try {</p><p>    const s = S3(); const b = s &amp;&amp; s.drawnMeshBounds ? s.drawnMeshBounds(tok) : tok.mesh.getBounds(false);</p><p>    if (b &amp;&amp; b.width &gt; 0) {</p><p>      const inv = (x, y) =&gt; canvas.stage.worldTransform.applyInverse(new PIXI.Point(x, y));</p><p>      const a = inv(b.x, b.y), c = inv(b.x + b.width, b.y + b.height);</p><p>      return { x0: a.x, y0: a.y, w: c.x - a.x, h: c.y - a.y };</p><p>    }</p><p>  } catch (e) {}</p><p>  return { x0: tok.x, y0: tok.y, w: tok.w, h: tok.h };</p><p>};</p><p>const cb = bodyBox(caster), casterCx = cb.x0 + cb.w / 2;</p><p></p><p>// ── layer: one frame per hit target (colour + additive light sprite), effect px = screen px x K ──</p><p>const root = new PIXI.Container(); root.name = \"oni-nidhogg-tail-stab\"; root.eventMode = \"none\"; root.scale.set(1 / D); root.zIndex = 95000;</p><p>canvas.stage.sortableChildren = true; canvas.stage.addChild(root);</p><p>// his soul ramp (soul-fx-lib SOUL, 7 steps): white-hot at the point, soul green along the streaks</p><p>const PAL = cfg.palette || [\"#0a3019\", \"#11522a\", \"#1d7d3b\", \"#34b04d\", \"#5dff6e\", \"#b4ffba\", \"#ffffff\"];</p><p>const SPK = cfg.sparks || [\"#dcffd2\", \"#a6ff9c\", \"#5dff6e\", \"#22a86c\"];</p><p>const GLOW_TINT = 0x5dff6e;</p><p>const REACH = cfg.reach || 100;                    // the streaks' length, effect px</p><p>const ANG = cfg.angle != null ? cfg.angle : 0.3;   // radians below level: down from his side into the target</p><p>const TX = 9 + REACH, TY = -20;                    // the stock effect's point (from its origin)</p><p>const SZ = 2 * (REACH + 44);                       // square frame, the point at its centre</p><p>let bloomTex = null;</p><p>const getBloomTex = () =&gt; {</p><p>  if (bloomTex) return bloomTex;</p><p>  const cv = document.createElement(\"canvas\"); cv.width = cv.height = 128;</p><p>  const c2 = cv.getContext(\"2d\"), gr = c2.createRadialGradient(64, 64, 0, 64, 64, 64);</p><p>  gr.addColorStop(0, \"rgba(255,255,255,1)\"); gr.addColorStop(0.35, \"rgba(255,255,255,0.45)\"); gr.addColorStop(1, \"rgba(255,255,255,0)\");</p><p>  c2.fillStyle = gr; c2.fillRect(0, 0, 128, 128);</p><p>  return (bloomTex = PIXI.Texture.from(cv));</p><p>};</p><p>let seedR = 0x6A09E667;</p><p>const R = () =&gt; { seedR ^= seedR &lt;&lt; 13; seedR ^= seedR &gt;&gt;&gt; 17; seedR ^= seedR &lt;&lt; 5; return ((seedR &gt;&gt;&gt; 0) % 100000) / 100000; };</p><p>const rr = (a, b) =&gt; a + (b - a) * R();</p><p>// a soul-flame puff (CotM's): rises and slows; puffField merges them, hottest where they are young and dense</p><p>const spawnPuff = (L, x, y, k) =&gt; L.push({ kind: \"puff\", x, y, vx: rr(-6, 6), vy: -rr(18, 42), age: 0, life: rr(0.16, 0.3) * (0.7 + 0.4 * k), s: rr(1.6, 2.8) * (0.6 + 0.5 * k), f: R() });</p><p>const stepPuffs = (L, dt) =&gt; { for (let i = L.length - 1; i &gt;= 0; i--) { const q = L[i]; q.age += dt; if (q.age &gt;= q.life) { L.splice(i, 1); continue; } q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= Math.pow(0.2, dt); q.vy *= Math.pow(0.55, dt); } };</p><p>const OUT_S = OUT_MS / 1000;</p><p>const burnK = (u) =&gt; { const v = u - OUT_S; return v &lt; 0 ? 0 : v &lt; 0.1 ? 1 : Math.max(0, 1 - (v - 0.1) / LINGER); };</p><p>function makeFx(g) {</p><p>  const bb = bodyBox(g.tok);</p><p>  const flip = casterCx &gt; bb.x0 + bb.w / 2;        // he stands to the target's right: come in from the right</p><p>  const a = flip ? -ANG : ANG, fxs = flip ? -1 : 1, cs = Math.cos(a), sn = Math.sin(a);</p><p>  // the origin that puts the point at the frame centre (painter: toX = x + lx*fx*cs - ly*sn, toY = y + lx*fx*sn + ly*cs)</p><p>  const ox = SZ / 2 - (TX * fxs * cs - TY * sn), oy = SZ / 2 - (TX * fxs * sn + TY * cs);</p><p>  const frame = PX.createFrame(SZ, SZ);</p><p>  const fx = PX.createFx(FXM, { x: ox, y: oy, flip, angle: a, reach: REACH, palette: PAL, sparks: SPK, seed: 4 + g.i * 7, light: cfg.lightK || 1.3 });</p><p>  const tex = (buf) =&gt; PIXI.Texture.fromBuffer(new Uint8Array(buf.buffer, buf.byteOffset, SZ * SZ * 4), SZ, SZ, { scaleMode: PIXI.SCALE_MODES.NEAREST, alphaMode: PIXI.ALPHA_MODES.UNPACK });</p><p>  const csp = new PIXI.Sprite(tex(frame.color)), lsp = new PIXI.Sprite(tex(frame.light));</p><p>  lsp.blendMode = PIXI.BLEND_MODES.ADD;</p><p>  const bl = new PIXI.Sprite(getBloomTex()); bl.anchor.set(0.5); bl.blendMode = PIXI.BLEND_MODES.ADD; bl.tint = GLOW_TINT; bl.alpha = 0;</p><p>  root.addChild(bl, csp, lsp);</p><p>  const K = Math.max(2, Math.min(4, Math.round(cfg.pixel || 3)));</p><p>  // where the soul flame burns: the wound (the frame centre) and the last few px of the streak behind it</p><p>  const bx = -fxs * cs, by = -sn, src = [];</p><p>  for (let d = 0; d &lt;= 9; d += 1.5) src.push([SZ / 2 + bx * d, SZ / 2 + by * d]);</p><p>  return { frame, fx, cs: csp, ls: lsp, bl, K, last: 0, puffs: [], src, fxDone: false };</p><p>}</p><p>function placeFx(g) {</p><p>  const bb = bodyBox(g.tok), F = g.fx, K = F.K;</p><p>  const cx = (bb.x0 + bb.w / 2) * D, cy = (bb.y0 + bb.h * 0.45) * D;</p><p>  for (const s of [F.cs, F.ls]) { s.scale.set(K); s.position.set(Math.round(cx - (SZ / 2) * K), Math.round(cy - (SZ / 2) * K)); }</p><p>  F.bl.position.set(cx, cy); F.bl.scale.set((K * (cfg.bloomPx || 70)) / 128);</p><p>}</p><p>function dropFx(g) {</p><p>  const F = g.fx; if (!F) return;</p><p>  for (const s of [F.cs, F.ls]) { try { s.parent &amp;&amp; s.parent.removeChild(s); s.destroy({ texture: true, baseTexture: true }); } catch (e) {} }</p><p>  try { F.bl.parent &amp;&amp; F.bl.parent.removeChild(F.bl); F.bl.destroy({ texture: false }); } catch (e) {}</p><p>  g.fx = null;</p><p>}</p><p></p><p>// ── the show ──</p><p>let t0 = 0, lastSim = -1, tickFn = null, nHit = 0;</p><p>const cost = { n: 0, sum: 0, max: 0 };</p><p>function tick() {</p><p>  const c0 = performance.now(), el = c0 - t0;</p><p>  for (const g of TG) {</p><p>    if (g.done || el &lt; g.hitAt) continue;</p><p>    g.done = true;</p><p>    try { oni.hit({ tokenUuid: g.tok.document.uuid, hit: g.hit }); } catch (e) {}</p><p>    if (g.hit) { nHit++; try { oni.screenshake({ duration: 260, intensity: nHit === 1 ? 7 : 5 }); } catch (e) {} }</p><p>  }</p><p>  if (!PX || !FXM) return;</p><p>  if (lastSim &gt;= 0 &amp;&amp; el - lastSim &lt; 33) return;</p><p>  lastSim = el;</p><p>  for (const g of TG) {</p><p>    if (!g.hit || el &lt; g.fxAt) continue;</p><p>    if (!g.fx &amp;&amp; !g.gone) { try { g.fx = makeFx(g); } catch (e) { g.gone = true; console.warn(\"[ONI][Tail Stab] fx build failed\", e); continue; } }</p><p>    const F = g.fx; if (!F) continue;</p><p>    const u = Math.min((el - g.fxAt) / 1000, FLAME_END / 1000 + 0.2), dts = Math.max(0, u - F.last);</p><p>    if (dts &gt; 0) { if (!F.fxDone) F.fx.update(dts); F.last = u; }</p><p>    if (!F.fxDone &amp;&amp; F.fx.done()) F.fxDone = true;</p><p>    // the soul flame left burning at the wound: front-loaded at the strike, dying over LINGER</p><p>    const k = burnK(u);</p><p>    if (k &gt; 0) {</p><p>      const n = (u - OUT_S &lt; 0.1 ? 3.2 : 1.6 * Math.pow(k, 1.4)) * (cfg.flameRate || 1);</p><p>      for (let j = 0; j &lt; 4; j++) if (R() &lt; n / 4) { const q = F.src[Math.floor(R() * F.src.length)]; spawnPuff(F.puffs, q[0] + rr(-1.5, 1.5), q[1] + rr(-1.5, 1.5), k); }</p><p>    }</p><p>    stepPuffs(F.puffs, dts);</p><p>    if (F.fxDone &amp;&amp; k &lt;= 0 &amp;&amp; !F.puffs.length) { dropFx(g); g.gone = true; continue; }</p><p>    PX.clearFrame(F.frame);</p><p>    if (!F.fxDone) F.fx.draw(F.frame, \"front\");</p><p>    if (SL &amp;&amp; F.puffs.length) SL.puffField(PX.painterFor(F.frame), F.puffs, u);</p><p>    // the bloom: flares green as the point lands, then breathes down with the flame</p><p>    const flare = u &lt; OUT_S ? Math.max(0, u / OUT_S) * 0.5 : Math.exp(-(u - OUT_S) / 0.2);</p><p>    F.bl.alpha = (cfg.bloomAlpha || 0.55) * Math.max(flare, 0.35 * k);</p><p>    for (const s of [F.cs, F.ls]) { try { s.texture.baseTexture.resource.update(); } catch (e) {} }</p><p>    placeFx(g);</p><p>  }</p><p>  const dt = performance.now() - c0; cost.n++; cost.sum += dt; if (dt &gt; cost.max) cost.max = dt;</p><p>  if (cfg.debug) globalThis.__nidCost = { avg: +(cost.sum / cost.n).toFixed(3), max: +cost.max.toFixed(3), n: cost.n };</p><p>}</p><p></p><p>// ── run ──</p><p>const rig = oni.rig.play(caster, \"tailStrike\", {});</p><p>t0 = performance.now();</p><p>ready();</p><p>for (const c of cfg.sfx || []) { try { oni.sfx(c.url, { volume: c.v != null ? c.v : 0.6, delay: c.at || 0 }); } catch (e) {} }</p><p>for (const g of TG) {</p><p>  if (!g.hit) continue;</p><p>  for (const c of cfg.hitSfx || []) { try { oni.sfx(c.url, { volume: c.v != null ? c.v : 0.6, delay: Math.max(0, g.hitAt + (c.dt || 0)) }); } catch (e) {} }</p><p>}</p><p>const tkr = canvas.app.ticker;</p><p>tickFn = () =&gt; { try { tick(); } catch (e) { console.warn(\"[ONI][Tail Stab] frame threw\", e); } };</p><p>tkr.add(tickFn);</p><p>try {</p><p>  await wait(GATE);</p><p>  tick();</p><p>  gate();</p><p>  await wait(Math.max(0, TOTAL - GATE));</p><p>  try { await Promise.race([rig.done, wait(800)]); } catch (e) {}</p><p>} finally {</p><p>  try { tkr.remove(tickFn); } catch (e) {}</p><p>  for (const g of TG) dropFx(g);</p><p>  try { root.parent &amp;&amp; root.parent.removeChild(root); root.destroy({ children: true }); } catch (e) {}</p><p>  gate();</p><p>}</p><p></p><p>`;</p><p></p><p>try {</p><p>  const waitReady = onceHook(readyHook, 8000);</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 10000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, readyHook, cfg: CFG, hits: hitMap(), strikes: Array.isArray(P?.strikes) ? P.strikes : [] },</p><p>    meta: { source: \"Tail Stab\" },</p><p>  });</p><p>  await waitReady;</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null, sourceTokenId: sourceToken?.id ?? null });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now(), sourceTokenId: sourceToken?.id ?? null });</p><p>}</p><p></p><p>})();</p>",
+          "availability_formula": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "30",
+          "defense_target_type": "def",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to <strong>one</strong> enemy.</p><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Conquer 5</strong></a>: if your Accuracy check exceeds its <strong>Defense</strong> by <strong>5 or more</strong>, it is also <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Grappled</strong></a>.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Grappled",
+              "effect_kind": "apply_ae",
+              "effect_label": "ts_grapple",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Tail Stab",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HIT_MARGIN >= 5",
+              "reaction_effect_ref": "ts_grapple",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Tail Stab",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "INS",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Enemy",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FXI0FkJZdecsuoma",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795097949754,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Call of the Master",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "",
+          "action_intent": "",
+          "action_keywords": "overflow",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Monster5.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Darkness4.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Wind1.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Poison.ogg",
+          "animation_script": "<p>// Call of the Master — generated by tools/anim-studio/lib/nidhogg-signatures.js</p><p>// Re-run: node tools/anim-studio/lib/nidhogg-signatures.js --out &lt;file&gt;</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"roarHold\":1,\"peakMs\":1100,\"chargeMs\":250,\"launchMs\":950,\"dropMs\":60,\"travelMs\":400,\"gateLagMs\":100,\"fadeMs\":600,\"stunMs\":110,\"totalMs\":3000,\"totalTimeoutMs\":15000,\"squash\":0.5,\"dim\":0.3,\"shake\":9,\"shakeMs\":800,\"flashAlpha\":0.16,\"sfx\":[{\"at\":800,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Monster5.ogg\",\"v\":0.75},{\"at\":950,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Darkness4.ogg\",\"v\":0.6},{\"at\":1000,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Wind1.ogg\",\"v\":0.55},{\"at\":1340,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Poison.ogg\",\"v\":0.6}]};</p><p>const ANIM_KEY = \"oni.nidhogg.call-of-the-master\";</p><p>const TAG = \"[ONI][Anim][Call of the Master]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>function hitMap() {</p><p>  try {</p><p>    const d = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();</p><p>    const r = d?.ctx?.actionResult?.perTargetResults;</p><p>    if (!Array.isArray(r) || !r.length) return null;</p><p>    const o = {};</p><p>    for (const x of r) if (x?.tokenUuid) o[x.tokenUuid] = x.hit !== false;</p><p>    return o;</p><p>  } catch (_) { return null; }</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>const readyHook = doneHook + '.ready';</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>// Call of the Master · Nidhogg (inner script, every client).</p><p>// He roars; at the jaw snap a ring of his green soul fire leaves his feet and runs out</p><p>// across the whole floor, through the party. Each target it reaches flares in soul</p><p>// fire and turns green (a colour wash on its own mesh). Damage gate (fireDone) once</p><p>// the front has passed the farthest target; the ring then cools and fades past them.</p><p>// After the gate the engine tears each HIT target's soul (Soul Tithe's own show),</p><p>// which this script does not draw.</p><p>// Pixel FX: drawn on CPU frames in \"field space\" (effect px = world px x D, the</p><p>// scene's rest-view scale, so 1 effect px = 1 screen px at the battle view), the</p><p>// soul-fire puff field and ramps from soul-fx-lib, placed where the 3D camera draws</p><p>// the floor (projectFoot). Back half of the ring under the battlers, front half over.</p><p>// No backticks in this file.</p><p>const cfg = ctx.params.cfg || {};</p><p>const hits = ctx.params.hits || null;</p><p>const caster = ctx.casterToken;</p><p>const targets = (ctx.targetTokens || []).filter((t) =&gt; t &amp;&amp; !t.destroyed &amp;&amp; t.mesh);</p><p>const readyHook = ctx.params.readyHook;</p><p>const ready = () =&gt; { if (readyHook) { try { Hooks.callAll(readyHook); } catch (e) {} } };</p><p>let gated = false;</p><p>const gate = () =&gt; { if (gated) return; gated = true; oni.fireDone(); };</p><p>if (!caster || !caster.mesh || !canvas || !canvas.ready) { ready(); gate(); return; }</p><p></p><p>const route = (p) =&gt; { try { return foundry.utils.getRoute(p); } catch (e) { return \"/\" + p; } };</p><p>const MOD = \"modules/fabula-ultima-companion/scripts/\";</p><p>let PX = null, SL = null;</p><p>try {</p><p>  PX = await import(route(MOD + \"battle-director/pixel-entrance/pixelfx/core/index.js\"));</p><p>  SL = await import(route(MOD + \"conflict-event/soul-fx/soul-fx-lib.js\"));</p><p>} catch (e) { console.warn(\"[ONI][Call of the Master] pixel fx unavailable\", e); }</p><p></p><p>// ── timing (ms from the roar's start) ──</p><p>const HOLD = cfg.roarHold != null ? cfg.roarHold : 1.4;</p><p>const rigT = oni.rig.timing ? oni.rig.timing(\"roar\", { hold: HOLD }) : null;</p><p>const PEAK = (rigT &amp;&amp; rigT.peakMs) || cfg.peakMs || 1100;      // the jaw snap (full gape)</p><p>const ROAR_END = (rigT &amp;&amp; rigT.durationMs) || (PEAK + (HOLD + 1.1) * 1000);</p><p>const CHARGE0 = cfg.chargeMs != null ? cfg.chargeMs : 250;</p><p>// the launch: the roar comes out of his mouth (the jaw is opening, 0.8 -&gt; 1.1 s; the roar sound is up)</p><p>const LAUNCH = cfg.launchMs || 950;</p><p>const DROP = cfg.dropMs != null ? cfg.dropMs : 60;          // mouth burst -&gt; the ring starts on the floor under it</p><p>const WAVE0 = LAUNCH + DROP;</p><p>const TW = cfg.travelMs || 400;          // ring start -&gt; the front reaches the farthest target</p><p>const GATE = WAVE0 + TW + (cfg.gateLagMs != null ? cfg.gateLagMs : 100);</p><p>const STUN_MS = cfg.stunMs || 110;       // hit stun: white-green flash frame + jolt</p><p>const FADE_MS = cfg.fadeMs || 800;         // the front cools out after the farthest target</p><p>const WASH_IN = 140, WASH_HOLD_TO = GATE + 300, WASH_OUT = 900;</p><p>const TOTAL = Math.max(cfg.totalMs || 3600, ROAR_END);</p><p>const SQ = cfg.squash || 0.5;              // the ring on the 2D floor: y half-axis / x half-axis</p><p>const K_EASE = 0.35;                       // gentle slow-down of the front (0 = constant speed)</p><p></p><p>// ── space ──</p><p>const S3 = () =&gt; globalThis.__ONI_BATTLE_STAGE_3D__ || null;</p><p>let D = 1;</p><p>try { const v = globalThis.FUCompanion.api.camera.restViewFor(canvas.scene); if (v &amp;&amp; v.scale &gt; 0) D = v.scale; } catch (e) {}</p><p>if (!(D &gt; 0)) D = canvas.stage.scale.x || 1;</p><p>const meshBox2d = (tok) =&gt; {</p><p>  try {</p><p>    const b = tok.mesh.getBounds(false);</p><p>    if (b &amp;&amp; b.width &gt; 0) {</p><p>      const inv = (x, y) =&gt; canvas.primary.worldTransform.applyInverse(new PIXI.Point(x, y));</p><p>      const a = inv(b.x, b.y), c = inv(b.x + b.width, b.y + b.height);</p><p>      return { x0: a.x, y0: a.y, w: c.x - a.x, h: c.y - a.y };</p><p>    }</p><p>  } catch (e) {}</p><p>  return { x0: tok.x, y0: tok.y, w: tok.w, h: tok.h };</p><p>};</p><p>// 2D feet (the floor point the camera plants the token on)</p><p>const foot2d = (tok) =&gt; {</p><p>  const m = S3() &amp;&amp; S3().drawnMap ? S3().drawnMap(tok) : null;</p><p>  if (m &amp;&amp; Number.isFinite(m.fx)) return { x: m.fx, y: m.fy };</p><p>  const g = meshBox2d(tok); return { x: g.x0 + g.w / 2, y: g.y0 + g.h };</p><p>};</p><p>// where a 2D floor point is drawn now (world px) and its drawn scale</p><p>const proj = (x, y) =&gt; {</p><p>  const s = S3(); let q = null;</p><p>  try { q = s &amp;&amp; s.projectFoot ? s.projectFoot({ x, y }) : null; } catch (e) { q = null; }</p><p>  return q &amp;&amp; Number.isFinite(q.x) ? { x: q.x, y: q.y, m: q.m || 1 } : { x, y, m: 1 };</p><p>};</p><p>// a token's drawn body box in world px</p><p>const bodyBox = (tok) =&gt; {</p><p>  try {</p><p>    const s = S3(); const b = s &amp;&amp; s.drawnMeshBounds ? s.drawnMeshBounds(tok) : tok.mesh.getBounds(false);</p><p>    if (b &amp;&amp; b.width &gt; 0) {</p><p>      const inv = (x, y) =&gt; canvas.stage.worldTransform.applyInverse(new PIXI.Point(x, y));</p><p>      const a = inv(b.x, b.y), c = inv(b.x + b.width, b.y + b.height);</p><p>      return { x0: a.x, y0: a.y, w: c.x - a.x, h: c.y - a.y };</p><p>    }</p><p>  } catch (e) {}</p><p>  return meshBox2d(tok);</p><p>};</p><p>const screenRectE = () =&gt; {</p><p>  const r = canvas.app.renderer, W = r.screen.width, H = r.screen.height;</p><p>  const inv = (x, y) =&gt; canvas.stage.worldTransform.applyInverse(new PIXI.Point(x, y));</p><p>  const a = inv(0, 0), b = inv(W, H);</p><p>  return { x0: a.x * D, y0: a.y * D, x1: b.x * D, y1: b.y * D };</p><p>};</p><p></p><p>// ── his mouth: a point on the painting carried by the rig's live pose (rig.json: jaw / neck pivots), placed</p><p>// on his 2D mesh (mirrored when he faces right) and moved to where the 3D camera draws him ──</p><p>const ART = cfg.art || { w: 859, h: 837, mouth: [112, 532], jaw: [193, 503], neck: [262, 468] };</p><p>const D2R = Math.PI / 180;</p><p>const roarPose = (t) =&gt; {   // the roar motion's own curve (rig-motions.js), used when the live pose is not readable</p><p>  const J = 32, HD = 16, t1 = 0.8, t2 = 1.1, t3 = t2 + HOLD, t4 = t3 + 1.1;</p><p>  const ob = (x) =&gt; { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };</p><p>  const es = (x) =&gt; 0.5 - 0.5 * Math.cos(Math.PI * x);</p><p>  if (t &lt; t1) { const e = es(t / t1); return { jaw: -5 * e, lift: -5 * e }; }</p><p>  if (t &lt; t2) { const e = ob((t - t1) / (t2 - t1)); return { jaw: -5 + (J + 5) * e, lift: -5 + (HD + 5) * e }; }</p><p>  if (t &lt; t3) return { jaw: J, lift: HD };</p><p>  if (t &lt; t4) { const e = es((t - t3) / (t4 - t3)); return { jaw: J * (1 - e), lift: HD * (1 - e) }; }</p><p>  return { jaw: 0, lift: 0 };</p><p>};</p><p>const livePose = (el) =&gt; {</p><p>  try { const rec = globalThis.__ONI_CREATURE_RIG__._debug.rec(caster); const p = rec &amp;&amp; rec.model &amp;&amp; rec.model.lastPose; if (p &amp;&amp; Number.isFinite(p.lift)) return p; } catch (e) {}</p><p>  return roarPose(el / 1000);</p><p>};</p><p>const rot = (v, c, a) =&gt; { const x = v[0] - c[0], y = v[1] - c[1], co = Math.cos(a), si = Math.sin(a); return [c[0] + x * co - y * si, c[1] + x * si + y * co]; };</p><p>const toM = (p) =&gt; [p[0] - ART.w / 2, ART.h - p[1]];</p><p>function mouth2d(el) {</p><p>  const ps = livePose(el);</p><p>  let v = rot(toM(ART.mouth), toM(ART.jaw), (ps.jaw || 0) * D2R * 0.5);   // half way between the jaws</p><p>  v = rot(v, toM(ART.neck), -(ps.lift || 0) * D2R);</p><p>  const sx = v[0] + ART.w / 2, sy = ART.h - v[1];</p><p>  const b = meshBox2d(caster), flip = (Number(caster.document.texture.scaleX) || 1) &lt; 0;</p><p>  return { x: b.x0 + (flip ? 1 - sx / ART.w : sx / ART.w) * b.w, y: b.y0 + (sy / ART.h) * b.h };</p><p>}</p><p>function mouthE(el) {   // effect px, where it is drawn now</p><p>  const p = mouth2d(el), m = S3() &amp;&amp; S3().drawnMap ? S3().drawnMap(caster) : null;</p><p>  const w = m &amp;&amp; Number.isFinite(m.fx) ? { x: m.bx + (p.x - m.fx) * m.m, y: m.by + (p.y - m.fy) * m.m, m: m.m } : { x: p.x, y: p.y, m: 1 };</p><p>  return { x: w.x * D, y: w.y * D, m: w.m };</p><p>}</p><p></p><p>// ── the plan: the ring starts on the floor right under his mouth; each target's distance on the ring ──</p><p>const F2 = foot2d(caster);</p><p>const cBox = meshBox2d(caster);</p><p>// the floor under his mouth at the row his claws stand on (the bottom of his painting); for a giant the token's own</p><p>// foot point sits up at his chest</p><p>const C2 = { x: mouth2d(LAUNCH).x, y: Math.max(F2.y, cBox.y0 + cBox.h * (cfg.floorFrac || 0.96)) };</p><p>const R0 = cfg.r0 || 40;</p><p>const rhoOf = (p) =&gt; Math.hypot(p.x - C2.x, (p.y - C2.y) / SQ);</p><p>const TG = targets.map((t) =&gt; { const f = foot2d(t); return { tok: t, f, rho: Math.max(R0 + 1, rhoOf(f)), hit: hits ? hits[t.document.uuid] !== false : true }; });</p><p>const RMAX = TG.length ? Math.max(...TG.map((g) =&gt; g.rho)) : (cfg.rDefault || 1000);</p><p>const EK = 1 - Math.exp(-K_EASE);</p><p>const gOf = (u) =&gt; (K_EASE &gt; 0 ? (1 - Math.exp(-K_EASE * u)) / EK : u);</p><p>const uOf = (y) =&gt; (K_EASE &gt; 0 ? -Math.log(1 - y * EK) / K_EASE : y);</p><p>const radiusAt = (el) =&gt; { const u = (el - WAVE0) / TW; return u &lt;= 0 ? R0 : R0 + (RMAX - R0) * (u &lt;= 1 ? gOf(u) : 1 + (u - 1) * K_EASE * Math.exp(-K_EASE) / EK); };</p><p>for (const g of TG) g.at = WAVE0 + TW * uOf((g.rho - R0) / Math.max(1, RMAX - R0));</p><p>if (cfg.debug) globalThis.__cotmPlan = { D, PEAK, LAUNCH, WAVE0, TW, GATE, C2, mouth: mouth2d(LAUNCH), TOTAL, R0, RMAX, hits: TG.map((g) =&gt; ({ name: g.tok.name, at: Math.round(g.at), hit: g.hit })) };</p><p></p><p>const seg = (t, a, b) =&gt; Math.max(0, Math.min(1, (t - a) / (b - a)));</p><p>const sine = (k) =&gt; 0.5 - 0.5 * Math.cos(Math.PI * k);</p><p>const R = (() =&gt; { let s = 0x2545F491; return () =&gt; { s ^= s &lt;&lt; 13; s ^= s &gt;&gt;&gt; 17; s ^= s &lt;&lt; 5; return ((s &gt;&gt;&gt; 0) % 100000) / 100000; }; })();</p><p>const rr = (a, b) =&gt; a + (b - a) * R();</p><p></p><p>// ── layers: frames shown as colour + additive light sprites ──</p><p>const FX = !!(PX &amp;&amp; SL);</p><p>const backRoot = new PIXI.Container(); backRoot.name = \"oni-cotm-back\"; backRoot.eventMode = \"none\"; backRoot.scale.set(1 / D);</p><p>const frontRoot = new PIXI.Container(); frontRoot.name = \"oni-cotm-front\"; frontRoot.eventMode = \"none\"; frontRoot.scale.set(1 / D); frontRoot.zIndex = 95000;</p><p>const dimG = new PIXI.Graphics(); backRoot.addChild(dimG);</p><p>canvas.primary.addChild(backRoot);</p><p>canvas.stage.sortableChildren = true; canvas.stage.addChild(frontRoot);</p><p>const reindex = () =&gt; {</p><p>  const kids = canvas.primary.children; let first = -1;</p><p>  for (let i = 0; i &lt; kids.length; i++) { const n = kids[i] &amp;&amp; kids[i].name; if (typeof n === \"string\" &amp;&amp; n.indexOf(\"Token.\") === 0) { first = i; break; } }</p><p>  const want = first &lt; 0 ? kids.length - 1 : Math.max(0, first - 1), cur = kids.indexOf(backRoot);</p><p>  if (cur &gt;= 0 &amp;&amp; cur !== want) { try { canvas.primary.setChildIndex(backRoot, Math.min(want, kids.length - 1)); } catch (e) {} }</p><p>};</p><p>const bufTex = (buf, w, h) =&gt; PIXI.Texture.fromBuffer(new Uint8Array(buf.buffer, buf.byteOffset, w * h * 4), w, h, { scaleMode: PIXI.SCALE_MODES.NEAREST, alphaMode: PIXI.ALPHA_MODES.UNPACK });</p><p>// A layer is a grid of 128 px tiles (colour + additive light sprite each), made on demand and drawn only where</p><p>// this frame has something: the ring is a thin arc across the whole screen, so one frame over its bbox would be</p><p>// ~1M px cleared and uploaded twice a tick for a few percent of lit pixels.</p><p>const TS = 128;</p><p>function Layer(parent) { this.parent = parent; this.tiles = new Map(); }</p><p>// bands: [{ x0, y0, x1, y1, draw(p) }], puffs, sparks, lights: [{ x, y, r, c, k }]</p><p>Layer.prototype.draw = function (bands, plist, sp, lights, tSec) {</p><p>  const use = new Map();</p><p>  const slot = (k) =&gt; { let u = use.get(k); if (!u) use.set(k, (u = { b: [], p: [], s: [], l: [] })); return u; };</p><p>  const span = (x0, y0, x1, y1, key, it) =&gt; {</p><p>    const ax = Math.floor(x0 / TS), bx = Math.floor(x1 / TS), ay = Math.floor(y0 / TS), by = Math.floor(y1 / TS);</p><p>    if (bx - ax &gt; 40 || by - ay &gt; 40) return;</p><p>    for (let ty = ay; ty &lt;= by; ty++) for (let tx = ax; tx &lt;= bx; tx++) slot(tx + \",\" + ty)[key].push(it);</p><p>  };</p><p>  for (const it of bands) span(it.x0, it.y0, it.x1, it.y1, \"b\", it);</p><p>  for (const q of plist) span(q.x - q.s * 4.5 - 2, q.y - q.s * 4.7 - 2, q.x + q.s * 4.5 + 2, q.y + q.s * 1.7 + 2, \"p\", q);</p><p>  for (const q of sp) span(q.x, q.y, q.x, q.y, \"s\", q);</p><p>  for (const it of lights) span(it.x - it.r, it.y - it.r, it.x + it.r, it.y + it.r, \"l\", it);</p><p>  for (const [k, t] of this.tiles) if (!use.has(k)) { t.c.visible = false; t.l.visible = false; }</p><p>  for (const [k, u] of use) {</p><p>    let t = this.tiles.get(k);</p><p>    if (!t) {</p><p>      const c = k.split(\",\"), f = PX.createFrame(TS, TS, +c[0] * TS, +c[1] * TS);</p><p>      const cs = new PIXI.Sprite(bufTex(f.color, TS, TS)), ls = new PIXI.Sprite(bufTex(f.light, TS, TS));</p><p>      ls.blendMode = PIXI.BLEND_MODES.ADD; cs.position.set(f.ox, f.oy); ls.position.set(f.ox, f.oy);</p><p>      this.parent.addChild(cs, ls); this.tiles.set(k, (t = { f, c: cs, l: ls }));</p><p>    }</p><p>    PX.clearFrame(t.f);</p><p>    const p = PX.painterFor(t.f);</p><p>    for (const it of u.b) it.draw(p);</p><p>    // the merged soul-fire field (soul-fx-lib): it reads 1 px past the frame, so tile edges see true neighbours</p><p>    if (u.p.length) SL.puffField(p, u.p, tSec);</p><p>    for (const q of u.s) { const a = 1 - q.age / q.life; p.put(Math.round(q.x), Math.round(q.y), q.c === 7 ? PX.WHITE : C[q.c], a &gt; 0.5 ? 1 : a * 2); }</p><p>    for (const it of u.l) glowClip(p, it.x, it.y, it.r, it.c, it.k);</p><p>    for (const s2 of [t.c, t.l]) { s2.visible = true; try { s2.texture.baseTexture.resource.update(); } catch (e) {} }</p><p>  }</p><p>};</p><p>Layer.prototype.destroy = function () {</p><p>  for (const t of this.tiles.values()) for (const s2 of [t.c, t.l]) { try { s2.parent &amp;&amp; s2.parent.removeChild(s2); s2.destroy({ texture: true, baseTexture: true }); } catch (e) {} }</p><p>  this.tiles.clear();</p><p>};</p><p>// a radial glow into the light buffer, visiting only this tile's pixels</p><p>function glowClip(p, x, y, r, c, k) {</p><p>  if (r &lt; 1 || k &lt;= 0.004) return;</p><p>  const x0 = Math.max(p.ox, Math.floor(x - r)), x1 = Math.min(p.ox + p.w - 1, Math.ceil(x + r));</p><p>  const y0 = Math.max(p.oy, Math.floor(y - r)), y1 = Math.min(p.oy + p.h - 1, Math.ceil(y + r));</p><p>  for (let sy = y0; sy &lt;= y1; sy++) { const dy = (sy + 0.5 - y) / r, dy2 = dy * dy; if (dy2 &gt;= 1) continue;</p><p>    for (let sx = x0; sx &lt;= x1; sx++) { const dx = (sx + 0.5 - x) / r, d = dx * dx + dy2; if (d &gt;= 1) continue; const f = 1 - Math.sqrt(d); p.add(sx, sy, c, f * f * k); } }</p><p>}</p><p>const LB = new Layer(backRoot), LF = new Layer(frontRoot);</p><p></p><p>// ── colour wash on a mesh (green soul light over its own luminance) ──</p><p>const CMF = PIXI.ColorMatrixFilter || (PIXI.filters &amp;&amp; PIXI.filters.ColorMatrixFilter);</p><p>const GREEN = [0.42, 1.0, 0.5];</p><p>const washM = (k, lift) =&gt; {</p><p>  const L = [0.299, 0.587, 0.114], m = [];</p><p>  for (let r = 0; r &lt; 3; r++) {</p><p>    for (let c = 0; c &lt; 3; c++) m.push((r === c ? 1 - k : 0) + k * GREEN[r] * lift * L[c]);</p><p>    m.push(0, 0);</p><p>  }</p><p>  m.push(0, 0, 0, 1, 0);</p><p>  return m;</p><p>};</p><p>const washes = new Map();</p><p>const setWash = (tok, k, lift) =&gt; {</p><p>  if (!CMF || !tok || tok.destroyed || !tok.mesh || tok.mesh.destroyed) return;</p><p>  let f = washes.get(tok);</p><p>  if (k &lt;= 0.01) { if (f) { const fs = tok.mesh.filters || []; if (fs.indexOf(f) &gt;= 0) tok.mesh.filters = fs.filter((x) =&gt; x !== f); } return; }</p><p>  if (!f) { f = new CMF(); f.resolution = canvas.app.renderer.resolution || 1; washes.set(tok, f); }</p><p>  f.matrix = washM(k, lift);</p><p>  const fs = tok.mesh.filters || [];</p><p>  if (fs.indexOf(f) &lt; 0) tok.mesh.filters = fs.concat([f]);</p><p>};</p><p>const dropWashes = () =&gt; { for (const [tok, f] of washes) { try { const fs = (tok.mesh &amp;&amp; tok.mesh.filters) || []; if (fs.indexOf(f) &gt;= 0) tok.mesh.filters = fs.filter((x) =&gt; x !== f); f.destroy &amp;&amp; f.destroy(); } catch (e) {} } washes.clear(); };</p><p></p><p>// ── the simulation (effect px) ──</p><p>const puffs = { b: [], f: [] }, sparks = { b: [], f: [] };</p><p>const step = (list, dt) =&gt; { for (let i = list.length - 1; i &gt;= 0; i--) { const q = list[i]; q.age += dt; if (q.age &gt;= q.life) { list.splice(i, 1); continue; } q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= Math.pow(0.2, dt); q.vy *= Math.pow(0.55, dt); } };</p><p>// a soul-fire puff: rises, and carries the push it was born with (vx0, vy0: the front's own motion)</p><p>const spawnPuff = (L, x, y, m, k, up, vx0, vy0, big) =&gt; puffs[L].push({ kind: \"puff\", x, y, vx: (vx0 || 0) + rr(-12, 12) * m, vy: (vy0 || 0) - rr(35, 80) * m * (up || 1), age: 0, life: rr(0.16, 0.3) * (0.75 + 0.35 * k) * (big ? 1.4 : 1), s: rr(3.6, 6.4) * m * Math.max(0.7, D) * (0.65 + 0.45 * k) * (big || 1), f: R() });</p><p>const spawnSpark = (L, x, y, m) =&gt; sparks[L].push({ x, y, vx: rr(-25, 25) * m, vy: -rr(60, 150) * m, age: 0, life: rr(0.25, 0.5), c: R() &lt; 0.4 ? 7 : R() &lt; 0.6 ? 6 : 5 });</p><p>const C = SL ? SL.SOUL : null, FH = SL ? SL.FH : null, GLOW = SL ? SL.GLOW : 0;</p><p>// the band behind the front: v 0 = the front edge .. 1 = inner fade</p><p>const bandCol = (v) =&gt; (v &lt; 0.07 ? [FH[0], 1] : v &lt; 0.17 ? [FH[1], 1] : v &lt; 0.3 ? [FH[2], 0.95] : v &lt; 0.48 ? [FH[3], 0.8] : v &lt; 0.7 ? [FH[5], 0.55] : [FH[6], 0.38 * (1.6 - v)]);</p><p></p><p>// the floor the ring may run on: the conflict stage rect (2D), faded over its last EDGE px</p><p>const STG = (() =&gt; { try { const st = canvas.scene.flags[\"fabula-ultima-companion\"].conflict.stage; if (st &amp;&amp; st.w &gt; 0) return st; } catch (e) {} const d = canvas.dimensions.sceneRect; return { x: d.x, y: d.y, w: d.width, h: d.height }; })();</p><p>const EDGE = cfg.edgePx || 70;</p><p>const edgeK = (x, y) =&gt; Math.max(0, Math.min(1, (x - STG.x) / EDGE, (STG.x + STG.w - x) / EDGE, (y - STG.y) / EDGE, (STG.y + STG.h - y) / EDGE));</p><p>// one frame of the ring at radius r (2D floor px), strength k: samples split into back (far) / front (near)</p><p>// halves, each half sampled end to end so the two meet without a seam</p><p>function ringSamples(r, k, tSec, scr, WB) {</p><p>  const out = { b: [], f: [] };</p><p>  if (r &lt;= 0 || k &lt;= 0.01) return out;</p><p>  const n = Math.max(8, Math.ceil(Math.PI / Math.min(0.08, 6 / (r * D))));</p><p>  for (const L of [\"f\", \"b\"]) for (let i = 0; i &lt;= n; i++) {</p><p>    const th = (L === \"f\" ? 0 : Math.PI) + Math.PI * i / n;</p><p>    const cs = Math.cos(th), sn = Math.sin(th);</p><p>    const j = 5 * Math.sin(th * 23 + tSec * 9) + 4 * Math.sin(th * 57 - tSec * 13);</p><p>    const rf = r + j, ri = Math.max(R0 * 0.5, r - WB * (0.85 + 0.3 * Math.sin(th * 11 + tSec * 5)));</p><p>    const px = C2.x + cs * rf, py = C2.y + sn * rf * SQ;</p><p>    const F = proj(px, py), B = proj(C2.x + cs * ri, C2.y + sn * ri * SQ);</p><p>    const fx = F.x * D, fy = F.y * D, bx = B.x * D, by = B.y * D;</p><p>    const e = edgeK(px, py);</p><p>    const vis = e &gt; 0 &amp;&amp; fx &gt; scr.x0 - 60 &amp;&amp; fx &lt; scr.x1 + 60 &amp;&amp; fy &gt; scr.y0 - 60 &amp;&amp; fy &lt; scr.y1 + 60;</p><p>    const dl = Math.hypot(fx - bx, fy - by) || 1;</p><p>    out[L].push({ fx, fy, bx, by, m: F.m, vis, e, th, ux: (fx - bx) / dl, uy: (fy - by) / dl, sc: dl / Math.max(1, rf - ri) });</p><p>  }</p><p>  return out;</p><p>}</p><p>// the band as quads between neighbouring samples (front edge -&gt; inner fade), and the light along the front</p><p>function bandItems(S, k, items, lights) {</p><p>  for (let i = 0; i + 1 &lt; S.length; i++) {</p><p>    const a = S[i], b = S[i + 1];</p><p>    if (!a.vis &amp;&amp; !b.vis) continue;</p><p>    const ek = Math.min(a.e, b.e);</p><p>    if (ek &lt;= 0) continue;</p><p>    items.push({</p><p>      x0: Math.min(a.fx, b.fx, a.bx, b.bx) - 1, y0: Math.min(a.fy, b.fy, a.by, b.by) - 1, x1: Math.max(a.fx, b.fx, a.bx, b.bx) + 1, y1: Math.max(a.fy, b.fy, a.by, b.by) + 1,</p><p>      draw: (p) =&gt; {</p><p>        const along = Math.max(Math.hypot(b.fx - a.fx, b.fy - a.fy), Math.hypot(b.bx - a.bx, b.by - a.by));</p><p>        const rad = Math.max(Math.hypot(a.bx - a.fx, a.by - a.fy), Math.hypot(b.bx - b.fx, b.by - b.fy));</p><p>        const na = Math.ceil(along * 1.05) + 1, nr = Math.ceil(rad * 1.05) + 1;</p><p>        for (let jj = 0; jj &lt;= nr; jj++) {</p><p>          const v = jj / nr, cc = bandCol(v), al = cc[1] * k * ek;</p><p>          if (al &lt;= 0.03) continue;</p><p>          for (let ii = 0; ii &lt;= na; ii++) {</p><p>            const u = ii / na, x = a.fx + (b.fx - a.fx) * u, y = a.fy + (b.fy - a.fy) * u;</p><p>            p.put(Math.round(x + (a.bx + (b.bx - a.bx) * u - x) * v), Math.round(y + (a.by + (b.by - a.by) * u - y) * v), cc[0], al);</p><p>          }</p><p>        }</p><p>      },</p><p>    });</p><p>  }</p><p>  for (let i = 0; i &lt; S.length; i += 3) { const s2 = S[i]; if (s2.vis &amp;&amp; s2.e &gt; 0) lights.push({ x: s2.fx, y: s2.fy - 4 * s2.m, r: 17 * s2.m * D, c: GLOW, k: 0.2 * k * s2.e }); }</p><p>}</p><p></p><p>// a shock ring off the mouth: a thin pixel ellipse, hot edge first, thinning out as it opens</p><p>function shockItem(q, el, items) {</p><p>  const u = (el - q.at) / 280;</p><p>  if (u &lt; 0 || u &gt; 1) return;</p><p>  const rx = (24 + 230 * Math.sqrt(u)) * q.m * D, ry = rx * 0.8, a = 1 - u;</p><p>  items.push({ x0: q.x - rx - 3, y0: q.y - ry - 3, x1: q.x + rx + 3, y1: q.y + ry + 3, draw: (p) =&gt; {</p><p>    const n = Math.ceil(rx * 7);</p><p>    for (let i = 0; i &lt; n; i++) {</p><p>      const th = (i / n) * Math.PI * 2, c = Math.cos(th), s2 = Math.sin(th);</p><p>      for (let w = 0; w &lt; 3; w++) p.put(Math.round(q.x + c * (rx - w)), Math.round(q.y + s2 * (ry - w * 0.8)), w === 0 ? FH[0] : w === 1 ? FH[2] : FH[4], a * (w === 2 ? 0.6 : 1));</p><p>    }</p><p>  } });</p><p>}</p><p></p><p>// ── the show ──</p><p>let t0 = 0, lastSim = -1, tickFn = null, shook = false, firstHit = false, dimK = 0, mouthGlow = null;</p><p>const shocks = [];</p><p>const DIM = cfg.dim != null ? cfg.dim : 0.3;</p><p>const flashes = [];   // light bursts { L, x, y, r, at, dur }</p><p>function tick() {</p><p>  const el = performance.now() - t0, tSec = el / 1000;</p><p>  try { reindex(); } catch (e) {}</p><p>  // washes on every frame (cheap): targets as the front reaches them, Nidhogg's own flare at the peak</p><p>  for (const g of TG) {</p><p>    if (!g.hit) continue;</p><p>    const st = el - g.at;</p><p>    if (st &gt;= 0 &amp;&amp; st &lt; STUN_MS) {</p><p>      // hit stun: a white-green flash frame, then the jolt (on the mesh pivot, the house shake: nothing refreshes it)</p><p>      setWash(g.tok, 1, st &lt; 70 ? 3.2 : 2.0);</p><p>      const u = st / STUN_MS, m = g.tok.mesh;</p><p>      if (m &amp;&amp; !m.destroyed) { m.pivot.x = Math.sin(u * Math.PI * 5) * (cfg.joltPx || 7) * (1 - u) / (Math.abs(m.scale.x) || 1); g.jolted = true; }</p><p>      continue;</p><p>    }</p><p>    if (g.jolted) { g.jolted = false; try { g.tok.mesh.pivot.x = 0; } catch (e) {} }</p><p>    const kIn = seg(el, g.at + STUN_MS - 20, g.at + STUN_MS + WASH_IN), kOut = 1 - sine(seg(el, WASH_HOLD_TO, WASH_HOLD_TO + WASH_OUT));</p><p>    setWash(g.tok, 0.72 * Math.max(kIn, st &gt;= 0 ? 0.6 : 0) * kOut, 1.15);</p><p>  }</p><p>  const ck = Math.max(0, 1 - Math.abs(el - LAUNCH - 150) / 600);</p><p>  setWash(caster, 0.38 * sine(ck), 1.25);</p><p>  // dim the scene a little so the green reads on the bright valley floor</p><p>  dimK = DIM * sine(seg(el, 0, 600)) * (1 - sine(seg(el, GATE + 300, GATE + 1100)));</p><p>  const scr = screenRectE();</p><p>  dimG.clear(); if (dimK &gt; 0.005) { dimG.beginFill(0x020a06, dimK).drawRect(scr.x0 - (scr.x1 - scr.x0), scr.y0 - (scr.y1 - scr.y0), (scr.x1 - scr.x0) * 3, (scr.y1 - scr.y0) * 3).endFill(); }</p><p>  if (!FX) return;</p><p>  // pixels at 30 fps</p><p>  if (lastSim &gt;= 0 &amp;&amp; el - lastSim &lt; 33) return;</p><p>  const dt = lastSim &lt; 0 ? 1 / 30 : Math.min(0.1, (el - lastSim) / 1000); lastSim = el;</p><p>  // the charge: soul fire gathers in his mouth as the roar winds up; the ring runs from WAVE0</p><p>  const MO = mouthE(el), dirX = (TG.length ? TG.reduce((a, g) =&gt; a + g.f.x, 0) / TG.length : C2.x + 1) &gt;= C2.x ? 1 : -1;</p><p>  if (el &gt;= CHARGE0 &amp;&amp; el &lt; LAUNCH) {</p><p>    const u = seg(el, CHARGE0, LAUNCH);</p><p>    for (let i = 0; i &lt; 2 + Math.round(4 * u); i++) { const a = rr(0, Math.PI * 2), d = rr(18, 46) * MO.m * D, T = rr(0.12, 0.22); puffs.f.push({ kind: \"puff\", x: MO.x + Math.cos(a) * d, y: MO.y + Math.sin(a) * d, vx: -Math.cos(a) * d / T, vy: -Math.sin(a) * d / T, age: 0, life: T, s: rr(1.6, 3) * MO.m * D * (0.6 + 0.6 * u), f: R() }); }</p><p>    mouthGlow = { x: MO.x, y: MO.y, r: (20 + 40 * u) * MO.m * D, k: 0.15 + 0.35 * u };</p><p>  } else mouthGlow = null;</p><p>  let r = 0, k = 0;</p><p>  if (el &gt;= WAVE0) { r = radiusAt(el); k = 1 - sine(seg(el, WAVE0 + TW, WAVE0 + TW + FADE_MS)); }</p><p>  const WB = (28 + 18 * seg(el, WAVE0, WAVE0 + 200)) * (0.6 + 0.4 * k);</p><p>  const S = ringSamples(r, k, tSec, scr, WB);</p><p>  // the flow: soul-fire puffs and sparks off the front (rate per sample)</p><p>  const rate = (cfg.puffRate || 0.3) * k;</p><p>  const vr = el &lt; WAVE0 ? 0 : (radiusAt(el + 20) - radiusAt(el - 20)) / 0.04;   // the front's speed, floor px/s</p><p>  for (const L of [\"b\", \"f\"]) for (const s of S[L]) {</p><p>    if (!s.vis) continue;</p><p>    const ride = vr * s.sc * 0.55;</p><p>    if (R() &lt; rate * s.e) spawnPuff(L, s.fx + rr(-2, 2), s.fy + rr(-2, 2), s.m, k, 1.1, s.ux * ride * 0.6, s.uy * ride * 0.6);</p><p>    if (R() &lt; rate * 0.05 * s.e) spawnSpark(L, s.fx, s.fy - 3, s.m);</p><p>  }</p><p>  // the launch: the roar bursts out of his mouth (a spray of soul fire forward and down to the floor, shock</p><p>  // rings off the mouth, a flash), and the ring starts on the floor under it</p><p>  if (!shook &amp;&amp; el &gt;= LAUNCH) {</p><p>    shook = true;</p><p>    try { oni.screenshake({ duration: cfg.shakeMs || 800, intensity: cfg.shake || 9 }); } catch (e) {}</p><p>    const FL = proj(C2.x, C2.y), floorDy = Math.max(30, FL.y * D - MO.y);</p><p>    for (let i = 0; i &lt; 60; i++) {</p><p>      const a = rr(-0.35, 1.2), sp = rr(250, 700) * MO.m * D;   // forward (toward the party) and down</p><p>      spawnPuff(\"f\", MO.x + rr(-6, 6), MO.y + rr(-6, 6), MO.m, 1, 0.4, dirX * Math.cos(a) * sp, Math.sin(a) * sp * (floorDy / 220), 1.25);</p><p>    }</p><p>    for (let i = 0; i &lt; 24; i++) spawnSpark(\"f\", MO.x + rr(-10, 10), MO.y + rr(-10, 10), MO.m);</p><p>    flashes.push({ L: \"f\", x: MO.x, y: MO.y, r: 150 * MO.m * D, at: el, dur: 450, k: 0.7 });</p><p>    for (let j = 0; j &lt; 3; j++) shocks.push({ at: el + j * 70, x: MO.x, y: MO.y, m: MO.m });</p><p>  }</p><p>  // a target the front reaches: soul fire licks up round its feet, a flash at its chest</p><p>  for (const g of TG) {</p><p>    if (el &lt; g.at || g.done &gt; 2) continue;</p><p>    const bb = bodyBox(g.tok), fx = (bb.x0 + bb.w / 2) * D, fy = (bb.y0 + bb.h) * D, m = proj(g.f.x, g.f.y).m;</p><p>    if (!g.done) {</p><p>      g.done = 1;</p><p>      try { oni.hit({ tokenUuid: g.tok.document.uuid, hit: g.hit }); } catch (e) {}</p><p>      if (g.hit) {</p><p>        flashes.push({ L: \"f\", x: fx, y: fy - bb.h * 0.45 * D, r: Math.max(40, bb.w * 0.6) * D, at: el, dur: 380, k: 0.5 });</p><p>        if (!firstHit) { firstHit = true; try { oni.screenshake({ duration: 260, intensity: 4 }); } catch (e) {} }</p><p>      }</p><p>    }</p><p>    if (!g.hit) { g.done = 3; continue; }</p><p>    const u = (el - g.at) / 320;</p><p>    if (u &gt; 1) { g.done = 3; continue; }</p><p>    const n = Math.round(9 * (1 - u));</p><p>    for (let i = 0; i &lt; n; i++) { const a = rr(0, Math.PI * 2); spawnPuff(\"f\", fx + Math.cos(a) * bb.w * 0.34 * D, fy + Math.sin(a) * 6 * m * D, m, 1, 2.2, 0, 0, 1.25); }</p><p>    if (R() &lt; 0.6) spawnSpark(\"f\", fx + rr(-0.3, 0.3) * bb.w * D, fy - rr(0, 0.6) * bb.h * D, m);</p><p>  }</p><p>  step(puffs.b, dt); step(puffs.f, dt); step(sparks.b, dt); step(sparks.f, dt);</p><p>  for (let i = flashes.length - 1; i &gt;= 0; i--) if (el - flashes[i].at &gt; flashes[i].dur) flashes.splice(i, 1);</p><p>  for (let i = shocks.length - 1; i &gt;= 0; i--) if (el - shocks[i].at &gt; 280) shocks.splice(i, 1);</p><p>  for (const L of [\"b\", \"f\"]) {</p><p>    const items = [], lights = [];</p><p>    bandItems(S[L], k, items, lights);</p><p>    if (L === \"f\") {</p><p>      if (mouthGlow) lights.push({ x: mouthGlow.x, y: mouthGlow.y, r: mouthGlow.r, c: GLOW, k: mouthGlow.k });</p><p>      for (const q of shocks) shockItem(q, el, items);</p><p>    }</p><p>    for (const q of flashes) if (q.L === L) { const a = 1 - (el - q.at) / q.dur; lights.push({ x: q.x, y: q.y, r: q.r, c: GLOW, k: q.k * a * a }, { x: q.x, y: q.y, r: q.r * 0.35, c: PX.WHITE, k: 0.25 * a * a }); }</p><p>    (L === \"b\" ? LB : LF).draw(items, puffs[L], sparks[L], lights, tSec);</p><p>  }</p><p>}</p><p></p><p>// ── run ──</p><p>const SFX = cfg.sfx || [];</p><p>const roar = oni.rig.roar(caster, { hold: HOLD });</p><p>t0 = performance.now();</p><p>ready();</p><p>for (const c of SFX) { try { oni.sfx(c.url, { volume: c.v != null ? c.v : 0.7, delay: c.at || 0 }); } catch (e) {} }</p><p>const tkr = canvas.app.ticker;</p><p>tickFn = () =&gt; { try { tick(); } catch (e) { console.warn(\"[ONI][Call of the Master] frame threw\", e); } };</p><p>tkr.add(tickFn);</p><p>const flashT = setTimeout(() =&gt; { try { oni.domFlash({ color: \"#7dff8a\", alpha: cfg.flashAlpha != null ? cfg.flashAlpha : 0.16, fadeIn: 60, hold: 40, fadeOut: 420 }); } catch (e) {} }, LAUNCH);</p><p>try {</p><p>  await wait(GATE);</p><p>  gate();</p><p>  await wait(Math.max(0, TOTAL - GATE));</p><p>  try { await Promise.race([roar.done, wait(1500)]); } catch (e) {}</p><p>} finally {</p><p>  clearTimeout(flashT);</p><p>  try { tkr.remove(tickFn); } catch (e) {}</p><p>  for (const g of TG) { try { if (g.tok.mesh) g.tok.mesh.pivot.x = 0; } catch (e) {} }</p><p>  dropWashes();</p><p>  LB.destroy(); LF.destroy();</p><p>  try { backRoot.parent &amp;&amp; backRoot.parent.removeChild(backRoot); backRoot.destroy({ children: true }); } catch (e) {}</p><p>  try { frontRoot.parent &amp;&amp; frontRoot.parent.removeChild(frontRoot); frontRoot.destroy({ children: true }); } catch (e) {}</p><p>  gate();</p><p>}</p><p></p><p>`;</p><p></p><p>try {</p><p>  const waitReady = onceHook(readyHook, 8000);</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 15000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, readyHook, cfg: CFG, hits: hitMap(), strikes: Array.isArray(P?.strikes) ? P.strikes : [] },</p><p>    meta: { source: \"Call of the Master\" },</p><p>  });</p><p>  await waitReady;</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null, sourceTokenId: sourceToken?.id ?? null });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now(), sourceTokenId: sourceToken?.id ?? null });</p><p>}</p><p></p><p>})();</p>",
+          "arcanum_role": "",
+          "availability_formula": "",
+          "availability_reason": "",
+          "check_bonus": "10",
+          "check_difficulty_level": "",
+          "check_mode": "",
+          "class": "NPC",
+          "companion_skills": "",
+          "cost": "-",
+          "damage_bonus": "20",
+          "defense_target_type": "mdef",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a></p></li></ul><p>Nidhogg roars, and a wave of green soul-fire sweeps the battlefield. Deal <strong>【HR + 20】</strong> <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a>&nbsp;damage to <strong>all enemies</strong>.</p><p>Right after the damage lands, <strong>Soul Tithe</strong> takes <strong>each player character hit</strong>: their <strong>Max HP</strong> drops to their current HP, and what they lost forms their <strong>Soul Fragment</strong> <em>(or is added to the one they already have)</em>.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "conflict_action": "lock",
+              "conflict_amount": "",
+              "consume_self": false,
+              "count": "",
+              "disable_ui_type": "",
+              "disabled_reason": "",
+              "effect_kind": "conflict_event_action",
+              "effect_label": "cotm_tithe",
+              "menu_color": "",
+              "menu_description": "",
+              "menu_label": "",
+              "on_condition_fail": "",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "has_pierce": false,
+          "has_roulette": false,
+          "heroic_requirement": "",
+          "id": "FXI0FkJZdecsuoma",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "menu_hidden": false,
+          "name": "Call of the Master",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "picker": "",
+          "post_damage_effect_ref": "",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_effect_ref": "cotm_tithe",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "round",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Call of the Master",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            }
+          },
+          "recipe": "",
+          "recipe_amount": "",
+          "recipe_resource": "",
+          "recipe_target": "",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_free_action": false,
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_skip_action_card": false,
+          "skill_tags": "",
+          "skill_target": "All Enemy",
+          "skill_type": "Active",
+          "target_eligibility": "",
+          "target_sequence": "",
+          "type_damage": "Poison",
+          "undying_restore_decay": "",
+          "undying_zp_cost": "",
+          "use_optional_params": false,
+          "uuid": "Actor.UfL16aNJqFM6Zw55.Item.FXI0FkJZdecsuoma",
+          "versatile": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "jySNvluZNVA4v9ee",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795116123782,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "3tevY1faPWZDrrKc",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1795116123867,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Nidhogg has already devoured a Soul Fragment this round.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "3tevY1faPWZDrrKc",
+              "originalParentId": "jySNvluZNVA4v9ee",
+              "originalUuid": "Actor.UfL16aNJqFM6Zw55.Item.jySNvluZNVA4v9ee.ActiveEffect.3tevY1faPWZDrrKc"
+            },
+            "fabula-ultima-companion": {
+              "endsOnCutRound": true,
+              "lifetimeMode": "round_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/aura.svg",
+          "name": "Soul Devour",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Soul Devour",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "availability_formula": "",
+          "availability_reason": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Nidhogg devours <strong>one</strong> of his <strong>Soul Fragments</strong>. It is destroyed, and he recovers <strong>【twice its Max HP】</strong> Mind Points.</p><p>The soul it held goes back to its owner <strong>without</strong> healing them: their <strong>Max HP</strong> is restored, but their <strong>current HP</strong> is <strong>not</strong>.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "sd_mark, sd_mp, sd_devour",
+              "effect_kind": "chain",
+              "effect_label": "sd_root"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Soul Devour",
+              "effect_kind": "apply_ae",
+              "effect_label": "sd_mark",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "sd_mp",
+              "grant_amount": "2 * ACTION_TARGETS_MAX_HP",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            },
+            "3": {
+              "$deleted": false,
+              "conflict_action": "destroy refund=max_only show=none",
+              "conflict_amount": "",
+              "effect_kind": "conflict_event_action",
+              "effect_label": "sd_devour",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Soul Devour",
+          "on_activate_effect_ref": "sd_root",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "One Ally",
+          "skill_type": "Active",
+          "target_eligibility": "TARGET_IS_CONFLICT_OBJECT_SOUL_FRAGMENT == 1",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "whVYUQsml3QWatCY",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795116174567,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Wailing Breath",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "spell",
+          "action_keywords": "massive",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "availability_formula": "",
+          "check_bonus": "",
+          "class": "NPC",
+          "cost": "200 MP",
+          "damage_bonus": "300",
+          "defense_target_type": "mdef",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.VCBaZfA3PZzN4sx3\" data-id=\"VCBaZfA3PZzN4sx3\" data-type=\"JournalEntry\">Massive</a></p></li></ul><p>Nidhogg breathes out a wailing gale of soul-poison. Deal <strong>【300】</strong> <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a>&nbsp;damage to <strong>one</strong> enemy. This spell <strong>always hits</strong>.</p><p>The damage is divided <strong>equally</strong> among all of its targets <em>(rounded down)</em>. Each player character it is <strong>not</strong> aimed at is dealt a <strong>Join</strong> card, and may play it to step in as an <strong>additional target</strong>.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Wailing Breath",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "",
+          "rolled_atr2": "",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Enemy",
+          "skill_type": "Spell",
+          "type_damage": "Poison",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "YrE6d5qP1KI7d9Zr",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795099150454,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215134.796.png",
+      "name": "Claw",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "multi",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster2.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_SWINGB.wav\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_HitSlashL.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_HITNIKUA.wav",
+          "animation_script": "<p>// Claw — generated by tools/anim-studio/lib/nidhogg-signatures.js</p><p>// Re-run: node tools/anim-studio/lib/nidhogg-signatures.js --out &lt;file&gt;</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"peakMs\":500,\"leadMs\":60,\"staggerMs\":170,\"gateLagMs\":150,\"markScale\":0.85,\"totalTimeoutMs\":10000,\"sfx\":[{\"at\":0,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster2.ogg\",\"v\":0.45},{\"at\":380,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_SWINGB.wav\",\"v\":0.6}],\"hitSfx\":[{\"dt\":-20,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_HitSlashL.ogg\",\"v\":0.7},{\"dt\":40,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_HITNIKUA.wav\",\"v\":0.45}]};</p><p>const ANIM_KEY = \"oni.nidhogg.claw\";</p><p>const TAG = \"[ONI][Anim][Claw]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>function hitMap() {</p><p>  try {</p><p>    const d = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();</p><p>    const r = d?.ctx?.actionResult?.perTargetResults;</p><p>    if (!Array.isArray(r) || !r.length) return null;</p><p>    const o = {};</p><p>    for (const x of r) if (x?.tokenUuid) o[x.tokenUuid] = x.hit !== false;</p><p>    return o;</p><p>  } catch (_) { return null; }</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>const readyHook = doneHook + '.ready';</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>// Claw · Nidhogg (inner script, every client).</p><p>// He rears up and slams his head down (his 3D rig's clawSwipe, the slam at 0.5 s); with the slam, three claw marks</p><p>// rake each target he hit, one target after the other: white-hot, cooling through his soul green to a glowing green</p><p>// burn, with green flecks and drips (the Bleed, in his colour), a green bloom, and a little of his soul fire left</p><p>// burning along the marks for ~0.6 s (CotM's merged soul-flame puff field: rising puffs + light, hot at the base). A missed target gets no marks and no impact sound. oni.hit per target as its last mark lands; the</p><p>// damage gate (fireDone) a beat after the last target.</p><p>// Pixel FX: stock pixelfx melee/claw-swipe (vendored under pixel-entrance/pixelfx/fx/melee, recoloured), one small</p><p>// frame per target at K screen px per effect px, placed on the target's drawn body (3D camera: drawnMeshBounds);</p><p>// the soul flame is soul-fx-lib puffField drawn into the same frame; the bloom is one soft additive GPU sprite.</p><p>// Every sound goes through oni.sfx. No backticks in this file.</p><p>const cfg = ctx.params.cfg || {};</p><p>const hits = ctx.params.hits || null;</p><p>const caster = ctx.casterToken;</p><p>const targets = (ctx.targetTokens || []).filter((t) =&gt; t &amp;&amp; !t.destroyed &amp;&amp; t.mesh);</p><p>const readyHook = ctx.params.readyHook;</p><p>const ready = () =&gt; { if (readyHook) { try { Hooks.callAll(readyHook); } catch (e) {} } };</p><p>let gated = false;</p><p>const gate = () =&gt; { if (gated) return; gated = true; oni.fireDone(); };</p><p>if (!caster || !caster.mesh || !canvas || !canvas.ready) { ready(); gate(); return; }</p><p></p><p>const route = (p) =&gt; { try { return foundry.utils.getRoute(p); } catch (e) { return \"/\" + p; } };</p><p>const PXD = \"modules/fabula-ultima-companion/scripts/battle-director/pixel-entrance/pixelfx/\";</p><p>let PX = null, FXM = null, LIB = null, SL = null;</p><p>try {</p><p>  PX = await import(route(PXD + \"core/index.js\"));</p><p>  FXM = await import(route(PXD + \"fx/melee/claw-swipe.js\"));</p><p>  LIB = await import(route(PXD + \"fx/melee/_lib.js\"));</p><p>  SL = await import(route(\"modules/fabula-ultima-companion/scripts/conflict-event/soul-fx/soul-fx-lib.js\"));</p><p>} catch (e) { console.warn(\"[ONI][Claw] pixel fx unavailable\", e); }</p><p></p><p>// ── timing (ms from the start) ──</p><p>const rigT = oni.rig.timing ? oni.rig.timing(\"clawSwipe\") : null;</p><p>const PEAK = (rigT &amp;&amp; rigT.peakMs) || cfg.peakMs || 500;</p><p>const RIG_END = (rigT &amp;&amp; rigT.durationMs) || 1250;</p><p>const LEAD = cfg.leadMs != null ? cfg.leadMs : 60;        // the slam -&gt; the first target's marks land</p><p>const STAG = cfg.staggerMs != null ? cfg.staggerMs : 170; // one target to the next</p><p>const MARK_HIT = 120;                                     // the stock effect's last (heavy) mark lands 0.12 s in</p><p>const FX_MS = 900;</p><p>const LINGER = cfg.lingerMs != null ? cfg.lingerMs / 1000 : 0.6;  // the soul flame keeps burning on the marks (s)</p><p>const FLAME_END = 80 + 100 + LINGER * 1000 + 320;                 // last puff gone, ms after fxAt</p><p>const GATE_LAG = cfg.gateLagMs != null ? cfg.gateLagMs : 150;</p><p>const TG = targets.map((t, i) =&gt; {</p><p>  const hitAt = PEAK + LEAD + i * STAG;</p><p>  return { tok: t, i, hitAt, fxAt: hitAt - MARK_HIT, hit: hits ? hits[t.document.uuid] !== false : true, fx: null, done: false };</p><p>});</p><p>const LAST = TG.length ? TG[TG.length - 1].hitAt : PEAK + LEAD;</p><p>const GATE = LAST + GATE_LAG;</p><p>const TOTAL = Math.max(cfg.totalMs || 0, RIG_END + 50, TG.length ? TG[TG.length - 1].fxAt + Math.max(FX_MS, FLAME_END) + 50 : 0);</p><p>if (cfg.debug) globalThis.__nidPlan = { move: \"claw\", PEAK, GATE, TOTAL, hits: TG.map((g) =&gt; ({ name: g.tok.name, at: g.hitAt, hit: g.hit })) };</p><p></p><p>// ── space ──</p><p>const S3 = () =&gt; globalThis.__ONI_BATTLE_STAGE_3D__ || null;</p><p>let D = 1;</p><p>try { const v = globalThis.FUCompanion.api.camera.restViewFor(canvas.scene); if (v &amp;&amp; v.scale &gt; 0) D = v.scale; } catch (e) {}</p><p>if (!(D &gt; 0)) D = canvas.stage.scale.x || 1;</p><p>// a token's drawn body box in world px</p><p>const bodyBox = (tok) =&gt; {</p><p>  try {</p><p>    const s = S3(); const b = s &amp;&amp; s.drawnMeshBounds ? s.drawnMeshBounds(tok) : tok.mesh.getBounds(false);</p><p>    if (b &amp;&amp; b.width &gt; 0) {</p><p>      const inv = (x, y) =&gt; canvas.stage.worldTransform.applyInverse(new PIXI.Point(x, y));</p><p>      const a = inv(b.x, b.y), c = inv(b.x + b.width, b.y + b.height);</p><p>      return { x0: a.x, y0: a.y, w: c.x - a.x, h: c.y - a.y };</p><p>    }</p><p>  } catch (e) {}</p><p>  return { x0: tok.x, y0: tok.y, w: tok.w, h: tok.h };</p><p>};</p><p></p><p>// ── layer: one frame per hit target (colour + additive light sprite), effect px = screen px x K ──</p><p>const root = new PIXI.Container(); root.name = \"oni-nidhogg-claw\"; root.eventMode = \"none\"; root.scale.set(1 / D); root.zIndex = 95000;</p><p>canvas.stage.sortableChildren = true; canvas.stage.addChild(root);</p><p>// his soul ramp (soul-fx-lib SOUL): the mark's core white-hot, cooling through soul green to a dark green burn</p><p>const PAL = cfg.palette || [\"#03140b\", \"#0a3019\", \"#11522a\", \"#1d7d3b\", \"#34b04d\", \"#5dff6e\", \"#b4ffba\", \"#ffffff\"];</p><p>const SPK = cfg.sparks || [\"#dcffd2\", \"#a6ff9c\", \"#5dff6e\", \"#22a86c\"];</p><p>const GLOW_TINT = 0x5dff6e;</p><p>const FW = 150, FH = 124, OX = 40, OY = 100;  // frame size and the effect's origin in it</p><p>const MX = 30, MY = -21, MH = 34;             // the marks' centre (from the origin) and their height, effect px</p><p>const bufTex = (buf) =&gt; PIXI.Texture.fromBuffer(new Uint8Array(buf.buffer, buf.byteOffset, FW * FH * 4), FW, FH, { scaleMode: PIXI.SCALE_MODES.NEAREST, alphaMode: PIXI.ALPHA_MODES.UNPACK });</p><p>// the soft bloom: one radial texture for the run, drawn additive and tinted green over each target's marks</p><p>let bloomTex = null;</p><p>const getBloomTex = () =&gt; {</p><p>  if (bloomTex) return bloomTex;</p><p>  const cv = document.createElement(\"canvas\"); cv.width = cv.height = 128;</p><p>  const c2 = cv.getContext(\"2d\"), gr = c2.createRadialGradient(64, 64, 0, 64, 64, 64);</p><p>  gr.addColorStop(0, \"rgba(255,255,255,1)\"); gr.addColorStop(0.35, \"rgba(255,255,255,0.45)\"); gr.addColorStop(1, \"rgba(255,255,255,0)\");</p><p>  c2.fillStyle = gr; c2.fillRect(0, 0, 128, 128);</p><p>  return (bloomTex = PIXI.Texture.from(cv));</p><p>};</p><p>// the marks as the stock effect draws them (claw-swipe.js: through(31 + 8i, -23 + 2i, 1.84, 1, 40, 0.84 - 0.05i, 0.5),</p><p>// width 4.2 - 0.4i, opening at 0.04i s): where each mark's soul flame burns, in frame px</p><p>const MARKS = [0, 1, 2].map((i) =&gt; {</p><p>  const s = LIB ? LIB.through(31 + i * 8, -23 + i * 2, 1.84, 1, 40, 0.84 - i * 0.05, 0.5) : null, W = 4.2 - i * 0.4;</p><p>  const pts = [];</p><p>  if (s) for (let k = 0; k &lt;= 8; k++) { const q = LIB.onSwing(s, s.R - W / 2, s.span * (0.12 + 0.76 * k / 8)); pts.push([OX + q[0], OY + q[1]]); }</p><p>  return { open: i * 0.04 + 0.035, pts };</p><p>});</p><p>let seedR = 0x2545F491;</p><p>const R = () =&gt; { seedR ^= seedR &lt;&lt; 13; seedR ^= seedR &gt;&gt;&gt; 17; seedR ^= seedR &lt;&lt; 5; return ((seedR &gt;&gt;&gt; 0) % 100000) / 100000; };</p><p>const rr = (a, b) =&gt; a + (b - a) * R();</p><p>// a soul-flame puff (CotM's): rises and slows; puffField merges them, hottest where they are young and dense</p><p>const spawnPuff = (L, x, y, k) =&gt; L.push({ kind: \"puff\", x, y, vx: rr(-6, 6), vy: -rr(18, 42), age: 0, life: rr(0.16, 0.3) * (0.7 + 0.4 * k), s: rr(1.3, 2.3) * (0.6 + 0.5 * k), f: R() });</p><p>const stepPuffs = (L, dt) =&gt; { for (let i = L.length - 1; i &gt;= 0; i--) { const q = L[i]; q.age += dt; if (q.age &gt;= q.life) { L.splice(i, 1); continue; } q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= Math.pow(0.2, dt); q.vy *= Math.pow(0.55, dt); } };</p><p>// how hard a mark still burns u s into the effect: full as it tears open, then dying over LINGER</p><p>const burnK = (u, open) =&gt; { const v = u - open; return v &lt; 0 ? 0 : v &lt; 0.1 ? 1 : Math.max(0, 1 - (v - 0.1) / LINGER); };</p><p>function makeFx(g) {</p><p>  const frame = PX.createFrame(FW, FH);</p><p>  const fx = PX.createFx(FXM, { x: OX, y: OY, palette: PAL, sparks: SPK, seed: 8 + g.i * 5, light: cfg.lightK || 1.3 });</p><p>  const cs = new PIXI.Sprite(bufTex(frame.color)), ls = new PIXI.Sprite(bufTex(frame.light));</p><p>  ls.blendMode = PIXI.BLEND_MODES.ADD;</p><p>  const bl = new PIXI.Sprite(getBloomTex()); bl.anchor.set(0.5); bl.blendMode = PIXI.BLEND_MODES.ADD; bl.tint = GLOW_TINT; bl.alpha = 0;</p><p>  root.addChild(bl, cs, ls);</p><p>  const bb = bodyBox(g.tok);</p><p>  const K = Math.max(2, Math.min(4, Math.round((bb.h * D * (cfg.markScale || 0.7)) / MH)));</p><p>  return { frame, fx, cs, ls, bl, K, last: 0, puffs: [], fxDone: false };</p><p>}</p><p>function placeFx(g) {</p><p>  const bb = bodyBox(g.tok), F = g.fx, K = F.K;</p><p>  const cx = (bb.x0 + bb.w / 2) * D, cy = (bb.y0 + bb.h * 0.42) * D;</p><p>  for (const s of [F.cs, F.ls]) { s.scale.set(K); s.position.set(Math.round(cx - (OX + MX) * K), Math.round(cy - (OY + MY) * K)); }</p><p>  F.bl.position.set(cx, cy); F.bl.scale.set((MH * K * (cfg.bloomSize || 2.4)) / 128);</p><p>}</p><p>function dropFx(g) {</p><p>  const F = g.fx; if (!F) return;</p><p>  for (const s of [F.cs, F.ls]) { try { s.parent &amp;&amp; s.parent.removeChild(s); s.destroy({ texture: true, baseTexture: true }); } catch (e) {} }</p><p>  try { F.bl.parent &amp;&amp; F.bl.parent.removeChild(F.bl); F.bl.destroy({ texture: false }); } catch (e) {}</p><p>  g.fx = null;</p><p>}</p><p></p><p>// ── the show ──</p><p>let t0 = 0, lastSim = -1, tickFn = null, nHit = 0;</p><p>const cost = { n: 0, sum: 0, max: 0 };</p><p>function tick() {</p><p>  const c0 = performance.now(), el = c0 - t0;</p><p>  // the damage beat per target, on every client (the presenter listens for oni:hit)</p><p>  for (const g of TG) {</p><p>    if (g.done || el &lt; g.hitAt) continue;</p><p>    g.done = true;</p><p>    try { oni.hit({ tokenUuid: g.tok.document.uuid, hit: g.hit }); } catch (e) {}</p><p>    if (g.hit) { nHit++; try { oni.screenshake({ duration: nHit === 1 ? 240 : 200, intensity: nHit === 1 ? 6 : 4 }); } catch (e) {} }</p><p>  }</p><p>  if (!PX || !FXM) return;</p><p>  // pixels at 30 fps</p><p>  if (lastSim &gt;= 0 &amp;&amp; el - lastSim &lt; 33) return;</p><p>  lastSim = el;</p><p>  for (const g of TG) {</p><p>    if (!g.hit || el &lt; g.fxAt) continue;</p><p>    if (!g.fx &amp;&amp; !g.gone) { try { g.fx = makeFx(g); } catch (e) { g.gone = true; console.warn(\"[ONI][Claw] fx build failed\", e); continue; } }</p><p>    const F = g.fx; if (!F) continue;</p><p>    const u = Math.min((el - g.fxAt) / 1000, FLAME_END / 1000 + 0.2), dts = Math.max(0, u - F.last);</p><p>    if (dts &gt; 0) { if (!F.fxDone) F.fx.update(dts); F.last = u; }</p><p>    if (!F.fxDone &amp;&amp; F.fx.done()) F.fxDone = true;</p><p>    // the soul flame left burning on the marks: front-loaded as each tears open, dying over LINGER</p><p>    let burning = 0;</p><p>    for (const m of MARKS) {</p><p>      const k = burnK(u, m.open); if (k &lt;= 0) continue;</p><p>      burning++;</p><p>      const n = (u - m.open &lt; 0.1 ? 2.0 : 1.1 * Math.pow(k, 1.4)) * (cfg.flameRate || 1);</p><p>      for (let j = 0; j &lt; 3; j++) if (R() &lt; n / 3) { const q = m.pts[Math.floor(R() * m.pts.length)]; if (q) spawnPuff(F.puffs, q[0] + rr(-1, 1), q[1] + rr(-1, 1), k); }</p><p>    }</p><p>    stepPuffs(F.puffs, dts);</p><p>    if (F.fxDone &amp;&amp; !burning &amp;&amp; !F.puffs.length) { dropFx(g); g.gone = true; continue; }</p><p>    PX.clearFrame(F.frame);</p><p>    if (!F.fxDone) F.fx.draw(F.frame, \"front\");</p><p>    if (SL &amp;&amp; F.puffs.length) SL.puffField(PX.painterFor(F.frame), F.puffs, u);</p><p>    // the bloom: flares green as the marks land, then breathes down with the flame</p><p>    const hitU = MARK_HIT / 1000, flare = u &lt; hitU ? Math.max(0, (u - 0.02) / (hitU - 0.02)) : Math.exp(-(u - hitU) / 0.18);</p><p>    F.bl.alpha = (cfg.bloomAlpha || 0.5) * Math.max(flare, 0.35 * burnK(u, MARKS[2].open));</p><p>    for (const s of [F.cs, F.ls]) { try { s.texture.baseTexture.resource.update(); } catch (e) {} }</p><p>    placeFx(g);</p><p>  }</p><p>  const dt = performance.now() - c0; cost.n++; cost.sum += dt; if (dt &gt; cost.max) cost.max = dt;</p><p>  if (cfg.debug) globalThis.__nidCost = { avg: +(cost.sum / cost.n).toFixed(3), max: +cost.max.toFixed(3), n: cost.n };</p><p>}</p><p></p><p>// ── run ──</p><p>const rig = oni.rig.play(caster, \"clawSwipe\", {});</p><p>t0 = performance.now();</p><p>ready();</p><p>for (const c of cfg.sfx || []) { try { oni.sfx(c.url, { volume: c.v != null ? c.v : 0.6, delay: c.at || 0 }); } catch (e) {} }</p><p>for (const g of TG) {</p><p>  if (!g.hit) continue;</p><p>  for (const c of cfg.hitSfx || []) { try { oni.sfx(c.url, { volume: c.v != null ? c.v : 0.6, delay: Math.max(0, g.hitAt + (c.dt || 0)) }); } catch (e) {} }</p><p>}</p><p>const tkr = canvas.app.ticker;</p><p>tickFn = () =&gt; { try { tick(); } catch (e) { console.warn(\"[ONI][Claw] frame threw\", e); } };</p><p>tkr.add(tickFn);</p><p>try {</p><p>  await wait(GATE);</p><p>  tick();</p><p>  gate();</p><p>  await wait(Math.max(0, TOTAL - GATE));</p><p>  try { await Promise.race([rig.done, wait(800)]); } catch (e) {}</p><p>} finally {</p><p>  try { tkr.remove(tickFn); } catch (e) {}</p><p>  for (const g of TG) dropFx(g);</p><p>  try { root.parent &amp;&amp; root.parent.removeChild(root); root.destroy({ children: true }); } catch (e) {}</p><p>  gate();</p><p>}</p><p></p><p>`;</p><p></p><p>try {</p><p>  const waitReady = onceHook(readyHook, 8000);</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 10000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, readyHook, cfg: CFG, hits: hitMap(), strikes: Array.isArray(P?.strikes) ? P.strikes : [] },</p><p>    meta: { source: \"Claw\" },</p><p>  });</p><p>  await waitReady;</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null, sourceTokenId: sourceToken?.id ?? null });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now(), sourceTokenId: sourceToken?.id ?? null });</p><p>}</p><p></p><p>})();</p>",
+          "availability_formula": "",
+          "check_bonus": "7",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "40",
+          "defense_target_type": "def",
+          "description": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi (2)</strong></a>: deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to <strong>up to two</strong> enemies. Each creature <strong>hit</strong> suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Bleed",
+              "effect_kind": "apply_ae",
+              "effect_label": "cl_bleed",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Claw",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_effect_ref": "cl_bleed",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Claw",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "Up to two enemies",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    }
+  ],
   "name": "🌟 Nidhogg, Dragon King",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -259,7 +1005,78 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "action_pattern_table": null,
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "formula",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Call of the Master",
+          "action_pattern_priority": "20",
+          "action_pattern_string": "ACTIVATION_NO == 1 && CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT == 0",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Claw",
+          "action_pattern_priority": "1",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Tail Stab",
+          "action_pattern_priority": "1",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "3": {
+          "$deleted": false,
+          "action_pattern_condition": "formula",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Soul Devour",
+          "action_pattern_priority": "15",
+          "action_pattern_string": "CUR_MP < 100 && CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT > 0 && AE_COUNT_SOUL_DEVOUR == 0",
+          "action_pattern_target_focus": "highest_max_hp",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "4": {
+          "$deleted": false,
+          "action_pattern_condition": "formula",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Wailing Breath",
+          "action_pattern_priority": "10",
+          "action_pattern_string": "CUR_MP >= 300",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        }
+      },
       "activation": "4",
       "affinity_1": "NA",
       "affinity_2": "NA",
@@ -272,7 +1089,28 @@
       "affinity_9": "NA",
       "animation_table": null,
       "arcane_ef": "100",
-      "attack_list": null,
+      "attack_list": {
+        "YrE6d5qP1KI7d9Zr": {
+          "active_target": "Up to two enemies",
+          "attack_description": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi (2)</strong></a>: deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to <strong>up to two</strong> enemies. Each creature <strong>hit</strong> suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>.</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Claw",
+          "roll": "",
+          "uuid": "Actor.UfL16aNJqFM6Zw55.Item.YrE6d5qP1KI7d9Zr"
+        },
+        "fHPY0kZb37N089Wk": {
+          "active_target": "One Enemy",
+          "attack_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to <strong>one</strong> enemy.</p><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Conquer 5</strong></a>: if your Accuracy check exceeds its <strong>Defense</strong> by <strong>5 or more</strong>, it is also <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Grappled</strong></a>.</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "INS",
+          "id": "${item.id}",
+          "name": "Tail Stab",
+          "roll": "",
+          "uuid": "Actor.UfL16aNJqFM6Zw55.Item.fHPY0kZb37N089Wk"
+        }
+      },
       "attribute": "",
       "battle_facing_direction": "right",
       "bonus_hp": 0,
@@ -345,7 +1183,7 @@
       "damage_receiving_mod_range": 0,
       "def_mod": "+6",
       "default_facing_direction": "left",
-      "defense": 16,
+      "defense": 18,
       "dex_base": "12",
       "dex_current": 12,
       "enmity": 100,
@@ -380,7 +1218,7 @@
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
-      "id": "P1uCkpNnxLRBNqZr",
+      "id": "UfL16aNJqFM6Zw55",
       "img": "worlds/fabula-ultima-2/assets/Beastiary/Nidhoggr_Standard.png",
       "init": "16",
       "ins_base": "12",
@@ -412,7 +1250,7 @@
       "level": "60",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
-      "magic_defense": 17,
+      "magic_defense": 18,
       "manadrain_percentage": 0,
       "manadrain_value": 0,
       "max_hp": "1500",
@@ -443,8 +1281,27 @@
       "shield_type": "PHYSICAL",
       "shield_value": "0",
       "showMacro": false,
-      "skill_active_list": null,
-      "skill_passive_list": null,
+      "skill_active_list": {
+        "FXI0FkJZdecsuoma": {
+          "active_cost": "-",
+          "active_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a></p></li></ul><p>Nidhogg roars, and a wave of green soul-fire sweeps the battlefield. Deal <strong>【HR + 20】</strong> <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a>&nbsp;damage to <strong>all enemies</strong>.</p><p>Right after the damage lands, <strong>Soul Tithe</strong> takes <strong>each player character hit</strong>: their <strong>Max HP</strong> drops to their current HP, and what they lost forms their <strong>Soul Fragment</strong> <em>(or is added to the one they already have)</em>.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "All Enemy",
+          "id": "${item.id}",
+          "name": "Call of the Master",
+          "roll": "",
+          "uuid": "Actor.UfL16aNJqFM6Zw55.Item.FXI0FkJZdecsuoma"
+        }
+      },
+      "skill_passive_list": {
+        "b2rXFpq4TjJQ4ub9": {
+          "id": "${item.id}",
+          "name": "Soul Master",
+          "passive_description": "<p>Every creature <strong>hit</strong> by one of Nidhogg's attacks, skills or spells <em>(whatever damage it takes, even none)</em> loses its <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> <strong>Resistance</strong>, <strong>Immunity</strong> and <strong>Absorption</strong> until the end of the round. A Poison <strong>Vulnerability</strong> is <strong>not</strong> lost.</p><p>The action that lands the hit is <strong>not</strong> affected; only the damage that comes after it is.</p>",
+          "roll": "",
+          "uuid": "Actor.UfL16aNJqFM6Zw55.Item.b2rXFpq4TjJQ4ub9"
+        }
+      },
       "spear_ef": "100",
       "species": "MONSTER",
       "sprite_attack": "",
@@ -458,7 +1315,7 @@
       "sprite_leap": "",
       "sprite_standard": "worlds/fabula-ultima-2/assets/Beastiary/Nidhoggr_Standard.png",
       "sprite_walk": "",
-      "steal_percentage_table": null,
+      "steal_percentage_table": {},
       "study_text": "<p>The king of dragons, whose soul is sealed inside a red crystal made of dragon slayer blood and bone.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "DRAGON",
@@ -469,7 +1326,7 @@
       "traits": "King of Dragons, Dragon, Sealed Soul",
       "ultima_point": "10",
       "unique": false,
-      "uuid": "Actor.P1uCkpNnxLRBNqZr",
+      "uuid": "Actor.UfL16aNJqFM6Zw55",
       "wlp_base": "12",
       "wlp_current": 12,
       "zenit_reward_max": "6000",
