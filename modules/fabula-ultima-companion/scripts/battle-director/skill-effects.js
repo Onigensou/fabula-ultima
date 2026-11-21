@@ -20,6 +20,8 @@
 import { log, warn } from "./logger.js";
 import { watchGone } from "./player-presence.js";
 import { stageOf } from "./director-camera.js";
+import { readTimedStrikeConfig, strikeDamage, finisherDamage } from "./timed-strikes-rules.js";
+import { resolveOutgoingDamageParts } from "./skill-formulas.js";
 import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock, shouldReverseHeal, isHealReversedActor, isReviveKillImmune, rowIgnoresUndead } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
@@ -32,6 +34,7 @@ import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
+import { resolveAttackerWeapon } from "./snapshot.js";
 import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX, targetsKnockedOutAlly, grappleHoldCap } from "./snapshot.js";
 import { tokensGrappledBy } from "./grappled.js";
 import { INVENTORY_ACTION_TAG } from "./skill-intent.js";
@@ -4938,6 +4941,45 @@ async function applyDestroySummonEffect(row, ctx) {
 //   notify_abort   — truthy → stop the chain after notifying (default true: a
 //                    stub branch has nothing more to do)
 // Headless (passive/no-DOM) → no toast, message logged; still returns ok.
+// The swing of a timed_strikes row (shared by the card preview and the apply):
+// the caster's main-hand weapon damage at HR 0 (no roll) + flat outgoing bonuses
+// ONCE, or the row's strike_swing formula. Synchronous (the preview is sync).
+function computeTimedStrikeSwing(row, caster, payload = null, skill = null, round = 0) {
+  const weapon = caster ? resolveAttackerWeapon(caster, { which: "main" }) : null;
+  const element = String(row.damage_element ?? "").trim().toLowerCase() || String(weapon?.damageType ?? "physical").toLowerCase();
+  const rangeKind = /melee/i.test(weapon?.range ?? "") ? "melee" : (/rang/i.test(weapon?.range ?? "") ? "ranged" : null);
+  const weaponKey = String(weapon?.weaponType ?? "").toLowerCase() || null;
+  let swing, swingParts = [];
+  const swingFormula = String(row.strike_swing ?? "").trim();
+  if (swingFormula) {
+    const resolver = buildSkillResolver({ actor: caster, payload, skill, round });
+    swing = Math.max(0, Math.floor(Number(evaluateFormula(swingFormula, resolver, 0)) || 0));
+  } else {
+    const HR = 0;   // no accuracy roll → HR treated as 0
+    swingParts = caster ? (resolveOutgoingDamageParts({ actor: caster, props: caster.system?.props ?? null, kind: rangeKind, elementType: element, weaponKey }) ?? []) : [];
+    const outgoing = swingParts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+    swing = Math.max(0, Math.floor(HR + (Number(weapon?.damageBonus ?? 0) || 0) + outgoing));
+  }
+  return { weapon, element, rangeKind, weaponKey, swing, swingParts };
+}
+
+// Card preview for timed_strikes (needs the caster: pctx.casterActor, passed by
+// action-profile.gatherEffectPreviews). Pre-affinity numbers per strike, plus
+// the fumble (0 triggers) → perfect (all triggers + finisher) total.
+function previewTimedStrikes(row, pctx = {}) {
+  const caster = pctx.casterActor ?? null;
+  if (!caster) return null;
+  const cfg = readTimedStrikeConfig(row);
+  const { element, swing } = computeTimedStrikeSwing(row, caster, null, null, 0);
+  const hit = strikeDamage(swing, true, cfg), miss = strikeDamage(swing, false, cfg);
+  const finisher = cfg.finisherMult > 0 ? finisherDamage(swing, cfg) : 0;
+  return {
+    type: "timed_strikes", valence: "harmful", source: row.effect_label, targetRef: row.target_ref ?? "action_targets",
+    element, swing, count: cfg.count, hit, miss, finisher, finisherLabel: cfg.finisherLabel || null,
+    min: miss * cfg.count, max: hit * cfg.count + finisher,
+  };
+}
+
 // ── timed_strikes ────────────────────────────────────────────────────────
 //
 // N weapon strikes on the target(s), each scaled by a timing gauge the ACTING
@@ -4972,23 +5014,7 @@ async function applyTimedStrikesEffect(row, ctx) {
   }
 
   // ── swing (computed once) ──
-  const { resolveAttackerWeapon } = await import("./snapshot.js");
-  const { resolveOutgoingDamageParts } = await getSkillFormulas();
-  const weapon = resolveAttackerWeapon(caster, { which: "main" });
-  const element = String(row.damage_element ?? "").trim().toLowerCase() || String(weapon?.damageType ?? "physical").toLowerCase();
-  const rangeKind = /melee/i.test(weapon?.range ?? "") ? "melee" : (/rang/i.test(weapon?.range ?? "") ? "ranged" : null);
-  const weaponKey = String(weapon?.weaponType ?? "").toLowerCase() || null;
-  let swing, swingParts = [];
-  const swingFormula = String(row.strike_swing ?? "").trim();
-  if (swingFormula) {
-    const resolver = buildSkillResolver({ actor: caster, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
-    swing = Math.max(0, Math.floor(Number(evaluateFormula(swingFormula, resolver, 0)) || 0));
-  } else {
-    const HR = 0;   // no accuracy roll → HR treated as 0
-    swingParts = resolveOutgoingDamageParts({ actor: caster, props: caster.system?.props ?? null, kind: rangeKind, elementType: element, weaponKey }) ?? [];
-    const outgoing = swingParts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
-    swing = Math.max(0, Math.floor(HR + (Number(weapon?.damageBonus ?? 0) || 0) + outgoing));
-  }
+  const { weapon, element, rangeKind, weaponKey, swing, swingParts } = computeTimedStrikeSwing(row, caster, ctx.payload, ctx.skill, ctx.dCombat?.round ?? 0);
   log(`skill-effects.timed_strikes: ${caster.name} swing ${swing} (weapon ${weapon?.name ?? "none"} +${weapon?.damageBonus ?? 0}`
     + `${swingParts.length ? `, outgoing ${swingParts.map((p) => `${p.source}:${p.amount}`).join(" ")}` : ""}) ${element} ${rangeKind ?? "-"} ${weaponKey ?? "-"}`);
 
@@ -5725,6 +5751,9 @@ function _valenceForResource(resource, amount) {
 const EFFECT_KIND_PREVIEW = {
   // Pure plumbing — produces a token list, nothing visible on the card.
   targeting: () => null,
+
+  // Renzokuken's per-strike numbers + fumble→perfect range (see previewTimedStrikes).
+  timed_strikes: (row, pctx) => previewTimedStrikes(row, pctx),
 
   // add_target augments the action's target set; the host (Barrage) renders the
   // extra rows. Surface a neutral marker so a chain audit can list it.

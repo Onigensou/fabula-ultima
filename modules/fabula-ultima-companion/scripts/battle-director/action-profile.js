@@ -1075,7 +1075,7 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
 // EffectPreviews. Pure preview — no writes. Self vs target routing is by
 // target_ref ("self" → selfEffects). Phase 0: a flat list per row; per-target
 // fan-out happens in the profile builder once target resolution is wired.
-function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars = null }) {
+function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars = null, casterActor = null }) {
   const selfEffects = [];
   const targetedEffects = [];
   const tbl = view?.effect_table ?? {};
@@ -1097,7 +1097,7 @@ function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars
     // introduce the opposite preview/apply mismatch. Self rows = caster (the
     // bearer). No formula semantics change: this only aligns preview to apply.
     const rowResolver = (!isSelf && targetResolver && kind === "deal_damage") ? targetResolver : resolver;
-    const pv = previewEffectRow(row, { resolver: rowResolver, targetRef: row.target_ref ?? null, chainVars });
+    const pv = previewEffectRow(row, { resolver: rowResolver, targetRef: row.target_ref ?? null, chainVars, casterActor });
     if (!pv) continue;
     if (isSelf || pv.type === "cost" || pv.type === "equip") selfEffects.push(pv);
     else targetedEffects.push(pv);
@@ -1251,7 +1251,7 @@ export async function computeActionProfile(input) {
   const targetResolver = firstTargetActor
     ? buildSkillResolver({ actor: firstTargetActor, payload: { targets, _chainVars: chainVars }, skill, round: ctx?.round ?? 0 })
     : null;
-  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, targetResolver, chainVars });
+  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, targetResolver, chainVars, casterActor: liveAttacker });
 
   // Per-target status fan-out (additive): surface each targeted status AE on the
   // roster rows it applies to, tagged with a per-target `immune` flag — the status
@@ -1528,6 +1528,9 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
     damageResource: prim.resource ?? "hp",
     perTargetResults,
     hitTokenUuids,
+    // timed_strikes preview (Renzokuken): per-strike TRIGGER / otherwise values
+    // and the fumble→perfect total, for the skill card's damage panel.
+    timedStrikes: (profile.appliedEffects ?? []).find((e) => e?.type === "timed_strikes") ?? null,
   };
 }
 

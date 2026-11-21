@@ -13,8 +13,9 @@
  *                      Shields keep the bigger value, they do not stack).
  *     The old "odd accuracy / crit → Vulnerable + Fire" rule and the Gun form's
  *     +1 DEF/M.DEF are gone.
- *   Cartridge — persistent counter (max 1), conflict-scoped; set to 1 at every
- *   conflict start by the weapon's passive.
+ *   Cartridge — persistent counter (max 1), conflict-scoped. At conflict start
+ *   the passive sets it to 1 when Lionheart is in Gun form, else 0 (user
+ *   2026-11-21); conflict end sets it back to 0. The form persists between battles.
  *   Renzokuken (Sword form only) — 30 MP + 1 Cartridge, no accuracy roll, six
  *   strikes on one creature through the `timed_strikes` effect kind (gauge per
  *   strike, ×0.55 on TRIGGER / ×0.20 otherwise, Lion Heart ×1.2 on 6/6).
@@ -71,11 +72,11 @@ const LIONHEART_TEXT =
   + ul(`When this weapon transforms into Gun form, gain <strong>1 Cartridge</strong> (max <strong>1</strong>) and <strong>15</strong> ${SHIELD}.`)
   + `<hr contenteditable="false">`
   + ul(
-    "Once per turn, before or after your action, you may transform this weapon for free.",
-    "You begin each conflict with <strong>1 Cartridge</strong>.",
+    "Once per turn, before your action, you may transform this weapon for free.",
+    "You begin each conflict with <strong>1 Cartridge</strong> if this weapon is in Gun form, or with <strong>0</strong> otherwise. Your Cartridges are lost when the conflict ends.",
   );
 const PASSIVE_TEXT = ul(
-  "You begin each conflict with <strong>1 Cartridge</strong>.",
+  "You begin each conflict with <strong>1 Cartridge</strong> if this weapon is in Gun form, or with <strong>0</strong> otherwise. Your Cartridges are lost when the conflict ends.",
   `When this weapon transforms into Gun form, gain <strong>1 Cartridge</strong> (max <strong>1</strong>) and <strong>15</strong> ${SHIELD}.`,
 );
 const RENZOKUKEN_TEXT =
@@ -147,7 +148,12 @@ function passiveData() {
     props: {
       description: PASSIVE_TEXT, skill_description: PASSIVE_TEXT, isReaction: true, skill_type: "Passive", skill_target: "Self",
       effect_table: table([
-        { effect_kind: "apply_ae", effect_label: "lh_cart_start", ae_template_ref: cartRef, ae_duplicate_mode: "replace", ae_initial_charges: "1", target_ref: "self" },
+        // conflict start: 1 in Gun form, 0 in Sword form (replace = a clean counter every conflict)
+        { effect_kind: "apply_ae", effect_label: "lh_cart_start", condition_formula: "WEAPON_FORM == 1", ae_template_ref: cartRef, ae_duplicate_mode: "replace", ae_initial_charges: "1", target_ref: "self" },
+        { effect_kind: "apply_ae", effect_label: "lh_cart_zero", condition_formula: "WEAPON_FORM != 1", ae_template_ref: cartRef, ae_duplicate_mode: "replace", ae_initial_charges: "0", target_ref: "self" },
+        // conflict end: back to 0 (the conflict-scoped sweep also takes the effect)
+        { effect_kind: "adjust_charges", effect_label: "lh_cart_end", condition_formula: "AE_COUNT_CARTRIDGE > 0", charge_ae_name: "Cartridge",
+          charge_operation: "set", charge_amount: "0", target_ref: "self" },
         { effect_kind: "chain", effect_label: "lh_gun", chain_steps: "lh_cart_add, lh_cart_new, lh_guard" },
         // add first: consecutive apply_ae rows batch, so the create comes last (Rewinder note)
         { effect_kind: "adjust_charges", effect_label: "lh_cart_add", condition_formula: "AE_COUNT_CARTRIDGE > 0", charge_ae_name: "Cartridge",
@@ -157,7 +163,9 @@ function passiveData() {
         { effect_kind: "set_resource", effect_label: "lh_guard", grant_resource: "shield", grant_amount: "15", target_ref: "self" },
       ]),
       reaction_config_table: table([
-        { reaction_trigger: "conflict_start", reaction_passive_mode: "force", reaction_passive_target: "self", reaction_source: "", reaction_effect_ref: "lh_cart_start" },
+        { reaction_trigger: "conflict_start", reaction_passive_mode: "force", reaction_passive_target: "self", reaction_source: "", condition_formula: "WEAPON_FORM == 1", reaction_effect_ref: "lh_cart_start" },
+        { reaction_trigger: "conflict_start", reaction_passive_mode: "force", reaction_passive_target: "self", reaction_source: "", condition_formula: "WEAPON_FORM != 1", reaction_effect_ref: "lh_cart_zero" },
+        { reaction_trigger: "conflict_end", reaction_passive_mode: "force", reaction_passive_target: "self", reaction_source: "", reaction_effect_ref: "lh_cart_end" },
         { reaction_trigger: "creature_transforms_weapon", reaction_passive_mode: "force", reaction_passive_target: "self", reaction_source: "",
           condition_formula: "TRANSFORMED_TO_FORM == 1", reaction_effect_ref: "lh_gun" },
       ]),
@@ -165,12 +173,12 @@ function passiveData() {
   });
   d.effects = [{
     _id: ID.cartridge, name: "Cartridge", img: ICON, transfer: false, disabled: false, changes: [],
-    description: "<p><em>Cartridge:</em> a loaded Lionheart round (max 1). Renzokuken spends it; transforming into Gun form reloads it. Every conflict starts with 1.</p>",
+    description: "<p><em>Cartridge:</em> a loaded Lionheart round (max 1). Renzokuken spends it; transforming into Gun form reloads it. A conflict starts with 1 if Lionheart is in Gun form, else 0; it is lost when the conflict ends.</p>",
     duration: { startTime: null, seconds: null, combat: null, rounds: null, turns: null, startRound: null, startTurn: null },
     flags: {
-      [M]: { chargeKey: "cartridge", charges: 1, chargesMax: 1, lifetimeMode: "persistent_counter", conflictScoped: true, crossScene: false,
+      [M]: { chargeKey: "cartridge", charges: 0, chargesMax: 1, lifetimeMode: "persistent_counter", conflictScoped: true, crossScene: false,
         directorPermanent: true, uncleansable: true, category: "buff", hudResourceColor: "#e0a040", [FLAG]: "cartridge" },
-      statuscounter: { config: { multiplyEffect: true, type: "default" }, value: 1, visible: true },
+      statuscounter: { config: { multiplyEffect: true, type: "default" }, value: 0, visible: true },
     },
   }];
   return d;
