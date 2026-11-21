@@ -19,7 +19,7 @@
   const TAG = "[FabulaLedger][Prompt]";
   const ROOT_ID = "fl-gm-prompts";
   const STYLE_ID = "fl-gm-prompt-style";
-  const CURSOR_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/UI/BattleCursor_4.wav";
+  const CURSOR_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav";
   const PANEL_WIDTH = 380;     // one width for every prompt, so stacked sprites line up
   const IN_MS = 320, OUT_MS = 220;
   const NOTE_MS = 6000;
