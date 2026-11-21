@@ -46,6 +46,7 @@ weapon category, **Deva = Strike vs Magic** (the class of the check: vs DEF = St
 | 2026-11-21 | Dossier scaffolded | — | claude | — |
 | 2026-11-21 | HP 1000 → 1500 | Runner playtest (207 fights, Lightning Storm, guest Kalina): 3.4 rounds at 78% PC HP. User target 5–6 rounds; sweep ×1.4 → 5.4 r, ×1.6 → 6.0 r, ×1.8 → 5.9 r | user | pending real-table look; damage tuning proposed separately |
 | 2026-11-21 | Missile Fist Detonate victim pool `enemy` → `party` | "enemy" is relative to the acting token and fails open when a fist acts without one; 1 of 6 detonations hit the other fist | user (bug fix) | — |
+| 2026-11-21 | Tuning pass 2: HP 1500 → 1400; Vajra Fist / Mudra Lance 38 → 52, Double Slap 25 → 36, Ground Slam 30 → 45, Fists of Fury 28 → 42, Fists of Focus 12 → 18 (drain 3 × (HR + 18)), Surya Palm 62 → 78, Kala Strike 25 → 38; every attack check +4 → +6; Surya Palm and Kala Strike players-only | At 1500 she missed 30–60% and fights ran 4–5 rounds at ~80% party HP. Confirmation at 1400: 5.2 rounds, lowest party HP 45–76%, 1 KO in 5; all 14 epic casts aimed at a PC | user | real-table look 2026-11-21 evening |
 
 ```json dossier
 {
@@ -77,7 +78,7 @@ weapon category, **Deva = Strike vs Magic** (the class of the check: vs DEF = St
   ],
   "open_questions": [
     "Affinities are all NEUTRAL (open since the build) — elite rule asks for 1 VU.",
-    "Damage tuning for the 1500 HP fight (PCs end ~80% HP) — proposal pending."
+    "Missile Fist: some fists lose their Detonate turn (Self target finds no performer token) — engine issue, open 2026-11-21."
   ]
 }
 ```
