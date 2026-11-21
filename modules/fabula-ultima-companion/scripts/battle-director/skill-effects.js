@@ -34,7 +34,7 @@ import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
-import { resolveAttackerWeapon } from "./snapshot.js";
+import { resolveAttackerWeapon, attrDieSize } from "./snapshot.js";
 import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX, targetsKnockedOutAlly, grappleHoldCap } from "./snapshot.js";
 import { tokensGrappledBy } from "./grappled.js";
 import { INVENTORY_ACTION_TAG } from "./skill-intent.js";
@@ -4942,8 +4942,10 @@ async function applyDestroySummonEffect(row, ctx) {
 //                    stub branch has nothing more to do)
 // Headless (passive/no-DOM) → no toast, message logged; still returns ok.
 // The swing of a timed_strikes row (shared by the card preview and the apply):
-// the caster's main-hand weapon damage at HR 0 (no roll) + flat outgoing bonuses
-// ONCE, or the row's strike_swing formula. Synchronous (the preview is sync).
+// the caster's main-hand weapon damage with HR = half the higher of the two
+// CURRENT accuracy dice of the active form (user 2026-11-21: Sword MIG/WLP,
+// d10/d8 → HR 5, floored — there is no roll) + flat outgoing bonuses ONCE, or
+// the row's strike_swing formula. Synchronous (the preview is sync).
 function computeTimedStrikeSwing(row, caster, payload = null, skill = null, round = 0) {
   const weapon = caster ? resolveAttackerWeapon(caster, { which: "main" }) : null;
   const element = String(row.damage_element ?? "").trim().toLowerCase() || String(weapon?.damageType ?? "physical").toLowerCase();
@@ -4955,12 +4957,14 @@ function computeTimedStrikeSwing(row, caster, payload = null, skill = null, roun
     const resolver = buildSkillResolver({ actor: caster, payload, skill, round });
     swing = Math.max(0, Math.floor(Number(evaluateFormula(swingFormula, resolver, 0)) || 0));
   } else {
-    const HR = 0;   // no accuracy roll → HR treated as 0
+    // No roll: HR = floor(max(die A1, die A2) / 2) for the active form's pair.
+    const HR = weapon ? Math.floor(Math.max(attrDieSize(caster, weapon.A1), attrDieSize(caster, weapon.A2)) / 2) : 0;
     swingParts = caster ? (resolveOutgoingDamageParts({ actor: caster, props: caster.system?.props ?? null, kind: rangeKind, elementType: element, weaponKey }) ?? []) : [];
     const outgoing = swingParts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
     swing = Math.max(0, Math.floor(HR + (Number(weapon?.damageBonus ?? 0) || 0) + outgoing));
   }
-  return { weapon, element, rangeKind, weaponKey, swing, swingParts };
+  return { weapon, element, rangeKind, weaponKey, swing, swingParts,
+    hr: swingFormula ? null : (weapon ? Math.floor(Math.max(attrDieSize(caster, weapon.A1), attrDieSize(caster, weapon.A2)) / 2) : 0) };
 }
 
 // Card preview for timed_strikes (needs the caster: pctx.casterActor, passed by
@@ -4970,12 +4974,12 @@ function previewTimedStrikes(row, pctx = {}) {
   const caster = pctx.casterActor ?? null;
   if (!caster) return null;
   const cfg = readTimedStrikeConfig(row);
-  const { element, swing } = computeTimedStrikeSwing(row, caster, null, null, 0);
+  const { element, swing, hr } = computeTimedStrikeSwing(row, caster, null, null, 0);
   const hit = strikeDamage(swing, true, cfg), miss = strikeDamage(swing, false, cfg);
   const finisher = cfg.finisherMult > 0 ? finisherDamage(swing, cfg) : 0;
   return {
     type: "timed_strikes", valence: "harmful", source: row.effect_label, targetRef: row.target_ref ?? "action_targets",
-    element, swing, count: cfg.count, hit, miss, finisher, finisherLabel: cfg.finisherLabel || null,
+    element, swing, hr, count: cfg.count, hit, miss, finisher, finisherLabel: cfg.finisherLabel || null,
     min: miss * cfg.count, max: hit * cfg.count + finisher,
   };
 }
@@ -4987,9 +4991,9 @@ function previewTimedStrikes(row, pctx = {}) {
 // is auto-hit (never misses, never crits). Per strike:
 //   round(swing × strike_hit_mult) on a TRIGGER, round(swing × strike_miss_mult)
 //   otherwise; a perfect set adds a finisher round(swing × finisher_mult).
-// swing = the caster's main-hand weapon damage at HR 0 (the engine's no-roll
-// convention: HR reads 0 when no roll was made, see the HR identifier), with
-// the caster's flat outgoing bonuses (extra_damage_mod_* — Powerful Shot etc.)
+// swing = the caster's main-hand weapon damage with HR = half the higher of the
+// active form's two current accuracy dice (floored; user ruling 2026-11-21 —
+// there is no roll), with the caster's flat outgoing bonuses (extra_damage_mod_* — Powerful Shot etc.)
 // folded in ONCE. Each strike is then dealt with damage_skip_outgoing, so those
 // bonuses are never re-added per strike; affinity (VU/RS/IM/AB), damage
 // reduction and weapon efficiency still apply to every strike. An optional
@@ -5014,8 +5018,8 @@ async function applyTimedStrikesEffect(row, ctx) {
   }
 
   // ── swing (computed once) ──
-  const { weapon, element, rangeKind, weaponKey, swing, swingParts } = computeTimedStrikeSwing(row, caster, ctx.payload, ctx.skill, ctx.dCombat?.round ?? 0);
-  log(`skill-effects.timed_strikes: ${caster.name} swing ${swing} (weapon ${weapon?.name ?? "none"} +${weapon?.damageBonus ?? 0}`
+  const { weapon, element, rangeKind, weaponKey, swing, swingParts, hr } = computeTimedStrikeSwing(row, caster, ctx.payload, ctx.skill, ctx.dCombat?.round ?? 0);
+  log(`skill-effects.timed_strikes: ${caster.name} swing ${swing} (HR ${hr} [${weapon?.A1}/${weapon?.A2}], weapon ${weapon?.name ?? "none"} +${weapon?.damageBonus ?? 0}`
     + `${swingParts.length ? `, outgoing ${swingParts.map((p) => `${p.source}:${p.amount}`).join(" ")}` : ""}) ${element} ${rangeKind ?? "-"} ${weaponKey ?? "-"}`);
 
   const strikeRow = (amount, label) => ({

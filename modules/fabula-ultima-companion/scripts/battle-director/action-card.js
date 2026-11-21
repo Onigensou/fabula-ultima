@@ -5746,7 +5746,7 @@ function buildTimedStrikesPreviewHTML(ts) {
   return `<div class="fud-bf-timed-strikes" data-fud-timed-strikes="${ts.min}-${ts.max}" style="margin:6px 0;padding:6px 10px;border:1px solid rgba(122,106,85,.6);border-radius:8px;background:rgba(255,250,240,.6);font-size:12px;line-height:1.45;">
     <div style="font-weight:800;letter-spacing:.04em;">${ts.count} strikes · no roll · ${el}</div>
     <div>TRIGGER <b>${ts.hit}</b> · otherwise <b>${ts.miss}</b> per strike${fin}</div>
-    <div>Total <b>${ts.min}–${ts.max}</b> <span style="opacity:.7">(before affinity)</span></div>
+    <div>Total <b>${ts.min}–${ts.max}</b> <span style="opacity:.7">(swing ${ts.swing}${ts.hr != null ? `, HR ${ts.hr}` : ""}; before affinity)</span></div>
   </div>`;
 }
 

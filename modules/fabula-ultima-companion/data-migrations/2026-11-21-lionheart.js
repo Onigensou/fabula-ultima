@@ -83,7 +83,7 @@ const RENZOKUKEN_TEXT =
   `<p><em>Sword form only.</em> This skill makes no Accuracy Check: it always hits. Make <strong>6</strong> strikes against the target. `
   + `Before each strike a gauge sweeps once; press inside <strong>TRIGGER</strong> to make that strike a Trigger.</p>`
   + ul(
-    `Each strike deals ${PHYSICAL} damage equal to <strong>【55%】</strong> of this weapon's damage on a Trigger, or <strong>【20%】</strong> otherwise (this weapon's damage = 【10 + your damage bonuses】, with HR counted as 0).`,
+    `Each strike deals ${PHYSICAL} damage equal to <strong>【55%】</strong> of this weapon's damage on a Trigger, or <strong>【20%】</strong> otherwise (this weapon's damage = 【HR + 10】 plus your damage bonuses, where HR is <strong>half your higher die</strong> between MIG and WLP, rounded down).`,
     "If all <strong>6</strong> strikes are Triggers, finish with <strong>Lion Heart</strong>: one more strike for <strong>【120%】</strong>.",
     "Costs <strong>1 Cartridge</strong> as well as MP.",
   );

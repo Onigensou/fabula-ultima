@@ -6,7 +6,7 @@
 //   strike damage = round(swing × hitMult)   on a TRIGGER
 //                 = round(swing × missMult)  otherwise
 //   a perfect set (every strike a TRIGGER) adds a finisher = round(swing × finisherMult)
-// `swing` is computed ONCE by the caller (the weapon's normal damage with HR 0,
+// `swing` is computed ONCE by the caller (the weapon's normal damage with HR = half the higher accuracy die,
 // the attacker's flat outgoing bonuses already folded in) — strikes never re-add
 // those bonuses. Affinity / DR / weapon efficiency apply per strike downstream.
 
