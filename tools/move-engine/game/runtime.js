@@ -244,6 +244,12 @@ function mePaint(g, a, st, img, alpha) {
   g.save(); g.translate(wx, wy - st.air * KP); if (st.rot) g.rotate(st.rot * Math.PI / 180); g.scale(T.flip * st.kx * r, st.ky * r); g.globalAlpha = alpha;
   g.drawImage(img, -T.w / 2, -T.h * T.foot, T.w, T.h); g.restore(); }
 function meFrame(t, S) {
+  // test hook (inert unless a test sets both globals): globalThis.__MOVE_SHOT_AT = [{ at, name }], __MOVE_SHOT(shot) is called at
+  // the start of the first frame AFTER the one that passed `at`, while the board + overlay still show that frame
+  const SA = globalThis.__MOVE_SHOT_AT;
+  if (Array.isArray(SA) && typeof globalThis.__MOVE_SHOT === "function") for (const s of SA) {
+    if (s.pending && !s.taken) { s.taken = true; s.frameT = s.seenT; try { globalThis.__MOVE_SHOT(s); } catch (e) { console.warn("[move-engine] shot threw", e); } }
+    else if (!s.pending && t >= s.at) { s.pending = true; s.seenT = Math.round(t); } }
   REC_ON = false; IN_TW++;
   while (ME_STEP_I < STEPS.length && STEPS[ME_STEP_I].at <= t) { const s = STEPS[ME_STEP_I++]; s.o[s.k] = s.v; }
   for (const tw of TWS) { if (tw.start > t) break; const u = tw.ms > 0 ? (t - tw.start) / tw.ms : 1;

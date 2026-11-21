@@ -68,7 +68,8 @@ async function attackRun(label, actorName, faces, { rounds = 1, forceReactions =
 if (want("G1")) await attackRun("G1 odd 5+4 → fire", "Blanche", [[5, 12, 4, 12]]);
 if (want("G2")) await attackRun("G2 even 5+5 → physical", "Blanche", [[5, 12, 5, 12]]);
 if (want("G3")) await attackRun("G3 crit 6+6 → fire", "Blanche", [[6, 12, 6, 12]]);
-if (want("G4")) await attackRun("G4 miss 1+2", "Blanche", [[1, 12, 2, 12]]);
+if (want("G4")) await attackRun("G4 fumble 1+1 → miss", "Blanche", [[1, 12, 1, 12]]);
+if (want("G5")) await attackRun("G5 low 2+1", "Blanche", [[2, 12, 1, 12]]);
 // 2 rounds, the after-action transform forced: Sword attack → transform (#gun) → Firearm attack → transform (#sword)
 if (want("T")) await attackRun("T 2 rounds with transforms", "Blanche", [[9, 12, 8, 12]], { rounds: 2, forceReactions: ["Gunblade: Transform"] });
 return out;

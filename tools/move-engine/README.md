@@ -83,6 +83,24 @@ FVTT_GPU=true node ../snapshot-runner/bin/run.mjs --snapshot snap-lionheart --po
 Results 2026-11-22 (Phase 1): all 5 Sonic Katar / Gunblade moves match the mockup event for event in the dry run; in the
 game they ran their planned length (Sonic Blow 4880 / 4880 ms) at 49-58 fps, every hit cue within 0-34 ms, no leftovers.
 
+## The pilot: Gunblade (2026-11-22)
+
+`moves/sonic-katar/head.js` + `gunblade.js` are the Sonic Katar page's family head and its three approved Gunblade moves,
+host-neutral. The page (test/assemble-sonic.js) and the game (build/pilot-gunblade.js → migration
+`2026-11-22-gunblade-move-engine`) load the SAME two files.
+
+- Host roles a move uses: `moveCaster()`, `moveTarget(i)`, `moveResult(t)` (the game's real Accuracy result: hit, crit, total,
+  fumble; null on a page → the move's sliders), `moveStrikes()` (a Chain plan), `moveVariant()` (a play_animation `#variant`).
+- One script per form weapon: `playOpts.byForm = ["gb_sword", "gb_gun"]` picks by the equipped weapon's active form.
+- `playOpts.variantTune = { gun: { dir: 0 }, sword: { dir: 1 } }` tunes by the transform row's `#gun` / `#sword`.
+- The damage gate in the game = the move's first hit number (where the mockup shows the number), else its markGate.
+- BD passes the card's Accuracy `total` / `fumble` in `payload.outcomes` (director-animation outcomesFromDirector).
+
+Checks: `test/game-dry.js gb_sword --result hit:9` (or `crit:12`, `miss:7`, `--variant sword` for gb_tf) shows what the move
+picks for a game outcome; `tools/snapshot-runner/checks/gunblade-move-engine.js` runs real sim battles (migration result,
+Sword / Firearm by form, odd / even / crit / fumble, both transform directions); side-by-sides:
+`node test/mockup-shots.js --gpu` + `node test/game-play.js --shots` (runner) + `node test/side-by-side.js`.
+
 ## Known limits (Phase 1)
 
 - Scripts carry the whole shared library (~97 KB each); unused helpers are not stripped yet.
