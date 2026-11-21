@@ -132,9 +132,9 @@ async function attackRun(label, actorName, weaponId, faces, { rounds = 1, setup 
   out.scenarios[label] = { err, simOk: !!r, attacks: seen.ars.filter((x) => x.by?.startsWith(actorName)), forms: seen.forms, numbers: seen.nums, logs: [...logs], warns: [...warns] };
 }
 
-const hit = { rA: 10, rB: 9 };
+const hit = O.hit || { rA: 10, rB: 9 };
 if (want("A")) await sonicRun("A sonic 8/8 perfect", hit, Array(7).fill(hit));
-if (want("B")) await sonicRun("B sonic 5/8 one crit", hit, [{ rA: 1, rB: 2 }, { rA: 10, rB: 8 }, { rA: 7, rB: 7 }, { rA: 2, rB: 3 }, { rA: 9, rB: 8 }, { rA: 11, rB: 10 }, { rA: 1, rB: 3 }]);
+if (want("B")) await sonicRun("B sonic 5/8 one crit", hit, (O.mixed || [{ rA: 1, rB: 2 }, { rA: 10, rB: 8 }, { rA: 7, rB: 7 }, { rA: 2, rB: 3 }, { rA: 9, rB: 8 }, { rA: 11, rB: 10 }, { rA: 1, rB: 3 }]));
 if (want("C")) await sonicRun("C sonic 8/8 all crit", { rA: 8, rB: 8 }, Array(7).fill({ rA: 9, rB: 9 }));
 if (want("N")) await attackRun("N katar normal hit", "Zarg", "3ZV5drjroWrvXqkw", [[10, 12, 9, 12]]);
 // Gunblade, Sword form, Blanche (DEX d12 / MIG d12): an odd total, an even total, a crit, a miss
