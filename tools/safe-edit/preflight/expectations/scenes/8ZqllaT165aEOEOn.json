@@ -1,129 +1,8 @@
 {
   "sceneId": "8ZqllaT165aEOEOn",
   "name": "Valley_Map006",
-  "tokens": [
-    {
-      "name": "Keren",
-      "actorId": "t6E3CQ0pGxwLgXrn",
-      "actorLink": true
-    }
-  ],
-  "tokensFull": [
-    {
-      "name": "Keren",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": 1.14,
-        "scaleY": 1.14,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": null
-      },
-      "bar2": {
-        "attribute": null
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.15,
-        "angle": 360,
-        "bright": 0,
-        "color": "#eea149",
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": "flame",
-          "speed": 2,
-          "intensity": 4,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 5,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {}
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": true
-        }
-      },
-      "actorId": "t6E3CQ0pGxwLgXrn",
-      "x": 454,
-      "y": 118,
-      "_id": "rd2IPmqX9LqdpyEe",
-      "elevation": 0,
-      "sort": 0,
-      "locked": false,
-      "hidden": false,
-      "_regions": []
-    }
-  ],
+  "tokens": [],
+  "tokensFull": [],
   "notes": [],
   "tileCount": 21,
   "full": {
@@ -218,7 +97,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -472,6 +351,11 @@
             "drawings": 22,
             "kept": []
           },
+          "fogRevealed": {
+            "OeCYq9a9bGsLlxsN": true,
+            "xerBucDtLXeHBRSr": true,
+            "ogRrDcaZnVL8C8Qf": true
+          },
           "tileStates": {
             "FqUHVtws6EtjMkaq": {
               "initialType": "door",
@@ -490,7 +374,7 @@
             },
             "ogRrDcaZnVL8C8Qf": {
               "initialType": "item",
-              "currentType": "item",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Item_Tile.png"
             },
             "CxObrrRVPzaA3W3E": {
@@ -500,7 +384,7 @@
             },
             "fNDYg1TelH42okIR": {
               "initialType": "skill_check",
-              "currentType": "skill_check",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/SkillCheck_Tile.png"
             },
             "WVmddjlA3xPEDmaS": {
@@ -520,7 +404,7 @@
             },
             "OeCYq9a9bGsLlxsN": {
               "initialType": "gold",
-              "currentType": "gold",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png"
             },
             "aIUl7yP6MD8dll0K": {
@@ -549,9 +433,10 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
             },
             "1pGpqDXOEbRuktpc": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png"
+              "initialType": "story",
+              "currentType": "story",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png",
+              "expired": true
             },
             "J8BmcX9zob7MqoGl": {
               "initialType": "random_battle",
@@ -589,11 +474,17 @@
             "MJ8oSNSFYrm6AzJJ": true,
             "zu7a8JWOk6W9I9qm": true,
             "xerBucDtLXeHBRSr": true,
-            "vSjOb7qWuBN8i8XL": true
-          },
-          "fogRevealed": {
+            "vSjOb7qWuBN8i8XL": true,
+            "WVmddjlA3xPEDmaS": true,
+            "fNDYg1TelH42okIR": true,
+            "ogRrDcaZnVL8C8Qf": true,
+            "J8BmcX9zob7MqoGl": true,
             "OeCYq9a9bGsLlxsN": true,
-            "xerBucDtLXeHBRSr": true
+            "aIUl7yP6MD8dll0K": true,
+            "l0ephXEh6FPgV4dq": true,
+            "2S23ScUeolbJcn9N": true,
+            "Oua7Kr2YODwDrijG": true,
+            "11mCN4hmZ9Ys3mU6": true
           }
         }
       },
@@ -688,7 +579,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359007469,
-      "modifiedTime": 1794077527494,
+      "modifiedTime": 1795279731548,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

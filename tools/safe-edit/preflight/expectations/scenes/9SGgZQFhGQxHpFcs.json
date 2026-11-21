@@ -74,7 +74,7 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": 0.97,
+        "scaleX": -0.97,
         "scaleY": 0.97,
         "rotation": 0,
         "tint": "#ffffff",
@@ -165,7 +165,9 @@
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-13",
           "draftName": "Rume",
-          "noShopButton": true
+          "noShopButton": true,
+          "facingDir": "left",
+          "facing": "left"
         },
         "oni-event-system": {
           "isEventTile": true,
@@ -262,8 +264,8 @@
         }
       },
       "actorId": "bCY4VbmO7SXDe7Tb",
-      "x": 610,
-      "y": 410,
+      "x": 1170,
+      "y": 358,
       "elevation": 0,
       "sort": 0,
       "locked": false,
@@ -949,7 +951,7 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": 1,
+        "scaleX": -1,
         "scaleY": 1,
         "rotation": 0,
         "tint": "#ffffff",
@@ -1640,7 +1642,7 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": 0.99,
+        "scaleX": -0.99,
         "scaleY": 0.99,
         "rotation": 0,
         "tint": "#ffffff",
@@ -1815,7 +1817,9 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-13",
-          "draftName": "Willy"
+          "draftName": "Willy",
+          "facingDir": "left",
+          "facing": "left"
         },
         "oni-event-system": {
           "isEventTile": true,
@@ -3062,7 +3066,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791880065592,
-      "modifiedTime": 1794157458839,
+      "modifiedTime": 1795279765651,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [
@@ -4232,8 +4236,8 @@
         "c": [
           179,
           489,
-          236,
-          476
+          225,
+          480
         ],
         "move": 20,
         "sight": 0,
@@ -5364,8 +5368,8 @@
       },
       {
         "c": [
-          177,
-          449,
+          180,
+          495,
           179,
           489
         ],
@@ -5582,8 +5586,8 @@
         "c": [
           64,
           469,
-          177,
-          449
+          195,
+          420
         ],
         "move": 20,
         "sight": 0,

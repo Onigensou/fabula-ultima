@@ -30,7 +30,7 @@ Actors and items:
 ## Checked
 
 - world-export report: every removal is session play (I read each one).
-- Preflight: 1 FAIL. Valley_Map006 expects Keren's party token, which left the map during play. That's normal post-session drift and gets re-blessed before the next session.
+- Preflight: 0 FAIL after re-blessing the 12 scenes the party touched (Ruhig_Village011, Valley_Map004–007, 013–015, 018, 019, 021, 029).
 - Every staged store's CURRENT → MANIFEST is present. The commit used `--no-verify` because the hook blocks on the play removals.
 
 ## Bugs found during the session (for this week)
@@ -45,13 +45,25 @@ Actors and items:
 8. **Keren's client** could see under an Unknown tile from 2 tiles away (Valley_Map006). Not investigated yet.
 9. **GM host performance in battle:** about 30 fps with ~100 ms hitches (p95) and the main thread ~96% busy; the spectator is smooth. Next step is a CPU profile.
 
-## Design follow-ups (user's calls this week)
+## To-do list until the next session (Saturday 2026-11-28)
 
-- Hako needs a **Gacha button** (no NPC opens the gacha today; it's a scene).
-- **Gacha pity readout** back on screen (it was removed on purpose in `f8fd9574`).
-- **Oathsworn Paladin set:** no set definition or bonus. Paladin Armor's "free spell on Cover/Protect" is text only.
-- **Blade Adept:** +1 DEF/MDEF and "daggers count as brawling/sword/thrown" are still text only.
-- **Deva has no affinities** (all neutral, no attribute).
-- **Victory MVP** went to Zarg every fight; the scoring weights need a look.
-- **Soul Steal limit:** is it per stealer or per monster? Per monster is expected.
-- **Canis Fabula Arcana card** idea ("Armor Break"), not requested yet.
+Bugs (fix and sandbox-test, numbers match the list above):
+- [ ] 1. Refining renames the weapon but not `main_hand`/`off_hand`. **Keren must re-equip "+7 Psychic Dagger"** before next session.
+- [ ] 2. Warning Shot (Multi + heroic skill): one menu choice per target.
+- [ ] 3. Looted items keep their transfer AEs enabled in the stash (Happy Feet still leaks).
+- [ ] 4. Spectator: dungeon Party Status HUD disappears.
+- [ ] 5. Spectator: missing API/minigame SFX.
+- [ ] 6. Fishing: stuck item tooltip.
+- [ ] 7. Stale party `total_zenit` roll-up.
+- [ ] 8. Unknown tile seen from 2 tiles away (Keren's client).
+- [ ] 9. GM host battle performance: take a CPU profile.
+
+Design decisions pending (no choice made yet; proposals come first, then a pick):
+- [ ] **Hako Gacha button** (Shop + Gacha on Hako; no NPC opens the gacha today).
+- [ ] **Gacha pity readout** back on screen (removed on purpose in `f8fd9574`). Mock up the placement first.
+- [ ] **Oathsworn Paladin set bonus.** 2 pieces: A "Oathbound Aegis" (+2 DEF/MDEF after Protect) or B "Sworn Bulwark" (−3 damage taken). 3 pieces: "Radiant Oath" (Guard → an ally recovers 10 HP). Also Paladin Armor's free spell on Cover/Protect: a reaction prompt, or keep it as GM-run text. Save the Queen's +5 vs Dark is already done; playtest it.
+- [ ] **Blade Adept** rest of the automation: +1 DEF/MDEF while a dagger is equipped; daggers count as brawling/sword/thrown. Flying reach is done; playtest it.
+- [ ] **Deva affinities:** none today. The elite rule asks for at least 1 VU, plus a Strike/Magic class affinity.
+- [ ] **Victory MVP scoring:** Zarg wins every fight. Review the weights.
+- [ ] **Soul Steal limit:** per stealer or per monster (expected: per monster).
+- [ ] **Canis Fabula Arcana card** ("Armor Break"): idea only, not requested yet.
