@@ -47,14 +47,15 @@ export async function releaseEquipLocks(actor, reason = "") {
     return name && !wields(actor, name);
   });
   if (!stale.length) return 0;
+  const items = [...new Set(stale.map((e) => e.flags[NS].equipLock))].join(", ");
+  const names = stale.map((e) => e.name).join(", ");
   await actor.updateEmbeddedDocuments("ActiveEffect", stale.map((e) => ({
     _id: e.id,
     [`flags.${NS}.uncleansable`]: false,
     [`flags.${NS}.directorPermanent`]: false,
     [`flags.${NS}.-=equipLock`]: null,
   })));
-  log(`equip-lock: ${actor.name} no longer wields ${[...new Set(stale.map(lockOf))].join(", ")} — `
-    + `${stale.map((e) => e.name).join(", ")} can be cleansed now (${reason})`);
+  log(`equip-lock: ${actor.name} no longer wields ${items} — ${names} can be cleansed now (${reason})`);
   return stale.length;
 }
 
