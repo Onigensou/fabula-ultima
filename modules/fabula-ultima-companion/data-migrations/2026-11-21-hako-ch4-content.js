@@ -72,7 +72,7 @@ const ID = {
   zenithPsv: "HkC4ZenithPsv001", scythePsv: "HkC4DScythePsv01", scytheImm: "HkC4DScytheImmAE",
   franticPsv: "HkC4FranticPsv01", kusariPsv: "HkC4KusariPsv001", gothicPsv: "HkC4GothicPsv001",
   curseCollPsv: "HkC4CurseCollPsv", ivoryPsv: "HkC4IvoryStatPsv",
-  rewinderAe: "HkC4RewinderAE01", delayedAe: "HkC4DelayedDmgAE",
+  rewinderAe: "HkC4RewinderAE01", delayedAe: "HkC4DelayedDmgAE", tommyPsv: "HkC4TommyGunPsv1",
 };
 const REWINDER = "lpM8id6fJzB7JP0A";
 
@@ -319,6 +319,16 @@ const OLDER = [
         { effect_kind: "apply_ae", effect_label: "ku_slow", condition_formula: "TARGET_AE_COUNT_SLOW == 0", ae_template_ref: "Slow", ae_duplicate_mode: "replace_same_status", target_ref: "trigger_subject" },
       ]),
       reaction_config_table: table([{ reaction_trigger: "creature_deals_damage", reaction_passive_mode: "on", reaction_source: "self", reaction_requires_weapon_used: true, condition_formula: "DAMAGE_IS_HP == 1", reaction_effect_ref: "ku_hit" }]) } },
+  // Tommy Gun (user 2026-11-21, Uncommon budget): a spray — up to 5 targets, five
+  // separate shots each on a random one of them, each (HR + 4) / 2 Physical.
+  { name: "Tommy Gun", props: { item_rarity: "Uncommon", damage_bonus: "4", skill_target: "Up to 5 creatures", action_keywords: "chain 5 random" },
+    text: () => ul(
+      `Attacks with this weapon gain ${J("ChnStrikeKeyw0rd", "Chain")} <strong>5</strong>: five separate shots, each against a random creature among your targets.`,
+      "Each shot deals <strong>half</strong> damage.",
+    ),
+    passive: { id: ID.tommyPsv, name: "Tommy Gun (Passive)",
+      effect_table: table([{ effect_kind: "adjust_damage", effect_label: "tg_spray", damage_stage: "outgoing", damage_operation: "multiply", damage_amount: "0.5" }]),
+      reaction_config_table: table([rcOut({ reaction_passive_mode: "force", reaction_requires_weapon_used: true, condition_formula: "DAMAGE_IS_HP == 1", reaction_effect_ref: "tg_spray" })]) } },
   { name: "Black Mage Wand", props: { item_rarity: "Rare", item_cost: "3500" } },
   { name: "Tailwind", props: { item_rarity: "Rare" } },
   // Rewinder: every HP hit is zeroed and banked on an untouchable "Delayed Damage"
@@ -459,6 +469,31 @@ async function authorWeighted(out) {
   }
 }
 
+// ── 3c. One companion per player: Decoy Doll counts as a companion ──────────
+// User ruling 2026-11-21: Decoy Doll, Nibbler (Glitter Brooch), the Automatic
+// Portable Turret and Dead Branch count as companions, and are unusable while
+// that actor already has a companion on the field. Decoy Doll is the only one
+// automated today: its summon row becomes kind "companion" (so the engine's
+// one-companion gate applies) and the item greys out via HAS_COMPANION. The
+// other three are text-only; author them as companion summons when built.
+async function companionItems(out) {
+  const docs = [];
+  for (const i of game.items) if (i.name === "Decoy Doll" && i.system?.container) docs.push(i);
+  for (const a of game.actors) for (const i of a.items) if (i.name === "Decoy Doll" && i.system?.container) docs.push(i);
+  let n = 0;
+  for (const d of docs) {
+    if (d.getFlag?.(M, FLAG)) continue;
+    const table0 = foundry.utils.deepClone(d.system.props.effect_table ?? {});
+    let touched = false;
+    for (const r of Object.values(table0)) if (r?.effect_kind === "summon" && r.summon_kind !== "companion") { r.summon_kind = "companion"; touched = true; }
+    await d.update({ "system.props.effect_table": table0, "system.props.availability_formula": "HAS_COMPANION == 0",
+      "system.props.availability_reason": "Already has a companion" });
+    await d.setFlag(M, FLAG, "companion");
+    if (touched) n++;
+  }
+  out.push(`~ Decoy Doll: companion summon + HAS_COMPANION gate (${n}/${docs.length} copies)`);
+}
+
 // ── 4. Hako restock ─────────────────────────────────────────────────────────
 // [name, price, qty]
 const ROSTER = [
@@ -468,6 +503,7 @@ const ROSTER = [
   ["Gothic Lolita Dress", 2500, 1], ["Biker Suit", 2500, 1], ["Dominatrix Leotard", 2500, 1], ["Curse Collector", 3500, 1],
   ["Stalwart Shield", 2500, 1], ["Mirror Shield", 2800, 1],
   ["Rewinder", 2200, 1], ["Cursed Ivory Statue", 3000, 1], ["Little Devil", 2800, 1], ["Lucky Egg", 2600, 1], ["Witch Hat", 2000, 1],
+  ["Multigroa Skin Gloves", 2000, 1],   // replaces Vibrator (user 2026-11-21)
   ["Vaccine", 1000, 5], ["Full Phoenix", 2000, 3], ["Magic Mirror", 1000, 1],
   ["Terrarium: Camp", 800, 3], ["Terrarium: Healing", 500, 3], ["Terrarium: Gathering", 400, 3], ["Terrarium: Random Battle", 300, 3], ["Terrarium: Blank", 300, 3],
   ["Ironwood Rod", 1500, 1], ["Swiftline Rod", 1500, 1], ["Seer's Rod", 1500, 1], ["Stillwater Rod", 1500, 1],
@@ -522,6 +558,7 @@ export async function migrate(game, log = () => {}) {
   await authorPhoenix(out);
   await updateOlder(out);
   await authorWeighted(out);
+  await companionItems(out);
   await restockHako(out);
   for (const l of out) log(l);
   return { applied: true, summary: out.join(" | ") };

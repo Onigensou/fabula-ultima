@@ -87,7 +87,7 @@ const TEXT = {
   ) + `<hr><p><strong>3-Piece</strong></p>` + ul(
     `You may perform the skill 【💥<strong>@UUID[Item.${ID.powerbomb}]{Powerbomb}</strong>】`,
   ),
-  powerbomb: `<p>Remove ${GRAPPLED} from every creature you ${GRAPPLE}, then deal <strong>50</strong> ${PHYSICAL} damage to each of them.</p>`,
+  powerbomb: `<p>Remove ${GRAPPLED} from every creature you ${GRAPPLE}, then deal <strong>【20 + your level】</strong> ${PHYSICAL} damage to each of them.</p>`,
 };
 const FLAVOR = {
   gloves: "Taped at the knuckles, stitched with stars. Once these grab you, the crowd is already counting to three.",
@@ -183,7 +183,7 @@ async function authorSet(folder, out) {
         { effect_kind: "chain", effect_label: "pb_root", chain_steps: "pb_pick, pb_release, pb_slam" },
         { effect_kind: "targeting", effect_label: "pb_pick", candidate_source: "grappled_by_self", mode: "all", auto_target: "skip", iteration_mode: "together" },
         { effect_kind: "break_free", effect_label: "pb_release", target_ref: "pb_pick" },
-        { effect_kind: "deal_damage", effect_label: "pb_slam", damage_amount: "50", damage_element: "physical", damage_verbosity: "full", target_ref: "pb_pick" },
+        { effect_kind: "deal_damage", effect_label: "pb_slam", damage_amount: "20 + CASTER_LEVEL", damage_element: "physical", damage_verbosity: "full", target_ref: "pb_pick" },
       ]),
     },
   }), out);
