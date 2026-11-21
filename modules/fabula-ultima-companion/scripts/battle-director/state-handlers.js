@@ -78,6 +78,7 @@ import { STANDALONE_TRIGGERS, phaseOf } from "./director-triggers.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, topIsResolveDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 // Grappled (Advanced Debuff) — turn-start break-free helpers.
 import { isGrappled, breakFree } from "./grappled.js";
+import { escapeDlFacing } from "./snapshot.js";
 // Boss "Super Armor" — Domination State / Ultima actions (Domination /
 // Escape / Recovery). See [[domination.js]].
 import {
@@ -2490,12 +2491,14 @@ async function maybeRunBreakFree(director, snap) {
     }
 
     const _bfInterrupt = director?._battleEndInterruptPromise ?? null;
+    // The grappler may raise the DL (`grapple_escape_dl` rule — Luchador Pant: 13).
+    const _bfDL = escapeDlFacing(actor);
     const _bfSpec = {
       titleText: `${snap.name}: Break Free?`,
-      subtitle: `Free action. DL 10 Check — the pair must include at least one MIG or DEX die (RAW). Cancel to skip.`,
+      subtitle: `Free action. DL ${_bfDL} Check — the pair must include at least one MIG or DEX die (RAW). Cancel to skip.`,
       defaults: { A1: "MIG", A2: "DEX" },
       includeDL: true,
-      defaultDL: 10,
+      defaultDL: _bfDL,
       requireAnyOf: ["MIG", "DEX"],
     };
     // SimMode has nobody to answer: pickAttributePair auto-answers it, so never route out.
@@ -2521,7 +2524,7 @@ async function maybeRunBreakFree(director, snap) {
 
     const A1 = cfg.A1;
     const A2 = cfg.A2;
-    const DL = Math.max(1, Number(cfg.dl) || 10);
+    const DL = Math.max(1, Number(cfg.dl) || _bfDL);
     // BD-canonical check (roll + prop-aware crit/fumble) + vs-DL comparison.
     const check = await rollCheck({ actor, A1, A2 });
     const { rA, rB, dA, dB, total, isFumble, isCrit } = check;

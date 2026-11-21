@@ -32,7 +32,8 @@ import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
-import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX, targetsKnockedOutAlly } from "./snapshot.js";
+import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX, targetsKnockedOutAlly, grappleHoldCap } from "./snapshot.js";
+import { tokensGrappledBy } from "./grappled.js";
 import { INVENTORY_ACTION_TAG } from "./skill-intent.js";
 import { isActorDefeated, settleRevive } from "./defeat-reactor.js";
 import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
@@ -7431,6 +7432,20 @@ export function getConditionAffinityFor(actor, { statuses, name } = {}) {
   return api?.getConditionAffinity?.(actor, { statuses, name }) ?? null;
 }
 
+// Does the APPLIER waive the target's immunity to this status? Rule key
+// `ignore_condition_immunity` (comma list of status names, or "all") on the
+// applier's live AEs — equip-gated gear carriers included (Luchador Mask).
+function applierIgnoresImmunity(applier, statusName) {
+  if (!applier) return false;
+  const want = String(statusName ?? "").trim().toLowerCase();
+  for (const raw of actorLiveRuleValues(applier, "ignore_condition_immunity")) {
+    for (const n of String(raw).split(/[,;|]/).map((s) => s.trim().toLowerCase()).filter(Boolean)) {
+      if (n === "all" || n === "*" || n === want) return true;
+    }
+  }
+  return false;
+}
+
 // Back-compat boolean form (action-profile's per-target preview flag).
 export function isTargetImmuneToStatuses(actor, statuses) {
   return getConditionAffinityFor(actor, { statuses }) === "IM";
@@ -7834,12 +7849,37 @@ async function applyApplyAeEffect(row, ctx) {
     // "fud-bodyguard" have no matching prop so they pass through.
     // `ignore_condition_immunity: true` on the row skips this gate entirely: a
     // curse that "nothing can block" (Muramasa's self-Doom vs an Omamori wearer).
-    const ignoreImmunity = row.ignore_condition_immunity === true || String(row.ignore_condition_immunity ?? "").toLowerCase() === "true";
+    // The APPLIER may carry the same waiver as a rule key on its gear:
+    // `ignore_condition_immunity` = comma list of status names ("Grappled"; "all"
+    // = every status) — Luchador Mask: "You ignore the target's Grappled immunity",
+    // whichever row applies it (the gloves' hold, the pant's counter-grapple).
+    const ignoreImmunity = row.ignore_condition_immunity === true || String(row.ignore_condition_immunity ?? "").toLowerCase() === "true"
+      || applierIgnoresImmunity(ctx.reactorActor, template.name);
     const conditionAffinity = ignoreImmunity ? null : getConditionAffinityFor(actor, { statuses: template.statuses, name: template.name });
     if (conditionAffinity === "IM") {
       log(`skill-effects.apply_ae: ${actor.name} immune to "${template.name}" (condition_<slug>=IM)`);
       fireStatusImmuneVfx({ tokenUuid: token?.document?.uuid ?? token?.uuid ?? null, statusName: template.name });
       continue;
+    }
+
+    // Grapple hold cap (`grapple_max` rule key on the grappler, snapshot.js).
+    // A new Grappled from an applier already holding its cap does not land; one
+    // it already holds is a refresh and passes. No rule = no cap (monster grabs).
+    if (!ctx._reciprocalApply && ctx.reactorActor && String(template.name ?? "").trim().toLowerCase() === "grappled") {
+      const cap = grappleHoldCap(ctx.reactorActor);
+      if (Number.isFinite(cap)) {
+        // Held = committed holds ∪ holds queued earlier in this chain (a batched
+        // apply_ae is not on the victim yet), keyed by victim actor uuid.
+        ctx._grappleAdds ??= new Map();
+        const queued = ctx._grappleAdds.get(ctx.reactorActor.uuid) ?? new Set();
+        const held = new Set([...queued, ...tokensGrappledBy({ actorUuid: ctx.reactorActor.uuid }).map((t) => t.actor?.uuid ?? t.uuid)]);
+        if (!held.has(actor.uuid) && held.size >= cap) {
+          log(`skill-effects.apply_ae: ${ctx.reactorActor.name} already holds ${held.size}/${cap} — "${template.name}" not applied to ${actor.name}`);
+          continue;
+        }
+        queued.add(actor.uuid);
+        ctx._grappleAdds.set(ctx.reactorActor.uuid, queued);
+      }
     }
 
     // Per-target probability gate (see `chanceRaw` above). Deliberately AFTER

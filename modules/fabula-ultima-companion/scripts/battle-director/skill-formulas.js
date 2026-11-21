@@ -2589,6 +2589,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // (see [[project_grappled_advanced_debuff]] P0). Matches TOKEN-first
         // (so one NPC token's grapple doesn't buff a sibling token sharing the
         // same base actor), with an actor-uuid fallback for linked tokens.
+        // GRAPPLE_ESCAPE_DL — the DL this actor must beat to break free of
+        // whoever holds it: the grappler's `grapple_escape_dl` rule (Luchador
+        // Pant: 13), else 10. Read by the Break Free objective's gate.
+        // snapshot.escapeDlFacing, published on globalThis (import cycle).
+        if (name === "GRAPPLE_ESCAPE_DL") {
+          const fn = globalThis.__fuGrappleEscapeDlFacing;
+          try { return typeof fn === "function" && actor ? Number(fn(actor)) || 10 : 10; }
+          catch (e) { warn("GRAPPLE_ESCAPE_DL reader threw", e); return 10; }
+        }
         if (name === "TARGET_GRAPPLED_BY_SELF") {
           const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
           if (!subjectUuid) return 0;

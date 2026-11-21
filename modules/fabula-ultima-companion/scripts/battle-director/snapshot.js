@@ -10,6 +10,7 @@ import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedAc
 import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { weightedActorKey } from "./weighted-rules.js";
+import { tokensGrappledBy, grapplerOf } from "./grappled.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -1119,6 +1120,51 @@ export function actorLiveRuleValues(actor, key) {
   return out;
 }
 
+// ── Grapple rules (Luchador set) ────────────────────────────────────────────
+// Three rule keys a grappler's gear/set AEs carry (equip-gated like every other
+// rule key read through actorLiveRuleValues):
+//   grapple_max         how many creatures this actor may hold at once (highest
+//                       value wins). No rule = no cap — the monster grabs
+//                       (Roper's four-target Tentacle) stay as they were.
+//   grapple_escape_dl   the DL a creature this actor holds must beat to break
+//                       free (highest wins; default 10, the Grappled journal).
+//   disable_action_while_grappling   "N:Label,Label" — block those turn
+//                       actions while this actor holds N or more creatures
+//                       (read by getBlockedActionLabels below).
+const _ruleNums = (actor, key) => actorLiveRuleValues(actor, key).map((v) => Number(v)).filter(Number.isFinite);
+export function grappleHoldCount(actor) {
+  if (!actor?.uuid) return 0;
+  return tokensGrappledBy({ actorUuid: actor.uuid }).length;
+}
+export function grappleHoldCap(actor) {
+  const vals = _ruleNums(actor, "grapple_max");
+  return vals.length ? Math.max(0, ...vals) : Infinity;
+}
+export function grappleEscapeDl(grapplerActor) {
+  const vals = _ruleNums(grapplerActor, "grapple_escape_dl");
+  return vals.length ? Math.max(10, ...vals) : 10;
+}
+// The escape DL a GRAPPLED actor faces (its grappler's rule; 10 when free or
+// unknown). Published for skill-formulas' GRAPPLE_ESCAPE_DL (it cannot import
+// this module — snapshot.js imports it).
+export function escapeDlFacing(actor) {
+  const by = grapplerOf(actor);
+  if (!by) return 10;
+  let g = null;
+  try {
+    g = (by.tokenUuid ? globalThis.fromUuidSync?.(by.tokenUuid)?.actor : null)
+      ?? (by.actorUuid ? globalThis.fromUuidSync?.(by.actorUuid) : null) ?? null;
+  } catch (_) { g = null; }
+  return g ? grappleEscapeDl(g) : 10;
+}
+try { globalThis.__fuGrappleEscapeDlFacing = escapeDlFacing; } catch (_e) { /* noop */ }
+// "N:Label,Label" rows → labels blocked at the actor's current hold count.
+function grappleLockoutLabels(raw, holdCount) {
+  const m = /^\s*(\d+)\s*:\s*(.*)$/.exec(String(raw ?? ""));
+  if (!m || holdCount < Number(m[1])) return [];
+  return m[2].split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+}
+
 // True if any TARGET of the action carries a live `deny_crit_opportunity` rule —
 // "critical successes on attacks and offensive spells that include you among
 // their targets do not generate opportunities" (Armor of Heroes). Read once at
@@ -1404,12 +1450,16 @@ export function getBlockedActionLabels(actor) {
     const L = canonActionLabel(label);
     if (L && !out.has(L)) out.set(L, reason);   // first source wins the stamp text
   };
+  let holds = null;
   for (const ae of effects) {
     if (ae?.disabled) continue;
     const reason = String(ae?.name ?? "").trim() || "Disabled";
     for (const ch of (ae?.changes ?? [])) {
       if (ch?.key === "disable_action") {
         for (const lbl of splitList(ch.value)) add(lbl, reason);
+      } else if (ch?.key === "disable_action_while_grappling") {
+        holds ??= grappleHoldCount(actor);   // read once, only when a lockout row exists
+        for (const lbl of grappleLockoutLabels(ch.value, holds)) add(lbl, reason);
       } else if (ch?.key === "enable_action_only") {
         const allow = new Set(splitList(ch.value).map(canonActionLabel));
         for (const lbl of GATEABLE_ACTION_LABELS) if (!allow.has(lbl)) add(lbl, reason);
@@ -1474,6 +1524,7 @@ export function getActionLabelBlockers(actor) {
     ? Array.from(actor.appliedEffects)
     : (actor?.effects?.contents ?? actor?.effects ?? []);
   const splitList = (raw) => String(raw ?? "").split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+  let holds = null;
   for (const ae of effects) {
     if (ae?.disabled) continue;
     const reason = String(ae?.name ?? "").trim() || "Disabled";
@@ -1481,6 +1532,9 @@ export function getActionLabelBlockers(actor) {
     for (const ch of (ae?.changes ?? [])) {
       if (ch?.key === "disable_action") {
         for (const lbl of splitList(ch.value)) add(lbl, reason, slug);
+      } else if (ch?.key === "disable_action_while_grappling") {
+        holds ??= grappleHoldCount(actor);
+        for (const lbl of grappleLockoutLabels(ch.value, holds)) add(lbl, reason, slug);
       } else if (ch?.key === "enable_action_only") {
         const allow = new Set(splitList(ch.value).map(canonActionLabel));
         for (const lbl of GATEABLE_ACTION_LABELS) if (!allow.has(lbl)) add(lbl, reason, slug);
