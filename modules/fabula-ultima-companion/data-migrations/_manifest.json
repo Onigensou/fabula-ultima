@@ -692,6 +692,10 @@
     {
       "key": "2026-11-21-warden-banner",
       "path": "data-migrations/2026-11-21-warden-banner.js"
+    },
+    {
+      "key": "2026-11-21-spirit-hawk-art",
+      "path": "data-migrations/2026-11-21-spirit-hawk-art.js"
     }
   ]
 }
