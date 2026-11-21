@@ -524,15 +524,29 @@ function subtree(rootId) {
   return out;
 }
 
+
+// Embedded deletes tolerant of the V12 orphaned-embed quirk: the client can list
+// an embedded Item the server has no record of, and deleting it throws
+// "does not exist" (real server only — the snapshot runner tolerates it). Skip
+// such ids instead of failing the migration (save-system safeDeleteEmbeds idea).
+async function safeDeleteItem(actor, id) {
+  if (!actor.items.get(id)) return false;
+  const orig = ui?.notifications?.error?.bind(ui.notifications);
+  if (ui?.notifications) ui.notifications.error = (msg, ...rest) => { if (typeof msg === "string" && msg.includes("does not exist")) return; return orig?.(msg, ...rest); };
+  try { await actor.deleteEmbeddedDocuments("Item", [id]); return true; }
+  catch (e) { if (!/does not exist/i.test(String(e?.message ?? e))) throw e; return false; }
+  finally { if (ui?.notifications) ui.notifications.error = orig; }
+}
+
 async function restockHako(out) {
   const hako = game.actors.get(HAKO);
   if (!hako) { out.push("! Hako actor missing"); return; }
   if (hako.getFlag(M, FLAG)) { out.push("= Hako already restocked"); return; }
   // Clear the old stock: top-level items one at a time (CSB cascades children).
   for (const it of hako.items.filter((i) => !i.system?.container)) {
-    if (hako.items.get(it.id)) await it.delete();
+    await safeDeleteItem(hako, it.id);
   }
-  for (const it of [...hako.items]) if (hako.items.get(it.id)) await it.delete();
+  for (const it of [...hako.items]) await safeDeleteItem(hako, it.id);
   let n = 0;
   for (const [name, price, qty] of ROSTER) {
     const src = ROD_IDS[name] ? game.items.get(ROD_IDS[name]) : worldItem(name);
