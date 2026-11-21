@@ -58,6 +58,14 @@ Bugs (fix and sandbox-test, numbers match the list above):
 - [ ] 8. Unknown tile seen from 2 tiles away (Keren's client).
 - [ ] 9. GM host battle performance: take a CPU profile.
 
+Level-up skills to author (every PC went from level 45 to 47 during the session; compared `8a41eb0e` with `b464ba3d`):
+- [ ] **Keren, new class Spell Fencer:** **Spellblade Rhapsody** (Active, SL 1) and **Spellweave** (Passive, SL 2) have **no automation**. The **Resonance** resource they spend and gain doesn't exist in the game yet. The whole Spell Fencer class in the world is unautomated (Master of Duality, Bladework, Book and Blade and Mystic Infusion too), so do the class as one job: the Resonance counter first, then the skills Keren owns.
+- [ ] **Zarg, Bane Oils SL 2 → 5:** the level-up ledger says he chose Elemental, Humanoid and Demon. His actor only has `bane_oil_beast` and `bane_oil_monster`, and the skill's menu rows are gated on `FLAG_BANE_OIL_<SPECIES> == 1`, so **the three new oils won't show up in the menu**. Set the three flags, and find out why the level-up choice didn't write them.
+- [ ] Zarg, **Wildlife Expert** (Passive, SL 1): GM questions while resting in the wilderness. Pure narration, so it needs no automation; just make sure the GM knows he has it.
+- [x] Zarg refunded **Lockdown** (gone, as intended).
+- [x] Hina, **Defensive Mastery SL 1 → 3**: already automated and scales with SL. Her new Magic Mirror (Passive) comes from an item and is automated too.
+- [ ] Blanche has **2 unspent skill points**. Nothing new to author until she spends them.
+
 Design decisions pending (no choice made yet; proposals come first, then a pick):
 - [ ] **Hako Gacha button** (Shop + Gacha on Hako; no NPC opens the gacha today).
 - [ ] **Gacha pity readout** back on screen (removed on purpose in `f8fd9574`). Mock up the placement first.
