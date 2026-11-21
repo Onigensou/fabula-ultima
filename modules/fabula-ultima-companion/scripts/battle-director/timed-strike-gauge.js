@@ -33,13 +33,15 @@ const STYLE_ID = "fu-tsg-style";
 
 // Presentation timing (approved mockup v4, Lionheart/Renzokuken). The GM holds these
 // fixed beats when presentation is on; the sim batch (presentation off) skips them.
-//   introMs        — the cinematic's intro (power-up light, dash in) before the HUD shows
+//   introMs        — the cinematic's intro before the HUD shows: the camera hand-over (the 3D
+//                    camera eases to neutral, up to ~600 ms) + the mockup's power-up light and
+//                    dash (900 + 520 + 250 ms), so the gauge opens after the dash as in the mockup
 //   leadMs         — HUD on screen → first sweep (unchanged from the engine build)
 //   finisherLeadMs — FINISHER → the finisher's damage (its wind-up lands on the hit)
 //   closeDelayMs   — DONE → the HUD leaves (the mockup closes it once the camera is home)
 //   tailMs         — DONE → the action moves on (the restore has played out);
 //                    finisherTailMs more after a finisher (its afterglow plays first)
-export const TSG_TIMING = Object.freeze({ introMs: 1700, leadMs: 450, finisherLeadMs: 1000, closeDelayMs: 1850, tailMs: 2100, finisherTailMs: 600 });
+export const TSG_TIMING = Object.freeze({ introMs: 2300, leadMs: 450, finisherLeadMs: 1000, closeDelayMs: 1850, tailMs: 2100, finisherTailMs: 600 });
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 // the mockup's gauge cues (its sfx(key, vol) plays at vol × 0.75)
 export const TSG_SFX = Object.freeze({ cursor: [SND + "BattleCursor_1.wav", 0.2 * 0.75], back: [SND + "Cursor_Back.mp3", 0.3 * 0.75] });
