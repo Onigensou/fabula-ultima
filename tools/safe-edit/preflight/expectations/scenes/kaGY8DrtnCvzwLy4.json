@@ -121,6 +121,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "The apple girl? She packed up and went off to some farming village. Can't say I blame her.",
+              "bubbleMode": "normal",
+              "id": "UhX8ZfbbmmqOb5SB"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"The apple girl? She packed up and went off to some farming village. Can't say I blame her.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"UhX8ZfbbmmqOb5SB\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -237,6 +259,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Empty shelves. Everyone bought out the potions the night of the attack.",
+              "bubbleMode": "normal",
+              "id": "lbrUcK237BEIUCig"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Empty shelves. Everyone bought out the potions the night of the attack.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"lbrUcK237BEIUCig\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -366,10 +410,16 @@
               "maskWholeToken": false
             }
           }
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
+          }
         }
       },
       "actorId": "I9sVwMLGjYLLDyRD",
-      "hidden": false,
+      "hidden": true,
       "sort": 0,
       "_id": "tolexiydN89HuK7X",
       "x": 425,

@@ -321,19 +321,20 @@ function resolvePerformerSnapshot(performer, dCombat, combat = null) {
   const tokenUuid = performer.tokenUuid ?? performer.tokenDocument?.uuid ?? performer.token?.uuid ?? null;
   const actorId   = performer.actorId   ?? performer.actor?.id ?? null;
 
-  const matches = (tokDoc, actDoc) => {
-    if (tokenUuid && tokDoc?.uuid === tokenUuid) return true;
-    if (tokenId && tokDoc?.id === tokenId) return true;
-    if (actorId && actDoc?.id === actorId) return true;
-    return false;
-  };
-  let combatant = (dCombat?.combatants ?? []).find((c) => matches(c.tokenDoc, c.actorDoc)) ?? null;
+  // Token FIRST, actor only as a fallback — two passes, not one. Copies of one
+  // actor (Deva's two Missile Fists, any summon cast twice) share the actor id, so
+  // a single pass that accepted either matched the FIRST copy for every copy: the
+  // second fist's Self action (Hover / Detonate) then found no performer in its
+  // pool and the fist lost its turn (Valley trio playtest, 2026-11-21).
+  const byToken = (tokDoc) => Boolean((tokenUuid && tokDoc?.uuid === tokenUuid) || (tokenId && tokDoc?.id === tokenId));
+  const byActor = (actDoc) => Boolean(actorId && actDoc?.id === actorId);
+  const roster = dCombat?.combatants ?? [];
+  let combatant = roster.find((c) => byToken(c.tokenDoc)) ?? roster.find((c) => byActor(c.actorDoc)) ?? null;
   // Legacy Foundry-combat roster (manual-attach). Searched too, or the refusal
   // below would reject every performer on that path.
   if (!combatant && combat?.combatants) {
-    for (const c of combat.combatants) {
-      if (matches(c?.token, c?.actor)) { combatant = c; break; }
-    }
+    const legacy = Array.from(combat.combatants);
+    combatant = legacy.find((c) => byToken(c?.token)) ?? legacy.find((c) => byActor(c?.actor)) ?? null;
   }
 
   // Refuse on EITHER roster. The fabricated fallback below is only reachable when

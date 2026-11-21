@@ -129,6 +129,28 @@
               "maskWholeToken": false
             }
           }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Business is booming. Every man in the city wants a blade by his bed now. I wish it weren't so.",
+              "bubbleMode": "normal",
+              "id": "AHVJBJR1fEH76HoV"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Business is booming. Every man in the city wants a blade by his bed now. I wish it weren't so.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"AHVJBJR1fEH76HoV\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "azHtPiPS4M1CnaAa",
@@ -245,6 +267,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "A sword for my son. He's fourteen. …He insisted.",
+              "bubbleMode": "normal",
+              "id": "ZUD04IgCE5RwjdxA"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"A sword for my son. He's fourteen. …He insisted.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"ZUD04IgCE5RwjdxA\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",

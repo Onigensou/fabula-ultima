@@ -116,6 +116,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "The archives survived. We're searching every record of dragons we have.",
+              "bubbleMode": "normal",
+              "id": "dj0xpS3cQBxyFBGv"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"The archives survived. We're searching every record of dragons we have.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"dj0xpS3cQBxyFBGv\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -232,6 +254,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Shh. Some of us are trying to read.",
+              "bubbleMode": "normal",
+              "id": "q31sNvSvtPIeoTad"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Shh. Some of us are trying to read.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"q31sNvSvtPIeoTad\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",

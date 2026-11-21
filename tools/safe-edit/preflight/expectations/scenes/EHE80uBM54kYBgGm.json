@@ -154,6 +154,28 @@
               "maskWholeToken": false
             }
           }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "My arm will mend. Thomas's stew is doing more good than the bandages.",
+              "bubbleMode": "normal",
+              "id": "qUhWKOYb1DNLEWNI"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"My arm will mend. Thomas's stew is doing more good than the bandages.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"qUhWKOYb1DNLEWNI\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -283,6 +305,28 @@
               "maskWholeToken": false
             }
           }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Half my rooms are full of the wounded. I'll find you a corner, don't you worry.",
+              "bubbleMode": "normal",
+              "id": "xuzLkfupVUHpIbhq"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Half my rooms are full of the wounded. I'll find you a corner, don't you worry.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"xuzLkfupVUHpIbhq\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "9DzQpyEmnjYXKsim",
@@ -400,7 +444,29 @@
           "hideBorder": true,
           "hideFill": true
         },
-        "world": {}
+        "world": {},
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "We lost the roof, but not the family. That's what matters.",
+              "bubbleMode": "normal",
+              "id": "75mkvFbx8HcW4hGk"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"We lost the roof, but not the family. That's what matters.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"75mkvFbx8HcW4hGk\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
+        }
       },
       "actorId": "hi5RUPDq2y0zQD89",
       "hidden": false,
@@ -516,6 +582,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Another night on this bench. Still beats sleeping under rubble.",
+              "bubbleMode": "normal",
+              "id": "MRyFUDMo4XmD9Yyy"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Another night on this bench. Still beats sleeping under rubble.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"MRyFUDMo4XmD9Yyy\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -645,6 +733,28 @@
               "maskWholeToken": false
             }
           }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "I'll drink to anyone brave enough to go after that thing.",
+              "bubbleMode": "normal",
+              "id": "ur7ZXYyfT29uqCJX"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"I'll drink to anyone brave enough to go after that thing.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"ur7ZXYyfT29uqCJX\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -761,6 +871,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "I came for the festival. Now I can't even find a wagon home.",
+              "bubbleMode": "normal",
+              "id": "hbwudIWpRVgccn7g"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"I came for the festival. Now I can't even find a wagon home.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"hbwudIWpRVgccn7g\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -877,6 +1009,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "…Leave me be. I just want a quiet drink.",
+              "bubbleMode": "normal",
+              "id": "mJ5aPLHRs1kSGNd7"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"…Leave me be. I just want a quiet drink.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"mJ5aPLHRs1kSGNd7\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
