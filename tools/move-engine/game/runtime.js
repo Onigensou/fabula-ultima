@@ -281,7 +281,7 @@ async function MOVE_PLAY(key, opts = {}) {
   for (const o of ME_ONCE) { let did = false; TRK.push({ t0: o.at, t1: 1e9, fn: () => { if (did) return; did = true; try { o.fn(); } catch (e) { console.warn("[move-engine] cue threw", e); } } }); }
   if (ME_GATE == null) TRK.push({ t0: end, t1: 1e9, fn: () => oni.fireDone() });
   const wall0 = performance.now();
-  try { await TL.run(TRK, { total, sfx: ME_SFX, onStart: () => { const h = ctx.params.readyHook; if (h) { try { Hooks.callAll(h); } catch (e) {} } } }); }
+  try { await TL.run(TRK, { total, sfx: ME_SFX, onStart: () => { report.wall0 = performance.now(); const h = ctx.params.readyHook; if (h) { try { Hooks.callAll(h); } catch (e) {} } } }); }
   finally { for (const f of ME_CLEANUP) { try { f(); } catch (e) {} } }
   report.wallMs = Math.round(performance.now() - wall0);
   oni.fireDone();

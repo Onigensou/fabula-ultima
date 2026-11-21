@@ -57,7 +57,9 @@ function assetsFromMeta(meta, { only = null, clipUrls = null, sfxUrls = null } =
   const clips = {}, sfx = {}, missing = [];
   for (const [k, c] of Object.entries(meta.clips || {})) { if (!used(k)) continue; const url = clipUrl(k, clipUrls); if (!url) { missing.push("clip " + k); continue; }
     clips[k] = { url, w: c.w, h: c.h, dur: c.dur, ax: c.ax, ay: c.ay, k: c.ro || /^ro_/.test(k) ? 1.1 : .55, impact: c.impact, add: false }; }
-  for (const k of Object.keys(meta.sfx || {})) { if (!used(k)) continue; const rel = (sfxUrls && sfxUrls[k]) || (meta.sfxSrc && meta.sfxSrc[k]);
+  // a mockup's meta.sfxSrc is a Forge path for the game's sounds ("Sound/…"), but for ripped sounds it names the rip source
+  // ("data.grf · …"): only Forge-looking paths are trusted; anything else needs sfxUrls, or it is reported missing
+  for (const k of Object.keys(meta.sfx || {})) { if (!used(k)) continue; const src0 = meta.sfxSrc && meta.sfxSrc[k]; const rel = (sfxUrls && sfxUrls[k]) || (/^(Sound|Animation|Campaign|Resource)\//.test(src0 || "") ? src0 : null);
     if (!rel) { missing.push("sfx " + k); continue; } sfx[k] = /^https?:/.test(rel) ? rel : FORGE + rel.split("/").map(encodeURIComponent).join("/"); }
   return { clips, sfx, missing };
 }
