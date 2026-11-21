@@ -1,6 +1,10 @@
 // ═════════ v2 cinematic layer (FF8 Renzokuken study, reference/NOTES.md):
 // isolation (dim UNDER the battlers + the other battlers fade), a follow camera with per-strike push / punch / roll,
 // tapered slash sheets, sparks, embers, impact rays, a white frame + chromatic split on TRIGGER, a bigger finisher.
+// colours + body points the melee helpers below use (moved here from the Lionheart / Sonic Katar family heads)
+const FIRE = "255,140,50", STEEL = "170,210,255", GOLD = "255,214,120", PINK = "255,170,210";
+const hand = (a) => ({ x: OX(a) + face(a) * wid(a) * .34, y: OY(a) - (a.lift || 0) - hgt(a) * .52 });
+const bodyAt = (a) => ({ x: OX(a), y: OY(a) - (a.lift || 0) - hgt(a) * .5 });
 const dens = (C) => (C ? tv(C, "parts") : 100) / 100;
 const nP = (C, n) => Math.max(0, Math.round(n * dens(C)));
 const others = () => Object.values(ACT).filter((a) => a !== WA() && a !== ORC && (a.kind === "party" || a.on));

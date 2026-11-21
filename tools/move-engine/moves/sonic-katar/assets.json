@@ -1,0 +1,118 @@
+{
+ "note": "Forge URLs + clip sizes for the sonic-katar family (build/pilot-gunblade.js --refresh-assets, from the Sonic Katar page's meta.json)",
+ "clips": {
+  "003_hit_fire": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/003_hit_fire.webm",
+   "w": 440,
+   "h": 440,
+   "dur": 667,
+   "ax": 0.5,
+   "ay": 0.5273,
+   "k": 0.55,
+   "impact": 0,
+   "add": false
+  },
+  "006_slash_physical": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/006_slash_physical.webm",
+   "w": 378,
+   "h": 378,
+   "dur": 333,
+   "ax": 0.4683,
+   "ay": 0.5794,
+   "k": 0.55,
+   "impact": 0,
+   "add": false
+  },
+  "008_slash_fire": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/008_slash_fire.webm",
+   "w": 408,
+   "h": 408,
+   "dur": 600,
+   "ax": 0.4706,
+   "ay": 0.6471,
+   "k": 0.55,
+   "impact": 0,
+   "add": false
+  },
+  "011_pierce_physical": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/011_pierce_physical.webm",
+   "w": 660,
+   "h": 660,
+   "dur": 467,
+   "ax": 0.5,
+   "ay": 0.503,
+   "k": 0.55,
+   "impact": 133,
+   "add": false
+  },
+  "051_powerup_1": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/051_powerup_1.webm",
+   "w": 508,
+   "h": 790,
+   "dur": 867,
+   "ax": 0.5,
+   "ay": 0.543,
+   "k": 0.55,
+   "impact": 333,
+   "add": false
+  },
+  "054_powerdown_1": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/054_powerdown_1.webm",
+   "w": 508,
+   "h": 656,
+   "dur": 867,
+   "ax": 0.5,
+   "ay": 0.628,
+   "k": 0.55,
+   "impact": 333,
+   "add": false
+  },
+  "gg_burst_anim02": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/burst_anim02.webm",
+   "w": 682,
+   "h": 1024,
+   "dur": 300,
+   "ax": 0.5,
+   "ay": 0.5,
+   "k": 0.55,
+   "impact": 90,
+   "add": false
+  },
+  "gg_spark_anim01": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/spark_anim01.webm",
+   "w": 340,
+   "h": 256,
+   "dur": 300,
+   "ax": 0.5,
+   "ay": 0.5,
+   "k": 0.55,
+   "impact": 90,
+   "add": false
+  },
+  "gg_fireanim02": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/fireanim02.webm",
+   "w": 512,
+   "h": 512,
+   "dur": 3200,
+   "ax": 0.5,
+   "ay": 0.5,
+   "k": 0.55,
+   "impact": 960,
+   "add": false
+  }
+ },
+ "sfx": {
+  "sword2": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Sword2.ogg",
+  "slashL": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_HitSlashL.ogg",
+  "hitfire": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_HitFire.ogg",
+  "fire1": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Fire1.ogg",
+  "gunshot": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/GunshotA.ogg",
+  "equip": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Equip1.ogg",
+  "switch1": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Switch1.ogg",
+  "key": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Key.ogg",
+  "shing": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Metal_Shing.mp3",
+  "powerup": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Powerup.ogg",
+  "move1": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Move1.ogg",
+  "jump1": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Jump1.ogg"
+ }
+}

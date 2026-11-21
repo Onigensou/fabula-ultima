@@ -2,31 +2,26 @@
 // Game runtime DRY RUN in Node, on a stub board shaped exactly like the mockup's stage, compared with the mockup's trace.
 //   node test/mockup-clock.js --gpu --json out/clock.json   (the mockup side: traces + stage geometry)
 //   node test/game-dry.js [moveKey] [--tune k=v ...]
-// Same move code (the approved Sonic Katar page's part-sonic.js), same shared parts; the game host instead of the mockup
-// engine. Expect: identical event times / keys / volumes / scales; positions equal (same geometry).
+// Same move files the page runs (moves/sonic-katar + the page's own part), same shared parts; the game host instead of the
+// mockup engine. Expect: identical event times / keys / volumes / scales; positions equal (same geometry).
+// --result hit|miss|crit[:total]  hand the move a GAME outcome (BD's payload.outcomes) instead of its page sliders
 const fs = require("fs");
 const path = require("path");
 const GB = require("../build/game-build.js");
+const LF = require("./lib-files.js");
 
 const args = process.argv.slice(2);
 const KEY = args[0] && !args[0].startsWith("--") ? args[0] : "gb_sword";
 const TUNE = { gb_sword: { roll: 1 }, gb_gun: { roll: 1 }, gb_tf: { dir: 0 }, sonicblow: { result: 1 }, sk_attack: { result: 1 } }[KEY] || {};
 args.forEach((a, i) => { if (a === "--tune") { const [k, v] = args[i + 1].split("="); TUNE[k] = Number(v); } });
+const RES = (() => { const i = args.indexOf("--result"); if (i < 0) return null; const [kind, tot] = args[i + 1].split(":");
+  return { tokenUuid: "t0", hit: kind !== "miss", crit: kind === "crit", total: tot == null ? null : Number(tot), fumble: false }; })();
+const VARIANT = (() => { const i = args.indexOf("--variant"); return i < 0 ? null : args[i + 1]; })();
 const MOCK = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "out", "clock.json"), "utf8"));
-const FX = path.join(__dirname, "fixtures", "sonic-katar");
-
-// the family head, made host-neutral: the mockup's head picks its actors from the page (ACT.orc, ACT[WIELD]); in the game
-// they are the action's caster and first target. (The pilot moves this into the move files themselves.)
-let head = fs.readFileSync(path.join(FX, "part-sonic-head.js"), "utf8").replace(/\r\n/g, "\n");
-const hrep = (a, b) => { if (head.split(a).length !== 2) throw new Error("head: " + a); head = head.replace(a, b); };
-hrep("const ORC = ACT.orc;", "const ORC = TARGET;");
-hrep("const WA = () => ACT[WIELD];", "const WA = () => CASTER;");
-hrep('WIELD = "keren";', "");
-const files = [{ name: "part-sonic-head.game.js", text: head }, { name: "part-sonic.js", text: fs.readFileSync(path.join(FX, "part-sonic.js"), "utf8").replace(/\r\n/g, "\n") },
-  { name: "test-dice.js", text: "PDICE.caster = PDICE.keren;   // test: the mockup's wielder (Keren) dice for the caster" }];
+const files = LF.filesFor(KEY);
 
 const chk = GB.checkMoveSource(files);
-const inner = GB.innerSource({ files, key: KEY, playOpts: { tune: TUNE } });
+const inner = GB.innerSource({ files, key: KEY, playOpts: { tune: TUNE, variantTune: { gun: { dir: 0 }, sword: { dir: 1 } } } });
 
 // ── stub board: mockup px = board px (KP 1, origin 0), the mockup's two battlers, the mockup's perspective
 const P = MOCK.preset;
@@ -39,7 +34,7 @@ const TL = { STAGE: { x: 0, y: 0, w: 1682, h: 788 }, TOK, POSE: {}, load: async 
 const el = () => ({ setAttribute() {}, style: {}, getContext: () => null, appendChild() {}, innerHTML: "" });
 globalThis.document = { getElementById: () => null, createElementNS: el, createElement: el, body: { appendChild() {} }, querySelector: () => null };
 globalThis.Hooks = { callAll() {} };
-const ctx = { casterToken: { center: {} }, targetTokens: [{ center: {} }], params: { cfg: { dryOnly: true, trace: true, seed: 2611 }, assets: { clips: {}, sfx: {} } } };
+const ctx = { casterToken: { center: {} }, targetTokens: [{ center: {} }], params: { cfg: { dryOnly: true, trace: true, seed: 2611 }, assets: { clips: {}, sfx: {} }, outcomes: RES ? [RES] : null, variant: VARIANT } };
 // every clip key the move names, so the runtime records them (sizes are irrelevant to the trace)
 const meta = JSON.parse(fs.readFileSync("E:/Art(New Com)/DND/Fabula Ultima/Resource/Animation/Sonic Katar/src/assets/meta.json", "utf8"));
 const A = GB.assetsFromMeta(meta, {}); ctx.params.assets = { clips: A.clips, sfx: A.sfx };
@@ -52,6 +47,10 @@ const canvas = { tokens: { placeables: [] }, app: null };
   const game = rep.trace, mock = MOCK.runs[KEY] && MOCK.runs[KEY][0];
   console.log("move " + KEY + " · build check: " + (chk.errors.length ? chk.errors.join("; ") : "ok") + (chk.warnings.length ? " · warnings: " + chk.warnings.join("; ") : ""));
   console.log("game dry run: " + rep.dryMs + " ms real, " + game.length + " events, move ends at " + rep.end + " ms, gate " + rep.gate + " ms, warnings: " + (rep.warnings.join("; ") || "none"));
+  // a game outcome / variant run: show what the move chose (no mockup trace to compare against)
+  if (RES || VARIANT) { console.log("gate " + rep.gate + " (markGate " + rep.markGate + ", first hit " + rep.firstHit + ") · result " + JSON.stringify(rep.result) + " · variant " + rep.variant);
+    for (const e of game) if (["clip", "sfx", "hit", "gate", "beat"].includes(e.type)) console.log("  GAME " + String(e.at).padStart(6) + " " + e.type + " " + (e.key || e.name || e.kind || ""));
+    process.exit(0); }
   if (!mock) { console.log("(no mockup trace for " + KEY + " in out/clock.json)"); process.exit(0); }
   // compare event by event (the mockup does not trace hit cues / namecard / beat ends: skip those types on both sides)
   const SKIP = new Set(["hit", "namecard", "critCutin", "end", "num"]);

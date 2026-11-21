@@ -83,6 +83,26 @@ const PARTY = [CASTER, ...TARGETS].filter((a) => a.kind === "party"), ENEMIES = 
 const SCR = meRec({ white: 0, black: 0, dim: 0, dimC: "#000", vig: 0, rumble: 0 });
 const ME_ACTORS = [CASTER, ...TARGETS];
 
+// ───────── host roles (the same names the mockup host gives a move)
+const moveCaster = () => CASTER;
+const moveTarget = (i = 0) => TARGETS[i] || TARGETS[0] || null;
+// the action's real Accuracy result for a target: { hit, crit, total, fumble, kind } (BD's payload.outcomes; a Chain's
+// per-strike results are moveStrikes()). null when the game did not say (a bench preview without an outcome).
+function moveResult(t) {
+  const list = Array.isArray(ctx.params.outcomes) ? ctx.params.outcomes : null; if (!list || !list.length) return null;
+  const tok = t && ME_TARGET_TOKS[TARGETS.indexOf(t)]; const uuid = tok && tok.document && tok.document.uuid;
+  const o = list.find((x) => x && x.tokenUuid === uuid) || list[0]; if (!o) return null;
+  return { hit: o.hit !== false, crit: !!o.crit, total: o.total == null ? null : Number(o.total), fumble: !!o.fumble, kind: o.hit === false ? "miss" : "hit" };
+}
+const moveStrikes = () => (Array.isArray(ctx.params.strikes) ? ctx.params.strikes : []);
+const moveVariant = () => ctx.params.variant || null;
+// the active form of the caster's equipped form weapon (Lionheart / Gunblade weaponForms), 0 when none
+function meWeaponForm() {
+  try { const a = ME_CASTER_TOK.actor; const NS = "fabula-ultima-companion";
+    const w = a.items.find((i) => i.flags && i.flags[NS] && Array.isArray(i.flags[NS].weaponForms) && i.system && i.system.props && i.system.props.isEquipped)
+      || a.items.find((i) => i.flags && i.flags[NS] && Array.isArray(i.flags[NS].weaponForms));
+    return w ? Number(w.flags[NS].activeForm || 0) || 0 : 0; } catch (e) { return 0; } }
+
 // ───────── the beat clock (virtual). wait / tween register a resolve at their target ms; the driver releases them in
 // time order, one per task, so every continuation runs with VT = its own ms.
 function wait(ms) { const target = VT + Math.max(0, ms || 0); return new Promise((res) => ME_Q.push({ target, seq: ME_QSEQ++, res })); }
@@ -148,9 +168,12 @@ const fdim = (o, ms = 500, color = "#000") => { traceEv("dim", { to: o, ms, colo
 const vignette = (o, ms) => { traceEv("vignette", { to: o, ms }); const s = SCR.vig; return tween(ms, EASE.sine, (t) => { SCR.vig = lerp(s, o, t); }); };
 function shake(px = 10, ms = 320) { traceEv("shake", { px, ms }); if (PHASE === "dry") TM.shake(VT, ms, px * KP); return wait(ms); }
 function rumble(on, px = 3) { traceEv("rumble", { on: !!on, px }); SCR.rumble = on ? px : 0; }
-function markGate() { traceEv("gate"); if (PHASE !== "dry") return; ME_GATE = VT; meOnce(() => oni.fireDone()); }
+// The damage gate. The game shows the action's numbers AT the gate, while a mockup shows them where the move calls gameNum():
+// so the gate is the move's FIRST hit number when it has one (what was approved on screen), else its markGate().
+let ME_MARK = null, ME_FIRST_HIT = null;
+function markGate() { traceEv("gate"); if (PHASE === "dry" && ME_MARK == null) ME_MARK = VT; }
 // hit cues: the game's own number / MISS / flinch / HP bar ride oni.hit (Chain) and the damage gate (BD)
-function meHitCue(kind, data) { traceEv("hit", Object.assign({ kind }, data || {})); meOnce(() => oni.hit({ paced: true })); }
+function meHitCue(kind, data) { traceEv("hit", Object.assign({ kind }, data || {})); if (PHASE === "dry" && ME_FIRST_HIT == null) ME_FIRST_HIT = VT; meOnce(() => oni.hit({ paced: true })); }
 function gameNum(t, amount, { kind = "loss", resource = "hp", element = "physical", crit = false, isHit = true } = {}) { if (kind === "loss" && resource === "hp") meHitCue(isHit ? "hit" : "bonus", { amount, element, crit }); else if (kind === "miss") meHitCue("miss"); }
 function dmgNum(key, at, amount, { element = "physical" } = {}) { traceEv("num", { who: key, amount, element }); if (amount > 0 && !["mp", "ip", "heal", "self"].includes(element)) meOnce(() => oni.hit({ paced: true })); }
 const numAt = (a) => () => ({ x: OX(a), y: OY(a) - hgt(a) * .5 });
@@ -252,9 +275,13 @@ let ME_STEP_I = 0, ME_LAST_T = 0;
 
 // ───────── run a move: dry run, then play it on the board
 // opts: { tune: { key: value } } (approved slider values), { beats: [indexes to skip] }
+// opts.byForm: [move for form 0, move for form 1, …] — picks by the caster's weapon form (one script for a form weapon)
+// opts.variantTune: { variant: { key: value } } — tune by the play_animation row's #variant (Gunblade: Transform#gun)
 async function MOVE_PLAY(key, opts = {}) {
+  if (Array.isArray(opts.byForm) && opts.byForm.length) { const f = meWeaponForm(); key = opts.byForm[Math.min(f, opts.byForm.length - 1)] || key; }
   const spec = SK[key]; if (!spec) { console.error("[move-engine] no move", key); oni.fireDone(); return; }
-  const C = { cfg: {} }; for (const t of spec.tune || []) C.cfg[t.k] = t.v; Object.assign(C.cfg, opts.tune || ME_CFG.tune || {});
+  const C = { cfg: {} }; for (const t of spec.tune || []) C.cfg[t.k] = t.v; Object.assign(C.cfg, (opts.tune && opts.tune[key]) || opts.tune || ME_CFG.tune || {});
+  const vt = opts.variantTune && moveVariant() && opts.variantTune[moveVariant()]; if (vt) Object.assign(C.cfg, vt);
   const skip = new Set(opts.skip || ME_CFG.skip || []);
   // snapshot of the initial state, restored before playback (the dry run leaves the end state)
   const init = ME_ACTORS.map((a) => { const r = meRaw(a); return [r, Object.assign({}, r), Object.assign({}, meRaw(r.el.style)), Object.assign({}, meRaw(r.media.style))]; });
@@ -274,12 +301,13 @@ async function MOVE_PLAY(key, opts = {}) {
   for (const x of ME_AFTER) total = Math.max(total, x.t0 + x.ms);
   for (const tr of TRK) if (tr.clip && tr.t1 < 1e8) total = Math.max(total, tr.t1);
   total = Math.min(total + (ME_CFG.tailMs || 0), end + 4000);
-  const report = { key, engine: MOVE_ENGINE_VERSION, host: MOVE_HOST, dryMs, end, total, gate: ME_GATE, events: TRACE.list.length, trace: TRACE.list, warnings: [...ME_WARN] };
-  globalThis.__MOVE_LAST = report;
+  ME_GATE = ME_FIRST_HIT != null ? ME_FIRST_HIT : ME_MARK != null ? ME_MARK : end;
+  const report = { key, engine: MOVE_ENGINE_VERSION, host: MOVE_HOST, dryMs, end, total, gate: ME_GATE, markGate: ME_MARK, firstHit: ME_FIRST_HIT, variant: moveVariant(), result: moveResult(moveTarget()), events: TRACE.list.length, trace: TRACE.list, warnings: [...ME_WARN] };
+  globalThis.__MOVE_LAST = report; if (Array.isArray(globalThis.__MOVE_RUNS)) globalThis.__MOVE_RUNS.push(report);   // tests collect every run
   if (ME_CFG.dryOnly) { oni.fireDone(); return report; }
   TM.hold(0, total, (t, S) => meFrame(t, S));
   for (const o of ME_ONCE) { let did = false; TRK.push({ t0: o.at, t1: 1e9, fn: () => { if (did) return; did = true; try { o.fn(); } catch (e) { console.warn("[move-engine] cue threw", e); } } }); }
-  if (ME_GATE == null) TRK.push({ t0: end, t1: 1e9, fn: () => oni.fireDone() });
+  { let did = false; TRK.push({ t0: ME_GATE, t1: 1e9, fn: () => { if (did) return; did = true; oni.fireDone(); } }); }
   const wall0 = performance.now();
   try { await TL.run(TRK, { total, sfx: ME_SFX, onStart: () => { report.wall0 = performance.now(); const h = ctx.params.readyHook; if (h) { try { Hooks.callAll(h); } catch (e) {} } } }); }
   finally { for (const f of ME_CLEANUP) { try { f(); } catch (e) {} } }

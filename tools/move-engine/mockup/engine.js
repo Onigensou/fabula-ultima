@@ -20,7 +20,7 @@ const live = (rid) => { if (rid !== RUN) throw ABORT; };
 // same ms. CLK.vt = the virtual ms the code running right now belongs to; a resolver sets it just before resolving.
 const CLK = { rid: -1, t0: 0, vt: 0, fast: false };
 function clkSync() {
-  if (CLK.rid !== RUN) { CLK.rid = RUN; CLK.vt = 0; CLK.t0 = performance.now(); CLK.fast = FAST; moveSeed(window.MOVE_SEED); traceReset(typeof WA === "function" ? WA() : null); }
+  if (CLK.rid !== RUN) { CLK.rid = RUN; CLK.vt = 0; CLK.t0 = performance.now(); CLK.fast = FAST; moveSeed(window.MOVE_SEED); traceReset(moveCaster()); }
   if (CLK.fast && !FAST) CLK.t0 = performance.now() - CLK.vt / SPEED;   // FAST replay just ended: re-anchor to now
   CLK.fast = FAST; }
 const clockNow = () => { clkSync(); return CLK.vt; };
@@ -175,6 +175,15 @@ for (const [id, a] of Object.entries(ACT)) {
 }
 const PARTY = ["hina", "zarg", "keren", "blanche"].map((k) => ACT[k]);
 let ENEMIES = [];
+// ───────── host roles (the same names the game runtime gives a move). The page says who acts with
+// window.MOVE_ROLES = { caster: () => ACT[WIELD], target: (i) => ACT.orc, result: (t) => null | { hit, crit, total, fumble } }.
+// result() is the GAME's real outcome; on a page it is normally null, so a move falls back to its own sliders / rolls.
+const MOVE_ROLES = () => window.MOVE_ROLES || {};
+const moveCaster = () => (MOVE_ROLES().caster ? MOVE_ROLES().caster() : PARTY[0]);
+const moveTarget = (i = 0) => (MOVE_ROLES().target ? MOVE_ROLES().target(i) : ENEMIES[i] || ENEMIES[0] || null);
+const moveResult = (t) => (MOVE_ROLES().result ? MOVE_ROLES().result(t) : null);
+const moveStrikes = () => (MOVE_ROLES().strikes ? MOVE_ROLES().strikes() : []);
+const moveVariant = () => (MOVE_ROLES().variant ? MOVE_ROLES().variant() : null);
 // the boss's side of the field for the chosen fight: who stands, where (cx, cy = token centre on the stage)
 function setLineup(list) {
   for (const a of Object.values(ACT)) if (a.kind === "enemy") { a.on = false; a.el.style.display = "none"; }

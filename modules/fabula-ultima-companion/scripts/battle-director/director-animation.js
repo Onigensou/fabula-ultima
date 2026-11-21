@@ -507,7 +507,7 @@ async function executeAnimationScript({
     animationScriptRaw: script,
     animation_damage_timing_options: timingMode,
     animation_damage_timing_offset:  timingOffset,
-    // Per-target accuracy outcome, [{ tokenUuid, hit, crit }], when the caller
+    // Per-target accuracy outcome, [{ tokenUuid, hit, crit, total, fumble }] (total / fumble = the card's one Accuracy Check), when the caller
     // knows it. The accuracy roll is settled before ANIMATION runs, so the FSM
     // fills this from the action result; the Anim Studio bench fills it from its
     // Outcome selector, which is how a miss cinematic gets rehearsed outside
@@ -676,10 +676,17 @@ function outcomesFromDirector(director) {
     // A separate Chain hits a target when ANY of its strikes landed — not just
     // strike 1. A one-roll Chain's verdict is the card's own.
     const chain = ar?.chainPlan && !ar.chainPlan.single ? (ar.chainPlan.perTarget ?? null) : null;
+    // The card's Accuracy Check (one roll per action): a script whose look depends on
+    // the roll itself (Gunblade's odd-total fire) reads total / fumble instead of
+    // guessing. total is null when the action had no roll.
+    const total = Number.isFinite(Number(ar?.roll?.total)) && ar?.roll?.total != null ? Number(ar.roll.total) : null;
+    const fumble = !!ar?.roll?.isFumble;
     return rows.map((r) => {
       const t = chain ? chain[r?.tokenUuid] : null;
       return {
         tokenUuid: r?.tokenUuid ?? null,
+        total,
+        fumble,
         hit: t ? t.landed > 0 : !!r?.hit,
         crit: t ? t.crits > 0 : !!r?.crit,
       };
