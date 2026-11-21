@@ -34,6 +34,7 @@ import { log, warn } from "./logger.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { orbmentReduction } from "../orbment/orbment-dr.js";
 import { bossStage } from "./boss-rules/boss-rules.js";
+import { companionOf } from "../shared/companion-rule.js";
 
 // snapshot.getBlockedActionLabels, registered by snapshot.js at load (it already
 // imports this module, so a static import back would be a cycle). Read by the
@@ -906,6 +907,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // (OWN_PERSISTENT_SUMMON_COUNT == 0) — independent of the Grave Toll AE, which
       // can desync from the minion.
       case "OWN_PERSISTENT_SUMMON_COUNT": return ownPersistentSummonCount(actor);
+      // 1 when this actor already has a COMPANION — a standing one linked to it
+      // (Faithful Companion) or a gear-granted one on the field (the Mantle's
+      // Spirit Hawk). The one-companion house rule's gate, readable by data:
+      // Summon Spirit Hawk's availability_formula is `HAS_COMPANION == 0`.
+      case "HAS_COMPANION": return companionOf(actor?.uuid) ? 1 : 0;
       case "BOND_STRENGTH": return bondStrengthTowardSubject(actor, payload);
       case "BOND_COUNT": return countBondSlots(actor);
       case "BOND_COUNT_ADMIRATION": return countBondsByEmotion(actor, "admiration");
