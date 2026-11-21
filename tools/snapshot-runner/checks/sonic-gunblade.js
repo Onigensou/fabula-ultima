@@ -38,6 +38,8 @@ async function giveWeapon(actor, weaponId) {
   const [nw] = await actor.createEmbeddedDocuments("Item", [d]);
   for (const k of game.items.filter((i) => i.system?.container === weaponId)) { const kd = k.toObject(); delete kd._id; kd.system.container = nw.id; await actor.createEmbeddedDocuments("Item", [kd]); }
   await ES.applyEquipmentSwap(actor, { main: nw.id, off: null });
+  // a swap to a same-named weapon reads as "no change": mark the new copy worn
+  if (!nw.system?.props?.isEquipped) await nw.update({ "system.props.isEquipped": true });
   return nw;
 }
 // watch the live director: every action result, the chain plans, Opportunity, MP of the caster
@@ -62,8 +64,10 @@ function watch(casterName) {
   const hid = Hooks.on("updateActor", (a, ch) => {
     const v = ch?.system?.props?.current_mp; if (v !== undefined && String(a.name).startsWith(casterName)) mp.push(v);
   });
+  const nums = [];
+  const hid3 = Hooks.on("fuDamageNumber", (p) => nums.push({ kind: p?.kind, amount: p?.amount, element: p?.element, affinity: p?.affinity, isCrit: !!p?.isCrit, critBanner: p?.critBanner, resource: p?.resource }));
   const hid2 = Hooks.on("updateItem", (i, ch) => { const f = ch?.flags?.[NS]; if (f && ("activeForm" in f || "transformFreeUsedRound" in f)) forms.push({ item: i.name, actor: i.parent?.name, round: bd.getActiveDirector?.()?.dCombat?.round ?? null, ...f }); });
-  return { stop() { clearInterval(iv); Hooks.off("updateActor", hid); Hooks.off("updateItem", hid2); return { ars, opp, mp, forms }; } };
+  return { stop() { clearInterval(iv); Hooks.off("updateActor", hid); Hooks.off("updateItem", hid2); Hooks.off("fuDamageNumber", hid3); return { ars, opp, mp, forms, nums }; } };
 }
 const logs = [];
 const origLog = console.log;
@@ -83,7 +87,7 @@ async function sonicRun(label, card, strikes) {
   catch (e) { err = String(e?.message ?? e); }
   globalThis.__FU_CHAIN_FORCED_DICE__ = null;
   const seen = w.stop();
-  out.scenarios[label] = { err, simOk: !!r, sonic: seen.ars.filter((a) => a.weapon?.name === "Sonic Blow"), otherAttacks: seen.ars.filter((a) => a.by?.startsWith("Zarg") && a.weapon?.name !== "Sonic Blow").length, opportunity: seen.opp, mpWrites: seen.mp, logs: [...logs], warns: [...warns] };
+  out.scenarios[label] = { err, simOk: !!r, sonic: seen.ars.filter((a) => a.weapon?.name === "Sonic Blow"), otherAttacks: seen.ars.filter((a) => a.by?.startsWith("Zarg") && a.weapon?.name !== "Sonic Blow").length, opportunity: seen.opp, mpWrites: seen.mp, numbers: seen.nums, logs: [...logs], warns: [...warns] };
 }
 // a plain Attack with a forced card roll (arm the dice when the directive declares it)
 async function attackRun(label, actorName, weaponId, faces, { rounds = 1, setup = null, forceReactions = null } = {}) {
@@ -101,7 +105,7 @@ async function attackRun(label, actorName, weaponId, faces, { rounds = 1, setup 
   catch (e) { err = String(e?.message ?? e); }
   SM.recordDeclaration = orig;
   const seen = w.stop();
-  out.scenarios[label] = { err, simOk: !!r, attacks: seen.ars.filter((x) => x.by?.startsWith(actorName)), forms: seen.forms, logs: [...logs], warns: [...warns] };
+  out.scenarios[label] = { err, simOk: !!r, attacks: seen.ars.filter((x) => x.by?.startsWith(actorName)), forms: seen.forms, numbers: seen.nums, logs: [...logs], warns: [...warns] };
 }
 
 const hit = { rA: 10, rB: 9 };
