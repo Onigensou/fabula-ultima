@@ -119,14 +119,14 @@ function renzokukenData() {
   return cloneData(SKILL_DONOR, {
     id: ID.renzokuken, name: "Renzokuken", container: LIONHEART, img: ICON,
     props: {
-      skill_type: "Active", cost: "30 MP", skill_target: "One Creature", duration: "Instantaneous", skill_range: "Melee",
+      skill_type: "Active", cost: "30 MP", skill_target: "One Enemy", duration: "Instantaneous", skill_range: "Melee",
       rolled_atr1: "-", rolled_atr2: "-", check_bonus: "0", damage_bonus: 0, type_damage: "", defense_target_type: "def",
       isCheck: false, isZeroPower: false, isOffensiveSpell: false, isReaction: false, class: "", skill_tags: "",
       animation_script: "", skill_animation_mode: "default", skill_animation_default: "",
       availability_formula: "WEAPON_FORM == 0 && AE_CHARGES_CARTRIDGE >= 1",
       availability_reason: "Needs Sword form and a Cartridge",
       description: RENZOKUKEN_TEXT,
-      skill_description: `<p><strong>Cost:</strong> 30 MP + 1 Cartridge</p><p><strong>Target:</strong> One Creature</p><p><strong>Duration:</strong> Instantaneous</p>${RENZOKUKEN_TEXT}`,
+      skill_description: `<p><strong>Cost:</strong> 30 MP + 1 Cartridge</p><p><strong>Target:</strong> One Enemy</p><p><strong>Duration:</strong> Instantaneous</p>${RENZOKUKEN_TEXT}`,
       on_activate_effect_ref: "rzk_root",
       reaction_config_table: {},
       effect_table: table([
