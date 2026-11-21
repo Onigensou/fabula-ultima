@@ -35,6 +35,7 @@ import { plateSettled } from "./director-player-hud.js";
 import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
+import { absorbKeywordValue, normalizeKeywordLabel } from "./keyword-value.js";
 import { DAMAGE as DAMAGE_TYPE_STYLE } from "../linked-text/lt-terms.js";
 import { formatHitChance, isConcealedRoll } from "./check.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
@@ -5671,10 +5672,14 @@ export function parseEffectDescription(html) {
 
       if (entry?.kind === "keyword") {
         const key = entry.key ?? uuid;
-        const dedup = `${key}|${label}`;
+        // "Chain" + " 2 Pick" authored outside the link → one chip, CHAIN 2
+        // (see keyword-value.js). Must run before the anchor is removed.
+        const value = absorbKeywordValue(a, root);
+        const chipLabel = value ? `${label} ${value}` : normalizeKeywordLabel(label);
+        const dedup = `${key}|${chipLabel}`;
         if (!seenKw.has(dedup)) {
           seenKw.add(dedup);
-          keywords.push({ key, label, icon: entry.icon ?? null });
+          keywords.push({ key, label: chipLabel, icon: entry.icon ?? null });
         }
         a.remove();
         continue;
