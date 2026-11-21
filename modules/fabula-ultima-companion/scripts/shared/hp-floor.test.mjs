@@ -1,0 +1,28 @@
+import { hpFloorFromEffects, clampHpChange, hpFloorPreUpdate, floorHp } from "./hp-floor.js";
+let fail = 0;
+const eq = (n, a, b) => { const ok = JSON.stringify(a) === JSON.stringify(b); if (!ok) fail++; console.log(ok ? "ok  " : "FAIL", n, ok ? "" : `got ${JSON.stringify(a)} want ${JSON.stringify(b)}`); };
+const ae = (v, extra = {}) => ({ disabled: false, changes: [{ key: "hp_floor", mode: 5, value: v }], ...extra });
+const actor = (effects, hp = 20, max = 20) => ({ effects, system: { props: { current_hp: hp, max_hp: max } } });
+const run = (a, change, opts) => { hpFloorPreUpdate(a, change, opts); return change; };
+
+eq("no AE unchanged", run(actor([]), { system: { props: { current_hp: 0 } } }), { system: { props: { current_hp: 0 } } });
+eq("floor 1 vs 0", run(actor([ae("1")]), { system: { props: { current_hp: 0 } } }).system.props.current_hp, 1);
+eq("string 0", run(actor([ae("1")]), { system: { props: { current_hp: "0" } } }).system.props.current_hp, 1);
+eq("negative sheet write", run(actor([ae("1")]), { system: { props: { current_hp: -5 } } }).system.props.current_hp, 1);
+eq("flat key", run(actor([ae("1")]), { "system.props.current_hp": 0 })["system.props.current_hp"], 1);
+eq("hp 5 untouched", run(actor([ae("1")]), { system: { props: { current_hp: 5 } } }).system.props.current_hp, 5);
+eq("two AEs max wins", hpFloorFromEffects([ae("1"), ae("3")]), 3);
+eq("disabled ignored", hpFloorFromEffects([ae("1", { disabled: true })]), 0);
+eq("suppressed ignored", hpFloorFromEffects([ae("1", { isSuppressed: true })]), 0);
+eq("NaN ignored", hpFloorFromEffects([ae("abc")]), 0);
+eq("no current_hp untouched", run(actor([ae("1")]), { name: "x" }), { name: "x" });
+eq("bypass", run(actor([ae("1")]), { system: { props: { current_hp: 0 } } }, { fuHpFloorBypass: true }).system.props.current_hp, 0);
+eq("vital loss to 0 (floor 1, hp 20)", clampHpChange({ system: { props: { current_hp: 0 } } }, { curHp: 20, maxHp: 20, floor: 1 }).to, 1);
+eq("already 0 not raised", run(actor([ae("1")], 0), { system: { props: { current_hp: 0 } } }).system.props.current_hp, 0);
+eq("never above current", floorHp(0, { curHp: 1, maxHp: 20, floor: 3 }), 1);
+eq("floor > max capped at max", floorHp(0, { curHp: 10, maxHp: 2, floor: 5 }), 2);
+eq("max drop with hp write", run(actor([ae("1")]), { system: { props: { current_hp: 0, max_hp: 1 } } }).system.props.current_hp, 1);
+eq("max drop only: no hp write", run(actor([ae("1")]), { system: { props: { max_hp: 1 } } }), { system: { props: { max_hp: 1 } } });
+eq("dmg card floor read", floorHp(0, { curHp: 20, maxHp: 20, floor: 1 }), 1);
+eq("no floor floorHp", floorHp(0, { curHp: 20, maxHp: 20, floor: 0 }), 0);
+console.log(fail ? `${fail} FAILED` : "all passed"); process.exit(fail ? 1 : 0);

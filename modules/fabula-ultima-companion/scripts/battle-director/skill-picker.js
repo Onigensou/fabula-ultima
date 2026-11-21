@@ -12,7 +12,7 @@
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost,
          findCostSubstitution, canSubstituteForShortfall } from "./skill-cost.js";
-import { buildSkillResolver, evaluateFormula, normalizeDamageType, arcanumQuickSummonLock } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, normalizeDamageType, arcanumQuickSummonLock, evaluateSkillAvailability } from "./skill-formulas.js";
 import { analyzeChainCost, estimatePerformReactionCost, isMergedArcanumChild } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
 import { previewPlateCost } from "./director-player-hud.js";
@@ -407,16 +407,9 @@ function candidateFromSkill(skill, actor, { source, sourceItem, freeOfCost = fal
   // in the picker with `availability_reason` ("Numen already active"), the same
   // disabled+reason treatment as an intent block. Empty formula = always
   // available (fail-open if it throws). Reusable board-state gate for any skill.
-  let unavailableReason = null;
-  const availFormula = String(p.availability_formula ?? "").trim();
-  if (availFormula) {
-    try {
-      const resolver = buildSkillResolver({ actor, payload: null, skill, round: 0 });
-      if (!evaluateFormula(availFormula, resolver, 1)) {
-        unavailableReason = String(p.availability_reason ?? "").trim() || "Unavailable";
-      }
-    } catch (e) { warn("skill-picker: availability_formula threw", e); }
-  }
+  // The same reading the enemy AI uses (evaluateSkillAvailability).
+  const availability = evaluateSkillAvailability({ actor, skill });
+  let unavailableReason = availability.available ? null : availability.reason;
   // Single-target restriction (Fatigue Advanced Debuff). When the caster carries
   // a `max_action_targets` cap below 2 and this action is inherently multi-target
   // (All / fixed "Two creatures" / Multi), dim it with the source-AE name — the

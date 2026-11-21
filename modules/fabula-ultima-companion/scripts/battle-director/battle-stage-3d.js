@@ -283,7 +283,14 @@ function cameraLive() {
   return !!(c?.running && !c.flat && c.lastRig);
 }
 
-globalThis[GLOBAL_KEY] = { tokenDepthConfig, drawnBox, drawnMeshBounds, drawnScreenPoint, predictDrawn, drawnMap, projectFoot, projectNear, paintedPoint, cameraLive, drawnCenter: (token) => state.camera3d?.drawnCenter(token) ?? null, hold };
+// The live 3D camera's yaw in degrees (+ = it has swung to the right round the view centre); 0 when it is flat
+// or off. The creature rig host turns its models by it so their relief parallaxes with the backdrop.
+function cameraYaw() {
+  const c = state.camera3d;
+  return c?.running && !c.flat && c.lastRig ? Number(c.lastRig.yaw) || 0 : 0;
+}
+
+globalThis[GLOBAL_KEY] = { cameraYaw, tokenDepthConfig, drawnBox, drawnMeshBounds, drawnScreenPoint, predictDrawn, drawnMap, projectFoot, projectNear, paintedPoint, cameraLive, drawnCenter: (token) => state.camera3d?.drawnCenter(token) ?? null, hold };
 
 // Token#center reads the DOCUMENT in v12, so anything placed at token.center
 // (skill animation scripts, reaction menus, scrolling text) would land on the

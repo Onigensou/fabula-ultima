@@ -57,6 +57,7 @@ import { htmlToCardText } from "./drawer-views.js";
 import { shortSkillName } from "./skill-formulas.js";
 import { deckDeal, deckReturn, deckPlay, deckSetHand, deckSetAllyHand } from "./reaction-deck.js";
 import { flyToReactionBox, preloadLandingCue } from "./reaction-landing.js";
+import { massiveJoinTables } from "./massive-keyword.js";
 
 const MIRROR_ROOT_ID = "fud-bf-mirror-root";
 const STYLE_ID = "fud-rxh-style";
@@ -300,6 +301,7 @@ const TRIGGER_TEXT = {
   creature_gain_resource: { self: "When you recover {RES}", other: "When a creature recovers {RES}" },
   caster_short_on_mp: "When you are short on MP",
   creature_defeated: { self: "When you fall to 0 HP", other: "When a creature is defeated" },
+  creature_stays_down: { self: "When you stay down", other: "When a creature stays down" },
   creature_enter_crisis: { self: "When you enter Crisis", other: "When a creature enters Crisis" },
   creature_miss_action: { self: "When your action misses", other: "When an action misses" },
   creature_completes_attack: { self: "After you attack", other: "After a creature attacks" },
@@ -358,6 +360,13 @@ function rowOf(r) {
   if (!r.carrierUuid) return { item: null, row: null };
   let item = null;
   try { item = fromUuidSync(r.carrierUuid); } catch {}
+  // A built-in reaction (the Massive join card) has its rows in code: a stand-in
+  // carrier holds them, so When / Target / Cost read them like any authored row.
+  const builtin = massiveJoinTables(r.rowKey);
+  if (builtin) {
+    const stand = { name: item?.name ?? "", parent: item?.parent ?? null, system: { props: { ...builtin, skill_target: "" } } };
+    return { item: stand, row: builtin.reaction_config_table[r.rowKey] ?? null };
+  }
   const row = tablesOf(item)?.reaction_config_table?.[r.rowKey] ?? null;
   return { item, row };
 }

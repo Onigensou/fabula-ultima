@@ -10,14 +10,16 @@ globalThis.cancelAnimationFrame = (id) => { pendingRaf.delete(id); };
 const realSet = setTimeout, realClear = clearTimeout;
 globalThis.setTimeout = (fn, ms) => { const id = ++tSeq; pendingTimers.set(id, fn); return id; };
 globalThis.clearTimeout = (id) => { pendingTimers.delete(id); };
-const props = new Map(), classes = new Set();
+const props = new Map(), classes = new Set(), byId = new Map();
+// the curtain's <style>: its one rule's declarations land in `props` (the opacity is written into the rule)
+const styleEl = () => ({ textContent: "", sheet: { cssRules: [{ style: { setProperty: (k, v) => props.set(k, v) } }] } });
 globalThis.document = {
-  getElementById: () => null, head: { appendChild: () => {} }, createElement: () => ({}),
-  body: { classList: { add: (c) => classes.add(c), remove: (c) => classes.delete(c) }, style: { setProperty: (k, v) => props.set(k, v), removeProperty: (k) => props.delete(k) } },
+  getElementById: (id) => byId.get(id) ?? null, head: { appendChild: (el) => { if (el.id) byId.set(el.id, el); } }, createElement: styleEl,
+  body: { classList: { add: (c) => classes.add(c), remove: (c) => classes.delete(c) }, style: { setProperty: () => { throw new Error("no custom property on <body>: it restyles the whole page"); } } },
 };
 const frame = () => { const fns = [...pendingRaf.values()]; pendingRaf.clear(); for (const f of fns) f(); };
 
-const { makeCurtain, hideHud, showHud, setHudLevel, releaseHud, hudCurtainPending } = await import("./hud-curtain.js");
+const { makeCurtain, hideHud, showHud, setHudLevel, releaseHud, hudCurtainPending, registerHudSelector } = await import("./hud-curtain.js");
 
 // ── pure holds ──
 let clock = 0;
@@ -41,7 +43,11 @@ for (let i = 0; i < 90; i++) {   // 1.5 s at 60 fps
 }
 ok("never more than one frame pending", maxRaf <= 1, maxRaf);
 ok("never more than one watchdog timer pending", maxTimers <= 1, maxTimers);
-ok("the HUD is hidden through the hold", classes.has("fud-hud-curtain") && Number(props.get("--fud-hud-curtain")) < 0.05, [...props]);
+ok("the HUD is hidden through the hold", classes.has("fud-hud-curtain") && Number(props.get("opacity")) < 0.05, [...props]);
+// a selector added mid-hold re-parses the sheet: the level must be back on the new rule at once (no one-frame flash)
+props.clear();
+registerHudSelector("#test-panel-added-later");
+ok("a selector added mid-hold keeps the HUD hidden", Number(props.get("opacity")) < 0.05, [...props]);
 showHud(tok, { fade: 0 });
 ok("given back: the HUD shows, nothing left pending", !classes.has("fud-hud-curtain") && hudCurtainPending().raf === 0 && hudCurtainPending().timer === 0 && pendingRaf.size === 0, { ...hudCurtainPending(), raf: pendingRaf.size });
 

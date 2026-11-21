@@ -252,7 +252,7 @@
 
   /** Body shape of the sprite on screen, or of the token's standing art when it cannot be read. */
   function bodyAlpha(token) {
-    const a = alphaOf(token.mesh.texture);
+    const a = alphaOf(globalThis.__ONI_CREATURE_RIG__?.paintedTexture?.(token) ?? token.mesh.texture);   // painted art, not a creature rig's live canvas
     if (a) return a;
     let st = state.standTex.get(token.id);
     const src = token.document?.texture?.src;

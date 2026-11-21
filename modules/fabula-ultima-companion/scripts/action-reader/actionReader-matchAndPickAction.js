@@ -354,6 +354,18 @@ function applyDeferredTargetCount(candidate, survey, reasons) {
   }
 }
 
+/* Same contract as safeSurvey: the provider is foreign code, so a throw is "no
+   answer", never "unavailable". */
+function safeAvailability(candidate, performerActor) {
+  const ask = AR.battleProvider()?.actionAvailable;
+  if (typeof ask !== "function" || !candidate?.item) return null;
+  try {
+    return ask(candidate.item, { performerActor }) ?? null;
+  } catch (_e) {
+    return null;
+  }
+}
+
 /* The survey is supplied by whoever owns the battle, so treat it as foreign
    code: a throw here must degrade to the head-count fallback, not abort the
    whole action choice and leave the creature idle. */
@@ -821,9 +833,40 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
       });
     }
 
+    // --- Availability hard filter (#7) ---------------------------------- //
+    // The action's own board-state gate (`availability_formula`), the one the
+    // player's skill picker dims an action with (Numen's "OWN_NUMEN_COUNT == 0",
+    // Call of the Master's "no Soul Fragment standing"). A HARD filter beside #5 /
+    // #6, not a feasibility reason: the graceful fallback below resurrects any
+    // free action that failed feasibility, and most gated actions cost nothing,
+    // so a reason alone would let the only candidate through exactly when its
+    // gate says no. Asked through the battle provider (ActionReader imports
+    // nothing from the director); no provider, or one that throws, = no answer =
+    // available, the same fail-open the picker uses.
+    const availableCandidates = [];
+    let unavailableCount = 0;
+    for (const candidate of affordableCandidates) {
+      const availability = safeAvailability(candidate, context?.performer?.actor ?? context?.actorData?.actor ?? null);
+      if (availability && availability.available === false) {
+        candidate.unavailable = true;
+        candidate.unavailableReason = availability.reason || "Unavailable";
+        unavailableCount++;
+        continue;
+      }
+      candidate.unavailable = false;
+      availableCandidates.push(candidate);
+    }
+    if (unavailableCount) {
+      ARD.addWarning(context, stage, "Some matched actions were withheld — their availability formula is false.", {
+        unavailableCandidates: unavailableCount,
+        reasons: affordableCandidates.filter((c) => c.unavailable).map((c) => `${c.itemName ?? c.actionName}: ${c.unavailableReason}`),
+        availableCandidates: availableCandidates.length
+      });
+    }
+
     // --- Feasibility filter (#1) ---------------------------------------- //
     const feasibility = new Map();
-    const feasibleCandidates = affordableCandidates.filter(candidate => {
+    const feasibleCandidates = availableCandidates.filter(candidate => {
       const result = assessCandidateFeasibility(candidate, context);
       feasibility.set(candidate, result);
       candidate.feasible = result.feasible;
@@ -834,17 +877,17 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
     let workingCandidates = feasibleCandidates;
     let feasibilityFallbackUsed = false;
 
-    if (!workingCandidates.length && affordableCandidates.length) {
+    if (!workingCandidates.length && availableCandidates.length) {
       // Graceful fallback: prefer no-cost actions so the actor still does
       // *something* (e.g. a basic attack) instead of erroring out. NOTE: draws
-      // from affordableCandidates ONLY — never resurrect a debuff-blocked (#5)
-      // or HP-reserved (#6) action.
-      const freeCandidates = affordableCandidates.filter(isCandidateFree);
-      workingCandidates = freeCandidates.length ? freeCandidates : affordableCandidates;
+      // from availableCandidates ONLY — never resurrect a debuff-blocked (#5),
+      // HP-reserved (#6) or availability-gated (#7) action.
+      const freeCandidates = availableCandidates.filter(isCandidateFree);
+      workingCandidates = freeCandidates.length ? freeCandidates : availableCandidates;
       feasibilityFallbackUsed = true;
 
       ARD.addWarning(context, stage, "No fully-feasible action; using graceful fallback.", {
-        affordableCandidates: affordableCandidates.length,
+        affordableCandidates: availableCandidates.length,
         freeFallbackCount: freeCandidates.length
       });
     }

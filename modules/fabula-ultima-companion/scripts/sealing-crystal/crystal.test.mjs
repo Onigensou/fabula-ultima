@@ -13,6 +13,9 @@ ok([[100, 100, 0], [76, 100, 0], [75, 100, 1], [51, 100, 1], [50, 100, 2], [26, 
 ok(crackStage(5, 0) === 0 && crackStage("x", 100) === 0, "crackStage: no max / no HP reads intact");
 const runtimeSrc = await import("node:fs").then((fs) => fs.readFileSync(new URL("./crystal-runtime.js", import.meta.url), "utf8"));
 ok(/from "\.\/crack-stage\.js"/.test(runtimeSrc) && !/r <= 0\.25/.test(runtimeSrc), "the runtime draws from the shared crackStage, no copy of its own");
+// fix pass C: the stage floor is only the Oath's (no in-memory "shown" term), and crackFloorOf is cached per state change
+ok(/Math\.max\(crackStage\(hp, max\), this\.#floor\(\)\)/.test(runtimeSrc) && !/this\.stage \?\? 0/.test(runtimeSrc), "crystal stage = max(raw, the Oath's floor) only");
+ok((runtimeSrc.match(/crackFloorOf\(/g) ?? []).length === 1 && /floorAt !== _floorEpoch/.test(runtimeSrc) && /Hooks\.on\("updateActiveEffect", bumpFloor\)/.test(runtimeSrc), "crackFloorOf read once per state change (epoch cache), not per frame");
 
 const P = makeCrystalPainter();
 const n = FRAME.W * FRAME.H;

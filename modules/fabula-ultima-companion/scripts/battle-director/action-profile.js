@@ -30,6 +30,7 @@ import { applyGmDamageInput, gmDamageInput, applyGmPrimaryOverrides } from "./gm
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp, describeGrant,
   getConditionAffinityFor } from "./skill-effects.js";
+import { MASSIVE_KEYWORD, massiveShare, massiveDefenseBonus } from "./massive-keyword.js";
 
 // Resolve an open_action_menu (+ nested chains) down to the concrete leaf rows for
 // the player's CHOSEN option(s), matched by display label. Mirrors card-mutations'
@@ -551,6 +552,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
   // apply per target inside the loop.
   const actionKeywordSet = collectActionKeywords({ view, weapon, kind, primary });
   exploits = actionKeywordSet.includes("exploit");
+  // Massive (massive-keyword.js): the action's own damage is divided equally among
+  // every target on it (rounded down) — a joiner added mid-card re-derives every
+  // row through here, so the share follows the live target count.
+  const isMassive = actionKeywordSet.includes(MASSIVE_KEYWORD);
+  const massiveCount = isMassive ? Math.max(1, targets.length) : 1;
 
   const rolled = check.required && check.total != null;
   const effectiveHr = check.grantHrAsZero || modeForcesHrZero(ctx)
@@ -589,7 +595,9 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     const defOv = Array.isArray(defenseOverrides)
       ? defenseOverrides.find((o) => (o.tokenUuid && o.tokenUuid === e.tokenUuid) || (o.actorUuid && o.actorUuid === e.actorUuid))
       : null;
-    const defStat = (defOv && Number.isFinite(Number(defOv.to))) ? Number(defOv.to) : pickDef(e);
+    const defStat = (defOv && Number.isFinite(Number(defOv.to)))
+      ? Number(defOv.to)
+      : pickDef(e) + (isMassive ? massiveDefenseBonus(e, targets) : 0);
     // Manual GM verdict for THIS slot, keyed by token (not actor) so two linked
     // tokens sharing one world actor stay independently editable.
     const hitOverride = (gmHitOverrides && e?.tokenUuid && e.tokenUuid in gmHitOverrides)
@@ -654,7 +662,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // pre-roll card's generic "potential damage" range).
       const ignoreHR = check.grantHrAsZero || modeForcesHrZero(ctx);
       const rawAt = (h) => {
-        const d = foldOps(Math.floor((h + primary.damageBonus + primary.outgoingTotal) * atkDmgMult), targetOps);
+        const d = foldOps(massiveShare(Math.floor((h + primary.damageBonus + primary.outgoingTotal) * atkDmgMult), massiveCount), targetOps);
         return Math.max(0, Math.floor(d));
       };
       const lo = ignoreHR ? 0 : (maxHR > 0 ? 1 : 0);
@@ -682,7 +690,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       if (atkDmgMult !== 1 && outBase !== preMult) {
         damageModParts.push({ source: atkMultSource(), amount: outBase - preMult });
       }
-      rawDamage = pierceMiss ? Math.ceil(outBase / 2) : outBase;
+      // Massive: this target's share of the action's damage, before its own
+      // reduction / efficiency / affinity take their turn on it.
+      const shareBase = massiveShare(outBase, massiveCount);
+      if (shareBase !== outBase) damageModParts.push({ source: `Massive (÷${massiveCount})`, amount: shareBase - outBase });
+      rawDamage = pierceMiss ? Math.ceil(shareBase / 2) : shareBase;
 
       // Target actor for the incoming layer (DR + weapon efficiency), fetched
       // once and reused (null for MP damage, which skips the incoming layer).
@@ -1573,11 +1585,29 @@ export async function buildActionViewFromAr(ar) {
     return { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null };
   }
   const skill = ar?.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+  if (ar?.skillUuid && !skill) console.warn(`action-profile: skill ${ar.skillUuid} did not resolve — action keywords (Massive etc.) read as none`);
   if (skill) {
     const sr = await import("./skill-recipes.js");
     return sr.getRuntimeActionView(skill);
   }
   return { kind: ar?.kind ?? "Skill", effect_table: {}, fire_points: {}, source: null };
+}
+
+// The action's inherent keyword set, from the SAME sources buildPerTarget folds
+// (collectActionKeywords over the action view, the weapon snapshot for an Attack,
+// and the attacker's AE-granted outgoing keywords — what describePrimary unions).
+// For callers outside the per-target loop that must agree with it: CONFIRM deals
+// the Massive join card from this, so a Massive weapon or an AE-granted Massive
+// deals cards exactly when the damage divides.
+export async function actionKeywordsForActionResult(ar) {
+  if (!ar) return [];
+  const view = await buildActionViewFromAr(ar);
+  const kind = view?.kind ?? ar?.kind ?? "Skill";
+  let liveAttacker = null;
+  const attackerRef = ar.attackerActorRef ?? ar.attacker?.actorUuid ?? null;
+  try { liveAttacker = attackerRef ? await fromUuid(attackerRef) : null; } catch (_) { liveAttacker = null; }
+  const primaryKeywords = [...new Set([...parseActionKeywords(view), ...aeOutgoingActionKeywords(liveAttacker)])];
+  return collectActionKeywords({ view, weapon: ar.weapon ?? null, kind, primary: { keywords: primaryKeywords } });
 }
 
 // ── Public: recomputeActionProfile ───────────────────────────────────────────
@@ -1613,7 +1643,10 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
         snap = tok ? snapshotTargetForToken(tok) : null;
       } catch { snap = null; }
       if (!snap) snap = t;
-      snaps.push(t?.redirectedFrom ? { ...snap, redirectedFrom: t.redirectedFrom } : snap);
+      // addedVia rides along too: the Massive +1 DEF tells an ORIGINAL target from a joiner by it.
+      snaps.push((t?.redirectedFrom || t?.addedVia)
+        ? { ...snap, ...(t.redirectedFrom ? { redirectedFrom: t.redirectedFrom } : {}), ...(t.addedVia ? { addedVia: t.addedVia } : {}) }
+        : snap);
     }
     const view = await buildActionViewFromAr(ar);
     const dice = (ar.roll && typeof ar.roll.rA === "number") ? { rA: ar.roll.rA, rB: ar.roll.rB } : null;

@@ -22,6 +22,7 @@ import { hex, mix, clamp, Rng, TAU, WHITE, createFrame, clearFrame, painterFor, 
 import { ember } from "../battle-director/pixel-entrance/pixelfx/fx/fire/_lib.js";
 import { makeSoulBallFire } from "./soul-ball-fire.js";
 import { DEATH, POURS, deathSpin, deathTimeline, pushOffset, drawJet, drawShatter } from "./crystal-death.js";
+import { BoxPainter, DIRECT, CLIP, clearBox, unionBox, rowsOf } from "./box-frame.js";
 
 // dark -> light. Darks lean to maroon-violet, lights to coral and a warm white (ice.md §6: the ramp spans the whole
 // value range and shifts hue along it, so it holds on dark and bright ground alike).
@@ -162,9 +163,10 @@ function beamAt(mesh, q, soulY, main) {
 // ------------------------------------------------------------------------------------------------ raster helpers
 function fillTri(W, H, a, b, c, fn) {
   const x0 = Math.max(0, Math.floor(Math.min(a[0], b[0], c[0]))), x1 = Math.min(W - 1, Math.ceil(Math.max(a[0], b[0], c[0])));
-  const y0 = Math.max(0, Math.floor(Math.min(a[1], b[1], c[1]))), y1 = Math.min(H - 1, Math.ceil(Math.max(a[1], b[1], c[1])));
+  const y0 = Math.max(0, CLIP.lo, Math.floor(Math.min(a[1], b[1], c[1]))), y1 = Math.min(H - 1, CLIP.hi, Math.ceil(Math.max(a[1], b[1], c[1])));
   const area = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
   if (Math.abs(area) < 1e-6) return;
+  if (x1 >= x0 && y1 >= y0) DIRECT.mark(x0, y0, x1, y1);
   const sg = area > 0 ? 1 : -1;
   // Each edge test is linear in px along a row: w = A * px + B. Solve the three for the row's inside span and only
   // test that span (+-1 px, so float error can never drop a pixel the exact test below would keep). Same pixels as
@@ -174,29 +176,51 @@ function fillTri(W, H, a, b, c, fn) {
     const py = y + 0.5;
     let lo = x0, hi = x1;
     const B0 = (b[0] * (c[1] - py) - (b[1] - py) * c[0]) * sg, B1 = (c[0] * (a[1] - py) - (c[1] - py) * a[0]) * sg, B2 = (a[0] * (b[1] - py) - (a[1] - py) * b[0]) * sg;
-    let empty = false;
-    for (const [A, B] of [[A0, B0], [A1, B1], [A2, B2]]) {
-      if (A > 1e-12) lo = Math.max(lo, Math.floor(-B / A - 0.5) - 1);
-      else if (A < -1e-12) hi = Math.min(hi, Math.ceil(-B / A - 0.5) + 1);
-      else if (B < -1e-9) { empty = true; break; }
-    }
-    if (empty) continue;
+    // (the three edges in turn, as a loop over [[A0, B0], [A1, B1], [A2, B2]] did, without its arrays a row)
+    if (A0 > 1e-12) lo = Math.max(lo, Math.floor(-B0 / A0 - 0.5) - 1); else if (A0 < -1e-12) hi = Math.min(hi, Math.ceil(-B0 / A0 - 0.5) + 1); else if (B0 < -1e-9) continue;
+    if (A1 > 1e-12) lo = Math.max(lo, Math.floor(-B1 / A1 - 0.5) - 1); else if (A1 < -1e-12) hi = Math.min(hi, Math.ceil(-B1 / A1 - 0.5) + 1); else if (B1 < -1e-9) continue;
+    if (A2 > 1e-12) lo = Math.max(lo, Math.floor(-B2 / A2 - 0.5) - 1); else if (A2 < -1e-12) hi = Math.min(hi, Math.ceil(-B2 / A2 - 0.5) + 1); else if (B2 < -1e-9) continue;
     for (let x = lo; x <= hi; x++) {
       const px = x + 0.5;
       const w0 = ((b[0] - px) * (c[1] - py) - (b[1] - py) * (c[0] - px)) * sg;
       const w1 = ((c[0] - px) * (a[1] - py) - (c[1] - py) * (a[0] - px)) * sg;
       const w2 = ((a[0] - px) * (b[1] - py) - (a[1] - py) * (b[0] - px)) * sg;
-      if (w0 >= 0 && w1 >= 0 && w2 >= 0) fn(x, y);
+      if (w0 >= 0 && w1 >= 0 && w2 >= 0) { if (fn === beamPx) beamPx(x, y, BEAM); else fn(x, y); }
     }
   }
+}
+// A beam's pixel (crystal death 60 fps pass, 2026-11-17): what its fillPoly callback did, a named function on the
+// beam's numbers (BEAM) so the rasteriser calls it directly, not through a new closure a beam (~250k beam pixels a
+// death frame). The same arithmetic in the same order.
+const BEAM = { W: 0, Lb: null, hullMask: null, clip: false, floorY: 0, sx: 0, sy: 0, ax: 0, ay: 0, len: 1, nx: 0, ny: 0, w0: 0, w1: 0, I: 0, stream: false, SZ: 1, t: 0, behind: false, rcol: "green", G: 0, Rd: 0 };
+function beamPx(x, y, B) {
+  if (B.clip && y > B.floorY + 3) return; // a beam aimed down stops at the floor (none in the dark void)
+  const qx = x + 0.5 - B.sx, qy = y + 0.5 - B.sy, u = (qx * B.ax + qy * B.ay) / B.len;
+  if (u < 0 || u > 1) return;
+  const v = Math.abs(qx * B.nx + qy * B.ny) / (B.w0 + (B.w1 - B.w0) * u);
+  if (v > 1) return;
+  const i = y * B.W + x, band = v < 0.3 ? 1 : v < 0.62 ? 0.62 : 0.3;
+  // (1 - u)^1.1 <= 1 - u, and the most the rest can make it is x 1.15: under 0.049 it rounds to 0 below whatever the
+  // pow gives, so the pow is not worked out
+  if (B.I * (1 - u) * band * (B.stream ? 1.15 : 1) < 0.049) return;
+  let k = B.I * Math.pow(1 - u, 1.1) * band;
+  // optional motion that keeps the beam itself still: light streaming OUT along it in soft pulses
+  if (B.stream) { const ph = (u * B.len) / (16 * B.SZ) - B.t * 1.4; k *= ph - Math.floor(ph) < 0.4 ? 1.15 : 0.8; }
+  if (B.behind && B.hullMask[i]) k *= 0.12;                // the crystal hides a beam on its far side
+  k = Math.round(k * 10) / 10;
+  if (k <= 0) return;
+  const col = B.rcol === "green" ? B.G : B.rcol === "red" ? B.Rd : lerpC(B.G, B.Rd, clamp(u * 1.4));
+  B.Lb[i] = addL(B.Lb[i], col, k);
 }
 function fillPoly(W, H, pts, fn) { for (let i = 1; i < pts.length - 1; i++) fillTri(W, H, pts[0], pts[i], pts[i + 1], fn); }
 function line(x0, y0, x1, y1, fn) {
   x0 = Math.floor(x0); y0 = Math.floor(y0); x1 = Math.floor(x1); y1 = Math.floor(y1);
+  DIRECT.mark(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1));
   const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
   let err = dx + dy, i = 0;
   for (;;) {
-    fn(x0, y0, i++);
+    if (y0 >= CLIP.lo && y0 <= CLIP.hi) fn(x0, y0, i);
+    i++;
     if (x0 === x1 && y0 === y1) break;
     const e2 = 2 * err;
     if (e2 >= dy) { err += dy; x0 += sx; }
@@ -234,17 +258,40 @@ function insideOf(hull) {
  * st: { mesh, cx, floorY, turn (s per turn), pitch, glass (0..1), flameSee (0..1), stage (0..3), stageT (time the
  *       newest stage appeared), hitT (time of the last hit), hitSide (-1 | 1), backEdges, flameK (1 = normal) }
  */
-export function makeCrystal(W, H) {
+export function makeCrystal(W, H, band = null) {
+  // band [y0, y1) (crystal death 60 fps pass, 2026-11-17): paint only those rows of the frame (the buffers stay the
+  // whole frame's size, so every index is the same). Each pixel is its own (nothing reads a pixel another row wrote),
+  // so the band's rows come out exactly as the whole frame's: several painters on several Workers share a frame.
+  const ROW_LO = band ? Math.max(0, band[0] | 0) : -Infinity, ROW_HI = band ? Math.min(H, band[1] | 0) - 1 : Infinity;
   const frame = createFrame(W, H), fire = createFrame(W, H);
   const flameMask = new Uint8Array(W * H);
+  // Crystal death 60 fps pass (2026-11-17), pixel-identical: the frame (1120 x 1120 for the death) was cleared whole,
+  // and premultiplied whole by the painter, every frame: 40 % of a death frame, over pixels nothing drew on (the drawn
+  // part is 5-21 % of it). Now each buffer is cleared only where the last frame could have written it: the frame's
+  // painter keeps its box (BoxPainter), the rasteriser below marks every box it writes straight (DIRECT: a triangle's
+  // clipped bounds, a line's ends, a loop's range), so every non-zero pixel lies in their union, box(). A draw that
+  // throws leaves the boxes "full": the next one clears everything.
+  const bp = new BoxPainter(frame).rows(ROW_LO, ROW_HI), fpB = new BoxPainter(fire).rows(ROW_LO, ROW_HI);
+  let drawnBox = "full", fireC = "full", fireL = "full", maskBox = "full", maskNext = null, hullBox = "full";
   // Nidhogg's soul: a burning orb with its fire merged into one body (soul-ball-fire.js)
   const soulOpts = { r: 19, seed: 4, rage: 1 }, soul = makeSoulBallFire(soulOpts);
   const jetCache = { key: null, list: [] };
   const hullMask = new Uint8Array(W * H), bins = 720, prof = new Float32Array(bins), plen = new Float32Array(bins), pid = new Int16Array(bins);
 
   function draw(t, st) {
-    clearFrame(frame); clearFrame(fire); flameMask.fill(0);
-    const C = frame.color, Lb = frame.light, p = painterFor(frame);
+    clearBox(frame.color, W, drawnBox); clearBox(frame.light, W, drawnBox); drawnBox = "full";
+    clearBox(fire.color, W, fireC); clearBox(fire.light, W, fireL); fireC = fireL = "full";
+    clearBox(flameMask, W, maskBox); maskBox = "full"; maskNext = null;
+    DIRECT.reset(); bp.reset(); bp.unbox(); fpB.reset(); fpB.unbox();
+    CLIP.lo = ROW_LO; CLIP.hi = ROW_HI;
+    let out;
+    try { out = paint(t, st); } finally { CLIP.lo = -Infinity; CLIP.hi = Infinity; }
+    drawnBox = rowsOf(unionBox(unionBox(DIRECT.box(W, H), bp.boxC()), bp.boxL()), W, H, ROW_LO, ROW_HI);
+    fireC = fpB.boxC(); fireL = fpB.boxL(); maskBox = maskNext;
+    return out;
+  }
+  function paint(t, st) {
+    const C = frame.color, Lb = frame.light, p = bp;
     const M = st.mesh, K = (i) => RED[clamp(i, 0, 7)];
     const since = (t0) => (t0 == null ? 99 : t - t0);
     const hitA = since(st.hitT);
@@ -336,12 +383,16 @@ export function makeCrystal(W, H) {
     const fy = st.floorY;
     const SRX = Math.round(M.r * 0.8), SRY = Math.max(5, Math.round(M.r * 0.12));
     const floorOn = st.floorClip !== false;   // in the dark void there is no floor: no shadow, no light pool on it
+    if (floorOn) {
+      const sx0 = Math.round(st.cx) - SRX, sx1 = Math.round(st.cx) + SRX, wraps = sx0 < 0 || sx1 > W - 1;
+      DIRECT.mark(wraps ? 0 : sx0, fy - SRY - 1, wraps ? W - 1 : sx1, fy + SRY + 1);
+    }
     if (floorOn) for (let y = -SRY; y <= SRY; y++) for (let x = -SRX; x <= SRX; x++) {
       const d = (x / SRX) ** 2 + (y / (SRY + 0.5)) ** 2;
       if (d > 1) continue;
       const a = d < 0.45 ? 0.42 : 0.24;
       const i = (fy + y) * W + (Math.round(st.cx) + x);
-      if (i >= 0 && i < C.length) C[i] = pack(8, 2, 6, Math.round(a * 255));
+      if (i >= 0 && i < C.length && (band == null || ((i / W) | 0) >= ROW_LO && ((i / W) | 0) <= ROW_HI)) C[i] = pack(8, 2, 6, Math.round(a * 255));
     }
     const stage = D == null ? (st.stage ?? 0) : D >= DEATH.crack ? 4 : Math.max(3, st.stage ?? 0);
     const stageT = D == null ? st.stageT : D >= DEATH.crack ? st.deathT + DEATH.crack : (st.stage ?? 0) >= 3 ? st.stageT : -1e9;
@@ -393,8 +444,9 @@ export function makeCrystal(W, H) {
     if (tl && jets) {
       let bx0 = W, by0 = H, bx1 = 0, by1 = 0;
       for (const [x, y] of hull) { bx0 = Math.min(bx0, x); by0 = Math.min(by0, y); bx1 = Math.max(bx1, x); by1 = Math.max(by1, y); }
-      bx0 = Math.max(0, Math.floor(bx0)); by0 = Math.max(0, Math.floor(by0)); bx1 = Math.min(W - 1, Math.ceil(bx1)); by1 = Math.min(H - 1, Math.ceil(by1));
+      bx0 = Math.max(0, Math.floor(bx0)); by0 = Math.max(0, ROW_LO, Math.floor(by0)); bx1 = Math.min(W - 1, Math.ceil(bx1)); by1 = Math.min(H - 1, ROW_HI, Math.ceil(by1));
       const bw = bx1 - bx0 + 1, before = new Uint32Array(bw * Math.max(0, by1 - by0 + 1));
+      DIRECT.mark(bx0, by0, bx1, by1);
       for (let y = by0; y <= by1; y++) for (let x = bx0; x <= bx1; x++) before[(y - by0) * bw + x - bx0] = Lb[y * W + x];
       jets.forEach((j, i) => drawJet(p, D, i, j, view, cx, cy, mcz, M.r / 74, FH, "back"));
       for (let y = by0; y <= by1; y++) for (let x = bx0; x <= bx1; x++) {
@@ -427,14 +479,16 @@ export function makeCrystal(W, H) {
 
     // 3. the soul fire, sealed inside: the merged ball fire, clipped to the inside of the hull. A hit or a new crack
     //    stage makes it rage for a moment.
-    const fp = painterFor(fire);
+    const fp = fpB;
     fp.place(fX, fY);
     let deathRage = 1;
     if (tl) { deathRage += 0.9 * tl.crystalWhite; for (const j of DEATH.jets) { const f = D - j; if (f >= 0 && f < 0.8) deathRage += 0.7 * (1 - f / 0.8); } for (const j of DEATH.pours) { const f = D - j; if (f >= 0 && f < 0.5) deathRage += 0.5 * (1 - f / 0.5); } if (D >= DEATH.crack) deathRage += 0.35; deathRage += 0.9 * (tl.surge ?? 0); }
     soulOpts.rage = (st.rage ?? 1) * (1 + 0.1 * Math.min(3, stage)) * (1 + 0.45 * Math.max(0, 1 - hitA / 0.7)) * deathRage;
-    soul.draw(fp, t, Math.min(1.6, flameK) * (0.45 + 0.55 * rv));
     const FC = fire.color, FL = fire.light;
-    const FX0 = Math.max(0, Math.floor(fX - 90)), FX1 = Math.min(W - 1, Math.ceil(fX + 90)), FY0 = Math.max(0, Math.floor(fY - 170)), FY1 = Math.min(H - 1, Math.ceil(fY + 60));
+    const FX0 = Math.max(0, Math.floor(fX - 90)), FX1 = Math.min(W - 1, Math.ceil(fX + 90)), FY0 = Math.max(0, ROW_LO, Math.floor(fY - 170)), FY1 = Math.min(H - 1, ROW_HI, Math.ceil(fY + 60));
+    // (the fire is only read in that box: a band off its rows need not burn it; the soul fire keeps no state)
+    if (FY1 >= FY0) soul.draw(fp, t, Math.min(1.6, flameK) * (0.45 + 0.55 * rv));
+    if (FX1 >= FX0 && FY1 >= FY0) { DIRECT.mark(FX0, FY0, FX1, FY1); maskNext = [FX0, FY0, FX1, FY1]; }
     for (let y = FY0; y <= FY1; y++) for (let x = FX0; x <= FX1; x++) {
       const i = y * W + x, c = FC[i];
       if (FL[i]) Lb[i] = addL(Lb[i], FL[i], 0.85 * (0.35 + 0.65 * rv) * (opOn ? 1 - 0.95 * opAt(x, y) : 1));
@@ -562,8 +616,13 @@ export function makeCrystal(W, H) {
     //    brightens, since we look down it), and on the far side the crystal itself hides it.
     const rays = st.rays ?? 1, glowOn = st.glow !== false, fl = 0.85 + 0.15 * Math.sin(t * 7.3) * Math.sin(t * 2.9 + 1);
     if (rays > 0 || glowOn) {
-      hullMask.fill(0);
+      // (cleared where the last hull was: everything it set lies in the hull's bounds)
+      clearBox(hullMask, W, hullBox); hullBox = "full";
       fillPoly(W, H, hull, (x, y) => (hullMask[y * W + x] = 1));
+      let hx0 = Infinity, hy0 = Infinity, hx1 = -Infinity, hy1 = -Infinity;
+      for (const [x, y] of hull) { if (x < hx0) hx0 = x; if (y < hy0) hy0 = y; if (x > hx1) hx1 = x; if (y > hy1) hy1 = y; }
+      const b = [Math.max(0, Math.floor(hx0)), Math.max(0, Math.floor(hy0)), Math.min(W - 1, Math.ceil(hx1)), Math.min(H - 1, Math.ceil(hy1))];
+      hullBox = b[2] < b[0] || b[3] < b[1] ? null : b;
     }
     if (rays > 0 && stage > 0) {
       const str = (rays > 1 ? 1.25 : 0.8) * Math.min(1.4, 0.85 + 0.15 * (st.rage ?? 1)), rcol = st.rayColor ?? "green";
@@ -588,22 +647,8 @@ export function makeCrystal(W, H) {
           if (len >= 2) {
             const ax = (ex - sx) / len, ay = (ey - sy) / len, nx = -ay, ny = ax;
             const quad = [[sx + nx * w0, sy + ny * w0], [ex + nx * w1, ey + ny * w1], [ex - nx * w1, ey - ny * w1], [sx - nx * w0, sy - ny * w0]];
-            fillPoly(W, H, quad, (x, y) => {
-              if (st.floorClip !== false && y > st.floorY + 3) return; // a beam aimed down stops at the floor (none in the dark void)
-              const qx = x + 0.5 - sx, qy = y + 0.5 - sy, u = (qx * ax + qy * ay) / len;
-              if (u < 0 || u > 1) return;
-              const v = Math.abs(qx * nx + qy * ny) / (w0 + (w1 - w0) * u);
-              if (v > 1) return;
-              const i = y * W + x;
-              let k = I * Math.pow(1 - u, 1.1) * (v < 0.3 ? 1 : v < 0.62 ? 0.62 : 0.3);
-              // optional motion that keeps the beam itself still: light streaming OUT along it in soft pulses
-              if (stream) { const ph = (u * len) / (16 * SZ) - t * 1.4; k *= ph - Math.floor(ph) < 0.4 ? 1.15 : 0.8; }
-              if (behind && hullMask[i]) k *= 0.12;                // the crystal hides a beam on its far side
-              k = Math.round(k * 10) / 10;
-              if (k <= 0) return;
-              const col = rcol === "green" ? G : rcol === "red" ? Rd : lerpC(G, Rd, clamp(u * 1.4));
-              Lb[i] = addL(Lb[i], col, k);
-            });
+            Object.assign(BEAM, { W, Lb, hullMask, clip: st.floorClip !== false, floorY: st.floorY, sx, sy, ax, ay, len, nx, ny, w0, w1, I, stream, SZ, t, behind, rcol, G, Rd });
+            fillPoly(W, H, quad, beamPx);
           }
           // the crack's mouth flares where the beam leaves it (only seen from the front)
           if (!behind) p.glow(sx, sy, (bm.main ? 9 : 5) * SZ, burst > 1.05 ? WHITE : G, 0.55 * I * gr0);
@@ -616,7 +661,8 @@ export function makeCrystal(W, H) {
       for (const [x, y] of hull) { bx0 = Math.min(bx0, x); by0 = Math.min(by0, y); bx1 = Math.max(bx1, x); by1 = Math.max(by1, y); }
       const PAD = Math.round(M.r * 0.42), BANDS = [[0.14, 0.46], [0.32, 0.28], [0.58, 0.15], [1, 0.07]];
       const breathe = 0.88 + 0.12 * fl;
-      for (let y = Math.max(0, Math.floor(by0 - PAD)); y <= Math.min(H - 1, Math.ceil(by1 + PAD)); y++)
+      DIRECT.mark(Math.floor(bx0 - PAD), Math.floor(by0 - PAD), Math.ceil(bx1 + PAD), Math.ceil(by1 + PAD));
+      for (let y = Math.max(0, ROW_LO, Math.floor(by0 - PAD)); y <= Math.min(H - 1, ROW_HI, Math.ceil(by1 + PAD)); y++)
         for (let x = Math.max(0, Math.floor(bx0 - PAD)); x <= Math.min(W - 1, Math.ceil(bx1 + PAD)); x++) {
           const i = y * W + x;
           if (hullMask[i]) continue;
@@ -660,7 +706,7 @@ export function makeCrystal(W, H) {
         const face = step < 0 ? WHITE : K(step);
         fillPoly(W, H, pts.map(([u, v]) => [u + 1, v + 1]), (X, Y) => { if (hashA(X, Y) < fade) C[Y * W + X] = K(0); });
         fillPoly(W, H, pts, (X, Y) => { if (hashA(X, Y) < fade) C[Y * W + X] = face; });
-        if (big && step >= 4) { const [hx, hy] = pts.reduce((m, q) => (q[1] < m[1] ? q : m)); const X = Math.floor(hx), Y = Math.floor(hy); if (X >= 0 && Y >= 0 && X < W && Y < H) C[Y * W + X] = K(7); }
+        if (big && step >= 4) { const [hx, hy] = pts.reduce((m, q) => (q[1] < m[1] ? q : m)); const X = Math.floor(hx), Y = Math.floor(hy); if (X >= 0 && Y >= ROW_LO && X < W && Y < H && Y <= ROW_HI) { C[Y * W + X] = K(7); DIRECT.px(X, Y); } }
         if (hitA < 0.1) p.glow(x, y, 5, RED[6], 0.35);
       }
       for (let k = 0; k < 48; k++) {
@@ -669,10 +715,10 @@ export function makeCrystal(W, H) {
         const x = ix + vx * hitA, y = iy + vy * hitA + 140 * DS * hitA * hitA;
         if (y > fy) continue;
         const X = Math.floor(x), Y = Math.floor(y);
-        if (X < 0 || Y < 0 || X >= W || Y >= H) continue;
+        if (X < 0 || Y < 0 || X >= W || Y >= H || Y < ROW_LO || Y > ROW_HI) continue;
         const tw2 = Math.sin(hitA * 40 + tw);
         if (hitA > life * 0.6 && tw2 < 0) continue;
-        C[Y * W + X] = tw2 > 0.6 ? WHITE : tw2 > -0.2 ? RED[7] : RED[6];
+        C[Y * W + X] = tw2 > 0.6 ? WHITE : tw2 > -0.2 ? RED[7] : RED[6]; DIRECT.px(X, Y);
       }
       const EMB = [FH[1], FH[2], FH[4], FH[6]];
       for (let k = 0; k < 12; k++) {
@@ -684,7 +730,8 @@ export function makeCrystal(W, H) {
     }
     return frame;
   }
-  return { frame, draw };
+  /** The box every non-zero pixel of the last frame lies in (both buffers), "full" if unknown, null if empty. */
+  return { frame, draw, box: () => drawnBox };
 }
 function addL(d, c, k) {
   const r = Math.min(255, (d & 255) + (c & 255) * k) | 0, g = Math.min(255, ((d >>> 8) & 255) + ((c >>> 8) & 255) * k) | 0, b = Math.min(255, ((d >>> 16) & 255) + ((c >>> 16) & 255) * k) | 0;

@@ -46,6 +46,8 @@ import { getLinkedSkillUuid, gatherConsumables, gatherCreatables, readActorIp } 
 import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { resolveTargetPlan } from "./target-survey.js";
+import { applyNoxMassiveGate } from "./massive-keyword.js";
+import { isNoxServant } from "./nox-servant.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
 import { buildUltimaMenuSpec } from "./domination.js";
@@ -522,6 +524,24 @@ export function registerPlayerComposeActionHandler(channel, isActiveDirector = (
 // pass; subsequent passes for two-weapon are handled by the GM FSM
 // re-entering TARGET, since multi-pass logic is intertwined with
 // COMPUTE/CLEANUP).
+// Nox Servant: never a target of a Massive action (mirror of target-survey's gate, which a
+// pre-composed pick bypasses: resolveActionTargets trusts it). `weapon` may be a snapshot
+// weapon ({actionKeywords}) or an item; fail CLOSED when an entry's actor cannot be read.
+function noxMassiveGate(list, { director, action = null, weapon = null } = {}) {
+  const w = weapon ? { action_keywords: weapon.actionKeywords ?? weapon.action_keywords ?? weapon.system?.props?.action_keywords ?? "" } : null;
+  return applyNoxMassiveGate(list, {
+    action, weapon: w, isNoxServant,
+    actorOf: (e) => {
+      const c = (director?.dCombat?.combatants ?? []).find((x) => x.id === e?.combatantId || (e?.tokenUuid && x.tokenDoc?.uuid === e.tokenUuid));
+      if (c?.actorDoc) return c.actorDoc;
+      let tok = null;
+      try { tok = e?.tokenUuid ? globalThis.fromUuidSync?.(e.tokenUuid) : null; } catch (_) { tok = null; }
+      if (!tok?.actor) throw new Error("nox gate: actor unresolved");
+      return tok.actor;
+    },
+  });
+}
+
 async function composeAttack({ director, snap, token, eligible, cancelSentinel, combatId, grant = null, focusValue = null }) {
   // NPC branch — actor has no equipped-weapon concept; the basic attack
   // is chosen from `snap.npcAttackItems` (items with skill_type "Attack").
@@ -641,9 +661,9 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   // Shadow Mask: a multi-target attack cannot select a `multi_offensive` bearer.
   // Hidden: a single-target attack cannot select a `single_target` bearer.
   const attackShape = { isAttack: true, skillTargetText: String(currentWeapon?.skillTarget ?? "") };
-  const filtered = applyAreaGate(applySingleTargetGate(applyMultiOffensiveGate(
+  const filtered = noxMassiveGate(applyAreaGate(applySingleTargetGate(applyMultiOffensiveGate(
     applyAttackRangeGate(enemies, currentWeapon, token?.actor ?? null),
-    attackShape), attackShape), attackShape);
+    attackShape), attackShape), attackShape), { director, weapon: currentWeapon });
   if (!filtered.length) {
     const isMelee = String(currentWeapon?.range ?? "").trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee
@@ -838,9 +858,9 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel, gran
   // a `can_target_flying_with` grant) — it carries no `canMeleeFlying` of its own.
   // Shadow Mask (multi_offensive) and Hidden (single_target) read the same shape.
   const npcAttackShape = { isAttack: true, skill: attackItem, skillTargetText: String(attackItem.system?.props?.skill_target ?? "") };
-  const filtered = applyAreaGate(applySingleTargetGate(
+  const filtered = noxMassiveGate(applyAreaGate(applySingleTargetGate(
     applyMultiOffensiveGate(applyAttackRangeGate(enemies, { range }, actor), npcAttackShape),
-    npcAttackShape), npcAttackShape);
+    npcAttackShape), npcAttackShape), { director, action: attackItem });
   if (!filtered.length) {
     const isMelee = range.trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee
@@ -1118,6 +1138,8 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   targetList = applySingleTargetGate(targetList, { skill: source, skillTargetText, intent });
   // Evasion: a multi-target HARMFUL skill/spell cannot select an `area` bearer.
   targetList = applyAreaGate(targetList, { skill: source, skillTargetText, intent });
+  // Nox Servant: never a Massive target (the survey's gate, mirrored for a composed pick).
+  targetList = noxMassiveGate(targetList, { director, action: source });
 
   if (lockedTargetTokenUuid && !targetList.some((e) => e.tokenUuid === lockedTargetTokenUuid)) {
     return refuseLocked(`can't target ${lockedName()}`);

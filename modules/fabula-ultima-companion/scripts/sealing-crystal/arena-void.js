@@ -12,6 +12,12 @@
 //   - a STATE, on every client alike (registerVoidSource(fn)): fn(scene) -> true
 //     while the void must be up; the Nidhogg rule reads its phase AE (F5-safe,
 //     replicated), so a reload in the Crystal Round comes back black.
+//   - LIT, locally (holdArenaLit(reason) -> release): the arena is lit on this
+//     client whatever the STATES say. Nidhogg's return takes it at its reveal (the
+//     roar), as the GM writes the cycle's next phase: that AE reaches a player a
+//     moment later, and the black plate must not stay up under the return's own
+//     veil (its smoke clears the dark from his mouth outward) meanwhile. Lit beats
+//     the states, never an explicit show hold (a show that holds the void means it).
 // The plate sits just above the backdrop, under every token (the death show's
 // dark plate, the same sort keys), and covers the whole visible window with room
 // for a screen shake. voidUp() tells the crystal host to stop clipping its light
@@ -22,6 +28,7 @@ import { warn } from "../battle-director/logger.js";
 
 const _holds = new Map();      // id -> reason
 const _sources = new Set();    // (scene) => boolean
+const _lit = new Map();        // id -> reason: lit on this client whatever the states say
 let _seq = 0, _plate = null, _ticker = null, _tickerOwner = null;
 
 /** Hold the void up on this client; returns the release (once). */
@@ -30,6 +37,13 @@ export function holdArenaVoid(reason = "hold") {
   _holds.set(id, String(reason));
   ensureTicker();
   return () => { _holds.delete(id); };
+}
+/** Keep the arena LIT on this client over every void source (never over a hold); returns the release (once). */
+export function holdArenaLit(reason = "lit") {
+  const id = ++_seq;
+  _lit.set(id, String(reason));
+  ensureTicker();
+  return () => { _lit.delete(id); };
 }
 /** A state that keeps the void up while fn(scene) is true. Returns the unregister. */
 export function registerVoidSource(fn) {
@@ -41,11 +55,12 @@ export function registerVoidSource(fn) {
 /** True while the void is up on this client. */
 export function voidUp() {
   if (_holds.size) return true;
+  if (_lit.size) return false;
   const scene = globalThis.canvas?.scene ?? null;
   for (const fn of _sources) { try { if (fn(scene)) return true; } catch { /* a source never breaks it */ } }
   return false;
 }
-export const arenaVoidStatus = () => ({ up: voidUp(), holds: [..._holds.values()], sources: _sources.size, plate: !!_plate?.visible });
+export const arenaVoidStatus = () => ({ up: voidUp(), holds: [..._holds.values()], lit: [..._lit.values()], sources: _sources.size, plate: !!_plate?.visible });
 
 function plate() {
   if (_plate && !_plate.destroyed && _plate.parent) return _plate;
@@ -86,6 +101,6 @@ export function initArenaVoid() {
   _hooked = true;
   Hooks.on("canvasReady", () => { _plate = null; ensureTicker(); });
   // a scene change ends every show's hold (the states read the new scene themselves)
-  Hooks.on("canvasTearDown", () => { _holds.clear(); try { _plate?.destroy(); } catch { /* gone */ } _plate = null; });
+  Hooks.on("canvasTearDown", () => { _holds.clear(); _lit.clear(); try { _plate?.destroy(); } catch { /* gone */ } _plate = null; });
   if (canvas?.ready) ensureTicker();
 }

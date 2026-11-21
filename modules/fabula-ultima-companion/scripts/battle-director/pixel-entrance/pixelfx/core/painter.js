@@ -15,6 +15,9 @@ const call = (v, ...args) => (typeof v === "function" ? v(...args) : v);
 export class Painter {
   constructor(frame) {
     this.frame = frame;
+    // the screen rows the glows below visit (all, unless a subclass paints only some rows: sealing-crystal box-frame.js
+    // BoxPainter, a crystal painted in bands); a row outside them is skipped whole (2026-11-17)
+    this.rowLo = -Infinity; this.rowHi = Infinity;
     this.reset();
   }
 
@@ -256,9 +259,13 @@ export class Painter {
     if (r < 1 || k <= 0.004) return;
     const cx = this.toX(x, y), cy = this.toY(x, y);
     const x0 = Math.floor(cx - r), x1 = Math.ceil(cx + r), y0 = Math.floor(cy - r), y1 = Math.ceil(cy + r);
-    for (let sy = y0; sy <= y1; sy++) {
-      const dy = (sy + 0.5 - cy) / r;
-      for (let sx = x0; sx <= x1; sx++) {
+    // (2026-11-17, the same pixels: past the row's chord + 1 px no pixel is inside, and a row with dy^2 >= 1 has
+    // none, so only the chord is tested, with the same test)
+    for (let sy = Math.max(y0, this.rowLo), yEnd = Math.min(y1, this.rowHi); sy <= yEnd; sy++) {
+      const dy = (sy + 0.5 - cy) / r, dy2 = dy * dy;
+      if (dy2 >= 1) continue;
+      const hw = r * Math.sqrt(1 - dy2) + 1, xa = Math.max(x0, Math.floor(cx - hw - 0.5)), xb = Math.min(x1, Math.ceil(cx + hw - 0.5));
+      for (let sx = xa; sx <= xb; sx++) {
         const dx = (sx + 0.5 - cx) / r, d = dx * dx + dy * dy;
         if (d >= 1) continue;
         const f = 1 - Math.sqrt(d);
@@ -273,20 +280,34 @@ export class Painter {
     const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy || 1e-9;
     const X0 = Math.floor(Math.min(ax, bx) - r), X1 = Math.ceil(Math.max(ax, bx) + r);
     const Y0 = Math.floor(Math.min(ay, by) - r), Y1 = Math.ceil(Math.max(ay, by) + r);
-    for (let sy = Y0; sy <= Y1; sy++)
-      for (let sx = X0; sx <= X1; sx++) {
+    // (2026-11-17, the same pixels) a row tests only the x span of the part of the segment within r + 1 of it,
+    // widened by r + 1: every point within r of the segment on that row lies in it
+    const R1 = r + 1;
+    for (let sy = Math.max(Y0, this.rowLo), yEnd = Math.min(Y1, this.rowHi); sy <= yEnd; sy++) {
+      const py0 = sy + 0.5;
+      let xa = X0, xb = X1;
+      if (Math.abs(dy) > 1e-9) {
+        let t0 = (py0 - R1 - ay) / dy, t1 = (py0 + R1 - ay) / dy;
+        if (t0 > t1) { const tt = t0; t0 = t1; t1 = tt; }
+        if (t1 < 0 || t0 > 1) continue;
+        t0 = Math.max(0, t0); t1 = Math.min(1, t1);
+        const xs0 = ax + dx * t0, xs1 = ax + dx * t1;
+        xa = Math.max(X0, Math.floor(Math.min(xs0, xs1) - R1)); xb = Math.min(X1, Math.ceil(Math.max(xs0, xs1) + R1));
+      } else if (Math.abs(ay - py0) > R1) continue;
+      for (let sx = xa; sx <= xb; sx++) {
         const px = sx + 0.5, py = sy + 0.5, u = clamp(((px - ax) * dx + (py - ay) * dy) / L2);
         const ex = ax + dx * u - px, ey = ay + dy * u - py, d = Math.sqrt(ex * ex + ey * ey) / r;
         if (d >= 1) continue;
         const f = 1 - d;
         this.add(sx, sy, c, f * f * k);
       }
+    }
   }
   /** Glow hugging a circle of radius R (a shockwave's light), falling off over width r. */
   glowRing(x, y, R, r, c, k = 0.5) {
     if (r < 1 || k <= 0.004) return;
     const cx = this.toX(x, y), cy = this.toY(x, y), E = R + r;
-    for (let sy = Math.floor(cy - E); sy <= Math.ceil(cy + E); sy++)
+    for (let sy = Math.max(Math.floor(cy - E), this.rowLo), yEnd = Math.min(Math.ceil(cy + E), this.rowHi); sy <= yEnd; sy++)
       for (let sx = Math.floor(cx - E); sx <= Math.ceil(cx + E); sx++) {
         const d = Math.abs(Math.hypot(sx + 0.5 - cx, sy + 0.5 - cy) - R) / r;
         if (d >= 1) continue;

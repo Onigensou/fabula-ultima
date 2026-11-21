@@ -15,6 +15,7 @@
 // the placeable each tick so it follows the turn step.
 
 import { warn } from "./logger.js";
+import { isOutOfPlay } from "./out-of-play.js";
 
 // "r,g,b" — the mockup's party gold / enemy red.
 const SIDE_RGB = { party: [255, 216, 102], enemy: [255, 70, 60] };
@@ -37,8 +38,19 @@ const rgbHex = ([r, g, b]) => (r << 16) | (g << 8) | b;
 // Eased 0..1..0 over 2×BREATH_MS (an alternate ease-in-out CSS animation).
 const breath = (ms) => 0.5 - 0.5 * Math.cos((ms / BREATH_MS) * Math.PI);
 
+// While a show holds the glow off (holdTurnGlowOff), every request clears it instead: the round bar
+// re-asks on each tracker snapshot, and mid-show writes (HP, out of play) would bring it straight back.
+let _offHolds = 0;
+export function holdTurnGlowOff() {
+  _offHolds++;
+  setTurnGlow(null);
+  let done = false;
+  return () => { if (!done) { done = true; _offHolds = Math.max(0, _offHolds - 1); } };
+}
+
 // Show the glow on one token (or clear it with null). Idempotent per token.
 export function setTurnGlow(target) {
+  if (_offHolds > 0) target = null;
   try {
     const tokenId = target?.tokenId ?? tokenIdOf(target?.tokenUuid);
     const side = target?.side === "enemy" ? "enemy" : "party";
@@ -188,7 +200,11 @@ function tick() {
       floor.position.set(mesh.x, mesh.y + (1 - ay) * Math.abs(mesh.height) - w * 0.04);
       floor.width = w * (1 + 0.08 * b);
       floor.height = w * 0.29 * (1 + 0.12 * b);
-      floor.alpha = FLOOR_ALPHA * (0.85 + 0.15 * (1 - b)) * k * s;
+      // No pool under a creature that is not on the field (out of play: Nidhogg's fall left his red pool
+      // glowing on the black void). Not mesh.alpha: hurt / entrance effects zero it while a copy is drawn.
+      const gone = !token.visible || isOutOfPlay(token.actor);
+      floor.alpha = gone ? 0 : FLOOR_ALPHA * (0.85 + 0.15 * (1 - b)) * k * s;
+      floor.visible = !gone;
       const elev = Number(token.document?.elevation) || 0;
       if (floor.elevation !== elev) { floor.elevation = elev; canvas.primary.sortDirty = true; }
     }

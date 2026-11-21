@@ -33,6 +33,36 @@ import { ActionReaderDebug as ARD } from "./actionReader-debug.js";
 export const ACTION_READER_BUILD_AND_PICK_TARGETS_VERSION = "1.0.0";
 export const ACTION_READER_BUILD_AND_PICK_TARGETS_STAGE = "BuildAndPickTargets";
 
+/* A target_eligibility naming one of these is an action written to reach a
+   battlefield object, so its pool may hold one (see the survey block below). */
+const OBJECT_OPT_IN = /\b(?:TARGET_COUNTDOWN|TARGET_IS_CONFLICT_OBJECT_\w+)\b/;
+
+/**
+ * Every target-focus mode this picker understands, as dropdown options
+ * ({ key, value }). The NPC sheet's `action_pattern_target_focus` select must
+ * offer each, or CSB re-stamps an authored row to its first option the first
+ * time the sheet is saved; csb-extensions/csb-pattern-condition-options.js widens
+ * that select to this list at render (no document is written).
+ */
+// Node-test seam (shared/target-block-drift.test.mjs): the pool builder, not part of the runtime API.
+export const _poolTestSeam = { getCandidatePool: (...a) => getCandidatePool(...a), normalizeSceneToken: (...a) => normalizeSceneToken(...a) };
+
+export function patternTargetFocusOptions() {
+  return [
+    { key: "auto", value: "Auto" },
+    { key: "by_affinity", value: "By Affinity" },
+    { key: "lowest_hp", value: "Lowest HP" },
+    { key: "highest_hp", value: "Highest HP" },
+    { key: "highest_max_hp", value: "Highest Max HP" },
+    { key: "squishy", value: "Squishy" },
+    { key: "burn_spread", value: "Burn Spread" },
+    { key: "burn_focus", value: "Burn Focus" },
+    { key: "status_focus", value: "Status Focus — aim at holders of Focus Status" },
+    { key: "status_avoid", value: "Status Avoid — aim at NON-holders of Focus Status" },
+    { key: "affinity_buff_focus", value: "Affinity Buff Focus" },
+  ];
+}
+
 function getModuleApiContainer(moduleId) {
   const module = game.modules.get(moduleId);
   if (!module) return null;
@@ -69,7 +99,7 @@ function getParticipantTokens(context = null) {
   return AR.participantTokens(context);
 }
 
-function normalizeSceneToken(tokenLike, performerTokenId = null, { allowObject = false } = {}) {
+function normalizeSceneToken(tokenLike, performerTokenId = null, { allowObject = false, performerActor = null, performerTokenDoc = null } = {}) {
   const token = tokenLike?.object ?? tokenLike ?? null;
   const tokenDocument = AR.getTokenDocument(token);
   const actor = AR.getTokenActor(token);
@@ -82,6 +112,10 @@ function normalizeSceneToken(tokenLike, performerTokenId = null, { allowObject =
   // would be dropped as infeasible with a plausible-looking reason.
   const isPerformer = performerTokenId && tokenDocument.id === performerTokenId;
   if (!isPerformer && !allowObject && AR.isUntargetableActor(actor)) return null;
+  // `cannot_be_targeted_by: "opponent"` (Nox Servant): dropped for a performer that is an
+  // opponent of the holder (natural side or Charm override). FAIL CLOSED: an unresolved
+  // performer reads as "unknown", and the mirror refuses a holder of the block for it.
+  if (!isPerformer && AR.isOpponentBlockedFor(actor, tokenDocument, performerActor ?? null, performerTokenDoc)) return null;
 
   const disposition = AR.getTokenDisposition(tokenDocument);
   const hp = AR.getResourcePair(actor, AR.keys.hpCurrent, AR.keys.hpMax);
@@ -113,10 +147,12 @@ function normalizeSceneToken(tokenLike, performerTokenId = null, { allowObject =
 function getCandidatePool(context, options = {}) {
   const explicitTokens = Array.isArray(options?.sceneTokens) ? options.sceneTokens : null;
   const rawTokens = explicitTokens ?? getParticipantTokens(context);
-  const performerTokenId = getPerformerTokenDocument(context)?.id ?? null;
+  const performerTokenDoc = getPerformerTokenDocument(context);
+  const performerTokenId = performerTokenDoc?.id ?? null;
+  const performerActor = getPerformerActor(context);
 
   const normalized = rawTokens
-    .map((t) => normalizeSceneToken(t, performerTokenId))
+    .map((t) => normalizeSceneToken(t, performerTokenId, { performerActor, performerTokenDoc }))
     .filter(Boolean);
 
   const seen = new Set();
@@ -567,17 +603,18 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
         const before = legalCandidates.length;
         legalCandidates = allCandidates.filter(c => reachable.has(c.tokenId));
         // A monster never picks a battlefield object, except with an action written
-        // to reach one (Resonance: target_eligibility "TARGET_COUNTDOWN > 0"). Without
-        // this the survey would say a Crystal is reachable and the pool would not
-        // hold it. The identifier is the opt-in, so a party brain's "All Enemies"
-        // still doesn't start hitting Crystals.
+        // to reach one (Resonance: target_eligibility "TARGET_COUNTDOWN > 0"; Soul
+        // Devour: "TARGET_IS_CONFLICT_OBJECT_SOUL_FRAGMENT == 1"). Without this the
+        // survey would say a Crystal is reachable and the pool would not hold it.
+        // The identifier is the opt-in, so a party brain's "All Enemies" still
+        // doesn't start hitting Crystals.
         const props = context?.chosenAction?.itemSnapshot?.props ?? context?.chosenAction?.item?.system?.props ?? {};
-        if (/\bTARGET_COUNTDOWN\b/.test(AR.toString(props.target_eligibility, ""))) {
+        if (OBJECT_OPT_IN.test(AR.toString(props.target_eligibility, ""))) {
           const have = new Set(legalCandidates.map(c => c.tokenId));
           for (const tokenLike of getParticipantTokens(context)) {
             const id = AR.getTokenDocument(tokenLike)?.id ?? null;
             if (!id || have.has(id) || !reachable.has(id)) continue;
-            const entry = normalizeSceneToken(tokenLike, null, { allowObject: true });
+            const entry = normalizeSceneToken(tokenLike, null, { allowObject: true, performerActor, performerTokenDoc: performerTokenDocument });
             if (entry) legalCandidates.push(decorateCandidate(entry, context));
           }
         }
@@ -625,6 +662,16 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
     if (statusAvoidName) {
       const free = legalCandidates.filter(c => AR.getEffectStackCount(c.actor, statusAvoidName) < 1);
       if (free.length) legalCandidates = free;
+    }
+
+    // `highest_max_hp` — narrow to the candidate(s) with the largest MAX HP (ties
+    // kept, so the weighted pick chooses among them). Not the same as `highest_hp`,
+    // which weights by HP PERCENT. Soul Devour: "target the Soul Fragment with the
+    // highest Max HP", since what it restores scales with it. Narrowing, like
+    // status_focus, so the biggest one is always the pick.
+    if (focusCtx.focus === "highest_max_hp" && legalCandidates.length > 1) {
+      const top = Math.max(...legalCandidates.map(c => AR.toNumber(c.hpMax, 0)));
+      legalCandidates = legalCandidates.filter(c => AR.toNumber(c.hpMax, 0) === top);
     }
 
     // A row that fired on `player_in_crisis` is ABOUT the player in Crisis, so

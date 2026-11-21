@@ -438,7 +438,7 @@ export function createTimeline(spec = {}, env = {}) {
     }
     for (const [k, s] of all) {
       const t = s.token, mesh = t.mesh;
-      const art = await imageOf(s.art) || mesh?.texture?.baseTexture?.resource?.source || null;
+      const art = await imageOf(s.art) || (globalThis.__ONI_CREATURE_RIG__?.paintedTexture?.(t) ?? mesh?.texture)?.baseTexture?.resource?.source || null;   // painted art, not a creature rig's live canvas
       const nativeDir = s.nativeDir ?? -1;
       const sign = Math.sign(mesh?.scale?.x || 1) || 1;
       ART[k] = art;

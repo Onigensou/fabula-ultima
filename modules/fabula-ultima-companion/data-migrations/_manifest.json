@@ -663,6 +663,10 @@
       "key": "2026-11-18-botc-minion-free-setup",
       "path": "data-migrations/2026-11-18-botc-minion-free-setup.js",
       "idempotent": true
+    },
+    {
+      "key": "2026-11-21-template-options-stays-down",
+      "path": "data-migrations/2026-11-21-template-options-stays-down.js"
     }
   ]
 }

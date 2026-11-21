@@ -42,10 +42,11 @@
 // ============================================================================
 
 import { log, warn } from "./logger.js";
-import { rigCamera, liveBattler, battlerDrawScale, projectNearFoot, floorDepth, reliefDepth, reliefPoint } from "./battle-stage-3d-rules.js";
+import { rigCamera, liveBattler, battlerDrawScale, projectNearFoot, floorDepth, reliefGrid } from "./battle-stage-3d-rules.js";
 import { shadowSpriteFor } from "../sprite-shadow/sprite-shadow-renderer.js";
+import { loadThree } from "../shared/three-loader.js";   // shared with the creature rig host
+export { loadThree };
 
-const THREE_SRC = "modules/fabula-ultima-companion/assets/vendor/three-r128.min.js";
 
 const BG_VERT = `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`;
 const BG_FRAG = `
@@ -59,27 +60,18 @@ void main(){
   float Z = max(0.01, -vW.z);
   vec2 p = vec2(cx + f * vW.x / Z, hz + f * (Hp - vW.y) / Z);
   vec2 uv = (p - sceneRect.xy) / sceneRect.zw;
+  // past the painting: its mirror image (a triangle-wave fold), seamless at every edge; far out it
+  // leans a little toward the painting's average so the repeat reads as distance, never as a flat plate
+  // (rules edgeFold / EDGE_FOLD: across the whole painting mirrors; up / down only the edge's band, 22 % top, 25 % bottom)
+  vec2 m = vec2(1.0 - abs(mod(uv.x, 2.0) - 1.0), uv.y);
+  if (uv.y < 0.0) m.y = 0.22 * (1.0 - abs(mod(uv.y / 0.22, 2.0) - 1.0));
+  else if (uv.y > 1.0) m.y = 1.0 - 0.25 * (1.0 - abs(mod((uv.y - 1.0) / 0.25, 2.0) - 1.0));
   vec2 cl = clamp(uv, vec2(0.0), vec2(1.0));
-  vec3 c = texture2D(map, vec2(cl.x, flipV > 0.5 ? 1.0 - cl.y : cl.y)).rgb;
-  float off = length((uv - cl) * sceneRect.zw) / 260.0;
-  c = mix(c, vW.y < 0.02 ? floorAvg : wallAvg, clamp(off, 0.0, 1.0));
+  vec3 c = texture2D(map, vec2(m.x, flipV > 0.5 ? 1.0 - m.y : m.y)).rgb;
+  float off = length((uv - cl) * sceneRect.zw) / max(sceneRect.z, 1.0);
+  c = mix(c, vW.y < 0.02 ? floorAvg : wallAvg, 0.35 * smoothstep(0.0, 1.5, off));
   gl_FragColor = vec4(c, 1.0);
 }`;
-
-let threeLoading = null;
-function loadThree() {
-  if (globalThis.THREE?.WebGLRenderer) return Promise.resolve(globalThis.THREE);
-  if (threeLoading) return threeLoading;
-  threeLoading = new Promise((resolve, reject) => {
-    const s = document.createElement("script");
-    s.src = foundry.utils.getRoute(THREE_SRC);
-    s.onload = () => (globalThis.THREE ? resolve(globalThis.THREE) : reject(new Error("three.js loaded without THREE")));
-    s.onerror = () => reject(new Error(`three.js failed to load (${THREE_SRC})`));
-    document.head.appendChild(s);
-  });
-  threeLoading.catch(() => { threeLoading = null; });
-  return threeLoading;
-}
 
 // The depth map as numbers (one grey channel, value = D / 2), for building a relief.
 export async function loadDepthField(path) {
@@ -125,30 +117,14 @@ function paintingAverages(src) {
   } catch { return null; }
 }
 
-// A grid over the painting (denser) and well past its edges, each vertex
-// pushed out along the projector's ray to its relief depth. Past the edges
-// there is no depth to read: the relief eases back to bare floor and horizon
-// within a few percent of the width, so an edge rock does not smear outward.
+// A grid over the painting (denser) and well past its edges (rules reliefGrid: RELIEF_EXTENT), each vertex
+// pushed out along the projector's ray to its relief depth. Past the edges the depth map is read MIRRORED, the
+// same fold the shader samples the painting with, so the scenery continues with its own shape and paint (was:
+// eased flat within 3 % of the width, past which a swung camera saw streaks, a flat wedge and the clear colour).
 function buildReliefGeometry(THREE, P, rect, depthAt) {
-  const fade = 0.03 * rect.w;
-  const outside = (x, y) => Math.max(rect.x - x, x - rect.x - rect.w, rect.y - y, y - rect.y - rect.h, 0);
-  const span = (a, b, n) => Array.from({ length: n + 1 }, (_, i) => a + ((b - a) * i) / n);
-  const xs = [...span(rect.x - rect.w * 0.8, rect.x, 16).slice(0, -1), ...span(rect.x, rect.x + rect.w, 220), ...span(rect.x + rect.w, rect.x + rect.w * 1.8, 16).slice(1)];
-  const ys = [...span(rect.y - rect.h * 0.3, rect.y, 8).slice(0, -1), ...span(rect.y, rect.y + rect.h, 150), ...span(rect.y + rect.h, rect.y + rect.h * 1.6, 14).slice(1)];
-  const nx = xs.length, ny = ys.length;
-  const pos = new Float32Array(nx * ny * 3);
-  let k = 0;
-  for (const y of ys) {
-    const v = (y - rect.y) / rect.h;
-    for (const x of xs) {
-      const keep = Math.max(0, 1 - outside(x, y) / fade);
-      const Z = reliefDepth(y, keep > 0 ? depthAt((x - rect.x) / rect.w, v) * keep : 0, P);
-      const p = reliefPoint({ x, y }, Z, P);
-      pos[k++] = p.X; pos[k++] = p.Y; pos[k++] = p.Z;
-    }
-  }
+  const { nx, ny, pos } = reliefGrid(P, rect, depthAt);
   const idx = new (nx * ny > 65535 ? Uint32Array : Uint16Array)((nx - 1) * (ny - 1) * 6);
-  k = 0;
+  let k = 0;
   for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
     const a = j * nx + i, b = a + 1, c = a + nx, d = c + 1;
     idx[k++] = a; idx[k++] = c; idx[k++] = b; idx[k++] = b; idx[k++] = c; idx[k++] = d;
@@ -298,12 +274,12 @@ export class Stage3dCamera {
     const front = 12;
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
     floor.rotation.x = -Math.PI / 2;
-    floor.scale.set(zw * 2.2, zw + front, 1);
+    floor.scale.set(zw * 6, zw + front, 1);   // wide enough for a 35-degree swing (was 2.2: its ends showed)
     floor.position.set(0, 0, -(zw - front) / 2);
     const top = P.Hp - ((d.sceneY - P.hz) * zw) / P.f;      // painting's top edge, on the wall
     const wallH = Math.max(top + 12, 20);
     const wall = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
-    wall.scale.set(zw * 2.2, wallH, 1);
+    wall.scale.set(zw * 6, wallH, 1);
     wall.position.set(0, wallH / 2, -zw);
     this.scene3.add(floor, wall);
   }

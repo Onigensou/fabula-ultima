@@ -302,6 +302,17 @@ function getPerformerTokenDoc(context) {
   return context?.performer?.tokenDocument ?? context?.actorData?.tokenDocument ?? null;
 }
 
+/* `cannot_be_targeted_by: "opponent"` (Nox Servant): is this holder off-limits to the
+   performer (natural side or Charm override)? A body the performer can never reach must
+   not sway its conditions either. Applies to the enemy-side and any-creature scans; the
+   self-excluded and ally scans never see it for a party performer but a Charmed one does. */
+function opponentBlockedFor(context, actor, tok) {
+  return AR.isOpponentBlockedFor(actor, AR.getTokenDocument(tok), getPerformerActorForBlock(context), getPerformerTokenDoc(context));
+}
+function getPerformerActorForBlock(context) {
+  return context?.performer?.actor ?? context?.actorData?.actor ?? null;
+}
+
 /* `target_count` — "how many creatures can THIS action actually reach", vs an
    inclusive v1–v2 range. Distinct from enemy_count, which answers "how many
    enemies exist": an action's own skill_target side/count and its declared
@@ -374,6 +385,7 @@ function evaluateEnemyLacksStatus(context, row) {
   for (const tok of tokens) {
     const actor = AR.getTokenActor(tok);
     if (!actor || AR.isUntargetableActor(actor)) continue;
+    if (opponentBlockedFor(context, actor, tok)) continue; // Nox Servant: opponent-only block
     const rel = AR.relationToPerformer(AR.getTokenDisposition(AR.getTokenDocument(tok)), performerDisposition);
     if (rel !== "enemy") continue;
     if (!AR.actorHasEffectByName(actor, statusName)) { free = AR.getActorName(actor); break; }
@@ -409,6 +421,7 @@ function evaluateEnemyHasAffinityBuff(context, row) {
   for (const tok of AR.participantTokens(context)) {
     const actor = AR.getTokenActor(tok);
     if (!actor) continue;
+    if (opponentBlockedFor(context, actor, tok)) continue; // Nox Servant: opponent-only block
     if (AR.relationToPerformer(AR.getTokenDisposition(AR.getTokenDocument(tok)), performerDisposition) !== "enemy") continue;
     if (AR.actorHasAffinityBuff(actor, elements)) { holder = AR.getActorName(actor); break; }
   }
@@ -443,6 +456,7 @@ function evaluateEnemyHasStatus(context, row) {
   for (const tok of tokens) {
     const actor = AR.getTokenActor(tok);
     if (!actor) continue;
+    if (opponentBlockedFor(context, actor, tok)) continue; // Nox Servant: opponent-only block
     const rel = AR.relationToPerformer(AR.getTokenDisposition(AR.getTokenDocument(tok)), performerDisposition);
     if (rel !== "enemy") continue;
     if (AR.actorHasEffectByName(actor, statusName)) { holder = AR.getActorName(actor); break; }
@@ -480,6 +494,7 @@ function evaluateAllyHasStatus(context, row) {
   for (const tok of tokens) {
     const actor = AR.getTokenActor(tok);
     if (!actor || AR.isUntargetableActor(actor)) continue;
+    if (opponentBlockedFor(context, actor, tok)) continue; // Nox Servant: opponent-only block
     const td = AR.getTokenDocument(tok);
     if (performerId && td?.id === performerId) continue;   // self is not an ally
     if (AR.relationToPerformer(AR.getTokenDisposition(td), performerDisposition) !== "ally") continue;
@@ -518,6 +533,7 @@ function evaluateCrisisCount(context, row, { conditionKey, label, noun, playersO
   for (const tok of tokens) {
     const actor = AR.getTokenActor(tok);
     if (!actor || AR.isUntargetableActor(actor)) continue;
+    if (opponentBlockedFor(context, actor, tok)) continue; // Nox Servant: opponent-only block
     const td = AR.getTokenDocument(tok);
     if (playersOnly && !AR.isPlayerAlly(actor, td)) continue;
     if (performerId && td?.id === performerId) continue;
@@ -571,6 +587,7 @@ function evaluateCreatureHasStatus(context, row) {
     if (performerId && tokenDoc?.id === performerId) continue; // exclude self
     const actor = AR.getTokenActor(tok);
     if (!actor) continue;
+    if (opponentBlockedFor(context, actor, tok)) continue; // Nox Servant: opponent-only block
     if (AR.actorHasEffectByName(actor, statusName)) { holder = AR.getActorName(actor); break; }
   }
 
@@ -642,6 +659,48 @@ function evaluateActivationSlot(context, row) {
       ? `Activation ${activationIndex} is within ${range.min}–${range.max}.`
       : `Activation ${activationIndex} is outside ${range.min}–${range.max}.`,
     details: { activationIndex, min: range.min, max: range.max }
+  };
+}
+
+/*
+ * A skill formula in the row's String column, true when it evaluates non-zero.
+ * Evaluated against the performer by the Battle Director's own resolver (the
+ * whole skill-formula vocabulary), asked through the battle provider because
+ * ActionReader imports nothing from the director. One pattern fact is injected
+ * as a variable, so a row can AND it with board state:
+ *   ACTIVATION_NO — the performer's activation slot this round (1 = first),
+ *                   0 outside a Battle Director turn (as `activation`).
+ * The round is NOT injected: the provider evaluates with the director's own
+ * dCombat round, so the resolver's built-in ROUND is the real one. (ActionReader's
+ * context.combat.round is core combat, which a Battle Director fight leaves at 0.)
+ * Fails CLOSED like `activation`: no formula, no provider, or a provider that
+ * throws is "not this row", and an `always` fallback row acts instead. A formula
+ * the evaluator cannot parse folds to 0 (closed) too. Unknown identifiers fold
+ * to 0, which a `== 0` test reads as true: run the `formulas` audit, which
+ * parses these rows.
+ */
+function evaluateFormulaCondition(context, row) {
+  const label = "Formula";
+  const formula = AR.toString(row?.stringRaw, "").trim();
+  const activationIndex = AR.toInteger(context?.actorData?.overrides?.activationIndex, 0);
+  const vars = { ACTIVATION_NO: activationIndex };
+  const fail = (reason) => ({ passed: false, conditionKey: "formula", conditionLabel: label, reason, details: { formula, vars } });
+  if (!formula) return fail("No formula in the String column.");
+  const evaluate = AR.battleProvider()?.evaluatePatternFormula;
+  if (typeof evaluate !== "function") return fail("No battle formula evaluator available.");
+  let value;
+  try {
+    value = Number(evaluate(formula, { performerActor: getActor(context), vars }));
+  } catch (e) {
+    return fail(`Formula threw: ${e?.message ?? e}`);
+  }
+  const passed = Number.isFinite(value) && value !== 0;
+  return {
+    passed,
+    conditionKey: "formula",
+    conditionLabel: label,
+    reason: `${formula} = ${value} (${passed ? "pass" : "fail"}).`,
+    details: { formula, value, vars }
   };
 }
 
@@ -782,6 +841,9 @@ function evaluateOneCondition(context, row, options = {}) {
 
     case "activation":
       return evaluateActivationSlot(context, row);
+
+    case "formula":
+      return evaluateFormulaCondition(context, row);
 
     default:
       return {

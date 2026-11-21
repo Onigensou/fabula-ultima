@@ -319,6 +319,11 @@ export async function conflictEventReactor(director, cfg, extra) {
  * that action, which is a legal state: a Fulgimite's Resonance on a scene with no
  * Crystal event has nothing to do.
  */
+/** True when the active event offers `action` (false: no event in play / no such action). */
+export function conflictEventOffersAction(director, action) {
+  return typeof activeConflictEvent(director)?.event?.actions?.[action] === "function";
+}
+
 export async function runConflictEventAction(director, action, request) {
   if (!game.user?.isGM) return false;
   const active = activeConflictEvent(director);
@@ -326,8 +331,9 @@ export async function runConflictEventAction(director, action, request) {
   if (typeof handler !== "function") return false;
   try {
     const ctx = await buildEventCtx(director, active.id);
-    await handler(ctx, request);
-    return true;
+    // A handler that returns exactly `false` reports it did not do its job (Nox Servant).
+    const r = await handler(ctx, request);
+    return r !== false;
   } catch (e) {
     warn(`"${active.id}" action "${action}" threw — the conflict continues without it`, e);
     return false;

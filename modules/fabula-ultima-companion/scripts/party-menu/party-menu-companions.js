@@ -205,6 +205,8 @@ function conditionText(row, name) {
       if (lo === hi) return `on ${what} ${ordinal(lo)} action of each round`;
       return `on ${what} ${ordinal(Math.max(1, lo))} to ${ordinal(hi)} actions of each round`;
     }
+    case "formula":
+      return when(esc(str(row.action_pattern_string)) || "its formula holds");
     default:
       return `when "${esc(str(row.action_pattern_condition))}" is between ${lo} and ${hi}`;
   }
@@ -220,6 +222,7 @@ function focusTag(row) {
     case "by_affinity": return "Favors targets weak to it";
     case "lowest_hp": return "Favors low HP";
     case "highest_hp": return "Favors high HP";
+    case "highest_max_hp": return "Highest Max HP";
     case "squishy": return "Favors low defenses";
     case "status_focus": return named ? `Targets with ${k(named)}` : "";
     case "status_avoid": return named ? `Targets without ${k(named)}` : "";

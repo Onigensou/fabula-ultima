@@ -464,6 +464,89 @@ export function reliefDepth(y, D, P) {
   return w > 0 ? z + (Math.min(zf, P.farZ) - z) * w : z;
 }
 
+/**
+ * A coordinate past the painting's edge folded back into it, mirror-wise (a triangle wave over 0..1): 1.2 -> 0.8,
+ * -0.3 -> 0.3, 2.4 -> 0.4. What the backdrop draws BEYOND the painting (2026-11-19): the painting continues as its
+ * own mirror image (texture and relief alike), so a camera swung far round (the battle opening's 35-degree reveal)
+ * sees painted surface with depth instead of the edge pixels smeared into streaks and a flat average colour.
+ * The fold is continuous at every edge (no seam). The shader (battle-stage-3d-camera.js BG_FRAG) does the same.
+ */
+export function mirrorUnit(u) {
+  const t = (((Number(u) || 0) % 2) + 2) % 2;
+  return t <= 1 ? t : 2 - t;
+}
+
+/**
+ * The fold the backdrop uses past each edge: across (x) the whole painting is mirrored; up and down only the edge's
+ * own BAND is (the top 22 % above the top, the bottom 25 % below the bottom), so above a painting's top the camera
+ * sees more of its sky / back wall, never its floor turned upside down in the sky (the first try, mirrorUnit both
+ * ways, put the Great Seal's floor rings over the cave). edgeFold(u, lo, hi): u in 0..1 unchanged, continuous at 0
+ * and 1. The shader (battle-stage-3d-camera.js BG_FRAG) mirrors this with the same numbers.
+ */
+export const EDGE_FOLD = Object.freeze({ x: Object.freeze([1, 1]), y: Object.freeze([0.22, 0.25]) });
+export function edgeFold(u, lo = 1, hi = 1) {
+  u = Number(u) || 0;
+  if (u < 0) return lo * mirrorUnit(u / lo);
+  if (u > 1) return 1 - hi * mirrorUnit((u - 1) / hi);
+  return u;
+}
+
+/**
+ * How far the relief model reaches past the painting, in painting widths (left / right) and heights (top / bottom).
+ * Was 0.8 / 0.8 / 0.3 / 0.6 with the far part eased flat: a camera swung 35 degrees round the Great Seal's boss saw
+ * past it (the clear colour) and past the painting (a flat wedge). Far enough now that the camera's whole window
+ * lands on it for the placed shots and the orbit's swings (battle-stage-3d-rules.test.mjs: screen coverage).
+ */
+export const RELIEF_EXTENT = Object.freeze({ left: 2.5, right: 2.5, top: 1.2, bottom: 0.8 });
+
+/**
+ * The relief model's vertex grid (pure): canvas columns xs / rows ys over the painting `rect` and `ext` past it, each
+ * vertex pushed out along the projector's ray to its relief depth. Past the painting the depth map is read MIRRORED
+ * (mirrorUnit), matching the mirrored texture, so the scenery continues with its own shape. depthAt(u, v) -> disparity
+ * (null = bare floor + horizon). The fold is edgeFold / EDGE_FOLD. -> { xs, ys, nx, ny, pos: Float32Array (X, Y, Z per vertex, row-major) }.
+ */
+export function reliefGrid(P, rect, depthAt, ext = RELIEF_EXTENT) {
+  const span = (a, b, n) => Array.from({ length: n + 1 }, (_, i) => a + ((b - a) * i) / n);
+  const L = rect.w * ext.left, Rr = rect.w * ext.right, T = rect.h * ext.top, B = rect.h * ext.bottom;
+  const sideN = (d, per) => Math.max(4, Math.ceil(d / per));
+  const xs = [...span(rect.x - L, rect.x, sideN(L, rect.w / 18)).slice(0, -1), ...span(rect.x, rect.x + rect.w, 220), ...span(rect.x + rect.w, rect.x + rect.w + Rr, sideN(Rr, rect.w / 18)).slice(1)];
+  const ys = [...span(rect.y - T, rect.y, sideN(T, rect.h / 24)).slice(0, -1), ...span(rect.y, rect.y + rect.h, 150), ...span(rect.y + rect.h, rect.y + rect.h + B, sideN(B, rect.h / 20)).slice(1)];
+  const nx = xs.length, ny = ys.length;
+  const pos = new Float32Array(nx * ny * 3);
+  let k = 0;
+  for (const y of ys) {
+    const v = edgeFold((y - rect.y) / rect.h, ...EDGE_FOLD.y);
+    for (const x of xs) {
+      const D = depthAt ? depthAt(edgeFold((x - rect.x) / rect.w, ...EDGE_FOLD.x), v) : 0;
+      const p = reliefPoint({ x, y }, reliefDepth(y, D, P), P);
+      pos[k++] = p.X; pos[k++] = p.Y; pos[k++] = p.Z;
+    }
+  }
+  return { xs, ys, nx, ny, pos };
+}
+
+/**
+ * Where the live camera's ray through window point `pt` (canvas px of the drawn frame) meets the scenery's outer
+ * shell, as a point of the painted canvas: the floor (Y = 0) when the ray falls toward it in front of the far
+ * distance, else the far wall (Z = -P.farZ). Null when the ray points away from both. For coverage checks: the relief
+ * grid must reach every such point the camera can see.
+ */
+export function screenRayCanvas(rig, pt, P) {
+  const sx = (pt.x - rig.c0.x) / rig.f, sy = (rig.c0.y - pt.y) / rig.f;
+  const R = rig.R, d = [R[0][0] * sx + R[0][1] * sy - R[0][2], R[1][0] * sx + R[1][1] * sy - R[1][2], R[2][0] * sx + R[2][1] * sy - R[2][2]];
+  const C = rig.C;
+  const toCanvas = (X, Y, Z) => (Z < -1e-3 ? { x: P.cx + (P.f * X) / -Z, y: P.hz + (P.f * (P.Hp - Y)) / -Z } : null);
+  if (d[1] < -1e-6) {
+    const t = -C[1] / d[1], X = C[0] + d[0] * t, Z = C[2] + d[2] * t;
+    if (Z > -P.farZ && t > 0) return toCanvas(X, 0, Z);
+  }
+  if (d[2] < -1e-6) {
+    const t = (-P.farZ - C[2]) / d[2];
+    if (t > 0) return toCanvas(C[0] + d[0] * t, C[1] + d[1] * t, -P.farZ);
+  }
+  return null;
+}
+
 /** Canvas point pushed out to distance Z (m) along the projector's ray -> world {X, Y, Z}. */
 export function reliefPoint({ x, y }, Z, P) {
   return { X: ((x - P.cx) * Z) / P.f, Y: P.Hp - ((y - P.hz) * Z) / P.f, Z: -Z };

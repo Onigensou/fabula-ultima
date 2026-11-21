@@ -48,6 +48,7 @@ import { playDefeatFx, restoreDefeatFx } from "./defeat-fx.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { releaseGrappleOnDown } from "./grapple-hold.js";
 import { KNOCKOUT_TRIGGER, holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
+import { STAYS_DOWN_TRIGGER, hasStaysDownReactor, beginStaysDown, endStaysDown, markStaysDownSettled, clearStaysDownSettled, isStaysDownSettled } from "./stays-down.js";
 import { bossRuleOwnsFall } from "./boss-rules/boss-rules.js";
 import { isOutOfPlay } from "./out-of-play.js";
 
@@ -606,6 +607,30 @@ function lossBehindDefeat(actor, payload, batch) {
   return loss;
 }
 
+// The payload of a fall: creature_defeated and creature_stays_down share it (subject = the
+// fallen creature; reaction_source self/ally/enemy keys off sourceActorUuid).
+function buildDefeatPayload(trigger, actor, tokenDoc, payload, batch) {
+  const NS = "fabula-ultima-companion";
+  const tokenFlags = tokenDoc?.flags?.[NS] ?? {};
+  const loss = lossBehindDefeat(actor, payload, batch);
+  return {
+    trigger,
+    sourceActorUuid:  actor.uuid,
+    sourceTokenUuid:  tokenDoc?.uuid ?? null,
+    subjectActorUuid: actor.uuid,
+    subjectTokenUuid: tokenDoc?.uuid ?? null,
+    summonedBy:       tokenFlags.summonedBy ?? null,
+    isPhantasm:       !!(actor?.system?.props?.isPhantasm || tokenFlags.isPhantasm),
+    element:          payload?.element ?? null,
+    cause:            payload?.cause ?? null,
+    causeActorUuid:   payload?.causeActorUuid ?? null,
+    causeTokenUuid:   payload?.causeTokenUuid ?? null,
+    subjectSnapshot:  loss?.subjectSnapshot ?? null,
+    isDamage:         !!loss?.isDamage,
+    damageInstance:   loss?.damageInstance ?? null,
+  };
+}
+
 async function emitCreatureDefeated(director, actor, payload, firedKeys, batch) {
   if (!actor) return;
   const key = `cdef:${actor.uuid}`;
@@ -629,25 +654,7 @@ async function emitCreatureDefeated(director, actor, payload, firedKeys, batch) 
   // an attack), not just by destroy_summon — powers Phantasmal Echo / Zero
   // Trigger: Shattered Phantasm on the common "enemy killed my phantasm" case.
   // Read from token flags + actor props exactly as skill-effects.destroy_summon.
-  const NS = "fabula-ultima-companion";
-  const tokenFlags = tokenDoc?.flags?.[NS] ?? {};
-  const loss = lossBehindDefeat(actor, payload, batch);
-  const defeatedPayload = {
-    trigger:          "creature_defeated",
-    sourceActorUuid:  actor.uuid,
-    sourceTokenUuid:  tokenDoc?.uuid ?? null,
-    subjectActorUuid: actor.uuid,
-    subjectTokenUuid: tokenDoc?.uuid ?? null,
-    summonedBy:       tokenFlags.summonedBy ?? null,
-    isPhantasm:       !!(actor?.system?.props?.isPhantasm || tokenFlags.isPhantasm),
-    element:          payload?.element ?? null,
-    cause:            payload?.cause ?? null,
-    causeActorUuid:   payload?.causeActorUuid ?? null,
-    causeTokenUuid:   payload?.causeTokenUuid ?? null,
-    subjectSnapshot:  loss?.subjectSnapshot ?? null,
-    isDamage:         !!loss?.isDamage,
-    damageInstance:   loss?.damageInstance ?? null,
-  };
+  const defeatedPayload = buildDefeatPayload("creature_defeated", actor, tokenDoc, payload, batch);
 
   try {
     const { collectReactors, dispatchReactionMenu } = await import("./standalone-reactions.js");
@@ -795,6 +802,7 @@ async function evaluateDefeatStatus(actor) {
 export async function settleRevive(actor) {
   if (!game.user?.isGM || !actor || isActorDefeated(actor)) return null;
   clearReviveTried(actor);
+  clearStaysDownSettled(actor);   // back up: a later fall is a new one (stays-down.js)
   return evaluateDefeatStatus(actor);
 }
 
@@ -811,7 +819,27 @@ export async function defeatReactor(director, cfg, extra) {
   // — guard so a null doesn't coerce to 0 and false-trigger.
   const hp = num(get(actor, PATH_HP));
   const down = !!actor && hp != null && hp <= 0;
-  if (!down) clearReviveTried(actor);
+  // Stays down (stays-down.js): from here until the emit below has run, the side wipe
+  // holds for this creature if an onlooker carries a creature_stays_down row. Sync,
+  // before any await, so the hold never has a gap. Released in the finally, always.
+  if (down) beginStaysDown(actor);
+  else { clearReviveTried(actor); clearStaysDownSettled(actor); }
+  try {
+    await defeatReactorBody(director, actor, payload, extra, down);
+  } finally {
+    if (down) {
+      endStaysDown(actor);
+      // The watcher's check at the HP write was held (stays-down / Auto-Life): decide now.
+      // Idempotent (no-op once ended), so running it on every fall is cheap.
+      try {
+        const { checkSideWipe } = await import("./state-handlers.js");
+        checkSideWipe(director);
+      } catch (e) { warn("defeat-reactor: side-wipe re-check after the fall threw", e); }
+    }
+  }
+}
+
+async function defeatReactorBody(director, actor, payload, extra, down) {
   // A battlefield object is not a creature: destroying one is not a kill, so no
   // on-defeat or on-kill reaction reads it (a Soul Fragment must not farm them).
   if (down && !isBattlefieldObject(actor)) {
@@ -866,10 +894,64 @@ export async function defeatReactor(director, cfg, extra) {
       clearReviveTried(actor);
       await evaluateDefeatStatus(actor);
     }
+    // (The side-wipe re-check runs for every fall, in defeatReactor's finally.)
+  }
+
+  // Stays down: every immediate revive has had its say (an onlooker's creature_defeated
+  // heal, the knockout revive). Still at 0 → onlookers react to a fall that stuck. Once
+  // per fall: the settled mark survives into later settles until the creature is back up
+  // (a second HP event at 0 is not a second fall). Runs for a rule-owned fall too, and
+  // for a removed Soldier (its removal is deferred; the emit needs only the onlookers).
+  const dc = director?.dCombat ?? null;
+  if (down && isActorDefeated(actor) && !isStaysDownSettled(actor, dc)) {
     try {
-      const { checkSideWipe } = await import("./state-handlers.js");
-      checkSideWipe(director);
-    } catch (e) { warn("defeat-reactor: side-wipe re-check after a knockout revive threw", e); }
+      // Ordinary battles pay nothing: dispatch only while a stays-down reactor stands (the same
+      // structural test holdsStaysDown / the side-wipe hold use).
+      const cmb = combatantOfActor(dc, actor);
+      if (!isBattlefieldObject(actor) && !isGuest(actor) && cmb && hasStaysDownReactor(dc, cmb)) {
+        await emitStaysDown(director, actor, payload, extra?.firedKeys, extra?.batch);
+      }
+    } catch (e) { warn("defeat-reactor: stays-down emit threw", e); }
+    // A revive inside the emit (settleRevive) leaves it up: nothing to settle.
+    if (isActorDefeated(actor)) markStaysDownSettled(actor, dc);
+  }
+}
+
+function combatantOfActor(dc, actor) {
+  const all = Array.isArray(dc?.combatants) ? dc.combatants : Object.values(dc?.combatants ?? {});
+  const c = all.find((o) => o?.actorDoc?.uuid && o.actorDoc.uuid === actor?.uuid);
+  return c ? { ...c, actorDoc: c.actorDoc ?? actor } : null;
+}
+
+/**
+ * Fire `creature_stays_down` for `actor` (subject = the fallen creature): the ONLOOKERS'
+ * rows only, never its own. Exported for a caller that turns an existing fall into one
+ * that stuck later (B13: the boss-cycle return calls it for each player still at 0 HP).
+ * Deduped by `csd:<uuid>` in `firedKeys` (pass a fresh Set from a non-settle caller).
+ * collectReactors skips downed reactors, so a fallen Nidhogg never answers.
+ */
+export async function emitStaysDown(director, actor, payload, firedKeys, batch) {
+  if (!actor) return;
+  const key = `csd:${actor.uuid}`;
+  if (firedKeys?.has?.(key)) return;
+  firedKeys?.add?.(key);
+  const tokenDoc = await resolveDefeatedToken(actor, payload ?? {});
+  const staysPayload = buildDefeatPayload(STAYS_DOWN_TRIGGER, actor, tokenDoc, payload ?? {}, batch);
+  try {
+    const { collectReactors, dispatchReactionMenu } = await import("./standalone-reactions.js");
+    const observers = (await collectReactors(director)).filter((r) => r.actor?.uuid !== actor.uuid);
+    for (const phase of ["forced", "ask"]) {
+      for (const { actor: ra, token } of observers) {
+        if (!ra || !token) continue;
+        if (isActorDefeated(ra)) continue;   // the list is read once; a forced row may have downed it
+        await dispatchReactionMenu({
+          director, reactor: ra, token, phase, askPassFollows: true,
+          trigger: STAYS_DOWN_TRIGGER, payload: staysPayload,
+        });
+      }
+    }
+  } catch (e) {
+    warn(`defeat-reactor: emitStaysDown dispatch threw for ${actor?.name}`, e);
   }
 }
 // settleInstance calls a builtin reactor's `drain` at the end of each pass.
@@ -907,10 +989,34 @@ async function emitKnockedOut(director, actor, payload, firedKeys) {
   }
 }
 
+// Emit `creature_stays_down` for a PC at 0 HP that is not settled, not a Nox Servant, while a
+// stays-down reactor stands. Returns true when the emit ran (a revive inside it, or the KO it
+// settles, changes the side-wipe picture, so the caller re-checks the wipe).
+async function sweepStaysDown(director, c, actor) {
+  try {
+    const dc = director?.dCombat ?? null;
+    if (c?.side !== "party" || isBattlefieldObject(actor) || isGuest(actor)) return false;
+    const fl = actor.flags?.[NS] ?? {};
+    if (fl.isPersistentSummon || c.tokenDoc?.flags?.[NS]?.isSummon || c.tokenDoc?.flags?.[NS]?.isPhantasm) return false;
+    const hp = num(get(actor, PATH_HP));
+    if (hp == null || hp > 0) return false;
+    if (isStaysDownSettled(actor, dc)) return false;
+    let servant = false;
+    try { servant = (await import("./nox-servant.js")).isNoxServant(actor); } catch { /* module absent: not a servant */ }
+    if (servant) return false;
+    if (!hasStaysDownReactor(dc, { ...c, actorDoc: c.actorDoc ?? actor })) return false;
+    await emitStaysDown(director, actor, { subjectTokenUuid: c.tokenUuid ?? null }, new Set());
+    if (isActorDefeated(actor)) markStaysDownSettled(actor, dc);
+    else await evaluateDefeatStatus(actor);
+    return true;
+  } catch (e) { warn("defeat-reactor: stays-down sweep threw", e); return false; }
+}
+
 // One-time sweep over all combatants — removes creatures that begin combat
 // already at 0 HP (the event-driven reactor only fires on HP changes).
 export async function sweepDefeat(director) {
   const combatants = director?.dCombat?.combatants ?? director?.dCombat?.turns ?? [];
+  let applied = false;
   for (const c of combatants) {
     const actor = c.actor ?? (c.actorUuid ? await fromUuid(c.actorUuid).catch(() => null) : null);
     if (!actor) continue;
@@ -919,6 +1025,18 @@ export async function sweepDefeat(director) {
     // at every turn_start, so without this it put "KO" on Nidhogg's dragon in each Crystal Round.
     if (isOutOfPlay(actor) || bossRuleOwnsFall(actor, director)) continue;
     const removed = await evaluateDefeat(director, actor, { subjectTokenUuid: c.tokenUuid ?? null });
-    if (!removed) await evaluateDefeatStatus(actor);
+    if (!removed && (await evaluateDefeatStatus(actor)) === "applied") applied = true;
+    // A PC at 0 off the ledger (a GM sheet edit, a raw actor.update, or an F5 between the tear and
+    // the conversion) never went through defeatReactor, so its stays-down reaction never ran:
+    // emit it here while a stays-down reactor stands (Nidhogg's Nox Servant).
+    if (!removed && (await sweepStaysDown(director, c, actor))) applied = true;
+  }
+  // A creature set to 0 off the ledger was held only until its KO landed (stays-down.js),
+  // and nothing else re-checks the side wipe after that.
+  if (applied) {
+    try {
+      const { checkSideWipe } = await import("./state-handlers.js");
+      checkSideWipe(director);
+    } catch (e) { warn("defeat-reactor: side-wipe re-check after the sweep threw", e); }
   }
 }

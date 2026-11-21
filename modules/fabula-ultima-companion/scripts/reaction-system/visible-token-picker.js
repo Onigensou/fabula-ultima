@@ -65,6 +65,29 @@
     return false;
   }
 
+  // `cannot_be_targeted_by: "opponent"` (Nox Servant): blocked only for a performer that is an
+  // opponent of the holder. Inline mirror of isTargetBlockedFor (battle-director/snapshot.js);
+  // keep in step. No allegiance overrides here. Unknown reactor => blocked (fail closed).
+  function _isOpponentBlocked(a, reactorDoc, targetDoc) {
+    let has = false;
+    for (const ae of (a?.effects?.contents ?? a?.effects ?? [])) {
+      // Servant's PERMANENT Soul Fragment (mark AE flags): same party-only rule. Mirror of isPermanentSoulFragment.
+      const nsf = ae?.flags?.["fabula-ultima-companion"];
+      if (nsf?.soulFragmentMark === true && nsf?.soulPermanent === true) has = true;
+      if (ae?.disabled) continue;
+      for (const ch of (ae?.changes ?? [])) {
+        if (ch?.key !== "cannot_be_targeted_by") continue;
+        if (String(ch.value ?? "").trim().toLowerCase().split(/[\s,]+/).includes("opponent")) has = true;
+      }
+    }
+    if (!has) return false;
+    const rd = Number(reactorDoc?.disposition ?? reactorDoc?.document?.disposition);
+    const td = Number(targetDoc?.disposition);
+    if (!reactorDoc || !Number.isFinite(rd) || !Number.isFinite(td)) return true;
+    if (rd === 0 || td === 0) return false;
+    return rd !== td;
+  }
+
   function _collectCandidates({ reactorToken, excludeNames }) {
     const scene = canvas?.scene;
     if (!scene) return [];
@@ -82,6 +105,7 @@
 
       const actor = doc.actor ?? tok.actor ?? null;
       if (_isUntargetable(actor)) continue;
+      if (_isOpponentBlocked(actor, reactorToken, doc)) continue;
       const tokenName = String(doc.name ?? tok.name ?? "").trim();
       const actorName = String(actor?.name ?? "").trim();
       if (!tokenName && !actorName) continue;

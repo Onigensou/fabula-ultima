@@ -195,5 +195,72 @@ ok("calling D", makeCalling(S).D === CALLING.END);
   }
 }
 
+// ── Runtime hooks (fieldSil export, fire suppression) — stubs stand in for Foundry/PIXI
+{
+  globalThis.Hooks ??= { on() {}, once() {} };
+  globalThis.PIXI ??= new Proxy(function () {}, { get: () => function () {} });
+  const rt = await import("./soul-fx-runtime.js");
+  ok("fieldSil is exported", typeof rt.fieldSil === "function");
+  ok("suppressFragmentFire on a non-fragment is a no-op", typeof rt.suppressFragmentFire("nope") === "function" && (rt.suppressFragmentFire("nope")(), true));
+  ok("suppressFire(null) is a no-op", (rt.suppressFire(null)(), true));
+
+  const fire = { override: null, dirty: false };
+  const restore = rt.suppressFire(fire, { maxMs: 10000 });
+  ok("suppress: fire off, mesh kept", fire.override?.k === 0 && fire.override?.hideMesh === false && fire.dirty);
+  restore(); restore();
+  ok("restore: back to no override (idempotent)", fire.override === null);
+
+  const prev = { k: 0.5, flare: 1, bright: 0, hideMesh: true };
+  const f2 = { override: prev, dirty: false };
+  rt.suppressFire(f2, { maxMs: 10000 })();
+  ok("restore: puts the earlier override back", f2.override === prev);
+
+  const f3 = { override: null, dirty: false };
+  rt.suppressFire(f3, { maxMs: 10000 });
+  const newer = { k: 0, flare: 0, bright: 0, hideMesh: true };
+  f3.override = newer;
+  const f3r = rt.suppressFire(f3, { maxMs: 10000 }); // second one over a newer show
+  f3.override = newer; f3r();
+  ok("restore: leaves a newer show's override alone", f3.override === newer);
+
+  const f4 = { override: null, dirty: false };
+  rt.suppressFire(f4, { maxMs: 30 });
+  ok("timeout: still suppressed before it fires", f4.override?.k === 0);
+  await new Promise((r) => setTimeout(r, 80));
+  ok("timeout: restores by itself", f4.override === null);
+
+  // ── SD-f: hideMesh, nesting
+  const mkFire = () => { const f = { override: null, dirty: false, hiding: false, held: () => false,
+    applyMesh(h) { this.hiding = h; } };
+    f.frame = () => f.applyMesh(f.held() || !!f.override?.hideMesh); return f; };
+  const h1 = mkFire(); const r1 = rt.suppressFire(h1, { maxMs: 10000, hideMesh: true }); h1.frame();
+  ok("hideMesh: override.hideMesh true, applyMesh hides", h1.override.hideMesh === true && h1.hiding === true);
+  r1(); h1.frame();
+  ok("hideMesh restore: mesh shown, override gone", h1.hiding === false && h1.override === null);
+  const h2 = mkFire(); rt.suppressFire(h2, { maxMs: 30, hideMesh: true }); h2.frame();
+  await new Promise((r) => setTimeout(r, 80)); h2.frame();
+  ok("hideMesh timeout: mesh shown", h2.hiding === false && h2.override === null);
+  const h3 = mkFire(); const r3 = rt.suppressFire(h3, { maxMs: 10000 });
+  ok("default keeps mesh", h3.override.hideMesh === false); r3.hideMesh(true);
+  ok("handle setter hides", h3.override.hideMesh === true); r3.hideMesh(false); r3();
+  const n1 = mkFire(); const na = rt.suppressFire(n1, { maxMs: 10000 }), nb = rt.suppressFire(n1, { maxMs: 10000 }); na(); nb();
+  ok("nested a();b(): restored", n1.override === null);
+  const n2 = mkFire(); const nc = rt.suppressFire(n2, { maxMs: 10000 }), nd = rt.suppressFire(n2, { maxMs: 10000 }); nd(); 
+  ok("nested: still off after first-in-last-out half", n2.override?.k === 0); nc();
+  ok("nested b();a(): restored", n2.override === null);
+  const n3 = mkFire(); rt.suppressFire(n3, { maxMs: 30 }); rt.suppressFire(n3, { maxMs: 60 });
+  await new Promise((r) => setTimeout(r, 200));
+  ok("nested both timers: restored", n3.override === null);
+  const n4 = mkFire(); const ne = rt.suppressFire(n4, { maxMs: 10000 }), nf = rt.suppressFire(n4, { maxMs: 10000, hideMesh: true });
+  ok("nested: any holder hides", n4.override.hideMesh === true); nf();
+  ok("nested: hide drops with that holder", n4.override.hideMesh === false); ne();
+  const n5 = mkFire(); const pv = { k: 1, flare: 0, bright: 0, hideMesh: false }; n5.override = pv;
+  const ng = rt.suppressFire(n5, { maxMs: 10000 }), nh = rt.suppressFire(n5, { maxMs: 10000 }); ng(); nh();
+  ok("nested: original override back", n5.override === pv);
+  const n6 = mkFire(); const ni = rt.suppressFire(n6, { maxMs: 10000, hideMesh: true }), fo = { k: 0, flare: 0, bright: 0, hideMesh: true };
+  n6.override = fo; ni();
+  ok("foreign override left alone (hideMesh)", n6.override === fo);
+}
+
 console.log(`soul-fx: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

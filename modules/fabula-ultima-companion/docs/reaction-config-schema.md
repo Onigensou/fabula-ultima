@@ -181,7 +181,7 @@ in `resolution_phase`).
 | `turn_start` | `turn_start` |
 | `turn_end` | `turn_end` |
 | `action_phase` | `creature_performs_check`, `creature_performs_action`, `creature_targeted_by_action`, `creature_fumbles_check`, `creature_check_outcome_flipped` |
-| `resolution_phase` | `creature_hit_by_action`, `creature_critical_hit`, `creature_miss_action`, `creature_deals_damage`, `creature_takes_damage`, `creature_takes_vulnerable_damage`, `creature_takes_weak_damage`, `creature_resists_damage`, `creature_absorbs_damage`, `creature_immune_damage`, `creature_shield_break`, `creature_recovers_hp`, `creature_lose_mp`, `creature_recovers_mp`, `creature_status_applied`, `creature_enter_crisis`, `creature_exit_crisis`, `creature_defeated`, `creature_unleashes_zero_power`, `creature_completes_spell` |
+| `resolution_phase` | `creature_hit_by_action`, `creature_critical_hit`, `creature_miss_action`, `creature_deals_damage`, `creature_takes_damage`, `creature_takes_vulnerable_damage`, `creature_takes_weak_damage`, `creature_resists_damage`, `creature_absorbs_damage`, `creature_immune_damage`, `creature_shield_break`, `creature_recovers_hp`, `creature_lose_mp`, `creature_recovers_mp`, `creature_status_applied`, `creature_enter_crisis`, `creature_exit_crisis`, `creature_defeated`, `creature_knocked_out`, `creature_stays_down`, `creature_unleashes_zero_power`, `creature_completes_spell` |
 
 `party_rested` is the only trigger that fires **outside a conflict**.
 camp-system's `RestAPI.perform()` emits it once the party finishes a Rest,
@@ -252,6 +252,8 @@ write them in JSON regardless — they just won't be evaluated.
 | `creature_enter_crisis` | state-changed | yes | — | — | — |
 | `creature_exit_crisis` | state-changed | yes | — | — | — |
 | `creature_defeated` | state-changed | yes | — | — | — |
+| `creature_knocked_out` | state-changed | yes | — | — | — |
+| `creature_stays_down` | state-changed | yes | — | — | — |
 | `creature_unleashes_zero_power` | performer | yes | — | — | — |
 | `creature_completes_spell` | performer | yes | — | — | — |
 
@@ -477,6 +479,20 @@ fields map to targeting rows:
 | `redirect_target` implicit "to reactor" | a `targeting` row with `{ candidate_source: "self" }` plus `destination_ref` pointing to it |
 
 ---
+
+### `effect_kind: "negate_action"` — nullify the whole action
+
+Marks the acting action `negated` (no hit, damage, effects or reactions; RESOLVE honours `ar.negated`).
+Shadow Possession's Creeped block and Pressure's "Lose the effect" use it.
+
+**Massive actions cannot be Negated.** A `negate_action` row never applies to an action with the
+`massive` keyword: CONFIRM does not offer a reaction whose unconditional chain holds one, and card-mutations
+Phase 0 refuses it (the candidate leaves the accepted set, so RESOLVE neither fires its chain nor consumes
+its AE). Only `negate_action` counts: Crossfire's accuracy-block path is ungated.
+
+| Field | Values | Notes |
+|---|---|---|
+| `negate_is_cost_failure` | `true` \| omitted | Opt-out marker: this negate is the CASTER'S OWN cost failure (Pressure's "Lose the effect"), not a defensive negate, so Massive does NOT block it. No CSB template column needed: set it on the row inside the AE's free-form `flags["fabula-ultima-companion"].reactionConfig.effect_table`. |
 
 ### `effect_kind: "grant"` — grant or drain a resource
 
@@ -1038,3 +1054,7 @@ no template option edit is needed.
 the values actually used in the skill masters — so a value authored via migration
 won't be stripped when a human opens the sheet. New select *columns* still need
 the column-gate surgery in the field checklist above.
+
+## AE change key `hp_floor`
+
+An enabled AE row `{ key: "hp_floor", mode: 5, value: "1" }` keeps the holder's current HP from being written below the value (Nox Servant). Enforced by a `preUpdateActor` clamp on every client (`scripts/shared/hp-floor.js`) and read by the damage-card paths (`apply-damage-core.js`, `skill-effects.js` applyDamageToTarget). Highest floor wins; never raises HP above Max; never raises HP by itself. Test-only bypass: update option `fuHpFloorBypass: true`.

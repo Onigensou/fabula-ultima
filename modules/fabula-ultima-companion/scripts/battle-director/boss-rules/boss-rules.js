@@ -22,9 +22,14 @@
 //   skipsRoundEndSweep?(director)  -> true: "until end of round" effects carry over
 //   holdsConflictEvent?(director)  -> true: the conflict event's round-end beat is
 //                                     skipped at this boundary
+//   holdsSideWipe?(director, side) -> true: this side's wipe is held (it is NOT over yet;
+//                                     sync). Called from sideIsWiped and nextTurn's
+//                                     "nobody has a turn" end with a { dCombat } view
+//                                     (no ctx). Must never hold forever.
 //   roundBoundary?(director)       -> awaited at ROUND_START before the new round's
 //                                     turns are dealt; may return { label } for the
 //                                     round banner
+//   onActorUpdate?(director, actor, change) -> awaited from a GM updateActor hook (boss-cycle.js initBossCycle)
 //   stage?(director)               -> the fight's stage as a number (sync), read by
 //                                     the BOSS_STAGE formula identifier — a boss kit
 //                                     escalates on it (Nidhogg: his crystal's cracks)
@@ -98,6 +103,8 @@ export function bossRoundEndTrigger(director) {
 }
 export const bossSkipsRoundEndSweep = (director) => some(director, (r) => r.skipsRoundEndSweep(director), "skipsRoundEndSweep");
 export const bossHoldsConflictEvent = (director) => some(director, (r) => r.holdsConflictEvent(director), "holdsConflictEvent");
+/** Does a boss rule hold this side's wipe? (sync; director may be a { dCombat } view) */
+export const bossHoldsSideWipe = (director, side) => some(director, (r) => r.holdsSideWipe(director, side), "holdsSideWipe");
 
 /** The fight's stage (BOSS_STAGE): the highest any claiming rule reports, 0 with none. Sync, never throws. */
 export function bossStage(director) {
@@ -120,4 +127,12 @@ export async function runBossRoundBoundary(director) {
     catch (e) { warn(`boss-rules: ${r.id}.roundBoundary threw`, e); }
   }
   return label ? { label } : null;
+}
+
+/** An actor update seen by the GM while a battle runs (a watcher: a boss rule reacts to an outside write). */
+export async function runBossActorUpdate(director, actor, change) {
+  for (const r of activeBossRules(director)) {
+    if (typeof r.onActorUpdate !== "function") continue;
+    try { await r.onActorUpdate(director, actor, change); } catch (e) { warn(`boss-rules: ${r.id}.onActorUpdate threw`, e); }
+  }
 }

@@ -22,7 +22,7 @@ globalThis.game = { user: { isGM: true } };
 globalThis.canvas = null;
 
 const { registerConflictEvent, clearConflictEvents } = await import("./conflict-event-registry.js");
-const { activeConflictEvent, LIFECYCLE_HANDLERS } = await import("./conflict-event-runtime.js");
+const { activeConflictEvent, LIFECYCLE_HANDLERS, conflictEventOffersAction } = await import("./conflict-event-runtime.js");
 
 let pass = 0, fail = 0;
 const eq = (label, got, want) => {
@@ -113,6 +113,18 @@ eq("round_start → onRoundStart", LIFECYCLE_HANDLERS.round_start, "onRoundStart
 eq("turn_start → onTurnStart", LIFECYCLE_HANDLERS.turn_start, "onTurnStart");
 eq("turn_end is NOT dispatched", LIFECYCLE_HANDLERS.turn_end, undefined);
 eq("the map is frozen", Object.isFrozen(LIFECYCLE_HANDLERS), true);
+
+
+// ── conflict_event_action gate: offers / absent ────────────────────────────
+{
+  clearConflictEvents();
+  registerConflictEvent({ id: "has-act", label: "H", onConflictStart: noop, actions: { noxServant: async () => false } }, quiet);
+  const withEvent = directorWith({ scene: sceneWith({ sceneMode: "conflict", conflictEvent: "has-act" }) });
+  eq("offers: event with the action", conflictEventOffersAction(withEvent, "noxServant"), true);
+  eq("offers: event without that action", conflictEventOffersAction(withEvent, "imp_mask"), false);
+  eq("offers: no event on the scene", conflictEventOffersAction(directorWith({ scene: sceneWith({ sceneMode: "conflict" }) }), "noxServant"), false);
+  eq("offers: no director", conflictEventOffersAction(null, "noxServant"), false);
+}
 
 console.log(`\n${fail === 0 ? "PASS" : "FAIL"} — ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

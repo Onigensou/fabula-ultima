@@ -178,6 +178,10 @@
               if (row.target === "token" && !String(row.name ?? "").trim()) add("warn", "Show Emote on a named token, with no name.");
               else if (row.target === "token" && !hasToken(scene, row.name)) add("warn", `Show Emote on "${row.name}", but no token on this scene has that name.`);
               break;
+            case "creatureMotion":
+              if (row.target !== "source" && !String(row.name ?? "").trim()) add("warn", "Creature Motion on a named token, with no name.");
+              else if (row.target !== "source" && !hasToken(scene, row.name)) add("warn", `Creature Motion on "${row.name}", but no token on this scene has that name.`);
+              break;
             case "lightningReveal":
               for (const line of String(row.lit ?? "").split("\n")) {
                 const [name] = line.split("=");

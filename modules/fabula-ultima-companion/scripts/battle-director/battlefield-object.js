@@ -23,6 +23,10 @@
 //                            (ActionReader has zero imports by design, so it
 //                            reads the same flag itself; the CONTRACT is
 //                            shared, not this function.)
+//   conflict-event/events/soul-tithe.js
+//                            destroyAllFragments skips a PERMANENT Soul Fragment
+//                            (isPermanentSoulFragment below). The party-only target
+//                            block and Nidhogg's Oath fall read it too.
 //
 // Leaf module: no imports, so anything may import it without a cycle.
 // ============================================================================
@@ -35,5 +39,20 @@ export const BATTLEFIELD_OBJECT_FLAG = "bdObject";
 export function isBattlefieldObject(actorDoc) {
   try {
     return actorDoc?.flags?.[FLAG_NS]?.[BATTLEFIELD_OBJECT_FLAG] === true;
+  } catch { return false; }
+}
+
+/**
+ * A Nox Servant's permanent Soul Fragment: the fragment's mark AE carries
+ * soulFragmentMark AND soulPermanent (written by soul-tithe.js in the same
+ * create as the mark, so a spawn is permanent atomically). It survives Nidhogg's
+ * fall sweep; the scene-boundary sweeps still remove it at conflict end.
+ */
+export function isPermanentSoulFragment(actorDoc) {
+  try {
+    const effects = actorDoc?.effects;
+    if (!effects) return false;
+    const list = Array.isArray(effects) ? effects : Array.from(effects.contents ?? effects);
+    return list.some((e) => e?.flags?.[FLAG_NS]?.soulFragmentMark === true && e?.flags?.[FLAG_NS]?.soulPermanent === true);
   } catch { return false; }
 }

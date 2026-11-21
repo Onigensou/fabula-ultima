@@ -1,7 +1,8 @@
 // ============================================================================
 // Sealing Crystal — what the idle host (crystal-runtime.js) and the death show
 // (crystal-death-show.js) share: the painter channel (one Worker for every
-// crystal), premultiplied dirty-box texture uploads, and depth placement.
+// crystal; an extra lane for a show that paints two layers at once),
+// premultiplied dirty-box texture uploads, and depth placement.
 // ============================================================================
 
 import { warn } from "../battle-director/logger.js";
@@ -9,14 +10,22 @@ import { shadowSpriteFor, STYLE as SHADOW_STYLE } from "../sprite-shadow/sprite-
 
 /* ── The painter channel: a Worker, else the main thread ─────────────────── */
 
-let _channel = null;
+// lane 0: the shared Worker every crystal, death, fall and return layer paints in (lives with the page). Lane >= 1
+// (WP6): an extra Worker for a show that paints two layers AT ONCE (Nidhogg's return: back smoke on lane 0, front on
+// lane 1); made on first use and terminated as soon as its last painter is dropped, so plays never add Workers.
+// A show may HOLD a lane (holdLane) to keep its Worker, and the JIT it has warmed, between plays: Nidhogg's fall holds
+// lane 1 while his battle is on the canvas (nidhogg-fall-show.js prepareNidhoggFall), released when it ends.
+const _channels = new Map();   // lane -> Channel
 class Channel {
-  constructor() {
+  constructor(lane = 0) {
+    this.lane = lane;
     this.listeners = new Map();   // id -> (msg) => void
     this.local = null;            // the fallback painters, once the Worker is gone
     this.mode = "starting";
+    this.closed = false;
+    this.holds = 0;
     try {
-      this.worker = new Worker(new URL("./crystal-worker.js", import.meta.url), { type: "module", name: "fu-sealing-crystal" });
+      this.worker = new Worker(new URL("./crystal-worker.js", import.meta.url), { type: "module", name: lane ? `fu-sealing-crystal-${lane + 1}` : "fu-sealing-crystal" });
       this.worker.onmessage = (e) => this.#deliver(e.data);
       this.worker.onerror = (e) => { warn("sealing-crystal: worker failed, painting on the main thread", e?.message ?? e); this.#fallback(); };
       this.mode = "worker";
@@ -27,20 +36,24 @@ class Channel {
   }
   #deliver(m) { if (m?.type === "error") warn(`sealing-crystal: paint threw (${m.id})`, m.message); this.listeners.get(m?.id)?.(m); }
   async #fallback() {
-    if (this.local) return;
+    if (this.local || this.closed) return;
     try { this.worker?.terminate(); } catch { /* gone */ }
     this.worker = null; this.mode = "local"; this.local = new Map();
     try {
-      const [{ makeCrystalPainter }, { makeFallPainter }] = await Promise.all([import("./crystal-painter.js"), import("./fall-painter.js")]);
-      this.makeLocal = (o) => (o.painter === "fall" ? makeFallPainter({ ...o.fall, W: o.W, H: o.H }) : makeCrystalPainter(o));
+      const [{ makeCrystalPainter }, { makeFallPainter }, { makeReturnPainter }, { makeCrackOutPainter }] = await Promise.all([import("./crystal-painter.js"), import("./fall-painter.js"), import("./return-painter.js"), import("./crack-out-painter.js")]);
+      this.makeLocal = (o) => (o.painter === "fall" ? makeFallPainter({ ...o.fall, W: o.W, H: o.H })
+        : o.painter === "return" ? makeReturnPainter({ ...o.returnSmoke, W: o.W, H: o.H })
+        : o.painter === "crackout" ? makeCrackOutPainter({ ...o.crackOut, W: o.W, H: o.H })
+        : makeCrystalPainter(o));
       // whoever was waiting on the Worker starts again here
-      for (const fn of this.listeners.values()) fn({ type: "restart" });
+      for (const fn of [...this.listeners.values()]) fn({ type: "restart", lane: this.lane });
     } catch (e) { warn("sealing-crystal: the painter cannot load at all", e); this.mode = "dead"; }
   }
   /**
    * frame: { W, H, CX, FLOOR } (crystal-painter FRAME / DEATH_FRAME). extra (optional): { painter: "fall", fall: {...} }
    * for one of Nidhogg's fall layers (fall-painter.js); its sprite pixels are COPIED to the Worker (kept here for a
-   * restart on the main thread).
+   * restart on the main thread). Or { painter: "return", returnSmoke: {...} } for his return's smoke
+   * (return-painter.js; frame = { W, H } of the smoke buffers).
    */
   init(id, frame, seed, fn, extra = null) {
     this.listeners.set(id, fn);
@@ -52,27 +65,84 @@ class Channel {
     catch (e) { warn(`sealing-crystal: painter ${id} failed to start`, e); return; }
     fn({ type: "ready", id });
   }
-  /** t: the clock (s); st: the crystal's state, or { T } (s into the fall) for a fall layer. */
-  draw(id, seq, t, st, color, light) {
+  /**
+   * t: the clock (s); st: the crystal's state, or { T } (s into the fall) for a fall layer, or { T: tau, view } for
+   * the return's smoke, whose three buffers to hand back go in `layers` ({ back, front, veil }; color / light unused).
+   */
+  draw(id, seq, t, st, color, light, layers = null) {
     const T = st?.T;
     if (this.worker) {
-      const tr = [color, light].filter((b) => b && b.byteLength);
-      this.worker.postMessage({ type: "draw", id, seq, t, T, st, color, light }, tr);
+      const tr = [color, light, ...Object.values(layers ?? {})].filter((b) => b && b.byteLength);
+      this.worker.postMessage({ type: "draw", id, seq, t, T, st, color, light, ...(layers ?? {}) }, tr);
       return;
     }
     const p = this.local?.get(id);
     if (!p) return;
-    try { const out = p.draw({ t, T, st, color, light }); this.listeners.get(id)?.({ type: "frame", id, seq, ...out }); }
+    try { const out = p.draw({ t, T, st, color, light, ...(layers ?? {}) }); this.listeners.get(id)?.({ type: "frame", id, seq, ...out }); }
     catch (e) { this.listeners.get(id)?.({ type: "error", id, seq, message: String(e?.stack ?? e) }); }
+  }
+  /**
+   * JIT warm-up (smoke perf pass): job { job: "draw", T, st, reserve? } (the painter's own draw into its scratch
+   * buffers; Nidhogg's return). Replies { type: "warm", id, seq, ms }. Only a Worker is warmed: on the
+   * main thread it would cost the frame it is meant to save, so the reply comes at once with skipped: true.
+   */
+  warm(id, seq, job) {
+    if (this.worker) { this.worker.postMessage({ type: "warm", id, seq, ...job }); return; }
+    this.listeners.get(id)?.({ type: "warm", id, seq, ms: 0, skipped: true });
+  }
+  /**
+   * A rehearsal (crystal-worker.js "rehearse"): a throwaway fall painter run through frames Ts in the Worker, to warm its
+   * JIT; fn gets { type: "rehearsed", frames, ms } (or "error"). Only a Worker rehearses: on the main thread it would
+   * cost the frames it is meant to save, so the reply comes at once with skipped: true. drop(id) stops it.
+   */
+  rehearse(id, { W, H, fall, Ts, gapMs = 0, crystal = null, frames = null, keepAs = null }, fn) {
+    this.listeners.set(id, fn);
+    if (this.worker) { this.worker.postMessage({ type: "rehearse", id, W, H, fall, Ts, gapMs, crystal, frames, keepAs }); return; }
+    fn({ type: "rehearsed", id, frames: 0, ms: 0, skipped: true });
   }
   drop(id) {
     this.listeners.delete(id);
     if (this.worker) this.worker.postMessage({ type: "drop", id });
     else this.local?.delete(id);
+    this.#closeIfIdle();
+  }
+  /** Keep this lane's Worker while held (see holdLane). */
+  hold() {
+    this.holds++;
+    let done = false;
+    return () => { if (done) return; done = true; this.holds = Math.max(0, this.holds - 1); this.#closeIfIdle(); };
+  }
+  #closeIfIdle() { if (this.lane > 0 && this.listeners.size === 0 && this.holds === 0) this.close(); }
+  /** An extra lane's Worker, gone (its last painter was dropped). */
+  close() {
+    if (this.closed) return;
+    this.closed = true;
+    try { this.worker?.terminate(); } catch { /* gone */ }
+    this.worker = null; this.local = null; this.listeners.clear(); this.mode = "closed";
+    if (_channels.get(this.lane) === this) _channels.delete(this.lane);
   }
 }
-export const channel = () => (_channel ??= new Channel());
-export const channelMode = () => _channel?.mode ?? "idle";
+/** The painter channel of a lane (0: the shared one; >= 1: an extra Worker, see above). */
+export const channel = (lane = 0) => {
+  let c = _channels.get(lane);
+  if (!c || c.closed) { c = new Channel(lane); _channels.set(lane, c); }
+  return c;
+};
+export const channelMode = (lane = 0) => _channels.get(lane)?.mode ?? "idle";
+/** Keep a lane's Worker (made now if need be) until the returned release is called; lane 0 always lives anyway. */
+export const holdLane = (lane) => channel(lane).hold();
+/**
+ * How many lanes a show that paints one frame in bands uses (Nidhogg's fall smoke, the crystal's death): 3 on 6+ logical
+ * cores, else 2 (an override 1..3 wins: the rigs' A/B switches).
+ */
+export function laneCount(override) {
+  const o = Number(override);
+  if (o >= 1 && o <= 3) return Math.floor(o);
+  const cores = Number(globalThis.navigator?.hardwareConcurrency) || 4;
+  return cores >= 6 ? 3 : 2;
+}
+/** Rigs / leak checks: the painter Workers alive now (lane 0 counts once made). */
+export const workerCount = () => [..._channels.values()].filter((c) => c.worker).length;
 
 /* ── Depth: right after the token's own mesh, sharing its sort keys ─────── */
 
