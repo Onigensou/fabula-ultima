@@ -72,7 +72,9 @@ const ID = {
   zenithPsv: "HkC4ZenithPsv001", scythePsv: "HkC4DScythePsv01", scytheImm: "HkC4DScytheImmAE",
   franticPsv: "HkC4FranticPsv01", kusariPsv: "HkC4KusariPsv001", gothicPsv: "HkC4GothicPsv001",
   curseCollPsv: "HkC4CurseCollPsv", ivoryPsv: "HkC4IvoryStatPsv",
+  rewinderAe: "HkC4RewinderAE01", delayedAe: "HkC4DelayedDmgAE",
 };
+const REWINDER = "lpM8id6fJzB7JP0A";
 
 // ── Doom countdown (shared by the library AE and Muramasa's variant) ────────
 function doomFlags(extra = {}) {
@@ -319,7 +321,42 @@ const OLDER = [
       reaction_config_table: table([{ reaction_trigger: "creature_deals_damage", reaction_passive_mode: "on", reaction_source: "self", reaction_requires_weapon_used: true, condition_formula: "DAMAGE_IS_HP == 1", reaction_effect_ref: "ku_hit" }]) } },
   { name: "Black Mage Wand", props: { item_rarity: "Rare", item_cost: "3500" } },
   { name: "Tailwind", props: { item_rarity: "Rare" } },
-  { name: "Rewinder", props: { item_rarity: "Uncommon" } },
+  // Rewinder: every HP hit is zeroed and banked on an untouchable "Delayed Damage"
+  // counter; at round end the wearer LOSES that much HP (consume_resource, not
+  // damage: no DR, Shield, Resistance, Absorb or damage reaction can change it).
+  // Damage reactions are read from effect-carried configs only (Life Charm form).
+  { name: "Rewinder", props: { item_rarity: "Uncommon" },
+    ae: [
+      { _id: ID.rewinderAe, name: "Rewinder", transfer: true, disabled: false, changes: [],
+        flags: { [M]: { category: "buff", reactionConfig: {
+          name: "Rewinder",
+          effect_table: table([
+            { effect_kind: "chain", effect_label: "rw_bank", chain_steps: "rw_cap, rw_add, rw_new" },
+            { effect_kind: "adjust_damage", effect_label: "rw_cap", damage_stage: "incoming", damage_operation: "cap", damage_amount: "0" },
+            // add first: consecutive apply_ae rows are batched, so the create must come last
+            { effect_kind: "adjust_charges", effect_label: "rw_add", condition_formula: "AE_COUNT_DELAYED_DAMAGE > 0", charge_ae_name: "Delayed Damage",
+              charge_operation: "add", charge_amount: "INCOMING_DAMAGE", target_ref: "self" },
+            { effect_kind: "apply_ae", effect_label: "rw_new", condition_formula: "AE_COUNT_DELAYED_DAMAGE == 0",
+              ae_template_ref: `Item.${REWINDER}.ActiveEffect.${ID.delayedAe}`, ae_initial_charges: "INCOMING_DAMAGE", ae_duplicate_mode: "replace", target_ref: "self" },
+            { effect_kind: "chain", effect_label: "rw_pay", chain_steps: "rw_card, rw_lose, rw_clear" },
+            { effect_kind: "notify", effect_label: "rw_card", notify_message: "Delayed Damage", notify_type: "card", notify_abort: false },
+            { effect_kind: "consume_resource", effect_label: "rw_lose", consume_resource: "hp", consume_amount: "AE_CHARGES_DELAYED_DAMAGE",
+              on_empty: "drain", consume_can_defeat: true, target_ref: "self" },
+            { effect_kind: "remove_ae", effect_label: "rw_clear", ae_template_ref: "Delayed Damage", include_persistent: true, target_ref: "self" },
+          ]),
+          reaction_config_table: table([
+            { reaction_trigger: "creature_takes_damage", reaction_source: "self", reaction_passive_mode: "force",
+              condition_formula: "INCOMING_DAMAGE > 0", reaction_effect_ref: "rw_bank" },
+            { reaction_trigger: "round_end", reaction_source: "self", reaction_passive_mode: "force", reaction_passive_target: "self",
+              condition_formula: "AE_COUNT_DELAYED_DAMAGE > 0", reaction_effect_ref: "rw_pay" },
+          ]),
+        } } } },
+      // The counter itself: a template (non-transfer), applied by rw_new.
+      { _id: ID.delayedAe, name: "Delayed Damage", transfer: false, disabled: false, changes: [],
+        img: "icons/svg/clockwork.svg",
+        flags: { [M]: { chargeKey: "delayed_damage", charges: 0, lifetimeMode: "persistent_counter", uncleansable: true,
+          conflictScoped: true, crossScene: false, directorPermanent: true, category: "debuff" } } },
+    ] },
   { name: "Gothic Lolita Dress", props: { item_rarity: "Rare", item_cost: "2500" },
     text: () => ul(`Your offensive spells that deal ${DARK} or ${POISON} damage deal <strong>5 bonus damage</strong> for each status effect on the target (up to <strong>15</strong>).`),
     passive: { id: ID.gothicPsv, name: "Gothic Lolita Dress (Passive)",
