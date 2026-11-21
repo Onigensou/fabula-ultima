@@ -153,6 +153,15 @@ try {
       await new Promise((r) => out.end(r));
       return file;
     }).catch(() => {});
+    // window.__runnerShot(name): a FULL page screenshot (everything the player sees: board, overlays,
+    // HUD, damage numbers) written to <snapshot dir>/shots/<name>.png; returns the path.
+    await page.exposeFunction("__runnerShot", async (name) => {
+      const { mkdirSync } = await import("node:fs");
+      const dir = resolve(OUT, "shots"); mkdirSync(dir, { recursive: true });
+      const file = resolve(dir, `${String(name).replace(/[^\w.-]/g, "_")}.png`);
+      await page.screenshot({ path: file });
+      return file;
+    }).catch(() => {});
     // window.__runnerHeapSampling("start" | "stop"): V8's sampling heap profiler. "stop" returns the allocation
     // sites of what is STILL ALIVE (after a GC), heaviest first: who holds the heap that grew.
     await page.exposeFunction("__runnerHeapSampling", async (op) => {

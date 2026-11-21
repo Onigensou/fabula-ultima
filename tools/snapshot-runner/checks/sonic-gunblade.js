@@ -77,8 +77,9 @@ const origWarn = console.warn; const warns = [];
 console.warn = (...a) => { try { const s = a.map((x) => (typeof x === "string" ? x : x?.message ?? "")).join(" "); if (/carrier|Sonic|Gunblade|transform|chain|volley/i.test(s)) warns.push(s.slice(0, 300)); } catch {} return origWarn(...a); };
 
 async function sonicRun(label, card, strikes) {
-  const zarg = pc("Zarg");
+  const zarg = pc(O.caster || "Zarg");
   await giveWeapon(zarg, "3ZV5drjroWrvXqkw");
+  const foe = O.enemy ? game.actors.getName(O.enemy) : dummy;
   globalThis.__FU_CHAIN_FORCED_DICE__ = strikes;
   globalThis.__SB_TRACE = [];
   // frame gaps + long tasks (perf), wall-clock ms like the trace's wall field
@@ -88,18 +89,21 @@ async function sonicRun(label, card, strikes) {
   // reference shots (O.shots): the board view + the timeline overlay, at fixed beats of the trace
   const shots = {}; let shotIv = null;
   if (O.shots) {
-    const want = [["strike3", (e) => e.type === "hit" && e.i === 3, 30], ["strike8", (e) => e.type === "hit" && e.i === 8, 30], ["perfect", (e) => e.type === "hit" && e.i === "perfect", 50], ["hophome", (e) => e.type === "beat" && e.name === "Back", 260]];
+    const want = [["miss", (e) => e.type === "hit" && e.kind === "miss", 40], ["strike3", (e) => e.type === "hit" && e.i === 3, 30], ["strike8", (e) => e.type === "hit" && e.i === 8, 30], ["perfect", (e) => e.type === "hit" && e.i === "perfect", 50], ["hophome", (e) => e.type === "beat" && e.name === "Back", 260]];
+    const full = O.shots === "full" && typeof window.__runnerShot === "function";
     const grab = () => { try { const r = canvas.app.renderer; const base = r.extract.canvas(); const W = base.width, H = base.height; const out = document.createElement("canvas"); out.width = W; out.height = H; const g = out.getContext("2d"); g.drawImage(base, 0, 0);
       for (const c of document.querySelectorAll("canvas")) { if (c === r.view || c.width < 200) continue; const st = getComputedStyle(c); if (st.position !== "fixed" && st.position !== "absolute") continue; if (+st.zIndex < 1 && !c.closest("#board")) continue; try { g.drawImage(c, 0, 0, W, H); } catch {} }
       return out.toDataURL("image/jpeg", 0.85); } catch (e) { return "ERR " + e.message; } };
-    shotIv = setInterval(() => { const tr = globalThis.__SB_TRACE || []; for (const [k, fn, delay] of want) { if (shots[k] !== undefined) continue; const e = tr.find(fn); if (e) { shots[k] = null; setTimeout(() => { shots[k] = { atMs: e.atMs + delay, img: grab() }; }, delay); } } }, 5);
+    shotIv = setInterval(() => { const tr = globalThis.__SB_TRACE || []; for (const [k, fn, delay] of want) { if (shots[k] !== undefined) continue; const e = tr.find(fn); if (e) { shots[k] = null; setTimeout(async () => { if (full) { const p = await window.__runnerShot((O.shotPrefix || "sb") + "-" + k).catch((er) => "ERR " + er); shots[k] = { atMs: e.atMs + delay, file: p }; } else shots[k] = { atMs: e.atMs + delay, img: grab() }; }, delay); } } }, 5);
   }
   const errs = []; const origErr = console.error; console.error = (...a) => { try { errs.push(a.map((x) => (typeof x === "string" ? x : x?.stack ?? x?.message ?? String(x))).join(" ").slice(0, 400)); } catch {} return origErr(...a); };
   const onErr = (e) => errs.push("window.onerror " + String(e?.message ?? e).slice(0, 300)); window.addEventListener("error", onErr);
   logs.length = 0; warns.length = 0;
   const w = watch("Zarg");
   let r = null, err = null;
-  try { r = await sim.testSkill({ caster: zarg.uuid, skill: "Sonic Blow", enemy: dummy.uuid, force: card, once: true, maxRounds: O.maxRounds, expectedRounds: O.maxRounds, pace: O.pace }); }
+  try { r = await sim.run({ enemies: [{ uuid: foe.uuid, quantity: 1 }], party: [zarg.uuid], pace: O.pace, maxRounds: O.maxRounds, expectedRounds: O.maxRounds, guests: false, startingZp: 6,
+      ...(O.scene ? { scene: O.scene } : {}), ...(O.forceReactions ? { forceReactions: O.forceReactions } : {}),
+      scripts: [{ caster: zarg.uuid, skill: "Sonic Blow", targets: "enemy", force: card, once: true }] }); }
   catch (e) { err = String(e?.message ?? e); }
   globalThis.__FU_CHAIN_FORCED_DICE__ = null;
   console.error = origErr; window.removeEventListener("error", onErr);
