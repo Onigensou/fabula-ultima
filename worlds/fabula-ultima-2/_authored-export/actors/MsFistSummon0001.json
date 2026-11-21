@@ -69,7 +69,7 @@
             "1": {
               "$deleted": false,
               "candidate_source": "combat",
-              "category": "enemy",
+              "category": "party",
               "count": 1,
               "effect_kind": "targeting",
               "effect_label": "fd_victim",

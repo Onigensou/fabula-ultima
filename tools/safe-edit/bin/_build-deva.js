@@ -436,7 +436,9 @@ run(async ({ changes }) => {
     description: fdesc.boom, on_activate_effect_ref: "fd_chain",
     effect_table: table([
       chain("fd_chain", ["fd_hit", "fd_die"]),
-      put("fd_victim", "targeting", { candidate_source: "combat", category: "enemy", exclude_self: true, mode: "random", count: 1 }),
+      // "party" (absolute side), not "enemy": "enemy" is relative to the acting token and fails open when a
+      // fist acts without one, which once picked the other Missile Fist (playtest 2026-11-21).
+      put("fd_victim", "targeting", { candidate_source: "combat", category: "party", exclude_self: true, mode: "random", count: 1 }),
       put("fd_hit", "deal_damage", { damage_amount: "60", damage_element: "physical", damage_cause: "damage", target_ref: "fd_victim" }),
       put("fd_die", "destroy_summon", { target_ref: "self" }),
     ]),

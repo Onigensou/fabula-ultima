@@ -65,6 +65,7 @@ your element; Rakshasa punishes you for REPEATING a weapon category.
 | 2026-09-08 | Ten Thousand Arms retired for dual-arm Crisis combos; HP 840 → 1200; Verdict sized to 162 | one Crisis idea; party keeps full output, so a bigger bar keeps the 5.5–6 round shape | claude | escalation 27 → 56 per hit |
 | 2026-10-21 | Keep the sheet's HP 1200 | "use sheet" | user | sim stalemate — live test owed |
 | 2026-10-31 | IM Charm | solo elite rule: a charmed solo monster has its gameplan shut down | user | — |
+| 2026-11-21 | HP 1200 → 2000 | Runner playtest (207 fights): at 1200 the story fight ended in 3.4 rounds at 82% PC HP and only 8 of 20 fights reached a Verdict. User target 5–6 rounds; sweep ×1.4 → 5.1 r, ×1.6 → 5.2 r, ×1.8 → 6.4 r, PCs stay ~80% at every step. Dual Shift → next strike: the party acted in between in almost every case (a handful back-to-back) — answers the open question | user | pending real-table look; damage tuning proposed separately |
 
 ```json dossier
 {
