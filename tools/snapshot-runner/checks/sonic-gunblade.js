@@ -184,20 +184,21 @@ if (want("F")) {
   await attackRun("F3 gunblade crit, no wellspring", "Blanche", "mODVDmjIfozcfERi", [[6, 12, 6, 12]], { setup: nw });
 }
 // ── Sonic Blow edges (no wellspring, so the hits stay Physical) ──
-if (want("E")) {
+if (want("E") || want("K")) {
   const hit = O.hit || { rA: 10, rB: 9 }, all = Array(7).fill(hit);
   // a flat damage bonus (+10 melee): counted once, ×2, shared over the 8 hits
-  await sonicRun("E0 sonic baseline (Blanche)", hit, all, { caster: "Blanche", setup: async (z) => { await noWellspring(z); } });
-  await sonicRun("E1 sonic +10 flat", hit, all, { caster: "Blanche", setup: async (z) => { await noWellspring(z); await z.createEmbeddedDocuments("ActiveEffect", [{ name: "SG test +10 melee", changes: [{ key: "system.props.extra_damage_mod_melee", mode: 2, value: "10" }], flags: { [NS]: { sgTest: true } } }]); } });
+  if (want("E")) await sonicRun("E0 sonic baseline (Blanche)", hit, all, { caster: "Blanche", setup: async (z) => { await noWellspring(z); } });
+  if (want("E")) await sonicRun("E1 sonic +10 flat", hit, all, { caster: "Blanche", setup: async (z) => { await noWellspring(z); await z.createEmbeddedDocuments("ActiveEffect", [{ name: "SG test +10 melee", changes: [{ key: "system.props.extra_damage_mod_melee", mode: 2, value: "10" }], flags: { [NS]: { sgTest: true } } }]); } });
   const clearFlat = async (z) => { const ids = z.effects.filter((e) => e.flags?.[NS]?.sgTest).map((e) => e.id); if (ids.length) await z.deleteEmbeddedDocuments("ActiveEffect", ids); };
-  for (const [lab, aff] of [["E2 sonic vs Resistant", "RS"], ["E3 sonic vs Vulnerable", "VU"]]) {
+  if (want("E")) for (const [lab, aff] of [["E2 sonic vs Resistant", "RS"], ["E3 sonic vs Vulnerable", "VU"]]) {
     let old = null;
     await sonicRun(lab, hit, all, { caster: "Blanche", setup: async (z, foe) => { await clearFlat(z); await noWellspring(z); old = await setProps(foe, { "system.props.affinity_1": aff }); } });
     await dummy.update(old);
   }
   // the Perfect bonus kills: HP so the 8 hits leave it standing and the Perfect strike drops it
   await sonicRun("E4 sonic Perfect kills", hit, all, { caster: "Blanche", setup: async (z) => { await clearFlat(z); await noWellspring(z); },
-    atDeclare: (name) => { const t = canvas.tokens.placeables.find((x) => x.actor && String(x.actor.name).startsWith(name)); if (t) { out.killHpSetOn = t.actor.name; t.actor.update({ "system.props.current_hp": Number(O.killHp ?? 30) }); } } });
+    atDeclare: (name) => { const dc = bd.getActiveDirector?.()?.dCombat; const c = (dc?.combatants ?? []).find((x) => String(x.name ?? "").startsWith(name)); const tok = c?.tokenUuid ? fromUuidSync(c.tokenUuid) : null; const act = tok?.actor ?? null;
+      if (act) { out.killHpSetOn = { name: act.name, token: c.tokenUuid, from: act.system.props.current_hp, to: Number(O.killHp ?? 30) }; act.update({ "system.props.current_hp": Number(O.killHp ?? 30) }); } } });
 }
 // ── 4ae73480: will_deal_damage rows gated on the roll now land ──
 if (want("W")) {
