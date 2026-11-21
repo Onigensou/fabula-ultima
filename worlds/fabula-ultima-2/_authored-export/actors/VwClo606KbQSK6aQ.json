@@ -1615,8 +1615,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 0.95,
-      "scaleY": 0.95,
+      "scaleX": 1.5,
+      "scaleY": 1.5,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Roo_Battle_Idle.webm",
       "tint": "#ffffff"
     },

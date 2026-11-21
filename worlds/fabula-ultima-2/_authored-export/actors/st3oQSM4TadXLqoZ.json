@@ -265,6 +265,9 @@
               "isTemporary": false,
               "isViewable": true
             },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "target_turn_end"
+            },
             "statuscounter": {
               "config": {
                 "multiplyEffect": true,
