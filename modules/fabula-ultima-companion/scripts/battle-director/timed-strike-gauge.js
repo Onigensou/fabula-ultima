@@ -41,7 +41,7 @@ const STYLE_ID = "fu-tsg-style";
 //   closeDelayMs   — DONE → the HUD leaves (the mockup closes it once the camera is home)
 //   tailMs         — DONE → the action moves on (the restore has played out);
 //                    finisherTailMs more after a finisher (its afterglow plays first)
-export const TSG_TIMING = Object.freeze({ introMs: 2300, leadMs: 450, finisherLeadMs: 1000, closeDelayMs: 1850, tailMs: 2100, finisherTailMs: 600 });
+export const TSG_TIMING = Object.freeze({ introMs: 2300, leadMs: 450, finisherLeadMs: 1200, closeDelayMs: 1850, tailMs: 2100, finisherTailMs: 1000 });
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 // the mockup's gauge cues (its sfx(key, vol) plays at vol × 0.75)
 export const TSG_SFX = Object.freeze({ cursor: [SND + "BattleCursor_1.wav", 0.2 * 0.75], back: [SND + "Cursor_Back.mp3", 0.3 * 0.75] });

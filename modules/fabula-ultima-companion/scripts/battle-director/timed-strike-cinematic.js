@@ -86,11 +86,13 @@ export const CINE_CLIPS = Object.freeze({
   "007_slash_effect": mv("007_slash_effect"),
   "002_hit_effect": mv("002_hit_effect"),
   "023_slash_special_1": mv("023_slash_special_1"),
-  gg_burst_anim02: { url: GG + "burst_anim02.webm", w: 682, h: 1024, ax: 0.5, ay: 0.5, dur: 300 },
-  gg_spark_anim01: { url: GG + "spark_anim01.webm", w: 340, h: 256, ax: 0.5, ay: 0.5, dur: 300 },
+  // luma: black-background art (the GG masks, the pixelfx light layer) is luma-keyed when drawn additive;
+  // fireanim02 carries its own alpha (its soft red glow would turn into a solid disc under the key)
+  gg_burst_anim02: { url: GG + "burst_anim02.webm", w: 682, h: 1024, ax: 0.5, ay: 0.5, dur: 300, luma: true },
+  gg_spark_anim01: { url: GG + "spark_anim01.webm", w: 340, h: 256, ax: 0.5, ay: 0.5, dur: 300, luma: true },
   gg_fireanim02: { url: GG + "fireanim02.webm", w: 512, h: 512, ax: 0.5, ay: 0.5, dur: 3200 },
-  px_lux_back: { url: PXN + "back.webm", ...PILLAR }, px_lux_front: { url: PXN + "front.webm", ...PILLAR }, px_lux_light: { url: PXN + "light.webm", ...PILLAR },
-  ...(ICE_PILLAR_ON_FORGE ? { px_ice_back: { url: PXI + "back.webm", ...PILLAR }, px_ice_front: { url: PXI + "front.webm", ...PILLAR }, px_ice_light: { url: PXI + "light.webm", ...PILLAR } } : {}),
+  px_lux_back: { url: PXN + "back.webm", ...PILLAR }, px_lux_front: { url: PXN + "front.webm", ...PILLAR }, px_lux_light: { url: PXN + "light.webm", ...PILLAR, luma: true },
+  ...(ICE_PILLAR_ON_FORGE ? { px_ice_back: { url: PXI + "back.webm", ...PILLAR }, px_ice_front: { url: PXI + "front.webm", ...PILLAR }, px_ice_light: { url: PXI + "light.webm", ...PILLAR, luma: true } } : {}),
 });
 // [url, the mockup's volume]; the mockup plays sfx(key, vol) at vol × 0.75
 export const CINE_SFX = Object.freeze({
@@ -503,7 +505,7 @@ class Cine {
     const hold = { stopAt: null, ms: 300 };
     const flipX = flip !== (this.fl < 0);   // a wielder facing right mirrors the cut
     const rr = (this.fl < 0 ? -rot : rot) * Math.PI / 180;
-    const f = add ? [filter, lumaFilter()].filter(Boolean).join(" ") : filter;   // additive = black-background art
+    const f = add && def.luma ? [filter, lumaFilter()].filter(Boolean).join(" ") : filter;
     const c = this.m.clip(key, this.tNow, { x: pt.x, y: pt.y, w, rot: rr, flip: flipX, add, filter: f || undefined, rate, z, depth: false,
       alpha: () => (hold.stopAt == null ? 1 : Math.max(0, 1 - (performance.now() - hold.stopAt) / hold.ms)) });
     const tr = this.T[this.T.length - 1];
