@@ -25,5 +25,6 @@ Approved mockup: `E:\Art(New Com)\DND\Fabula Ultima\Resource\Animation\Sonic Kat
 ## Not done / open
 - **Fire element not proven**: Training Ground's Wellspring (bolt) retypes all damage to bolt in the runner, masking Fire. The +10 rides the same reaction chain.
 - "Before the action" path: not re-run here (Lionheart's Equipment-chip code, unchanged); the shared once-per-round gate is the same flag.
-- Animations (port, mockup diff, side-by-side) DEFERRED by the user; Sonic Blow plays the default chain-8 attack animation (no errors seen). Mockup timeline specs are in `spec/`.
+- **Sonic Blow animation**: ported from the approved mockup (tools/anim-studio/lib/sonic-signatures.js + sonic-shots/sonic-blow.inner.js, constants copied from spec/sonic-blow-mockup-timeline.json), written into the migration via _sonic-gunblade-anims.js. GPU runner: plays with the real per-strike hit/miss/crit, no animation errors. Diff vs mockup: spec/sonic-blow-game-diff.json; side-by-sides spec/side-by-side/. Open: the Perfect gold hit lands ~0.5 s late (render stall after the filtered RO clip starts); strikes 3/5 drift ~25 ms; chroma split not ported; numbers/flinch/namecard are BD's own.
+- Gunblade attack / transform animations: not ported (no existing game equivalent); default attack animation plays.
 - Real-server first boot: deletes are guarded (skip missing ids, swallow "does not exist").
