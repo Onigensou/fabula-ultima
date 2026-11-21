@@ -65,7 +65,7 @@ function watch(casterName) {
     const v = ch?.system?.props?.current_mp; if (v !== undefined && String(a.name).startsWith(casterName)) mp.push(v);
   });
   const nums = [];
-  const hid3 = Hooks.on("fuDamageNumber", (p) => nums.push({ kind: p?.kind, amount: p?.amount, element: p?.element, affinity: p?.affinity, isCrit: !!p?.isCrit, critBanner: p?.critBanner, resource: p?.resource }));
+  const hid3 = Hooks.on("fuDamageNumber", (p) => nums.push({ wall: performance.now(), kind: p?.kind, amount: p?.amount, element: p?.element, affinity: p?.affinity, isCrit: !!p?.isCrit, critBanner: p?.critBanner, resource: p?.resource }));
   const hid2 = Hooks.on("updateItem", (i, ch) => { const f = ch?.flags?.[NS]; if (f && ("activeForm" in f || "transformFreeUsedRound" in f)) forms.push({ item: i.name, actor: i.parent?.name, round: bd.getActiveDirector?.()?.dCombat?.round ?? null, ...f }); });
   return { stop() { clearInterval(iv); Hooks.off("updateActor", hid); Hooks.off("updateItem", hid2); Hooks.off("fuDamageNumber", hid3); return { ars, opp, mp, forms, nums }; } };
 }
@@ -80,14 +80,19 @@ async function sonicRun(label, card, strikes) {
   const zarg = pc("Zarg");
   await giveWeapon(zarg, "3ZV5drjroWrvXqkw");
   globalThis.__FU_CHAIN_FORCED_DICE__ = strikes;
+  globalThis.__SB_TRACE = [];
+  const errs = []; const origErr = console.error; console.error = (...a) => { try { errs.push(a.map((x) => (typeof x === "string" ? x : x?.stack ?? x?.message ?? String(x))).join(" ").slice(0, 400)); } catch {} return origErr(...a); };
+  const onErr = (e) => errs.push("window.onerror " + String(e?.message ?? e).slice(0, 300)); window.addEventListener("error", onErr);
   logs.length = 0; warns.length = 0;
   const w = watch("Zarg");
   let r = null, err = null;
   try { r = await sim.testSkill({ caster: zarg.uuid, skill: "Sonic Blow", enemy: dummy.uuid, force: card, once: true, maxRounds: O.maxRounds, expectedRounds: O.maxRounds, pace: O.pace }); }
   catch (e) { err = String(e?.message ?? e); }
   globalThis.__FU_CHAIN_FORCED_DICE__ = null;
+  console.error = origErr; window.removeEventListener("error", onErr);
+  const trace = globalThis.__SB_TRACE; globalThis.__SB_TRACE = null;
   const seen = w.stop();
-  out.scenarios[label] = { err, simOk: !!r, sonic: seen.ars.filter((a) => a.weapon?.name === "Sonic Blow"), otherAttacks: seen.ars.filter((a) => a.by?.startsWith("Zarg") && a.weapon?.name !== "Sonic Blow").length, opportunity: seen.opp, mpWrites: seen.mp, numbers: seen.nums, logs: [...logs], warns: [...warns] };
+  out.scenarios[label] = { err, simOk: !!r, sonic: seen.ars.filter((a) => a.weapon?.name === "Sonic Blow"), otherAttacks: seen.ars.filter((a) => a.by?.startsWith("Zarg") && a.weapon?.name !== "Sonic Blow").length, opportunity: seen.opp, mpWrites: seen.mp, numbers: seen.nums, trace, errors: errs.filter((x) => !/ReactionConfigLint/.test(x)).slice(0, 40), logs: [...logs], warns: [...warns] };
 }
 // a plain Attack with a forced card roll (arm the dice when the directive declares it)
 async function attackRun(label, actorName, weaponId, faces, { rounds = 1, setup = null, forceReactions = null } = {}) {
