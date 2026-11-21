@@ -5,6 +5,10 @@
 // Design + balance: memory project_deva_monster.md, the Deva Battle Sim and the
 // design mockup artifacts (v4.5). Run from tools/safe-edit; --apply to write.
 //
+// NUMBERS UPDATED 2026-11-21 (Valley trio tuning, dossiers/deva.md): HP 1400, attacks check +6, damage
+// Vajra/Mudra 52, Slap 36, Slam 45, Fury 42, Focus 18, Surya 78, Kala 38; Surya + Kala players-only;
+// Detonate victim pool "party". The WORLD is the source of truth — diff against it before any --apply.
+//
 // THE ROUND CLOCK. The action pattern's `round` condition reads 0 inside a BD
 // battle (BD creates no Foundry Combat), and the pattern has no formula
 // condition. So the clock is a passive, Celestial Discipline: lifecycle rows
@@ -138,7 +142,7 @@ run(async ({ changes }) => {
   if (!shell || !donorActor || !donorAttack || !donorPassive || !donorSpell) throw new Error("shell or donor documents missing");
   const skill = (owner, src, id, name, img, props) => makeSkill(src, owner, id, name, img, props);
   const attack = (id, name, props) => skill(A, donorAttack, id, name, ICON.melee, {
-    skill_type: "Attack", class: "NPC", check_bonus: "4", defense_target_type: "def",
+    skill_type: "Attack", class: "NPC", check_bonus: "6", defense_target_type: "def",
     isCheck: true, isOffensiveSpell: false, isReaction: false, details_roller: "Show",
     duration: "Instantaneous", cost: "-", skill_range: "Melee", ...props,
   });
@@ -213,15 +217,15 @@ run(async ({ changes }) => {
 
   // ── Guard round ────────────────────────────────────────────────────────
   changes.push([ik(A, IDS.VAJRA), attack(IDS.VAJRA, "Vajra Fist", {
-    skill_target: "One Creature", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "38", type_damage: "Physical",
+    skill_target: "One Creature", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "52", type_damage: "Physical",
     action_keywords: "", description: DESC.vajra,
   }), "NEW item — Vajra Fist (Vajra Stance, Physical vs DEF)"]);
   changes.push([ik(A, IDS.LANCE), attack(IDS.LANCE, "Mudra Lance", {
-    skill_target: "One Creature", skill_range: "Range", rolled_atr1: "INS", rolled_atr2: "DEX", damage_bonus: "38", type_damage: "Light",
+    skill_target: "One Creature", skill_range: "Range", rolled_atr1: "INS", rolled_atr2: "DEX", damage_bonus: "52", type_damage: "Light",
     defense_target_type: "mdef", action_keywords: "", description: DESC.lance,
   }), "NEW item — Mudra Lance (Maya Stance, Light vs MDEF)"]);
   changes.push([ik(A, IDS.SLAP), attack(IDS.SLAP, "Double Slap", {
-    skill_target: "Up to two creatures", rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "25", type_damage: "Physical",
+    skill_target: "Up to two creatures", rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "36", type_damage: "Physical",
     action_keywords: "multi", description: DESC.slap, isReaction: true,
     reaction_config_table: table([rider("Double Slap", "sl_shaken")]),
     effect_table: table([applyAe("sl_shaken", "Shaken", { target_ref: "trigger_subject" })]),
@@ -238,7 +242,7 @@ run(async ({ changes }) => {
 
   // ── Offense: Fury (Strike Form) ────────────────────────────────────────
   const slam = attack(IDS.SLAM, "Ground Slam", {
-    skill_target: "All Enemies", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "30", type_damage: "Earth",
+    skill_target: "All Enemies", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "45", type_damage: "Earth",
     action_keywords: "overflow", description: DESC.slam, isReaction: true, on_activate_effect_ref: "gs_next",
     reaction_config_table: table([rider("Ground Slam", "gs_slow")]),
     effect_table: table([
@@ -252,12 +256,13 @@ run(async ({ changes }) => {
   changes.push([ik(A, IDS.SLAM), slam, "NEW item — Ground Slam (Fury opener, all, Earth, Slow)"]);
   changes.push(ae(IDS.SLAM, "DvAeStrikeFists1", "Strike Fists", MARK("deva_offense")));
   changes.push([ik(A, IDS.FURY), attack(IDS.FURY, "Fists of Fury", {
-    skill_target: "All Enemies", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "28", type_damage: "Physical",
+    skill_target: "All Enemies", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "42", type_damage: "Physical",
     action_keywords: "chain 12", description: DESC.fury, on_activate_effect_ref: "ff_spend",
     effect_table: table([removeAe("ff_spend", "Strike Fists")]),
   }), "NEW item — Fists of Fury (all enemies, one roll each, chain 12 ticks)"]);
   changes.push([ik(A, IDS.SURYA), attack(IDS.SURYA, "Surya Palm", {
-    skill_target: "One Creature", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "62", type_damage: "Light",
+    skill_target: "One Creature", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "78", type_damage: "Light",
+    target_eligibility: "IS_SUMMON == 0 && IS_GUEST == 0",
     action_keywords: "", description: DESC.surya, isReaction: true,
     reaction_config_table: table([rider("Surya Palm", "sp_blind")]),
     effect_table: table([applyAe("sp_blind", "Blind", { target_ref: "trigger_subject" })]),
@@ -282,18 +287,19 @@ run(async ({ changes }) => {
   // No `chain` keyword here: its MP rider fires per landed strike and whether
   // HP_DEALT is the tick or the total there is unverified. Ticks can be visual.
   changes.push([ik(A, IDS.FOCUS), attack(IDS.FOCUS, "Fists of Focus", {
-    skill_target: "All Enemies", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "12", type_damage: "Dark",
+    skill_target: "All Enemies", rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "18", type_damage: "Dark",
     action_keywords: "", description: DESC.focus, isReaction: true, on_activate_effect_ref: "fo_spend",
     reaction_config_table: table([rider("Fists of Focus", "fo_drain")]),
     effect_table: table([
       removeAe("fo_spend", "Magic Fists"),
       // the per-target payload has the roll's HR but no damage value, so 3x the
-      // unmodified hit (HR + 12); affinities and Guard are not reflected
-      put("fo_drain", "deal_damage", { damage_amount: "3 * (HR + 12)", damage_resource: "mp", damage_element: "dark", damage_cause: "damage", target_ref: "trigger_subject" }),
+      // unmodified hit (HR + 18); affinities and Guard are not reflected
+      put("fo_drain", "deal_damage", { damage_amount: "3 * (HR + 18)", damage_resource: "mp", damage_element: "dark", damage_cause: "damage", target_ref: "trigger_subject" }),
     ]),
   }), "NEW item — Fists of Focus (all enemies, Dark, MP loss = 3x damage)"]);
   changes.push([ik(A, IDS.KALA), attack(IDS.KALA, "Kala Strike", {
-    skill_target: "One Creature", rolled_atr1: "INS", rolled_atr2: "DEX", damage_bonus: "25", type_damage: "Dark",
+    skill_target: "One Creature", rolled_atr1: "INS", rolled_atr2: "DEX", damage_bonus: "38", type_damage: "Dark",
+    target_eligibility: "IS_SUMMON == 0 && IS_GUEST == 0",
     defense_target_type: "mdef", action_keywords: "", description: DESC.kala, isReaction: true,
     reaction_config_table: table([
       react("creature_will_deal_damage", "ks_bonus", { reaction_source_skill: "Kala Strike" }),
@@ -354,7 +360,7 @@ run(async ({ changes }) => {
     traits: "Arrogant · Devoted to Fafnir · Respects strength · Reads how you fight",
     dex_base: "10", ins_base: "10", mig_base: "10", wlp_base: "8",
     def_mod: "+2", mdef_mod: "+2", defense: 12, magic_defense: 12,
-    max_hp: "1000", current_hp: "1000", max_mp: "100", current_mp: "100",
+    max_hp: "1400", current_hp: "1400", max_mp: "100", current_mp: "100",
     init: "12", max_zero: "6", ultima_points: "3", zenit_reward_min: "1400", zenit_reward_max: "1400",
     study_text: STUDY,
     // the rule for every solo elite (Charm), plus the design's own three; Provoked is the passive's job

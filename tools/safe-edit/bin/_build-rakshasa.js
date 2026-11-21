@@ -7,6 +7,10 @@
 //
 // Run from tools/safe-edit; --apply to write.
 //
+// NUMBERS UPDATED 2026-11-21 (Valley trio tuning, dossiers/rakshasa.md): HP 1600; Saber 80, Mace 60,
+// Chakram 45, Rain of Arrows 40, Executioner's Volley 42, Rending Orbit 48, Devour 75; Severing Verdict
+// 162 with check +8 and players-only. The WORLD is the source of truth — diff against it before any --apply.
+//
 // THE SHAPE. Four activations resolve Shift -> Strike -> Shift -> Strike. Form
 // Shift costs an activation and announces the next attack; the attack is worth
 // double because of it, and CONSUMES the stance, which is what forces the next
@@ -294,7 +298,7 @@ run(async ({ changes, deletes }) => {
   // field is why Kirin's identical Execute never fired.
   changes.push([ik(IDS.RK_SABER), attack(IDS.RK_SABER, "Saber", {
     skill_target: "One Creature", skill_range: "Melee",
-    rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "60",
+    rolled_atr1: "MIG", rolled_atr2: "DEX", damage_bonus: "80",
     action_keywords: "execute", description: DESC.saber,
     isReaction: true,
     on_activate_effect_ref: "spend_stance",
@@ -317,7 +321,7 @@ run(async ({ changes, deletes }) => {
   changes.push([ik(IDS.RK_MACE), attack(IDS.RK_MACE, "Mace", {
     skill_target: "One Creature", skill_range: "Melee",
     defense_target_type: "mdef",
-    rolled_atr1: "MIG", rolled_atr2: "MIG", damage_bonus: "40",
+    rolled_atr1: "MIG", rolled_atr2: "MIG", damage_bonus: "60",
     action_keywords: "cripple", description: DESC.mace,
     isReaction: true,
     on_activate_effect_ref: "cr_debuff",
@@ -360,7 +364,7 @@ run(async ({ changes, deletes }) => {
   changes.push([ik(IDS.RK_CHAKRAM), attack(IDS.RK_CHAKRAM, "Chakram", {
     skill_target: "Up to three creatures", skill_range: "Range",
     defense_target_type: "mdef",
-    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "20",
+    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "45",
     action_keywords: "multi", description: DESC.chakram,
     isReaction: false,
     on_activate_effect_ref: "ch_bleed",
@@ -376,7 +380,7 @@ run(async ({ changes, deletes }) => {
   // Form Shift returns 15, so it is affordable roughly every other cycle.
   changes.push([ik(IDS.RK_RAIN), attack(IDS.RK_RAIN, "Rain of Arrows", {
     skill_target: "All Enemies", skill_range: "Range",
-    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "15",
+    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "40",
     action_keywords: "overflow", cost: "30 MP", description: DESC.rain,
     isReaction: false,
     on_activate_effect_ref: "spend_stance",
@@ -390,14 +394,14 @@ run(async ({ changes, deletes }) => {
   changes.push([ik(IDS.RK_DEVOUR), skill(donorSpell, IDS.RK_DEVOUR, "Devour", ICON.active, {
     skill_type: "Active", skill_target: "One Creature", skill_range: "Melee",
     rolled_atr1: "-", rolled_atr2: "-",
-    check_bonus: "0", damage_bonus: "", type_damage: "", defense_target_type: "def",
+    check_bonus: "0", damage_bonus: "75", type_damage: "", defense_target_type: "def",
     isCheck: false, isOffensiveSpell: false, isReaction: false,
     cost: "-", duration: "Instantaneous", details_roller: "Show",
     action_keywords: "", description: DESC.devour,
     on_activate_effect_ref: "dv_bite",
     effect_table: {
       "0": { $deleted: false, effect_kind: "deal_damage", effect_label: "dv_bite",
-             damage_amount: "45", damage_element: "physical", damage_cause: "damage",
+             damage_amount: "75", damage_element: "physical", damage_cause: "damage",
              target_ref: "action_targets", chain_steps: "dv_feed" },
       "1": { $deleted: false, effect_kind: "grant", effect_label: "dv_feed",
              grant_resource: "hp", grant_amount: "22", target_ref: "self" },
@@ -499,7 +503,7 @@ run(async ({ changes, deletes }) => {
   // down. The finisher for a party that has taken casualties.
   changes.push([ik(IDS.RK_VOLLEY), attack(IDS.RK_VOLLEY, "Executioner's Volley", {
     skill_target: "All Enemies", skill_range: "Range",
-    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "18",
+    rolled_atr1: "DEX", rolled_atr2: "INS", damage_bonus: "42",
     action_keywords: "execute, overflow", description: DESC.volley,
     isReaction: true,
     on_activate_effect_ref: "spend_combo",
@@ -523,7 +527,7 @@ run(async ({ changes, deletes }) => {
   changes.push([ik(IDS.RK_ORBIT), attack(IDS.RK_ORBIT, "Rending Orbit", {
     skill_target: "Up to three creatures", skill_range: "Range",
     defense_target_type: "mdef",
-    rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "22",
+    rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "48",
     action_keywords: "cripple, multi", description: DESC.orbit,
     isReaction: true,
     on_activate_effect_ref: "ro_bleed",
@@ -560,6 +564,7 @@ run(async ({ changes, deletes }) => {
   changes.push([ik(IDS.RK_VERDICT), attack(IDS.RK_VERDICT, "Severing Verdict", {
     skill_target: "One Creature", skill_range: "Melee",
     rolled_atr1: "MIG", rolled_atr2: "MIG", damage_bonus: "162",
+    check_bonus: "8", target_eligibility: "IS_SUMMON == 0 && IS_GUEST == 0",
     action_keywords: "", description: DESC.verdict,
     isReaction: false,
     on_activate_effect_ref: "spend_combo",
@@ -586,7 +591,7 @@ run(async ({ changes, deletes }) => {
   // its own unadapted party, and the measured live-to-modelled ratio is ~4.2.
   // Crisis still lands at the start of round 3 on its own: with a uniform party
   // rate, half the bar IS the midpoint of the fight.
-    max_hp: "1200", current_hp: "1200", max_mp: "45", current_mp: "45",
+    max_hp: "1600", current_hp: "1600", max_mp: "45", current_mp: "45",
     init: "12", max_zero: "6", ultima_points: "3",
     zenit_reward_min: "1400", zenit_reward_max: "1400",
     study_text: STUDY,
