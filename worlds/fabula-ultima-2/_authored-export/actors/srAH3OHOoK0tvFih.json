@@ -2153,6 +2153,8 @@
               "chargeKey": "doom",
               "charges": 3,
               "directorPermanent": true,
+              "equipLock": "Muramasa",
+              "hakoLeftovers": true,
               "lifetimeMode": "on_activation",
               "muramasaDoom": true,
               "reactionConfig": {
@@ -3018,7 +3020,8 @@
               "effect_label": "rzk_strikes",
               "finisher_label": "Lion Heart",
               "finisher_mult": "1.2",
-              "gauge_sweep_ms": "650",
+              "gauge_gap_ms": "70",
+              "gauge_sweep_ms": "460",
               "gauge_title": "Renzokuken",
               "gauge_zone": "70-92",
               "strike_count": "6",
@@ -6214,16 +6217,8 @@
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
-              "condition_formula": "ACTION_IS_SPELL == 1 && DAMAGE_IS_HP == 1 && TARGET_STATUS_COUNT > 0",
-              "reaction_damage_type": "dark",
-              "reaction_effect_ref": "gl_malediction",
-              "reaction_passive_mode": "force",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_will_deal_damage"
-            },
-            "1": {
-              "condition_formula": "ACTION_IS_SPELL == 1 && DAMAGE_IS_HP == 1 && TARGET_STATUS_COUNT > 0",
-              "reaction_damage_type": "poison",
+              "condition_formula": "ACTION_IS_SPELL == 1 && DAMAGE_IS_HP == 1 && TARGET_STATUS_COUNT > 0 && (TRIGGER_DAMAGE_IS_DARK == 1 || TRIGGER_DAMAGE_IS_POISON == 1)",
+              "reaction_damage_type": "",
               "reaction_effect_ref": "gl_malediction",
               "reaction_passive_mode": "force",
               "reaction_source": "self",

@@ -342,7 +342,7 @@
     }
   },
   "folder": "HkLuSetFolder001",
-  "img": "https://i.etsystatic.com/15111921/r/il/931254/5957895207/il_fullxfull.5957895207_sz2o.jpg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Luchador_Pant.webp",
   "name": "Luchador Pant",
   "ownership": {
     "WQGFvLStTZeWGpak": 3,
@@ -354,6 +354,7 @@
     "props": {
       "description": "<ul><li><p>Creatures you <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grapple</a> must beat <strong>DL 13</strong> to break free.</p></li><li><p>When a creature inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> on you, you inflict <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> on it.</p></li></ul>",
       "flavor_text": "<p><em>Glittering tights cut for flying off the top rope. Nobody has ever wriggled out of them, and nobody has ever looked better trying.</em></p>",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Luchador_Pant.webp",
       "isMartial": false,
       "isSet": true,
       "item_baseDef": "0",

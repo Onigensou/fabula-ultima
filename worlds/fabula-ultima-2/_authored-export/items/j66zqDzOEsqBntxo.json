@@ -163,7 +163,7 @@
     }
   },
   "folder": "HkLuSetFolder001",
-  "img": "https://m.media-amazon.com/images/I/91fZwooKjBL._AC_SL1500_.jpg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Luchador_Mask.webp",
   "name": "Luchador Mask",
   "ownership": {
     "WQGFvLStTZeWGpak": 3,
@@ -175,6 +175,7 @@
     "props": {
       "description": "<ul><li><p>You can only use <strong>Brawling</strong> weapons.</p></li><li><p>You ignore the target's <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> immunity.</p></li></ul>",
       "flavor_text": "<p><em>Never take off the mask. Behind it is just some guy; in front of it is a legend.</em></p>",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Luchador_Mask.webp",
       "isSet": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",

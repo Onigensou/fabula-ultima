@@ -97,7 +97,7 @@
     }
   },
   "folder": "HkLuSetFolder001",
-  "img": "https://p.vitalmtb.com/photos/products/11191/photos/9952/s1600_BlackUp.jpg?VersionId=jWz9JAs5MixhjFWEvpTKBz_NzVkty8lt",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Luchador_Gloves.webp",
   "name": "Luchador Gloves",
   "ownership": {
     "WQGFvLStTZeWGpak": 3,
@@ -113,6 +113,7 @@
       "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\">Conquer 5</a>: inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> on the target.</p></li><li><p>You deal <strong>5 bonus damage</strong> when you attack a <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> target.</p></li><li><p>You cannot equip a <strong>Shield</strong>.</p></li></ul>",
       "flavor_text": "<p><em>Taped at the knuckles, stitched with stars. Once these grab you, the crowd is already counting to three.</em></p>",
       "hand_slots": "One-handed",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Luchador_Gloves.webp",
       "isMartial": false,
       "isSet": true,
       "item_cost": "2300",

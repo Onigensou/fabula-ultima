@@ -51,6 +51,8 @@
           "chargeKey": "doom",
           "charges": 3,
           "directorPermanent": true,
+          "equipLock": "Muramasa",
+          "hakoLeftovers": true,
           "lifetimeMode": "on_activation",
           "muramasaDoom": true,
           "reactionConfig": {
