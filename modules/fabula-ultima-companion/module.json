@@ -545,6 +545,7 @@
     "scripts/battle-director/camera-authority.js",
     "scripts/battle-director/director-boot.js",
     "scripts/battle-director/timed-strike-gauge.js",
+    "scripts/battle-director/timed-strike-cinematic.js",
     "scripts/shared/held-status.js",
     "scripts/battle-director/unit-inspect/unit-inspect.js",
     "scripts/battle-director/set-bonus-hooks.js",

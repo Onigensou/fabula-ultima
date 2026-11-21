@@ -297,6 +297,8 @@ t("remove_ae (Vaccine) is a cleanse", () => {
 t("a move whose rows play their own animation (Phoenix Feather) gets no default", () => {
   assert.equal(hasOwnAnimationRow({ effect_table: rows({ effect_label: "a", effect_kind: "chain", chain_steps: "b" }, { effect_label: "b", effect_kind: "play_animation", action_ref: "FX: Revive" }) }), true);
   assert.equal(hasOwnAnimationRow({ effect_table: rows({ effect_label: "g", effect_kind: "grant" }) }), false);
+  // Renzokuken: the timed_strikes cinematic plays it, no default beat on top
+  assert.equal(hasOwnAnimationRow({ effect_table: rows({ effect_label: "r", effect_kind: "chain", chain_steps: "c, s" }, { effect_label: "c", effect_kind: "consume_charge" }, { effect_label: "s", effect_kind: "timed_strikes" }) }), true);
 });
 t("item timing: step + glint (+ pop and throw when it deals damage) before the first landing", () => {
   const heal = resolveBeats([{ k: "heal", to: "target", post: false, needsHit: false }], {});

@@ -5047,11 +5047,27 @@ async function applyTimedStrikesEffect(row, ctx) {
   const owner = ownerUserId ? game.users?.get(ownerUserId) : null;
   const presentation = sim ? SimMode.config?.pace === "watch" : (typeof document !== "undefined");
   const { runTimedStrikeGauge } = await import("./timed-strike-gauge.js");
+  // who stands where, for the cinematic every client plays (timed-strike-cinematic.js)
+  const tokId = (t) => t?.id ?? t?.document?.id ?? null;
+  let casterTokenId = tokId(ctx.reactorToken) ?? tokId(ctx.casterToken);
+  if (!casterTokenId) { try { casterTokenId = tokId((await resolveTargetRef("self", ctx))?.tokens?.[0]); } catch (_) { casterTokenId = null; } }
+  // the game's combo counter ("N HIT / X DAMAGE", as the approved mockup shows it) over the strikes:
+  // a timed_strikes skill has no damage formula, so the action itself never opens its window
+  let hc = null;
+  if (presentation) {
+    try {
+      hc = await import("./hit-counter.js");
+      const disp = Number(caster.getActiveTokens?.()?.[0]?.document?.disposition ?? 1);
+      hc.beginHitCounter({ id: `tsg-${casterTokenId ?? caster.id}`, side: disp === -1 ? "enemy" : "party" });
+    } catch (e) { hc = null; warn("skill-effects.timed_strikes: hit counter begin threw", e); }
+  }
   const run = await runTimedStrikeGauge({
     ownerUserId: (owner && !owner.isGM) ? ownerUserId : null,
     presentation,
     spec: { title: cfg.title || ctx.skill?.name || "Timed strikes", icon: ctx.skill?.img ?? null, actorName: caster.name,
-      count: cfg.count, sweepMs: cfg.sweepMs, zone: cfg.zone, gapMs: cfg.gapMs, autoRate: cfg.autoRate },
+      count: cfg.count, sweepMs: cfg.sweepMs, zone: cfg.zone, gapMs: cfg.gapMs, autoRate: cfg.autoRate,
+      casterTokenId, targetTokenIds: targetResult.tokens.map(tokId).filter(Boolean), sceneId: canvas?.scene?.id ?? null,
+      finisher: cfg.finisherMult > 0, finisherLabel: cfg.finisherLabel || null },
     onStrike: async (i, hit) => {
       await deal(R.strikeDamage(swing, hit, cfg), `${row.effect_label ?? "timed"}_s${i + 1}`, { i, hit });
     },
@@ -5061,11 +5077,14 @@ async function applyTimedStrikesEffect(row, ctx) {
   const hits = run.hits.filter(Boolean).length;
   let finisher = null;
   if (hits >= cfg.count && cfg.finisherMult > 0) {
+    // the finisher's wind-up plays on every client; its damage lands on the hit
+    try { await ctl?.finisher?.({ label: cfg.finisherLabel || null }); } catch (e) { warn("skill-effects.timed_strikes: finisher cue threw", e); }
     await deal(R.finisherDamage(swing, cfg), `${row.effect_label ?? "timed"}_finisher`, { i: cfg.count, hit: true, finisher: cfg.finisherLabel || "Finisher" });
     finisher = strikes[strikes.length - 1];
   }
   const tier = R.tierOf(hits, cfg.count);
-  try { ctl?.finish?.({ tier, total }); } catch (e) { warn("skill-effects.timed_strikes: finish threw", e); }
+  try { hc?.endHitCounter?.({ id: `tsg-${casterTokenId ?? caster.id}` }); } catch (_) {}
+  try { await ctl?.finish?.({ tier, total }); } catch (e) { warn("skill-effects.timed_strikes: finish threw", e); }
   log(`skill-effects.timed_strikes: ${caster.name} ${ctx.skill?.name ?? ""} — ${tier} ${hits}/${cfg.count} (${run.judgedBy}) swing ${swing}: `
     + strikes.map((s) => `${s.finisher ? s.finisher : `#${s.i + 1}`}${s.hit ? "T" : "-"}=${s.amount}>${s.dealt}${s.affinity ? `[${s.affinity}]` : ""}`).join(" ")
     + ` total ${total}`);

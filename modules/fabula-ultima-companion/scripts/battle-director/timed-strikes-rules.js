@@ -16,9 +16,9 @@ export const TIMED_STRIKE_DEFAULTS = Object.freeze({
   missMult: 0.20,
   finisherMult: 1.2,
   finisherLabel: "",
-  sweepMs: 650,
+  sweepMs: 460,
   zone: Object.freeze([0.70, 0.92]),
-  gapMs: 260,
+  gapMs: 70,
   autoRate: 0.7,
 });
 
