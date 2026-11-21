@@ -13,7 +13,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const out = { scenarios: {} };
 
 // ── 1. migration ─────────────────────────────────────────────────────────────
-for (let i = 0; i < 240 && !game.items.get("mODVDmjIfozcfERi")?.getFlag(NS, "sonicGunblade"); i++) await wait(250);
+for (let i = 0; i < (O.skipMig ? 0 : 240) && !game.items.get("mODVDmjIfozcfERi")?.getFlag(NS, "sonicGunblade"); i++) await wait(250);
 const it = (id) => game.items.get(id);
 const sb = it("f3QKcoZ4HwrR607a"), katar = it("3ZV5drjroWrvXqkw"), gb = it("mODVDmjIfozcfERi");
 out.migration = {
@@ -31,6 +31,9 @@ out.migration = {
 const pc = (n) => game.actors.find((a) => a.name === n && a.hasPlayerOwner && String(a.system?.props?.main_hand ?? "").trim());
 const dummy = game.actors.getName("Test Target Enemy");
 const ES = await import("/modules/fabula-ultima-companion/scripts/battle-director/equipment-swap.js");
+// remove the holder's Inner Wellspring (its ask retypes every hit to the chosen element: bolt on this snapshot)
+async function noWellspring(actor) { const ids = actor.effects.filter((e) => e.flags?.[NS]?.innerWellspring || /wellspring/i.test(e.name ?? "")).map((e) => e.id); if (ids.length) await actor.deleteEmbeddedDocuments("ActiveEffect", ids); return ids.length; }
+async function setProps(actor, patch) { const old = {}; for (const k of Object.keys(patch)) old[k] = foundry.utils.getProperty(actor, k); await actor.update(patch); return old; }
 async function giveWeapon(actor, weaponId) {
   const old = actor.items.filter((i) => i.getFlag(NS, "sgTest"));
   for (const o of old) { for (const k of actor.items.filter((i) => i.system?.container === o.id)) await k.delete(); await o.delete(); }
@@ -76,10 +79,11 @@ console.log = (...a) => { try { cap(...a); } catch {} return origLog(...a); };
 const origWarn = console.warn; const warns = [];
 console.warn = (...a) => { try { const s = a.map((x) => (typeof x === "string" ? x : x?.message ?? "")).join(" "); if (/carrier|Sonic|Gunblade|transform|chain|volley/i.test(s)) warns.push(s.slice(0, 300)); } catch {} return origWarn(...a); };
 
-async function sonicRun(label, card, strikes) {
+async function sonicRun(label, card, strikes, opts = {}) {
   const zarg = pc(O.caster || "Zarg");
   await giveWeapon(zarg, "3ZV5drjroWrvXqkw");
   const foe = O.enemy ? game.actors.getName(O.enemy) : dummy;
+  if (opts.setup) await opts.setup(zarg, foe);
   globalThis.__FU_CHAIN_FORCED_DICE__ = strikes;
   globalThis.__SB_TRACE = [];
   // frame gaps + long tasks (perf), wall-clock ms like the trace's wall field
@@ -119,7 +123,7 @@ async function sonicRun(label, card, strikes) {
 async function attackRun(label, actorName, weaponId, faces, { rounds = 1, setup = null, forceReactions = null } = {}) {
   const a = pc(actorName);
   await giveWeapon(a, weaponId);
-  if (setup) await setup(a);
+  if (setup) await setup(a, dummy);
   const SM = sim.mode; const orig = SM.recordDeclaration.bind(SM);
   let n = 0;
   SM.recordDeclaration = (k, s) => { const f = Array.isArray(faces) ? faces[Math.min(n, faces.length - 1)] : faces; n++; if (f) SM.armDice(f[0], f[1], f[2], f[3]); return orig(k, s); };
@@ -167,6 +171,38 @@ if (want("U")) {
     }, 20);
   } });
   if (hookId) Hooks.off("updateActor", hookId);
+}
+// ── Fire proof (no Inner Wellspring): odd / even / crit with the Sword form ──
+if (want("F")) {
+  const nw = async (a) => { out.wellspringRemoved = await noWellspring(a); };
+  await attackRun("F1 gunblade odd, no wellspring", "Blanche", "mODVDmjIfozcfERi", [[5, 12, 4, 12]], { setup: nw });
+  await attackRun("F2 gunblade even, no wellspring", "Blanche", "mODVDmjIfozcfERi", [[5, 12, 5, 12]], { setup: nw });
+  await attackRun("F3 gunblade crit, no wellspring", "Blanche", "mODVDmjIfozcfERi", [[6, 12, 6, 12]], { setup: nw });
+}
+// ── Sonic Blow edges (no wellspring, so the hits stay Physical) ──
+if (want("E")) {
+  const hit = O.hit || { rA: 10, rB: 9 }, all = Array(7).fill(hit);
+  // a flat damage bonus (+10 melee): counted once, ×2, shared over the 8 hits
+  await sonicRun("E1 sonic +10 flat", hit, all, { setup: async (z) => { await noWellspring(z); await z.createEmbeddedDocuments("ActiveEffect", [{ name: "SG test +10 melee", changes: [{ key: "system.props.extra_damage_mod_melee", mode: 2, value: "10" }], flags: { [NS]: { sgTest: true } } }]); } });
+  const clearFlat = async (z) => { const ids = z.effects.filter((e) => e.flags?.[NS]?.sgTest).map((e) => e.id); if (ids.length) await z.deleteEmbeddedDocuments("ActiveEffect", ids); };
+  for (const [lab, aff] of [["E2 sonic vs Resistant", "RS"], ["E3 sonic vs Vulnerable", "VU"]]) {
+    let old = null;
+    await sonicRun(lab, hit, all, { setup: async (z, foe) => { await clearFlat(z); await noWellspring(z); old = await setProps(foe, { "system.props.affinity_1": aff }); } });
+    await dummy.update(old);
+  }
+  // the Perfect bonus kills: HP so the 8 hits leave it standing and the Perfect strike drops it
+  let oldHp = null;
+  await sonicRun("E4 sonic Perfect kills", hit, all, { setup: async (z, foe) => { await clearFlat(z); await noWellspring(z); oldHp = await setProps(foe, { "system.props.current_hp": Number(O.killHp ?? 35) }); } });
+  await dummy.update(oldHp);
+}
+// ── 4ae73480: will_deal_damage rows gated on the roll now land ──
+if (want("W")) {
+  const nw = async (a) => { await noWellspring(a); };
+  await attackRun("W1 Lucky Mallet crit 7/7", "Blanche", "0AlyI2roR4BT5RAv", [[7, 12, 7, 12]], { setup: nw });
+  await attackRun("W2 Lucky Mallet no crit 7/6", "Blanche", "0AlyI2roR4BT5RAv", [[7, 12, 6, 12]], { setup: nw });
+  await attackRun("W3 Minotaurus Axe margin >= 5 (12/11)", "Blanche", "seumBxHYbWkD4puo", [[12, 12, 11, 12]], { setup: nw });
+  await attackRun("W4 Gae Bolg crit 6/6", "Blanche", "i4oM2NTWVz9lRIZz", [[6, 12, 6, 6]], { setup: nw });
+  await attackRun("W5 Arcana Avant total >= 20 (12/8)", "Zarg", "36xO7InIbrbVP2Kx", [[12, 12, 8, 8]], { setup: nw });
 }
 console.log = origLog; console.warn = origWarn;
 return out;
