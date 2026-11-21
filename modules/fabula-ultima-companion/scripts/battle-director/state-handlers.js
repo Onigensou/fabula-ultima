@@ -5709,8 +5709,13 @@ const Compute = {
         // Chain N on the weapon (`chain N` in its action_keywords): one card, N
         // strikes — see the Skill branch. A two-weapon pass keeps its own pass
         // loop, so it never chains on top of it.
+        // `chain {FORMULA}` on an attack: the count is evaluated now against the
+        // attacker, exactly as the Skill branch does. Without an evaluator a
+        // formula Chain is off, so an NPC attack's conditional Combo (the Spirit
+        // Hawk's Dive Strike: Combo 2 at its owner's 4-piece set) never split.
+        const _atkChainEval = (f) => evaluateFormula(String(f), buildSkillResolver({ actor: liveActor, payload: {}, skill: null, round: director.dCombat?.round ?? 0, vars: { CASTER_LEVEL: Number(liveActor?.system?.props?.level ?? 0) || 0 } }), 0);
         const _chainSpec = String(director.ctx.attackMode ?? "").startsWith("two-weapon")
-          ? null : chainSpecFor({ kind: "Attack", weapon, isCheck: true, hasDamage: true });
+          ? null : chainSpecFor({ kind: "Attack", weapon, isCheck: true, hasDamage: true, evalCount: _atkChainEval });
         const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(targetSnapshots, "", liveActor, "attack").map((e) => e.tokenUuid) : [];
         const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, targetSnapshots.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
         const _chainNarrow = _chainDraw?.keep

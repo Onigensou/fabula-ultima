@@ -45,6 +45,7 @@ import { INTENTS } from "./intents.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 import { potionRainHalves } from "../healing-system/potion-rain.js";
 import { boundSummonRef } from "../shared/summon-bindings.js";
+import { companionOf, isCompanionKind, announceCompanionRefused } from "../shared/companion-rule.js";
 import { classifyEffect, isStatusTier } from "./status-classifier.js";
 import { hotUrl } from "./hot-reload.js";
 
@@ -12507,6 +12508,22 @@ async function applySummonEffect(row, ctx) {
   const side = disposition === -1 ? "enemy" : "party";
   const summonerUuid = ctx.reactorActor?.uuid ?? null;
 
+  // One companion per character (house rule, shared/companion-rule.js). A row
+  // that summons a COMPANION (summon_kind "companion": the Mantle's Spirit Hawk)
+  // does nothing when its owner already has one linked or on the field — the
+  // existing companion wins (Blanche keeps King Gorger). Any other kind is an
+  // ordinary summon and is never gated here.
+  if (isCompanionKind(summonKind) && summonerUuid) {
+    const held = companionOf(summonerUuid);
+    if (held) {
+      await announceCompanionRefused({
+        ownerName: ctx.reactorActor?.name, held, casterToken: casterTok,
+        icon: ctx.carrierImg ?? ctx.skill?.img ?? null,
+      });
+      return { ok: false, kind: "summon", reason: "companion-limit", held: held.name, applied: [] };
+    }
+  }
+
   // Caster-front anchor: a token-CENTER point one cell "in front" of the caster,
   // i.e. one grid-step from the caster toward the centre of the scene (the way it
   // faces). spawnLiveDirectorTokens fans from here and skips occupied cells, so a
@@ -12954,7 +12971,20 @@ export async function reAddPersistentSummons(director) {
   }
 
   let added = 0;
+  // One companion per character (shared/companion-rule.js): a second standing
+  // companion linked to the same owner (legacy data — the Party Menu bind
+  // already replaces rather than adds) is not fielded; the first one wins. A
+  // linked companion always outranks a gear-granted one, which the summon gate
+  // refuses while this one is linked, so nothing here yields to a token.
+  const companionOwners = new Map();
   for (const { actor, owner } of toAdd) {
+    if (isCompanionKind(actor.flags?.[FLAG_NS]?.persistentSummonKind)) {
+      if (companionOwners.has(owner)) {
+        log(`reAddPersistentSummons: ${actor.name} not fielded — owner ${owner} already has a companion (${companionOwners.get(owner)})`);
+        continue;
+      }
+      companionOwners.set(owner, actor.name);
+    }
     try {
       // A summon that is meant to SURVIVE its own defeat (Faithful Companion:
       // "if your companion falls to 0 HP, they flee and rejoin you at the start
