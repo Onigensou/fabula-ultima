@@ -2,7 +2,7 @@
 // (Lionheart's Renzokuken, 2026-11-21; look + timing from the approved mockup
 // E:\Art(New Com)\DND\Fabula Ultima\Resource\Animation\Lionheart\lionheart-mockup.html v4).
 //
-// Before each strike a needle sweeps the bar once (650 ms by default). The FIRST
+// Before each strike a needle sweeps the bar once (460 ms by default). The FIRST
 // press (Z / Space / click on the bar) is judged: inside the TRIGGER zone
 // (70-92 % of the bar by default) = a TRIGGER.
 //
@@ -36,12 +36,13 @@ const STYLE_ID = "fu-tsg-style";
 //   introMs        — the cinematic's intro before the HUD shows: the camera hand-over (the 3D
 //                    camera eases to neutral, up to ~600 ms) + the mockup's power-up light and
 //                    dash (900 + 520 + 250 ms), so the gauge opens after the dash as in the mockup
-//   leadMs         — HUD on screen → first sweep (unchanged from the engine build)
+//   leadMs         — HUD on screen → first sweep (the mockup's lead-in, 380 ms; sweep 460 / gap 70 are
+//                    the mockup's too, see timed-strikes-rules TIMED_STRIKE_DEFAULTS)
 //   finisherLeadMs — FINISHER → the finisher's damage (its wind-up lands on the hit)
 //   closeDelayMs   — DONE → the HUD leaves (the mockup closes it once the camera is home)
 //   tailMs         — DONE → the action moves on (the restore has played out);
 //                    finisherTailMs more after a finisher (its afterglow plays first)
-export const TSG_TIMING = Object.freeze({ introMs: 2300, leadMs: 450, finisherLeadMs: 1200, closeDelayMs: 1850, tailMs: 2100, finisherTailMs: 1000 });
+export const TSG_TIMING = Object.freeze({ introMs: 2300, leadMs: 380, finisherLeadMs: 1200, closeDelayMs: 1850, tailMs: 2100, finisherTailMs: 1000 });
 const SND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 // the mockup's gauge cues (its sfx(key, vol) plays at vol × 0.75)
 export const TSG_SFX = Object.freeze({ cursor: [SND + "BattleCursor_1.wav", 0.2 * 0.75], back: [SND + "Cursor_Back.mp3", 0.3 * 0.75] });
@@ -268,14 +269,14 @@ function onSocket(data) {
       if (p.ownerUserId && p.ownerUserId === me) { ownerPlay(p).catch((e) => warn("timed-strike-gauge: owner play threw", e)); return; }
       if (p.presentation === false) return;
       const hud = new GaugeHud({ ...p.spec, interactive: false, showAfterMs: Number(p.spec?.introMs) || 0 });
-      hud._sweepMs = p.spec?.sweepMs ?? 650;
+      hud._sweepMs = p.spec?.sweepMs ?? 460;
       _runs.set(p.requestId, { hud });
       hook("open", { requestId: p.requestId, owner: false, spec: p.spec });
       return;
     }
     case "SWEEP": {
       const r = _runs.get(p.requestId);
-      if (r && !r.owner) r.hud.sweep(p.i, r.hud._sweepMs ?? 650).catch(() => {});
+      if (r && !r.owner) r.hud.sweep(p.i, r.hud._sweepMs ?? 460).catch(() => {});
       hook("sweep", { requestId: p.requestId, i: p.i });
       return;
     }

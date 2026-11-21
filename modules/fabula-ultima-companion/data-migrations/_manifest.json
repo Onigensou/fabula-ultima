@@ -700,6 +700,10 @@
     {
       "key": "2026-11-21-lionheart",
       "path": "data-migrations/2026-11-21-lionheart.js"
+    },
+    {
+      "key": "2026-11-21-renzokuken-timing",
+      "path": "data-migrations/2026-11-21-renzokuken-timing.js"
     }
   ]
 }

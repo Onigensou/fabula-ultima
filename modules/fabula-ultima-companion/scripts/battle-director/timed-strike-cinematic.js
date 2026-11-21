@@ -70,10 +70,9 @@ export const CINE = Object.freeze({
 });
 
 // pixelfx pxfx_lh_ice_pillar (the finisher's light, the gold pillar in the ice palette) is
-// built locally (pixelfx\foundry\out\pxfx_lh_ice_pillar) but NOT on Forge yet (checked
-// 2026-11-21: 404). Upload its three layers to the path below and flip this on; until then
-// the finisher plays without the pillar (no hand-drawn stand-in, by the house rule).
-const ICE_PILLAR_ON_FORGE = false;
+// built locally (pixelfx\foundry\out\pxfx_lh_ice_pillar) and uploaded to Forge 2026-11-21
+// (the path below, byte-checked). Set false to play the finisher without the pillar.
+const ICE_PILLAR_ON_FORGE = true;
 
 // ── assets (all Forge, all the mockup's) ────────────────────────────────────
 const mv = (key) => ({ url: clipUrl(key), w: MV_CLIPS[key].w, h: MV_CLIPS[key].h, ax: MV_CLIPS[key].ax, ay: MV_CLIPS[key].ay, dur: MV_CLIPS[key].dur });
@@ -655,7 +654,7 @@ function startRun(requestId, spec) {
   const c = new Cine(requestId, spec);
   runs.set(requestId, c);
   // watchdog: the longest a run can take (the GM's own budget + the finisher + the restore)
-  const t = TSG_TIMING, n = Number(spec?.count) || 6, per = (Number(spec?.sweepMs) || 650) + (Number(spec?.gapMs) || 260);
+  const t = TSG_TIMING, n = Number(spec?.count) || 6, per = (Number(spec?.sweepMs) || 460) + (Number(spec?.gapMs) || 70);
   const budget = 6000 + (Number(spec?.introMs) || t.introMs) + n * (per + 1500) + 6000 + t.tailMs + 4000;
   c.watchdog = setTimeout(() => c.abort("watchdog"), budget);
   c.start().catch((e) => { warn(`${TAG}: start threw`, e); c.abort("start threw"); });

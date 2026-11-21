@@ -5,7 +5,8 @@ import { readTimedStrikeConfig, strikeDamage, finisherDamage, judgePress, tierOf
 const cfg = readTimedStrikeConfig({ strike_count: "6", strike_hit_mult: "0.55", strike_miss_mult: "0.2", finisher_mult: "1.2" });
 assert.equal(cfg.count, 6);
 assert.deepEqual(cfg.zone, [0.7, 0.92]);
-assert.equal(cfg.sweepMs, 650);
+assert.equal(cfg.sweepMs, 460);   // the mockup's timing (user 2026-11-21)
+assert.equal(cfg.gapMs, 70);
 assert.equal(cfg.autoRate, 0.7);
 // swing 10 (Lionheart Form I, HR 0)
 assert.equal(strikeDamage(10, true, cfg), 6);   // round(5.5)
