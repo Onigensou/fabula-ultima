@@ -72,7 +72,7 @@ const ID = {
   zenithPsv: "HkC4ZenithPsv001", scythePsv: "HkC4DScythePsv01", scytheImm: "HkC4DScytheImmAE",
   franticPsv: "HkC4FranticPsv01", kusariPsv: "HkC4KusariPsv001", gothicPsv: "HkC4GothicPsv001",
   curseCollPsv: "HkC4CurseCollPsv", ivoryPsv: "HkC4IvoryStatPsv",
-  rewinderAe: "HkC4RewinderAE01", delayedAe: "HkC4DelayedDmgAE", tommyPsv: "HkC4TommyGunPsv1",
+  rewinderAe: "HkC4RewinderAE01", delayedAe: "HkC4DelayedDmgAE", tommyAe: "HkC4TommySprayAE",
 };
 const REWINDER = "lpM8id6fJzB7JP0A";
 
@@ -326,9 +326,13 @@ const OLDER = [
       `Attacks with this weapon gain ${J("ChnStrikeKeyw0rd", "Chain")} <strong>5</strong>: five separate shots, each against a random creature among your targets.`,
       "Each shot deals <strong>half</strong> damage.",
     ),
-    passive: { id: ID.tommyPsv, name: "Tommy Gun (Passive)",
-      effect_table: table([{ effect_kind: "adjust_damage", effect_label: "tg_spray", damage_stage: "outgoing", damage_operation: "multiply", damage_amount: "0.5" }]),
-      reaction_config_table: table([rcOut({ reaction_passive_mode: "force", reaction_requires_weapon_used: true, condition_formula: "DAMAGE_IS_HP == 1", reaction_effect_ref: "tg_spray" })]) } },
+    // Halving via the attacker flag Bane uses (damage_dealt_mult_attack), which
+    // action-profile applies to EVERY Chain strike's own damage roll. An outgoing
+    // adjust_damage passive did not reach the separate strikes (runner, 11-21).
+    // The gun is two-handed, so while equipped all the wielder's attacks are its.
+    ae: [{ _id: ID.tommyAe, name: "Tommy Gun: spray", transfer: true, disabled: false,
+      changes: [{ key: "flags.fabula-ultima-companion.damage_dealt_mult_attack", mode: 1, priority: 20, value: "0.5" }],
+      flags: { [M]: { [FLAG]: "tommy-spray" } } }] },
   { name: "Black Mage Wand", props: { item_rarity: "Rare", item_cost: "3500" } },
   { name: "Tailwind", props: { item_rarity: "Rare" } },
   // Rewinder: every HP hit is zeroed and banked on an untouchable "Delayed Damage"
