@@ -761,6 +761,12 @@
               "effect_label": "no_provoke",
               "include_persistent": "true",
               "target_ref": "self"
+            },
+            "20": {
+              "$deleted": false,
+              "chain_steps": "g_clear_off,g_clear_st,g_mark,g_stance",
+              "effect_kind": "chain",
+              "effect_label": "guard_nf"
             }
           },
           "heroic_requirement": "",
@@ -814,7 +820,7 @@
             },
             "3": {
               "$deleted": false,
-              "condition_formula": "(ROUND % 2 == 1 || ROUND == 0) && AE_COUNT_GUARD_ROUND == 0",
+              "condition_formula": "(ROUND % 2 == 1 || ROUND == 0) && AE_COUNT_GUARD_ROUND == 0 && OWN_SUMMON_COUNT == 0",
               "reaction_cause_filter": "",
               "reaction_effect_ref": "guard",
               "reaction_isPassive": true,
@@ -854,6 +860,17 @@
               "reaction_resource_filter": "",
               "reaction_source": "self",
               "reaction_trigger": "creature_status_applied"
+            },
+            "7": {
+              "$deleted": false,
+              "condition_formula": "(ROUND % 2 == 1 || ROUND == 0) && AE_COUNT_GUARD_ROUND == 0 && OWN_SUMMON_COUNT > 0",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "guard_nf",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "",
+              "reaction_trigger": "round_start"
             }
           },
           "rolled_atr1": "-",

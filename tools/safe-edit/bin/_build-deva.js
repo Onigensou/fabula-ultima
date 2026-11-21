@@ -169,17 +169,21 @@ run(async ({ changes }) => {
       react("creature_targeted_by_action", "st_magic", { condition_formula: "SUBJECT_IS_SELF == 1 && ATTACK_VS_MDEF == 1" }),
       // round 1 is laid by conflict_start (ROUND may read 0 there) or round_start, whichever comes first
       react("conflict_start", "guard", { reaction_source: "", condition_formula: ODD_FRESH }),
-      react("round_start", "guard", { reaction_source: "", condition_formula: ODD_FRESH }),
+      // Fist Ready (= summon) only when no fists are out; with fists still alive she skips the summon so
+      // they reach their fuse-2 Detonate instead of being replaced (user pick "A", 2026-11-21)
+      react("round_start", "guard", { reaction_source: "", condition_formula: `${ODD_FRESH} && OWN_SUMMON_COUNT == 0` }),
       react("round_start", "to_strike", { reaction_source: "", condition_formula: `${EVEN_FRESH} && ${PICK_STRIKE}` }),
       react("round_start", "to_magic", { reaction_source: "", condition_formula: `${EVEN_FRESH} && !${PICK_STRIKE}` }),
       // every Provoke variant is its own AE name ("Provoked (Thread the Horns)"…), so
       // no status filter; the removal names them all (live 2026-11-09)
       react("creature_status_applied", "no_provoke"),
+      react("round_start", "guard_nf", { reaction_source: "", condition_formula: `${ODD_FRESH} && OWN_SUMMON_COUNT > 0` }),
     ]),
     effect_table: table([
       applyAe("st_strike", "Strike Stack", { ae_duplicate_mode: "add_charges", ae_initial_charges: "1" }),
       applyAe("st_magic", "Magic Stack", { ae_duplicate_mode: "add_charges", ae_initial_charges: "1" }),
       chain("guard", ["g_clear_off", "g_clear_st", "g_mark", "g_stance", "g_fist"]),
+      chain("guard_nf", ["g_clear_off", "g_clear_st", "g_mark", "g_stance"]),
       removeTag("g_clear_off", "deva_offense"),
       removeTag("g_clear_st", "deva_guard"),
       applyAe("g_mark", "Guard Round"),

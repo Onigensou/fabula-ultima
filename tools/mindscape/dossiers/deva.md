@@ -47,6 +47,7 @@ weapon category, **Deva = Strike vs Magic** (the class of the check: vs DEF = St
 | 2026-11-21 | HP 1000 → 1500 | Runner playtest (207 fights, Lightning Storm, guest Kalina): 3.4 rounds at 78% PC HP. User target 5–6 rounds; sweep ×1.4 → 5.4 r, ×1.6 → 6.0 r, ×1.8 → 5.9 r | user | pending real-table look; damage tuning proposed separately |
 | 2026-11-21 | Missile Fist Detonate victim pool `enemy` → `party` | "enemy" is relative to the acting token and fails open when a fist acts without one; 1 of 6 detonations hit the other fist | user (bug fix) | — |
 | 2026-11-21 | Tuning pass 2: HP 1500 → 1400; Vajra Fist / Mudra Lance 38 → 52, Double Slap 25 → 36, Ground Slam 30 → 45, Fists of Fury 28 → 42, Fists of Focus 12 → 18 (drain 3 × (HR + 18)), Surya Palm 62 → 78, Kala Strike 25 → 38; every attack check +4 → +6; Surya Palm and Kala Strike players-only | At 1500 she missed 30–60% and fights ran 4–5 rounds at ~80% party HP. Confirmation at 1400: 5.2 rounds, lowest party HP 45–76%, 1 KO in 5; all 14 epic casts aimed at a PC | user | real-table look 2026-11-21 evening |
+| 2026-11-21 | Missile Fist: (1) engine fix — target-survey matches the performer by token before actor (both fists share one actor; the 2nd fist's Self Hover/Detonate found no performer and lost its turn); (2) Deva re-summons only when no fists are out: Celestial Discipline's round_start Guard row splits on OWN_SUMMON_COUNT (== 0 → guard with Fist Ready, > 0 → guard_nf without) | Every Guard round's new pair (summon_max 2) replaced fists still on the field before their fuse-2 Detonate whenever Deva acted first that round. User pick "A": keep fuse 2; ignored fists always detonate, broken fists come back next Guard round. Runner: 0 self-target errors in 15 fights; fists alive at a Guard round → no re-summon → Detonate lands | user | — |
 
 ```json dossier
 {
@@ -78,7 +79,7 @@ weapon category, **Deva = Strike vs Magic** (the class of the check: vs DEF = St
   ],
   "open_questions": [
     "Affinities are all NEUTRAL (open since the build) — elite rule asks for 1 VU.",
-    "Missile Fist: some fists lose their Detonate turn (Self target finds no performer token) — engine issue, open 2026-11-21."
+    "Missile Fist fuse 2 + re-summon rule: fists only detonate if the party leaves them for a full round; the sim party breaks them ~every time (by design — AoE is the answer)."
   ]
 }
 ```
