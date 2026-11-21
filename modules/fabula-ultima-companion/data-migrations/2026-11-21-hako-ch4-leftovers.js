@@ -80,10 +80,34 @@ async function breakFreeDl(out) {
   out.push(n ? `~ Break Free: DL shown live (${n} doc${n === 1 ? "" : "s"})` : "= Break Free text already live (or hand-edited)");
 }
 
+
+// Hako's sheet lists (normal_spell_list etc.) are CSB mirrors of her embedded
+// items. The v1.0.650 restock removed her old stock, incl. Budding Maple Wand,
+// whose contained Heal had been mirrored into normal_spell_list, so that row
+// now points at a deleted item (preflight broken-ref warning). Drop every list
+// row whose key is no longer an embedded item. Hako only; idempotent.
+const HAKO = "srAH3OHOoK0tvFih";
+async function pruneHakoLists(out) {
+  const hako = game.actors.get(HAKO);
+  if (!hako) { out.push("! Hako missing"); return; }
+  const props = hako.system?.props ?? {};
+  const upd = {}; let n = 0;
+  for (const [k, v] of Object.entries(props)) {
+    if (!/_list$/.test(k) || !v || typeof v !== "object") continue;
+    for (const id of Object.keys(v)) {
+      if (/^[A-Za-z0-9]{16}$/.test(id) && !hako.items.get(id)) { upd[`system.props.${k}.-=${id}`] = null; n++; }
+    }
+  }
+  if (!n) { out.push("= Hako lists clean"); return; }
+  await hako.update(upd);
+  out.push(`~ Hako: dropped ${n} stale list row(s)`);
+}
+
 export async function migrate(game, log = () => {}) {
   const out = [];
   await muramasaLock(out);
   await breakFreeDl(out);
+  await pruneHakoLists(out);
   for (const l of out) log(l);
   return { applied: true, summary: out.join(" | ") };
 }
