@@ -8,9 +8,69 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "HkC4DScytheImmAE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795239819970,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "condition_doom",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HkC4DScytheImmAE",
+          "originalParentId": "FwWbV9Ig4LEvmA1o",
+          "originalUuid": "Item.FwWbV9Ig4LEvmA1o.ActiveEffect.HkC4DScytheImmAE"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Death Scythe: Doom immunity",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -60,6 +120,7 @@
   "system": {
     "container": null,
     "props": {
+      "action_keywords": "weighted",
       "active_effect_config_table": {},
       "aquatic_ef": "100",
       "automaton_ef": "100",
@@ -72,7 +133,7 @@
       "damage_bonus": "18",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When you deal damage with this weapon, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a> to the target, if the target is already afflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>, reduce its duration by 1 instead.</p></li><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a></p></li></ul>",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li><li><p>When you deal damage with this weapon, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a> to the target, if the target is already afflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>, reduce its duration by 1 instead.</p></li><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -100,7 +161,7 @@
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Common",
+      "item_rarity": "Uncommon",
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",

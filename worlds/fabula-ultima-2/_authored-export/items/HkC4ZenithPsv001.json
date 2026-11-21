@@ -1,0 +1,69 @@
+{
+  "_id": "HkC4ZenithPsv001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239819401,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Zenith Blade (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "CmfeUhDwT0Fwyy1t",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Attacks with this weapon deal <strong>50%</strong> more damage if you are not in <strong>Crisis</strong></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "1.5",
+          "damage_operation": "multiply",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "zen_edge"
+        }
+      },
+      "id": "HkC4ZenithPsv001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Zenith Blade (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_CRISIS == 0 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "zen_edge",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Attacks with this weapon deal <strong>50%</strong> more damage if you are not in <strong>Crisis</strong></p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkC4ZenithPsv001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkC4ZenithPsv001"
+  },
+  "type": "equippableItem"
+}

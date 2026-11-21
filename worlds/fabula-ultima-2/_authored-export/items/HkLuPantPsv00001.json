@@ -1,0 +1,70 @@
+{
+  "_id": "HkLuPantPsv00001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239831027,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "luchador": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Luchador Pant (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "e4fETqmxyFgqnGDO",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Creatures you <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grapple</a> must beat <strong>DL 13</strong> to break free.</p></li><li><p>When a creature inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> on you, you inflict <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> on it.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "skip",
+          "ae_template_ref": "Grappled",
+          "effect_kind": "apply_ae",
+          "effect_label": "lp_counter",
+          "on_empty": "skip",
+          "target_ref": "cause_actor"
+        }
+      },
+      "id": "HkLuPantPsv00001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Luchador Pant (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "CAUSE_IS_SELF == 0",
+          "reaction_effect_ref": "lp_counter",
+          "reaction_passive_mode": "on",
+          "reaction_source": "self",
+          "reaction_status_filter": "Grappled",
+          "reaction_trigger": "creature_status_applied"
+        }
+      },
+      "skill_description": "<ul><li><p>Creatures you <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grapple</a> must beat <strong>DL 13</strong> to break free.</p></li><li><p>When a creature inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> on you, you inflict <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> on it.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkLuPantPsv00001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkLuPantPsv00001"
+  },
+  "type": "equippableItem"
+}

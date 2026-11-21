@@ -144,6 +144,64 @@
       "tint": "#ffffff",
       "transfer": true,
       "type": "base"
+    },
+    {
+      "_id": "HkC4TitanicWgtAE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795239824153,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "grant_weapon_keywords",
+          "mode": 2,
+          "priority": 20,
+          "value": "weighted"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HkC4TitanicWgtAE",
+          "originalParentId": "W5nXmJFH3rBBTxr4",
+          "originalUuid": "Item.W5nXmJFH3rBBTxr4.ActiveEffect.HkC4TitanicWgtAE"
+        },
+        "fabula-ultima-companion": {
+          "hakoCh4": "titanic-weighted"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Titanic Shield: Weighted",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
     }
   ],
   "flags": {

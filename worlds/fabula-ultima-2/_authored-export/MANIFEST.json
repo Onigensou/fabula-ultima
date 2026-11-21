@@ -1257,6 +1257,12 @@
         "parent": "5KFkUixjqI5c6PpK"
       },
       {
+        "id": "HkLuSetFolder001",
+        "name": "Luchador",
+        "type": "Item",
+        "parent": "5KFkUixjqI5c6PpK"
+      },
+      {
         "id": "qEouPSjXJosljam5",
         "name": "Lucky Bunny",
         "type": "Item",
@@ -4817,6 +4823,12 @@
         "effects": 2
       },
       {
+        "id": "HkC4CurseCollPsv",
+        "name": "Curse Collector (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "XSy7MGgInDpsTwG5",
         "name": "Curse Magic",
         "type": "equippableItem",
@@ -4843,6 +4855,12 @@
       {
         "id": "T5sBr6Ge33ZRihfW",
         "name": "Cursed Ivory Statue",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HkC4IvoryStatPsv",
+        "name": "Cursed Ivory Statue (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4976,6 +4994,12 @@
         "id": "FwWbV9Ig4LEvmA1o",
         "name": "Death Scythe",
         "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "HkC4DScythePsv01",
+        "name": "Death Scythe (Passive)",
+        "type": "equippableItem",
         "effects": 0
       },
       {
@@ -4988,7 +5012,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 63
+        "effects": 64
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -6179,6 +6203,12 @@
         "effects": 0
       },
       {
+        "id": "HkC4FranticPsv01",
+        "name": "Frantic Nail (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Ut7PylVN9kYZ6XUz",
         "name": "Freezing Shot",
         "type": "equippableItem",
@@ -6309,6 +6339,18 @@
         "name": "Fulgur Shield",
         "type": "equippableItem",
         "effects": 3
+      },
+      {
+        "id": "HkC4FullPhoenix1",
+        "name": "Full Phoenix",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HkC4FullPhxSkill",
+        "name": "Full Phoenix",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "U1WUGQw6hkUo1La7",
@@ -6783,6 +6825,12 @@
         "name": "Gothic Lolita Dress",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "HkC4GothicPsv001",
+        "name": "Gothic Lolita Dress (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "c2QrSCzvCzpXCgvz",
@@ -7517,6 +7565,12 @@
         "effects": 2
       },
       {
+        "id": "HkWdMantlePsv001",
+        "name": "Hunter's Mantle (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "D6IehPsp6h7srIJH",
         "name": "Hunter's Mark",
         "type": "equippableItem",
@@ -8075,6 +8129,12 @@
         "effects": 0
       },
       {
+        "id": "HkWdKeenTalons01",
+        "name": "Keen Talons",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "ToGH9jvk799CBOiG",
         "name": "Keeper of the Dead",
         "type": "equippableItem",
@@ -8107,6 +8167,12 @@
       {
         "id": "aTVhiVRcHZpMinbg",
         "name": "Kindred Spirit",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HkWdKSpiritPsv01",
+        "name": "Kindred Spirit (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8149,6 +8215,12 @@
       {
         "id": "6hVl6ETi6wDQlnWh",
         "name": "Kusarigama",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HkC4KusariPsv001",
+        "name": "Kusarigama (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8309,6 +8381,12 @@
         "effects": 0
       },
       {
+        "id": "LhRzLionheartPsv",
+        "name": "Lionheart (Passive)",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "zmWvwyaGbwhC8NZV",
         "name": "Lipovitan-Z",
         "type": "equippableItem",
@@ -8435,8 +8513,20 @@
         "effects": 0
       },
       {
+        "id": "HkLuSetDef000001",
+        "name": "Luchador — Equipment Set",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "r0dthPszZhHz2SVH",
         "name": "Luchador Gloves",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "HkLuGlovesPsv001",
+        "name": "Luchador Gloves (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8444,13 +8534,19 @@
         "id": "j66zqDzOEsqBntxo",
         "name": "Luchador Mask",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "e4fETqmxyFgqnGDO",
         "name": "Luchador Pant",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
+      },
+      {
+        "id": "HkLuPantPsv00001",
+        "name": "Luchador Pant (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "fGhpK2MXDb6Z16eN",
@@ -8831,6 +8927,12 @@
         "effects": 0
       },
       {
+        "id": "HkWdMarkedPrey01",
+        "name": "Marked Prey",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "bmXjtAU8XKmnVQ0D",
         "name": "Master of Duality",
         "type": "equippableItem",
@@ -9117,6 +9219,18 @@
         "name": "Mirror",
         "type": "equippableItem",
         "effects": 1
+      },
+      {
+        "id": "HkC4MirrorShld01",
+        "name": "Mirror Shield",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
+        "id": "HkC4MirrorShPsv1",
+        "name": "Mirror Shield (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "QdejcwwLYiKfOLRr",
@@ -9547,6 +9661,18 @@
       {
         "id": "lFAG6dMR89JX4H9h",
         "name": "Multigroa Skin Gloves",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "HkC4Muramasa0001",
+        "name": "Muramasa",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HkC4MuramasaPsv1",
+        "name": "Muramasa (Passive)",
         "type": "equippableItem",
         "effects": 1
       },
@@ -10319,6 +10445,12 @@
         "effects": 2
       },
       {
+        "id": "HkLuPowerbomb001",
+        "name": "Powerbomb",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "iOyodA5kN67TFUMk",
         "name": "Powerful Shot",
         "type": "equippableItem",
@@ -10407,6 +10539,12 @@
         "name": "Protect",
         "type": "equippableItem",
         "effects": 1
+      },
+      {
+        "id": "HkWdFeathProtect",
+        "name": "Protect (Spirit Hawk)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "vrCJoVQmhvdVrWxQ",
@@ -10811,6 +10949,12 @@
         "effects": 0
       },
       {
+        "id": "LhRzRenzokuken01",
+        "name": "Renzokuken",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "JD3qn4EcNupk8VLO",
         "name": "Repetition",
         "type": "equippableItem",
@@ -10922,7 +11066,7 @@
         "id": "lpM8id6fJzB7JP0A",
         "name": "Rewinder",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "F00dStap1eRice00",
@@ -12209,8 +12353,32 @@
         "effects": 0
       },
       {
+        "id": "HkC4StaffStupid1",
+        "name": "Staff of Stupidity",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "HkC4StaffStupPsv",
+        "name": "Staff of Stupidity (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "UjwPQbjFx3RuOM74",
         "name": "Staff of the Necromancer",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HkC4StalwartShd1",
+        "name": "Stalwart Shield",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
+        "id": "HkC4StalwartPsv1",
+        "name": "Stalwart Shield (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12427,6 +12595,12 @@
       {
         "id": "WULoMiPdXlzB6SSg",
         "name": "Summer Masher",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HkWdMantleSumm01",
+        "name": "Summon Spirit Hawk",
         "type": "equippableItem",
         "effects": 0
       },
@@ -13142,7 +13316,7 @@
         "id": "W5nXmJFH3rBBTxr4",
         "name": "Titanic Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "X9SaWakWp1Tl8xPA",
@@ -13154,7 +13328,7 @@
         "id": "xp8L14Xp90gd20vo",
         "name": "Tommy Gun",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "ZO0vkyhHeR2pR4QH",
@@ -13411,6 +13585,12 @@
       {
         "id": "MPC3YFZXWrQKthVr",
         "name": "Twilight Requiem",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HkWdTwinDive0001",
+        "name": "Twin Dive",
         "type": "equippableItem",
         "effects": 0
       },
@@ -13781,6 +13961,12 @@
         "effects": 1
       },
       {
+        "id": "HkWdWardenSetDef",
+        "name": "Warden of the Wilds — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "DJWKNQ0INInWtARn",
         "name": "Wardwattle",
         "type": "equippableItem",
@@ -13979,6 +14165,12 @@
         "effects": 1
       },
       {
+        "id": "HkC4WitsEndSpel1",
+        "name": "Wit's End",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "oGop1MLCHPzdpdR5",
         "name": "Witch Hat",
         "type": "equippableItem",
@@ -14083,6 +14275,12 @@
       {
         "id": "CmfeUhDwT0Fwyy1t",
         "name": "Zenith Blade",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HkC4ZenithPsv001",
+        "name": "Zenith Blade (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -19880,152 +20078,212 @@
         "type": "character",
         "items": [
           {
-            "id": "t4O5n2pWNuDxGuZF",
-            "name": "5-Star Exchange Ticket"
+            "id": "D00d73wrNn3ccV0g",
+            "name": "Aenigma of Adaptation"
           },
           {
-            "id": "txMRFkA7TJ3FZBL2",
-            "name": "Army Wrecker"
+            "id": "vJgk8VL4vXqJTHPz",
+            "name": "Biker Suit"
           },
           {
-            "id": "oDVo37h0x4X8LkRl",
-            "name": "Avalon"
+            "id": "kViMMmHc53C7FVIR",
+            "name": "Black Mage Wand"
           },
           {
-            "id": "utumNuWYo9Hzwxqx",
-            "name": "Blink"
+            "id": "Vp0YYLmQzg6wKtD9",
+            "name": "Cataclysm"
           },
           {
-            "id": "IrKN92jRRxDzdYzm",
-            "name": "Brief Respite"
-          },
-          {
-            "id": "wKogg4SVIY63cqLh",
-            "name": "Budding Maple Wand"
-          },
-          {
-            "id": "l7kMJfPCrp9mfxsL",
-            "name": "Copycat"
-          },
-          {
-            "id": "OHpfq3cznsoVXLh8",
+            "id": "iRFEXJW4d3rHF0G4",
             "name": "Curse Collector"
           },
           {
-            "id": "eEtWzQ3OVDwYdOoe",
-            "name": "Dragontrap Bow"
+            "id": "LGUgQAOePeIW3vX2",
+            "name": "Curse Collector (Passive)"
           },
           {
-            "id": "W9dHR4OQZIWNi3X8",
-            "name": "Dragontrap Bow (Passive)"
+            "id": "lO2Kxj5P5zZR2NJu",
+            "name": "Cursed Ivory Statue"
           },
           {
-            "id": "c5UMCKLMcRC47hq0",
-            "name": "Excalibur?"
+            "id": "pV3QsqrN8bIY6gUS",
+            "name": "Cursed Ivory Statue (Passive)"
           },
           {
-            "id": "2bpkyQeHry5IsNgL",
-            "name": "Fairy Cloak"
+            "id": "bDlywgmEsGHUUAY9",
+            "name": "Death Scythe"
           },
           {
-            "id": "Gyk5N3J6GwSBm7Wa",
-            "name": "Fairy Tunic"
+            "id": "ngEpIObpPjH84ep7",
+            "name": "Death Scythe (Passive)"
           },
           {
-            "id": "JZ6RuG5v5isEnimU",
-            "name": "Gambler's Dice"
+            "id": "E0SW4DBtM1iXl0Xn",
+            "name": "Dominatrix Leotard"
           },
           {
-            "id": "nsTz9KPaJHWBOVoR",
-            "name": "Goddess Tear"
+            "id": "SmphlpFrfp2qc9dZ",
+            "name": "Frantic Nail"
           },
           {
-            "id": "acc3Hr5gfOOtmoHm",
-            "name": "Hako Coupon"
+            "id": "LtVoQAlITF2K6sjL",
+            "name": "Frantic Nail (Passive)"
           },
           {
-            "id": "7IBdWHGWsYr1ImY4",
-            "name": "Heal"
+            "id": "NcOCVjsOiUoGO3og",
+            "name": "Full Phoenix"
           },
           {
-            "id": "TFlkSWMWp59Nqh9h",
-            "name": "Heat HANDS Replica"
+            "id": "zEkFM0mXBXq72ZFE",
+            "name": "Full Phoenix"
           },
           {
-            "id": "D7O7B977xdz6Mndg",
-            "name": "Mega-Elixir"
+            "id": "QYgfQWTYSUh8ZF6L",
+            "name": "Gothic Lolita Dress"
           },
           {
-            "id": "GlBKvz5lDwGextqo",
-            "name": "Mega-Elixir"
+            "id": "R3KAhHYYulvvcxPU",
+            "name": "Gothic Lolita Dress (Passive)"
           },
           {
-            "id": "jfHjXIvIdtMlYDpi",
-            "name": "Mega-Remedy"
+            "id": "Du1q5iXEZ9kqW798",
+            "name": "Ironwood Rod"
           },
           {
-            "id": "LVwLI7slKbPofiP4",
-            "name": "Mega-Remedy"
+            "id": "BAOXvP5mJfGKSQX4",
+            "name": "Kusarigama"
           },
           {
-            "id": "5pZrwswltGCOBfSc",
-            "name": "Morrigan"
+            "id": "LPIh3LDbVqpiDxpR",
+            "name": "Kusarigama (Passive)"
           },
           {
-            "id": "GyEGnl58wJhwSwex",
-            "name": "Morrigan (Passive)"
+            "id": "nBrvK58NcYnaNJ2z",
+            "name": "Lionheart"
           },
           {
-            "id": "XtpBgKfbKMR18UTT",
-            "name": "Myth of Sisyphus"
+            "id": "jGWuFmbph5BHNGVB",
+            "name": "Lionheart (Passive)"
           },
           {
-            "id": "q3NNHt8WIQVEcIEv",
-            "name": "Orb"
+            "id": "Z4mYkx5ZIhyNoi0o",
+            "name": "Little Devil"
           },
           {
-            "id": "6QxALpV0MFncqoF4",
-            "name": "Phoenix Feather"
+            "id": "JAvLqsR4vcIw2KZC",
+            "name": "Lucky Egg"
           },
           {
-            "id": "exVAwWwaIvNcyuwc",
-            "name": "Phoenix Feather"
+            "id": "vsCoN9QiMPYWWj6P",
+            "name": "Magic Mirror"
           },
           {
-            "id": "9osWqShXiM6c2Sin",
-            "name": "Polymorph Potion: Centuaros"
+            "id": "OtvJfFc1XG4CiuTP",
+            "name": "Magic Mirror (Passive)"
           },
           {
-            "id": "83MCg7ideKxStmop",
-            "name": "Polymorph Potion: Inferex"
+            "id": "kXimXBmmzUmatqak",
+            "name": "Mirror Shield"
           },
           {
-            "id": "b37lT3uZOorwV3Fb",
-            "name": "Portable Cauldron"
+            "id": "Cl3f30hcX3xlGLdT",
+            "name": "Mirror Shield (Passive)"
           },
           {
-            "id": "PMxrhqZDiu4RoaW5",
-            "name": "Ring of Onions"
+            "id": "6sUE9c6uGf9G8XV2",
+            "name": "Multigroa Skin Gloves"
           },
           {
-            "id": "rGzyWaaZtXCmUjxn",
-            "name": "Shadow Grimoire"
+            "id": "baPeKHXBbWvkRv2F",
+            "name": "Muramasa"
           },
           {
-            "id": "ZgLGoh1jL1XqTxl2",
-            "name": "Super Tonic"
+            "id": "DtEwMlB68NvGXzdH",
+            "name": "Muramasa (Passive)"
           },
           {
-            "id": "b79FZl99KKevvQVI",
+            "id": "GsfxIIZmwYhLCc6n",
+            "name": "Renzokuken"
+          },
+          {
+            "id": "Ricm2XTEOFsUUmLO",
+            "name": "Rewinder"
+          },
+          {
+            "id": "DO9VSNKo3sK63WAq",
+            "name": "Seer's Rod"
+          },
+          {
+            "id": "y5PDljiab6aJQSPh",
+            "name": "Staff of Stupidity"
+          },
+          {
+            "id": "1MURxbcwPYpzpwGe",
+            "name": "Staff of Stupidity (Passive)"
+          },
+          {
+            "id": "1Bop3IUREYhy9cu3",
+            "name": "Stalwart Shield"
+          },
+          {
+            "id": "RWGXXJl1G1NQQ8X9",
+            "name": "Stalwart Shield (Passive)"
+          },
+          {
+            "id": "Jehn3ThdmRKaUaWO",
+            "name": "Stillwater Rod"
+          },
+          {
+            "id": "3jLLRKlkIvRY5ULj",
+            "name": "Swiftline Rod"
+          },
+          {
+            "id": "1IzUqd2dCtuzOUMr",
+            "name": "Terrarium: Blank"
+          },
+          {
+            "id": "53tC4ghQLMKdHtsj",
+            "name": "Terrarium: Camp"
+          },
+          {
+            "id": "M79Lyq41roVPVDpJ",
+            "name": "Terrarium: Gathering"
+          },
+          {
+            "id": "ToKdm6Z4voTi4fZ6",
+            "name": "Terrarium: Healing"
+          },
+          {
+            "id": "05FIPnvF9ZFIqqy2",
+            "name": "Terrarium: Random Battle"
+          },
+          {
+            "id": "oihNHedO9tzkRLgk",
+            "name": "Tommy Gun"
+          },
+          {
+            "id": "16wzaZ1ujPtCUJOj",
             "name": "Vaccine"
           },
           {
-            "id": "hncEMqDuJtWSEgdD",
+            "id": "G9vPmgpXtXsOzHYv",
             "name": "Vaccine"
           },
           {
-            "id": "3cnqLWqSdV8YxBSH",
-            "name": "Witchbane"
+            "id": "4tPXqvCb6wfSQh6l",
+            "name": "Wit's End"
+          },
+          {
+            "id": "OKMSFokdCqpF7iJF",
+            "name": "Witch Hat"
+          },
+          {
+            "id": "7wVTJkTCGsktRo1k",
+            "name": "Zenith Blade"
+          },
+          {
+            "id": "MJXf7wXPfwhVqLTZ",
+            "name": "Zenith Blade (Passive)"
           }
         ],
         "effects": 0
@@ -25124,8 +25382,25 @@
         "id": "GnEmdc02BDDTmeaU",
         "name": "Spirit Hawk",
         "type": "character",
-        "items": [],
-        "effects": 0
+        "items": [
+          {
+            "id": "HkWdHawkDive0001",
+            "name": "Dive Strike"
+          },
+          {
+            "id": "HkWdHawkFlight01",
+            "name": "Flying"
+          },
+          {
+            "id": "HkWdHawkBond0001",
+            "name": "Spirit Bond"
+          },
+          {
+            "id": "HkWdHawkTalon001",
+            "name": "Talon Rake"
+          }
+        ],
+        "effects": 2
       },
       {
         "id": "h6f2zG39e1ALpwvH",
@@ -27839,6 +28114,11 @@
         "id": "oIdlLAgL2CDmemCw",
         "name": "Vastwind Field (Lower Road) - Encounter",
         "results": 20
+      },
+      {
+        "id": "HkC4WardenBanner",
+        "name": "Warden of the Wilds",
+        "results": 7
       },
       {
         "id": "aCK7rDJ2A21ZWfcj",

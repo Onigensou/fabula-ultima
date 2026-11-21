@@ -1,0 +1,88 @@
+{
+  "_id": "HkWdMantleSumm01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239834324,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "wardenHawk": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda.png",
+  "name": "Summon Spirit Hawk",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "09KjioTnamwnRFv4",
+    "props": {
+      "action_command": "skill",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "availability_formula": "HAS_COMPANION == 0",
+      "availability_reason": "Already has a companion",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You call upon the spirits of nature: an ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a> joins the conflict as your <strong>companion</strong>. Unavailable while you already have a companion.</p>",
+      "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "effect_kind": "summon",
+          "effect_label": "ssh_call",
+          "summon_act_this_round": "false",
+          "summon_actor": "Actor.GnEmdc02BDDTmeaU",
+          "summon_count": "1",
+          "summon_kind": "companion",
+          "summon_max": "1",
+          "summon_overrides": "{\"max_hp\":\"5 + CHAR_LEVEL\",\"current_hp\":\"5 + CHAR_LEVEL\"}",
+          "summon_turns_per_round": "0"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "HkWdMantleSumm01",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Summon Spirit Hawk",
+      "on_activate_effect_ref": "ssh_call",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "-",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.HkWdMantleSumm01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkWdMantleSumm01"
+  },
+  "type": "equippableItem"
+}

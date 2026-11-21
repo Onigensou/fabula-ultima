@@ -14,6 +14,7 @@
     },
     "fabula-ultima-companion": {
       "coreAction": "objective:break_free",
+      "luchador": true,
       "objectiveGate": "HAS_STATUS_GRAPPLED",
       "objectiveGateReason": "You aren't being held",
       "objectiveScope": "all"
@@ -32,11 +33,11 @@
       "check_difficulty_level": "10",
       "check_mode": "open",
       "cost": "",
-      "description": "<p>Spend your action wrenching yourself loose. <strong>【DEX + MIG】</strong> vs <strong>DL 10</strong> — on a success you are no longer <strong>Grappled</strong>.</p><p><em>The free attempt at the start of your turn still happens; this is a second try.</em></p>",
+      "description": "<p>Spend your action wrenching yourself loose. <strong>【DEX + MIG】</strong> vs <strong>DL 10</strong> (or the escape DL of whoever holds you) — on a success you are no longer <strong>Grappled</strong>.</p><p><em>The free attempt at the start of your turn still happens; this is a second try.</em></p>",
       "details_roller": "Show",
       "effect_table": {
         "0": {
-          "condition_formula": "TOTAL >= 10",
+          "condition_formula": "TOTAL >= GRAPPLE_ESCAPE_DL",
           "effect_kind": "break_free",
           "effect_label": "break_free_try",
           "target_ref": "self"

@@ -1,0 +1,83 @@
+{
+  "_id": "HkC4KusariPsv001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239821154,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Kusarigama (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "6hVl6ETi6wDQlnWh",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>,&nbsp;</strong>if they are already&nbsp;<strong>Slow</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a>&nbsp;instead.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ku_bleed, ku_slow",
+          "effect_kind": "chain",
+          "effect_label": "ku_hit"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Bleed",
+          "condition_formula": "TARGET_AE_COUNT_SLOW > 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "ku_bleed",
+          "target_ref": "trigger_subject"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Slow",
+          "condition_formula": "TARGET_AE_COUNT_SLOW == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "ku_slow",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "HkC4KusariPsv001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Kusarigama (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "ku_hit",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>,&nbsp;</strong>if they are already&nbsp;<strong>Slow</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a>&nbsp;instead.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkC4KusariPsv001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkC4KusariPsv001"
+  },
+  "type": "equippableItem"
+}

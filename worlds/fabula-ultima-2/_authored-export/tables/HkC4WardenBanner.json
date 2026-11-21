@@ -1,0 +1,138 @@
+{
+  "_id": "HkC4WardenBanner",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239836665,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "<p>Call of the Spirit Hawk</p>",
+  "displayRoll": true,
+  "flags": {
+    "fabula-ultima-companion": {
+      "gacha": {
+        "mainSet": "Warden of the Wilds"
+      },
+      "hakoCh4": true
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Sword%20of%20Convollaria/Vlder_Longbow-icon.webp",
+  "name": "Warden of the Wilds",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "0p3ndV97H3ehNyxu",
+      "documentCollection": "Item",
+      "documentId": "r0dthPszZhHz2SVH",
+      "drawn": false,
+      "flags": {},
+      "img": "https://p.vitalmtb.com/photos/products/11191/photos/9952/s1600_BlackUp.jpg?VersionId=jWz9JAs5MixhjFWEvpTKBz_NzVkty8lt",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Luchador Gloves",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "6XujJQkpFJafUIoV",
+      "documentCollection": "Item",
+      "documentId": "duaQp4cjNOboR9Gk",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2447.gif",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Hunter Boots",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "BRYL7ezTKNfg3pJW",
+      "documentCollection": "Item",
+      "documentId": "09KjioTnamwnRFv4",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Druid%2527s_Cloak_icon.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Hunter's Mantle",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "lB1pYph4AZNkGfEs",
+      "documentCollection": "Item",
+      "documentId": "e4fETqmxyFgqnGDO",
+      "drawn": false,
+      "flags": {},
+      "img": "https://i.etsystatic.com/15111921/r/il/931254/5957895207/il_fullxfull.5957895207_sz2o.jpg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Luchador Pant",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Pd5871TbLprdkO8U",
+      "documentCollection": "Item",
+      "documentId": "aTVhiVRcHZpMinbg",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Sword%20of%20Convollaria/Vlder_Longbow-icon.webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Kindred Spirit",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "RNeCzsA6HUkzh1DX",
+      "documentCollection": "Item",
+      "documentId": "Z4juGssM2ArmX7Vq",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2799.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Kindred Feather",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "xmomkjn2pfbA0ULr",
+      "documentCollection": "Item",
+      "documentId": "j66zqDzOEsqBntxo",
+      "drawn": false,
+      "flags": {},
+      "img": "https://m.media-amazon.com/images/I/91fZwooKjBL._AC_SL1500_.jpg",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Luchador Mask",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

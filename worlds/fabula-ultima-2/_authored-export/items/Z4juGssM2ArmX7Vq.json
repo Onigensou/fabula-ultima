@@ -75,6 +75,10 @@
     "custom-system-builder": {
       "version": "4.6.4"
     },
+    "fabula-ultima-companion": {
+      "hakoCh4": true,
+      "wardenHawk": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "accessory",
@@ -129,14 +133,16 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul><li><p>Your attacks gain +1 Accuracy</p></li><li><p>You may perform the <strong>【💥 Protect】</strong>skill on an an ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a> <em>(You may still perform Protect once per round)</em></p></li></ul>",
+      "description": "<ul><li><p>Your attacks gain +1 Accuracy</p></li><li><p>You may perform the <strong>【💥 Protect】</strong>skill on an ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a> <em>(You may still perform Protect once per round)</em></p></li></ul>",
+      "flavor_text": "<p><em>A single feather shed by a spirit hawk. It hums whenever its partner is near.</em></p>",
       "isSet": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "1200",
+      "item_rarity": "Rare",
       "item_type": "accessory",
       "name": "Kindred Feather",
-      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong>apply <strong>Hunter's Mark </strong>to the target</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>Attacks </strong>gain +3 Accuracy</p><hr contenteditable=\"false\"></li></ul><p>&nbsp;<strong>4 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong>gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a> <strong>2</strong>&nbsp;<em>(Both attack must target the same creature)</em></p></li></ul>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong> apply <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/30px-GrandArcherSkill1.png\" style=\"width: 18px; height: 18px; vertical-align: middle; margin-right: 4px; border: none;\"> <a class=\"content-link\" data-uuid=\"Item.D6IehPsp6h7srIJH\" data-id=\"D6IehPsp6h7srIJH\" data-type=\"Item\">Hunter's Mark</a> to the target</p><hr></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>Attacks</strong> gain +3 Accuracy</p><hr></li></ul><p><strong>4 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong> gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a> <strong>2</strong> <em>(Both attacks must target the same creature)</em></p></li></ul>",
       "set_name": "Warden of the Wilds"
     },
     "template": "ZoiV53VaLzeRsEps",

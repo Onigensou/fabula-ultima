@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "3.2.4"
     },
+    "fabula-ultima-companion": {
+      "hakoCh4": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "weapon",
@@ -67,6 +70,7 @@
       "hand_slots": "One-handed",
       "isMartial": false,
       "item_cost": "2450",
+      "item_rarity": "Rare",
       "item_type": "weapon",
       "name": "Frantic Nail",
       "rolled_atr1": "INS",

@@ -1,0 +1,81 @@
+{
+  "_id": "HkLuPowerbomb001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239828806,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "luchador": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/svg/explosion.svg",
+  "name": "Powerbomb",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "HkLuSetDef000001",
+    "props": {
+      "availability_formula": "AE_COUNT_GRAPPLING > 0",
+      "availability_reason": "You are not grappling anyone",
+      "cost": "-",
+      "description": "<p>Remove <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> from every creature you <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grapple</a>, then deal <strong>【20 + your level】</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage to each of them.</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "pb_pick, pb_release, pb_slam",
+          "effect_kind": "chain",
+          "effect_label": "pb_root"
+        },
+        "1": {
+          "auto_target": "skip",
+          "candidate_source": "grappled_by_self",
+          "effect_kind": "targeting",
+          "effect_label": "pb_pick",
+          "iteration_mode": "together",
+          "mode": "all"
+        },
+        "2": {
+          "effect_kind": "break_free",
+          "effect_label": "pb_release",
+          "target_ref": "pb_pick"
+        },
+        "3": {
+          "damage_amount": "20 + CASTER_LEVEL",
+          "damage_element": "physical",
+          "damage_verbosity": "full",
+          "effect_kind": "deal_damage",
+          "effect_label": "pb_slam",
+          "target_ref": "pb_pick"
+        }
+      },
+      "id": "HkLuPowerbomb001",
+      "img": "icons/svg/explosion.svg",
+      "isCheck": false,
+      "max_level": "1",
+      "name": "Powerbomb",
+      "on_activate_effect_ref": "pb_root",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "uuid": "Item.HkLuPowerbomb001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkLuPowerbomb001"
+  },
+  "type": "equippableItem"
+}

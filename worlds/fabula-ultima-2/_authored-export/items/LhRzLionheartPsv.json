@@ -1,0 +1,200 @@
+{
+  "_id": "LhRzLionheartPsv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239837307,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "LhRzCartridgeAE1",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Cartridge:</em> a loaded Lionheart round (max 1). Renzokuken spends it; transforming into Gun form reloads it. A conflict starts with 1 if Lionheart is in Gun form, else 0; it is lost when the conflict ends.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "cartridge",
+          "charges": 0,
+          "chargesMax": 1,
+          "conflictScoped": true,
+          "crossScene": false,
+          "directorPermanent": true,
+          "hudResourceColor": "#e0a040",
+          "lifetimeMode": "persistent_counter",
+          "lionheart": "cartridge",
+          "uncleansable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 0,
+          "visible": true
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Lionheart.webp",
+      "name": "Cartridge",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "lionheart": "created"
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Lionheart (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "GNQXRnV6t7CR9hZ5",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>You begin each conflict with <strong>1 Cartridge</strong> if this weapon is in Gun form, or with <strong>0</strong> otherwise. Your Cartridges are lost when the conflict ends.</p></li><li><p>When this weapon transforms into Gun form, gain <strong>1 Cartridge</strong> (max <strong>1</strong>) and <strong>15</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "1",
+          "ae_template_ref": "Item.LhRzLionheartPsv.ActiveEffect.LhRzCartridgeAE1",
+          "condition_formula": "WEAPON_FORM == 1",
+          "effect_kind": "apply_ae",
+          "effect_label": "lh_cart_start",
+          "target_ref": "self"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "0",
+          "ae_template_ref": "Item.LhRzLionheartPsv.ActiveEffect.LhRzCartridgeAE1",
+          "condition_formula": "WEAPON_FORM != 1",
+          "effect_kind": "apply_ae",
+          "effect_label": "lh_cart_zero",
+          "target_ref": "self"
+        },
+        "2": {
+          "charge_ae_name": "Cartridge",
+          "charge_amount": "0",
+          "charge_operation": "set",
+          "condition_formula": "AE_COUNT_CARTRIDGE > 0",
+          "effect_kind": "adjust_charges",
+          "effect_label": "lh_cart_end",
+          "target_ref": "self"
+        },
+        "3": {
+          "chain_steps": "lh_cart_add, lh_cart_new, lh_guard",
+          "effect_kind": "chain",
+          "effect_label": "lh_gun"
+        },
+        "4": {
+          "charge_ae_name": "Cartridge",
+          "charge_amount": "1",
+          "charge_max": "1",
+          "charge_operation": "add",
+          "condition_formula": "AE_COUNT_CARTRIDGE > 0",
+          "effect_kind": "adjust_charges",
+          "effect_label": "lh_cart_add",
+          "target_ref": "self"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "1",
+          "ae_template_ref": "Item.LhRzLionheartPsv.ActiveEffect.LhRzCartridgeAE1",
+          "condition_formula": "AE_COUNT_CARTRIDGE == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "lh_cart_new",
+          "target_ref": "self"
+        },
+        "6": {
+          "effect_kind": "set_resource",
+          "effect_label": "lh_guard",
+          "grant_amount": "15",
+          "grant_resource": "shield",
+          "target_ref": "self"
+        }
+      },
+      "id": "LhRzLionheartPsv",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Lionheart (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "WEAPON_FORM == 1",
+          "reaction_effect_ref": "lh_cart_start",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "condition_formula": "WEAPON_FORM != 1",
+          "reaction_effect_ref": "lh_cart_zero",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "2": {
+          "reaction_effect_ref": "lh_cart_end",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_end"
+        },
+        "3": {
+          "condition_formula": "TRANSFORMED_TO_FORM == 1",
+          "reaction_effect_ref": "lh_gun",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_transforms_weapon"
+        }
+      },
+      "skill_description": "<ul><li><p>You begin each conflict with <strong>1 Cartridge</strong> if this weapon is in Gun form, or with <strong>0</strong> otherwise. Your Cartridges are lost when the conflict ends.</p></li><li><p>When this weapon transforms into Gun form, gain <strong>1 Cartridge</strong> (max <strong>1</strong>) and <strong>15</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.LhRzLionheartPsv"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "LhRzLionheartPsv"
+  },
+  "type": "equippableItem"
+}

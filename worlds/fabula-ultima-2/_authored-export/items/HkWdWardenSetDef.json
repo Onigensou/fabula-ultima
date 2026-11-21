@@ -1,0 +1,62 @@
+{
+  "_id": "HkWdWardenSetDef",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239832165,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "wardenHawk": "created"
+    }
+  },
+  "folder": "5KFkUixjqI5c6PpK",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Warden of the Wilds — Equipment Set",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "id": "HkWdWardenSetDef",
+      "isSet": false,
+      "name": "Warden of the Wilds — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Spirit Hawk's Dive Strike applies Hunter's Mark",
+          "bonus_skill_ref": "Marked Prey",
+          "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Spirit Hawk's attacks gain +3 Accuracy",
+          "bonus_skill_ref": "Keen Talons",
+          "pieces": "3"
+        },
+        "2": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Spirit Hawk's Dive Strike gains Combo 2",
+          "bonus_skill_ref": "Twin Dive",
+          "pieces": "4"
+        }
+      },
+      "set_name": "Warden of the Wilds",
+      "uuid": "Item.HkWdWardenSetDef"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "HkWdWardenSetDef"
+  },
+  "type": "equippableItem"
+}

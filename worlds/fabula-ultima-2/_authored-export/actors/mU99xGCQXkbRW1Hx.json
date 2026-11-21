@@ -199,6 +199,7 @@
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
+          "item_rarity": "Rare",
           "level": "1",
           "max_level": "1",
           "name": "Tailwind",
