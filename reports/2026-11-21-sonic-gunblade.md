@@ -28,3 +28,15 @@ Approved mockup: `E:\Art(New Com)\DND\Fabula Ultima\Resource\Animation\Sonic Kat
 - **Sonic Blow animation**: ported from the approved mockup (tools/anim-studio/lib/sonic-signatures.js + sonic-shots/sonic-blow.inner.js, constants copied from spec/sonic-blow-mockup-timeline.json), written into the migration via _sonic-gunblade-anims.js. GPU runner: plays with the real per-strike hit/miss/crit, no animation errors. Diff vs mockup: spec/sonic-blow-game-diff.json; side-by-sides spec/side-by-side/. Open: the Perfect gold hit lands ~0.5 s late (render stall after the filtered RO clip starts); strikes 3/5 drift ~25 ms; chroma split not ported; numbers/flinch/namecard are BD's own.
 - Gunblade attack / transform animations: not ported (no existing game equivalent); default attack animation plays.
 - Real-server first boot: deletes are guarded (skip missing ids, swallow "does not exist").
+
+## DEFERRED to after the session
+- The full timeline diff and side-by-sides. A first pass is committed in `spec/`. Still to do: fix the Perfect beat's ~0.5 s late gold hit, port the chroma split, and capture the target token, HUD and dim in the game shots on a 3D Valley map.
+- Gunblade Sword / Firearm attack and transform animations: port the mockup moves gb_sword, gb_gun and gb_tf, then check them in game.
+- Gunblade Fire proof on a map without the Bolt Wellspring, since Training Ground retypes all damage to bolt.
+- The before-action transform through the real Equipment card on a player client. Then confirm the turn_end ask does not fire in that round.
+- Edge playtests:
+  - Sonic Blow with a flat damage bonus (Powerful Shot-style, shared ×2).
+  - Sonic Blow vs a Resistant / Vulnerable target, and the Perfect bonus killing.
+  - Sonic Blow on a player client, where the skill menu rewrites it into an Attack card.
+  - Gunblade on an NPC.
+  - The turn_end ask prompt on a real player client.
