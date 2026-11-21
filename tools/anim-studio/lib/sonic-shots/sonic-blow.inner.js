@@ -28,7 +28,7 @@ const C = {
   PF_HIT_AT: 243.9, PF_RAYS: { n: 30, r0: 30, r1: 520, ms: 380, rgb: '255,236,200' }, PF_SPARKS: 26, PF_SHAKE: 11, PF_SHAKE_MS: 340,
   PF_CHROMA_AT: 243.1, PF_CHROMA_PX: 5, PF_CHROMA_MS: 240, PF_CHROMA_PUNCH: 1.25,   // spec chroma(5, 240) at +243.1
   PF_UNDIM_AT: 946.7, PF_UNDIM_MS: 400, PF_BEAT_END: 946.8, NO_PF_BEAT: 100,
-  HOME_MS: 520, HOME_HOP: 14, HOME_TAIL: 450,       // backHome quiet: NO jump sound (approved v2)
+  HOME_MS: 545.7, HOME_HOP: 14, HOME_TAIL: 450,   // spec moveActor (home) durMs 545.7 (nominal 520 + the mockup's frame rounding)       // backHome quiet: NO jump sound (approved v2)
   GOLD: '255,214,120', PINK: '255,120,190',
 };
 // timeline trace for the mockup diff (tools/snapshot-runner/checks: globalThis.__SB_TRACE = [] before the action)
