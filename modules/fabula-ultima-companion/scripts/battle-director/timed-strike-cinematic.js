@@ -195,7 +195,7 @@ class Cine {
 
   // ── start: tokens, overlay, camera ──
   async start() {
-    const sp = this.spec;
+    const sp = this.spec, t0 = performance.now(), ms = {};
     if (!globalThis.canvas?.ready || (sp.sceneId && canvas.scene?.id !== sp.sceneId)) return this.inert("no canvas / other scene");
     const caster = canvas.tokens.get(sp.casterTokenId);
     const target = (sp.targetTokenIds ?? []).map((id) => canvas.tokens.get(id)).find((t) => t?.mesh);
@@ -214,6 +214,7 @@ class Cine {
       const S3 = globalThis.__ONI_BATTLE_STAGE_3D__;
       for (let i = 0; i < 12 && S3?.cameraLive?.(); i++) await new Promise((r) => setTimeout(r, 50));
     } catch (_) {}
+    ms.camera = Math.round(performance.now() - t0);
     if (!this.alive) return;
 
     const others = canvas.tokens.placeables.filter((t) => t !== caster && t !== target && !(sp.targetTokenIds ?? []).includes(t.id) && t.visible && t.mesh && !t.document.hidden && t.mesh.alpha > 0.05);
@@ -225,6 +226,7 @@ class Cine {
       { canvas, PIXI, loadTexture: globalThis.loadTexture ?? foundry.canvas?.loadTexture, fromUuid, wait: (ms) => new Promise((r) => setTimeout(r, ms)), foundry });
     this.tl = this.oni.timeline({ live: true, depthRef: "a", tokens, clips: CINE_CLIPS });
     await this.tl.load();
+    ms.load = Math.round(performance.now() - t0);
     if (!this.alive) { this.teardown(); return; }
     const tl = this.tl;
     this.TA = tl.TOK.a; this.TT = tl.TOK.t;
@@ -243,7 +245,7 @@ class Cine {
     m.hold(0, 1e9, (t, S) => this.frame(t, S));
     this.runP = tl.run(this.T, { total: () => (this.ended ? 0 : 1e9), lead: 0 }).catch((e) => warn(`${TAG}: timeline threw`, e));
     this.runP.then(() => this.teardown());
-    this.fx({ phase: "start", info: { others: others.length } });
+    this.fx({ phase: "start", info: { others: others.length, ms } });
     log(`${TAG}: ${caster.name} → ${target.name} (${others.length} faded)`);
     this.main().catch((e) => { if (e !== ABORT) warn(`${TAG}: main threw`, e); this.abort("main threw"); });
   }
