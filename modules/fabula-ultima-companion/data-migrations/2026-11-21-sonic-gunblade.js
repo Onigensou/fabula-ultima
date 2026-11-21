@@ -148,6 +148,17 @@ async function createIfMissing(data, out) {
   return doc;
 }
 const propsPatch = (props) => Object.fromEntries(Object.entries(props).map(([k, v]) => [`system.props.${k}`, v]));
+// An update MERGES objects, so "{}" would keep the old rows: delete every existing row key.
+const TABLES = ["effect_table", "reaction_config_table"];
+function propsPatchFor(doc, props) {
+  const patch = propsPatch(props);
+  for (const t of TABLES) {
+    if (!(t in props) || Object.keys(props[t] ?? {}).length) continue;
+    delete patch[`system.props.${t}`];
+    for (const k of Object.keys(doc?.system?.props?.[t] ?? {})) patch[`system.props.${t}.-=${k}`] = null;
+  }
+  return patch;
+}
 
 // Embedded deletes tolerant of the V12 orphaned-embed quirk (Lionheart / Hako pattern):
 // skip ids the document does not list, swallow "does not exist" from the server.
@@ -220,12 +231,12 @@ async function reworkSonicKatar(out) {
   if (await safeDelete(katar, "ActiveEffect", KATAR_MULTI_AE)) out.push("- Sonic Katar: old 'Sonic Blow (Attacks)' effect");
   const sb = game.items.get(SONIC_BLOW);
   if (sb) {
-    await sb.update({ name: "Sonic Blow", img: SONIC_BLOW_ICON, ...propsPatch(SONIC_BLOW_PROPS), [`flags.${M}.carrierAttack`]: CARRIER });
+    await sb.update({ name: "Sonic Blow", img: SONIC_BLOW_ICON, ...propsPatchFor(sb, SONIC_BLOW_PROPS), [`flags.${M}.carrierAttack`]: CARRIER });
     if (await safeDelete(sb, "ActiveEffect", SONIC_MARKER_AE)) out.push("- Sonic Blow: old marker effect");
     out.push("~ Sonic Blow: 30 MP carrier attack, chain 8 volley, ×2 shared, crit ×1.5 no Opportunity, Perfect ×1.5");
   } else out.push("! Sonic Blow (contained) missing");
   const psv = game.items.get(KATAR_PSV);
-  if (psv) { await psv.update(propsPatch(KATAR_PSV_PROPS)); out.push("~ Sonic Katar (Passive): rows cleared, text mirrored"); }
+  if (psv) { await psv.update(propsPatchFor(psv, KATAR_PSV_PROPS)); out.push("~ Sonic Katar (Passive): rows cleared, text mirrored"); }
   await katar.setFlag(M, FLAG, true);
   out.push("~ Sonic Katar: text");
 }
@@ -260,9 +271,9 @@ async function updateActorCopies(out) {
       await safeDelete(copy, "ActiveEffect", copy.effects.find((e) => e.name === "Sonic Blow (Attacks)")?.id);
       for (const child of a.items.filter((i) => i.system?.container === copy.id)) {
         if (child.name === "Sonic Blow") {
-          await child.update({ img: SONIC_BLOW_ICON, ...propsPatch(SONIC_BLOW_PROPS), [`flags.${M}.carrierAttack`]: CARRIER });
+          await child.update({ img: SONIC_BLOW_ICON, ...propsPatchFor(child, SONIC_BLOW_PROPS), [`flags.${M}.carrierAttack`]: CARRIER });
           await safeDelete(child, "ActiveEffect", child.effects.find((e) => e.name === "Sonic Blow")?.id);
-        } else if (child.name === "Sonic Katar (Passive)") await child.update(propsPatch(KATAR_PSV_PROPS));
+        } else if (child.name === "Sonic Katar (Passive)") await child.update(propsPatchFor(child, KATAR_PSV_PROPS));
       }
       for (const c of katarKids) {
         if (a.items.some((i) => i.system?.container === copy.id && i.name === c.name)) continue;
