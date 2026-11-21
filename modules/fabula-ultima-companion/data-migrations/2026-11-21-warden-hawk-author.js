@@ -191,12 +191,14 @@ async function authorHawk(out) {
   props.skill_passive_list = { [ID.bond]: psv(ID.bond, "Spirit Bond", TEXT.bond), [ID.flight]: psv(ID.flight, "Flying", TEXT.flight) };
   if ("skill_active_list" in props) props.skill_active_list = {};
   if ("normal_spell_list" in props) props.normal_spell_list = {};
-  const pat = (name, priority, cooldown, focus) => ({ $deleted: false, action_pattern_name: name, action_pattern_condition: "always",
-    action_pattern_value_1: "0", action_pattern_value_2: "100", action_pattern_string: "", action_pattern_priority: String(priority),
-    action_pattern_target_focus: focus, action_pattern_cooldown: String(cooldown), action_pattern_hp_reserve: "0", action_pattern_hp_ceiling: "0", action_pattern_focus_status: "" });
-  // Dive Strike is exclusive when ready (priority gap 3) and rests 2 turns, so
-  // the hawk's own action runs Dive, Rake, Rake, Dive…
-  props.action_pattern_table = { 0: pat("Dive Strike", 5, 2, "by_affinity"), 1: pat("Talon Rake", 2, 0, "auto") };
+  const pat = (name, priority, condition, v1, v2, focus) => ({ $deleted: false, action_pattern_name: name, action_pattern_condition: condition,
+    action_pattern_value_1: v1, action_pattern_value_2: v2, action_pattern_string: "", action_pattern_priority: String(priority),
+    action_pattern_target_focus: focus, action_pattern_cooldown: "0", action_pattern_hp_reserve: "0", action_pattern_hp_ceiling: "0", action_pattern_focus_status: "" });
+  // One own action in three is a Dive Strike. A `random` row spaced ≥3 above
+  // the fallback is exclusive when it passes — a cooldown would not work here:
+  // the hawk takes no turns of its own, so a turn-counted cooldown never ticks
+  // (measured: it dove every turn).
+  props.action_pattern_table = { 0: pat("Dive Strike", 8, "random", "34", "", "by_affinity"), 1: pat("Talon Rake", 2, "always", "0", "100", "auto") };
 
   // Nothing of the donor's identity may survive the blanking.
   const leak = Object.entries(props).filter(([, v]) => /gorger/i.test(typeof v === "string" ? v : JSON.stringify(v ?? ""))).map(([k]) => k);
