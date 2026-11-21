@@ -19,6 +19,7 @@ import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
   applyCritDamage, resolveIncomingReduction, applyHealReceiving, applyMpReceiving, normalizeDamageType, applyAdjustOp,
+  shouldReverseHeal,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense,
          attackerHitRuleInverted } from "./snapshot.js";
@@ -27,6 +28,7 @@ import { applyClassAffinityAndMult, applyKeywordAffinity, hasCrush, hasExpose,
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck, decideHit, buildCheckDistribution, checkHitChance } from "./check.js";
 import { applyGmDamageInput, gmDamageInput, applyGmPrimaryOverrides } from "./gm-card-override.js";
+import { volleyShotContext, volleyPrimary, volleyShareOps, volleyFinalShare } from "./chain-strikes.js";
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp, describeGrant,
   getConditionAffinityFor } from "./skill-effects.js";
@@ -250,6 +252,9 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
     return {
       mode: "damage", element, resource: "hp", isMpDamage: false,
       damageBonus: (Number(weapon?.damageBonus ?? 0) || 0) + grantDb,
+      // The grant's part of damageBonus on its own: a volley Chain shares it
+      // across its shots like the outgoing parts (applyVolleyToPrimary).
+      grantDamageBonus: grantDb,
       outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
       // overriddenElement drives the HEADLINE damage element (projectProfileToActionResult's
       // ladder reads it before nativeElement) — so a grant element override (Ripples: the
@@ -586,6 +591,12 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     return "Damage dealt";
   };
 
+  // Volley Chain (chain-strikes.js volleyShotContext): this shot's share of the
+  // attacker's flat bonuses, counted once for the action (applyVolleyToPrimary).
+  // Null on every other action, which keeps the arithmetic below unchanged.
+  const volley = primary.volley ?? null;
+  const flatBase = volley ? volley.ownBonus : (primary.damageBonus + primary.outgoingTotal);
+
   for (const e of targets) {
     // An accepted adjust_defense for THIS slot (Verónica +2, Terror Gaze's "a
     // Frightened creature's M.DEF is 0") replaces the defence BEFORE hit and damage
@@ -624,7 +635,12 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     // ops — so the ×2 multiplies the post-bonus figure, which is where the
     // per-skill riders this replaces sat.
     const keywordOps = crisisKeywordOps(actionKeywordSet, targetIsInCrisis(e));
-    const targetOps = keywordOps.length ? [...reactionOps, ...keywordOps] : reactionOps;
+    const targetOpsAll = keywordOps.length ? [...reactionOps, ...keywordOps] : reactionOps;
+    // Volley: a flat add/subtract reaction op on this creature (a +6 per hit) is
+    // counted once for it and shared over the shots aimed at it. Multiply ops,
+    // element / keyword ops stay per shot; a final-stage (formula) bonus is sized per
+    // shot and then shared (volleyFinalShare, in the final-stage fold below).
+    const targetOps = volley ? volleyShareOps(targetOpsAll, volley, e.tokenUuid) : targetOpsAll;
 
     // Affinity helper (MP damage / status-only → NE). Forced-VU is ATTACK-only
     // in COMPUTE today; gate to kind==="Attack". Guard's "RS to all" is NO LONGER
@@ -662,7 +678,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // pre-roll card's generic "potential damage" range).
       const ignoreHR = check.grantHrAsZero || modeForcesHrZero(ctx);
       const rawAt = (h) => {
-        const d = foldOps(massiveShare(Math.floor((h + primary.damageBonus + primary.outgoingTotal) * atkDmgMult), massiveCount), targetOps);
+        const d = foldOps(massiveShare(Math.floor((h + flatBase) * atkDmgMult) + (volley ? volley.flatShare : 0), massiveCount), targetOps);
         return Math.max(0, Math.floor(d));
       };
       const lo = ignoreHR ? 0 : (maxHR > 0 ? 1 : 0);
@@ -684,11 +700,17 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // afterwards would bypass all of that and make a resisted hit read the
       // same as an unresisted one. Null leaves the engine's arithmetic exactly
       // as it was.
-      const _gmDmg = applyGmDamageInput(gmDamage, primary.damageBonus + primary.outgoingTotal, effectiveHr);
+      const _gmDmg = applyGmDamageInput(gmDamage, flatBase, effectiveHr);
       const preMult = _gmDmg.hr + _gmDmg.flat;
-      const outBase = Math.floor(preMult * atkDmgMult);
-      if (atkDmgMult !== 1 && outBase !== preMult) {
-        damageModParts.push({ source: atkMultSource(), amount: outBase - preMult });
+      const multBase = Math.floor(preMult * atkDmgMult);
+      if (atkDmgMult !== 1 && multBase !== preMult) {
+        damageModParts.push({ source: atkMultSource(), amount: multBase - preMult });
+      }
+      // Volley: the shared flat bonuses join AFTER the attacker multiplier (they
+      // are already counted once), and before DR / crit / efficiency / affinity.
+      const outBase = multBase + (volley ? volley.flatShare : 0);
+      if (volley && volley.flatShare !== volley.flatTotal) {
+        damageModParts.push({ source: volleyShareLabel(volley), amount: volley.flatShare - volley.flatTotal });
       }
       // Massive: this target's share of the action's damage, before its own
       // reduction / efficiency / affinity take their turn on it.
@@ -855,7 +877,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
           skill: o.finalContext?.skill ?? null,
           round: ctx?.round ?? 0,
         });
-        const finalAmount = Math.floor(Number(evaluateFormula(o.finalFormula, finalResolver, 0)) || 0);
+        const fullAmount = Math.floor(Number(evaluateFormula(o.finalFormula, finalResolver, 0)) || 0);
+        // Volley: the bonus is still sized per shot (its condition reads THIS
+        // shot's predicted damage), but a flat add / subtract is counted once for
+        // the creature: this shot takes only its share (volleyFinalShare).
+        const finalAmount = volley ? volleyFinalShare(o.op, fullAmount, volley, e.tokenUuid) : fullAmount;
         if (finalAmount === 0) continue;
         const nextRaw = Math.max(0, Math.floor(applyDamageOp(rawDamage, o.op, finalAmount)));
         if (nextRaw === rawDamage) continue;
@@ -870,7 +896,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
           }).value;
         }
         if (reactionBreakdown) {
-          reactionBreakdown.ops = [...reactionBreakdown.ops, { op: o.op, amount: finalAmount, source: o.source, finalStage: true }];
+          reactionBreakdown.ops = [...reactionBreakdown.ops, { op: o.op, amount: finalAmount, source: o.source, finalStage: true, ...(finalAmount !== fullAmount ? { volleyTotal: fullAmount } : {}) }];
           reactionBreakdown.to = rawDamage;
           reactionBreakdown.baseBonus = rawDamage - reactionBreakdown.from;
         }
@@ -1030,7 +1056,11 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
     // Incoming-restore adjustment (recipient side: Bleed -50% on HP, Wither -50%
     // on MP, Vitality Up +5): mirror applyGrantEffect so the previewed number
     // matches the applied one. Both helpers do fractional-then-flat, clamped at 0.
+    // Undead / Zombie (A1): the heal lands as damage of the caster-side amount
+    // (heal_receiving_* skipped) — grantApply reads this same per-target figure.
+    const healReversed = !vismagusSuppress && shouldReverseHeal(tActor, { resource: canonRes, amount: grantAmount, row: grantRow });
     const recipBase = vismagusSuppress ? 0
+      : healReversed ? grantAmount
       : canonRes === "hp" ? applyHealReceiving(tActor, grantAmount)
       : canonRes === "mp" ? applyMpReceiving(tActor, grantAmount)
       : grantAmount;
@@ -1046,6 +1076,7 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
       // the flat grant row from effects alone.
       resourceCur: cur, resourceMax: max,
       ...(vismagusSuppress ? { vismagusSuppressed: true } : {}),
+      ...(healReversed ? { healReversed: true } : {}),
     };
     // Attach to the target's existing roster row (shares its hit determination);
     // create an auto-hit row only when none exists yet (pure heal — no damage/check).
@@ -1081,7 +1112,7 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
 // EffectPreviews. Pure preview — no writes. Self vs target routing is by
 // target_ref ("self" → selfEffects). Phase 0: a flat list per row; per-target
 // fan-out happens in the profile builder once target resolution is wired.
-function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars = null }) {
+function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars = null, casterActor = null }) {
   const selfEffects = [];
   const targetedEffects = [];
   const tbl = view?.effect_table ?? {};
@@ -1103,12 +1134,29 @@ function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars
     // introduce the opposite preview/apply mismatch. Self rows = caster (the
     // bearer). No formula semantics change: this only aligns preview to apply.
     const rowResolver = (!isSelf && targetResolver && kind === "deal_damage") ? targetResolver : resolver;
-    const pv = previewEffectRow(row, { resolver: rowResolver, targetRef: row.target_ref ?? null, chainVars });
+    const pv = previewEffectRow(row, { resolver: rowResolver, targetRef: row.target_ref ?? null, chainVars, casterActor });
     if (!pv) continue;
     if (isSelf || pv.type === "cost" || pv.type === "equip") selfEffects.push(pv);
     else targetedEffects.push(pv);
   }
   return { selfEffects, targetedEffects };
+}
+
+// ── Volley Chain: flat bonuses counted once ──────────────────────────────────
+// "N shots that each roll to hit, but bonuses are counted once and shared across
+// the shots" (user, 2026-11-21). A volley shot's base is its own HR + the
+// weapon's / skill's own damage bonus, times the attacker's damage_dealt_mult;
+// the attacker's FLAT bonuses — the outgoing damage parts (Powerful Shot +10,
+// extra_damage_mod_*) and a free-action grant's damage — are totalled once and
+// this shot gets its share (splitVolleyFlat: floor, remainder to the earliest
+// shots). The share is not multiplied again. Per-target flat reaction ops are
+// shared in buildPerTarget. Mutates `primary` (adds `primary.volley`).
+function applyVolleyToPrimary(primary, volley) {
+  if (!volley || primary?.mode !== "damage") return;
+  primary.volley = volleyPrimary(primary, volley);
+}
+function volleyShareLabel(v) {
+  return `Volley: bonuses shared (shot ${(v?.shot ?? 0) + 1}/${v?.shots ?? 1})`;
 }
 
 // ── Public: computeActionProfile ─────────────────────────────────────────────
@@ -1140,6 +1188,9 @@ export async function computeActionProfile(input) {
     grant: _ctxIn?.grant !== undefined ? _ctxIn.grant : (ar?.freeActionGrant ?? null),
     attackMode: _ctxIn?.attackMode ?? ar?.attackMode ?? null,
     multiAttackKeepHr: _ctxIn?.multiAttackKeepHr ?? !!ar?.multiAttackKeepHr,
+    // Volley Chain shot context: explicit (COMPUTE, before the chain is on the ar),
+    // else the strike's own (chain-plan strikeArFor), else strike 1 of the card's chain.
+    volley: _ctxIn?.volley !== undefined ? _ctxIn.volley : (ar?._volley ?? volleyShotContext(ar?.chain ?? null, 1)),
   };
   let view = _viewIn;
   const kind = view?.kind ?? ar?.kind ?? "Skill";
@@ -1195,6 +1246,7 @@ export async function computeActionProfile(input) {
   // damage reduction and weapon efficiency are all computed against what the GM
   // chose rather than being relabelled afterwards.
   applyGmPrimaryOverrides(primary, gmDamage);
+  applyVolleyToPrimary(primary, ctx.volley);
   // Attack damage tooltip breakdown (per-AE/weapon/grant source list) — the
   // Skill path's baseParts are just the outgoing-mod parts; Attack appends the
   // buildDamageBonusParts breakdown ahead of them (mirrors COMPUTE Attack).
@@ -1257,7 +1309,7 @@ export async function computeActionProfile(input) {
   const targetResolver = firstTargetActor
     ? buildSkillResolver({ actor: firstTargetActor, payload: { targets, _chainVars: chainVars }, skill, round: ctx?.round ?? 0 })
     : null;
-  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, targetResolver, chainVars });
+  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, targetResolver, chainVars, casterActor: liveAttacker });
 
   // Per-target status fan-out (additive): surface each targeted status AE on the
   // roster rows it applies to, tagged with a per-target `immune` flag — the status
@@ -1364,6 +1416,7 @@ function flattenRow(r, kind) {
       resourceCur: heal.resourceCur, resourceMax: heal.resourceMax,
       ...(typeof o.hitChance === "number" ? { hitChance: o.hitChance } : {}),
       ...(heal.vismagusSuppressed ? { vismagusSuppressed: true } : {}),
+      ...(heal.healReversed ? { healReversed: true } : {}),
     };
   }
   // Damage row — WHO from target/outcome, WHAT from the primary damage effect.
@@ -1489,13 +1542,17 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   // headline in step with the per-target rows without threading an argument
   // through every caller.
   const _hlGmIn = gmDamageInput(baseAr?.gmOverride ?? null);
-  const _hlGm = applyGmDamageInput(_hlGmIn, prim.damageBonus + prim.outgoingTotal, effectiveHr);
+  const _hlVolley = prim.volley ?? null;
+  const _hlGm = applyGmDamageInput(_hlGmIn, _hlVolley ? _hlVolley.ownBonus : (prim.damageBonus + prim.outgoingTotal), effectiveHr);
+  if (_hlVolley) _hlGm.flat += _hlVolley.flatShare;
+  const _hlVolleyParts = (_hlVolley && _hlVolley.flatShare !== _hlVolley.flatTotal)
+    ? [{ source: volleyShareLabel(_hlVolley), amount: _hlVolley.flatShare - _hlVolley.flatTotal }] : [];
   const _hlBase = _hlGm.flat + reactionDelta;
   const _hlFinal = _hlGm.hr + _hlGm.flat + reactionDelta;
   const _gmIgnoreHr = _hlGmIn && _hlGmIn.useHR === false;
   const damageObj = hasDamage ? (kind === "Attack" ? {
     base: _hlBase,
-    baseParts: [...(prim.baseParts ?? prim.outgoingParts ?? []), ...repReactionParts],
+    baseParts: [...(prim.baseParts ?? prim.outgoingParts ?? []), ..._hlVolleyParts, ...repReactionParts],
     // A GM-chosen element outranks a reaction's override, which otherwise sits
     // at the front of this ladder.
     element: _hlGmIn?.element ?? repOverrideElement ?? prim.overriddenElement ?? prim.nativeElement ?? prim.element,
@@ -1504,7 +1561,7 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
     finalIfHit: _hlFinal,
   } : {
     base: _hlBase,
-    baseParts: [...(prim.outgoingParts ?? []), ...repReactionParts],
+    baseParts: [...(prim.outgoingParts ?? []), ..._hlVolleyParts, ...repReactionParts],
     // Same element-read ladder as the Attack arm (overridden/native are undefined for
     // a spell → falls through to prim.element); aligned so the two arms can't drift.
     element: _hlGmIn?.element ?? repOverrideElement ?? prim.overriddenElement ?? prim.nativeElement ?? prim.element,
@@ -1533,6 +1590,9 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
     damageResource: prim.resource ?? "hp",
     perTargetResults,
     hitTokenUuids,
+    // timed_strikes preview (Renzokuken): per-strike TRIGGER / otherwise values
+    // and the fumble→perfect total, for the skill card's damage panel.
+    timedStrikes: (profile.appliedEffects ?? []).find((e) => e?.type === "timed_strikes") ?? null,
   };
 }
 

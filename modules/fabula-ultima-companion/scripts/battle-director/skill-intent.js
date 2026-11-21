@@ -87,8 +87,16 @@ export function classifyActionIntent(skill) {
   //     `skill_target` is a real template FIELD and `effect_table` is
   //     dynamic-table DATA — both survive templateSystem.reloadTemplate(),
   //     unlike the non-template `action_intent` prop (which reload strips).
-  const targetsEnemies = /enemy/i.test(String(p.skill_target ?? ""));
+  //     "Enemies" too: /enemy/ alone missed "All Enemies" / "Up to 99 Enemies"
+  //     (Zombie Plague, Mean Look ... were classified "aid", 2026-11-20).
+  const targetsEnemies = /enem(?:y|ies)/i.test(String(p.skill_target ?? ""));
   if (targetsEnemies && hasApplyAe(skill)) return "harmful";
+
+  // 6c. No damage prop, but an effect row deals damage to the creatures the
+  //     action is aimed at (Gravis Alta: floor(CUR_HP * 0.5); Soul Sever: the
+  //     eaten fragment's HP; Revive on an Undead). Without this they were "aid",
+  //     so Prophetic Defender / Protect / Illusory Shield could never answer them.
+  if (targetsEnemies && hasTargetDamage(skill)) return "harmful";
 
   // 7. Non-offensive spell → aid.
   if (skillType === "spell") return "aid";
@@ -155,6 +163,24 @@ function hasApplyAe(skill) {
     const row = table[key];
     if (!row || row.$deleted) continue;
     if (row.effect_kind === "apply_ae") return true;
+  }
+  return false;
+}
+
+// Step 6c: a deal_damage row aimed at the action's targets (not at the caster's
+// side — recoil / self-cost rows don't make an action hostile).
+const TARGET_DAMAGE_REFS = new Set(["action_targets", "hit_action_targets", "save_failed_targets", "save_passed_targets"]);
+function hasTargetDamage(skill) {
+  const table = skill?.system?.props?.effect_table
+            ?? skill?.system?.props?.reaction_effect_table  // legacy alias
+            ?? null;
+  if (!table) return false;
+  for (const key of Object.keys(table)) {
+    const row = table[key];
+    if (!row || row.$deleted) continue;
+    // timed_strikes (Renzokuken) deals its damage through deal_damage strikes.
+    if (row.effect_kind !== "deal_damage" && row.effect_kind !== "timed_strikes") continue;
+    if (TARGET_DAMAGE_REFS.has(String(row.target_ref ?? "").trim().toLowerCase())) return true;
   }
   return false;
 }

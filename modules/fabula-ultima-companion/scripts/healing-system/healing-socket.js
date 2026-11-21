@@ -30,6 +30,7 @@ import { debitCost } from "../battle-director/skill-cost.js";
 import { consumeOne, spendIp } from "../battle-director/item-resource.js";
 import { getPotionRain, isPotionItem, halveHeal, potionRainHalves } from "./potion-rain.js";
 import { gatherHealingActions } from "./healing-actions.js";
+import { shouldReverseHeal } from "../battle-director/skill-formulas.js";
 
 const CHANNEL = "module.fabula-ultima-companion";
 const T_REQ = "healing.apply.req";
@@ -217,8 +218,17 @@ async function applyHeal(payload, requesterUserId = game.user?.id) {
       const e = ensure(target);
       for (const g of spreadGrants) {
         const prop = HEAL_PROP[g.resource]; if (!prop) continue;
-        const before = _readNum(target, prop);
+        // Merged value first, so two HP grants on one target compose.
+        const before = e.update[`system.props.${prop}`] ?? _readNum(target, prop);
         const max = _readNum(target, HEAL_MAX[g.resource]) || before + g.amount;
+        // Undead / Zombie (A1, Nox Legion): an HP heal lands as damage of the same
+        // amount (floored at 0). Out of combat there is no damage pipeline to run.
+        if (shouldReverseHeal(target, { resource: g.resource, amount: g.amount })) {
+          const after = Math.max(0, before - g.amount);
+          e.update[`system.props.${prop}`] = after;
+          applied.push({ type: "heal", targetName: target.name, resource: g.resource, before, after, max, healed: 0, reversed: before - after });
+          continue;
+        }
         const after = Math.min(max, before + g.amount);
         e.update[`system.props.${prop}`] = after;
         applied.push({ type: "heal", targetName: target.name, resource: g.resource, before, after, max, healed: after - before });

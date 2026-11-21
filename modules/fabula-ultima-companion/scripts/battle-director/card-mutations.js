@@ -1298,6 +1298,10 @@ async function applyAdjustDefenseMutation(ctx, cand, row) {
   if (newChance == null) delete nextDefRow.hitChance; else nextDefRow.hitChance = newChance;
   ctx.perTargets[idx] = nextDefRow;
   log(`adjust_defense: ${op} ${amount} on ${pt.name ?? reactorUuid} — DEF ${oldDef} → ${newDef}; hit ${pt.hit ? "Y" : "N"}→${newHit ? "Y" : "N"} (via ${via})`);
+  // A one-shot defence change spends its carrier at CONFIRM, the same opt-in
+  // the incoming-damage twin has (`consume_carrier_charge`): Hunter's Mark
+  // lowers the marked creature's DEF for the next attack, then is gone.
+  recordCarrierConsume(ctx, cand, row);
   return "applied";
 }
 

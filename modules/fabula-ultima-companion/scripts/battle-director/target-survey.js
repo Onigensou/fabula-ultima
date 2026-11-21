@@ -76,7 +76,7 @@
 // `ok && available === 0` — never `available < 1`.
 
 import { log, warn } from "./logger.js";
-import { buildSkillResolver, evaluateFormula, evaluateSkillAvailability } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, evaluateSkillAvailability, isHealReversedActor } from "./skill-formulas.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { affordableTargetCount, mpCapTargetCount } from "./skill-cost.js";
 import {
@@ -89,6 +89,8 @@ import {
   snapshotEligibleTargets,
   snapshotEligibleTargetsFromDCombat,
   targetsKnockedOut,
+  targetsKnockedOutAlly,
+  mergeUndeadRevivePool,
 } from "./snapshot.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 import { applyNoxMassiveGate } from "./massive-keyword.js";
@@ -321,19 +323,20 @@ function resolvePerformerSnapshot(performer, dCombat, combat = null) {
   const tokenUuid = performer.tokenUuid ?? performer.tokenDocument?.uuid ?? performer.token?.uuid ?? null;
   const actorId   = performer.actorId   ?? performer.actor?.id ?? null;
 
-  const matches = (tokDoc, actDoc) => {
-    if (tokenUuid && tokDoc?.uuid === tokenUuid) return true;
-    if (tokenId && tokDoc?.id === tokenId) return true;
-    if (actorId && actDoc?.id === actorId) return true;
-    return false;
-  };
-  let combatant = (dCombat?.combatants ?? []).find((c) => matches(c.tokenDoc, c.actorDoc)) ?? null;
+  // Token FIRST, actor only as a fallback — two passes, not one. Copies of one
+  // actor (Deva's two Missile Fists, any summon cast twice) share the actor id, so
+  // a single pass that accepted either matched the FIRST copy for every copy: the
+  // second fist's Self action (Hover / Detonate) then found no performer in its
+  // pool and the fist lost its turn (Valley trio playtest, 2026-11-21).
+  const byToken = (tokDoc) => Boolean((tokenUuid && tokDoc?.uuid === tokenUuid) || (tokenId && tokDoc?.id === tokenId));
+  const byActor = (actDoc) => Boolean(actorId && actDoc?.id === actorId);
+  const roster = dCombat?.combatants ?? [];
+  let combatant = roster.find((c) => byToken(c.tokenDoc)) ?? roster.find((c) => byActor(c.actorDoc)) ?? null;
   // Legacy Foundry-combat roster (manual-attach). Searched too, or the refusal
   // below would reject every performer on that path.
   if (!combatant && combat?.combatants) {
-    for (const c of combat.combatants) {
-      if (matches(c?.token, c?.actor)) { combatant = c; break; }
-    }
+    const legacy = Array.from(combat.combatants);
+    combatant = legacy.find((c) => byToken(c?.token)) ?? legacy.find((c) => byActor(c?.actor)) ?? null;
   }
 
   // Refuse on EITHER roster. The fabricated fallback below is only reachable when
@@ -542,6 +545,14 @@ export function surveyActionTargets({
     // exactly the failure this module exists to remove.
     return unanswered("no-combat", { category });
   }
+  // Revive on Undead (A2): a KO-ally revive also reaches LIVING Undead / Zombie'd
+  // creatures on either side — same pool as the compose picker.
+  if (targetsKnockedOutAlly(targetText)) {
+    const living = dCombat?.combatants?.length
+      ? snapshotEligibleTargetsFromDCombat(dCombat, snap, { category: "any", defeated: "exclude" })
+      : snapshotEligibleTargets(combat, snap, { category: "any", defeated: "exclude" });
+    eligible = mergeUndeadRevivePool(eligible, living);
+  }
 
   // Order matches the TARGET state's: side → self → action-declared narrowing →
   // turn-state narrowing → pool focus.
@@ -666,6 +677,32 @@ function bdParticipantRoster(director) {
 // token-id list and a plain function. No director type reaches ActionReader.
 const PROVIDER_KEY = "battleContext";
 
+// Does this action restore HP to its targets? A healing damage type, or an HP
+// grant row aimed at the targets (Remedy: grant hp 50 on action_targets). Grants
+// to the caster's own side-channel (self, own summons…) don't count.
+const HEAL_TYPES = new Set(["healing", "heal", "hp_heal", "hp", "recovery"]);
+const CASTER_SIDE_REFS = new Set(["self", "own_summons", "own_phantasms", "own_persistent_summons", "own_minions", "own_numen", "last_summoned", "field"]);
+export function restoresHp(action) {
+  const p = action?.system?.props ?? null;
+  if (!p) return false;
+  if (HEAL_TYPES.has(String(p.type_damage ?? "").trim().toLowerCase())) return true;
+  const table = p.effect_table ?? p.reaction_effect_table ?? null;
+  if (!table || typeof table !== "object") return false;
+  return Object.values(table).some((r) => r && !r.$deleted
+    && r.effect_kind === "grant"
+    && String(r.grant_resource ?? "").trim().toLowerCase() === "hp"
+    && !CASTER_SIDE_REFS.has(String(r.target_ref ?? "").trim().toLowerCase()));
+}
+
+// Drop survey entries whose creature a heal would hurt. Unresolvable entries stay.
+export function withoutHealReversed(eligible, resolveActor = (uuid) => globalThis.fromUuidSync?.(uuid) ?? null) {
+  return (eligible ?? []).filter((e) => {
+    let actor = null;
+    try { actor = e?.actorUuid ? resolveActor(e.actorUuid) : null; } catch { actor = null; }
+    return !(actor && isHealReversedActor(actor));
+  });
+}
+
 // Published on the module API, which is where ActionReader already looks for
 // everything else, so it stays a lookup rather than an import.
 export function registerBattleTargetingProvider() {
@@ -713,6 +750,13 @@ export function registerBattleTargetingProvider() {
         skillTargetText: opts.skillTargetText ?? null,
         excludeSelf:     Boolean(opts.excludeSelf),
         creatureMeans:   "enemy",
+        // AI only (user 2026-11-20): an HP heal never goes to a creature it would
+        // HURT (Zombie / Undead — healing is reversed on them). Kalina's Remedy
+        // kept landing on Zombie'd players as 50 damage. With nobody else left the
+        // pool is empty, so the row is not feasible and the AI moves on. The
+        // player's own picker does not come through here: a player may still heal
+        // an Undead on purpose — that is the counterplay.
+        postFilter:      restoresHp(action) ? withoutHealReversed : null,
       });
     },
 

@@ -35,6 +35,7 @@ import { plateSettled } from "./director-player-hud.js";
 import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
+import { absorbKeywordValue, normalizeKeywordLabel } from "./keyword-value.js";
 import { DAMAGE as DAMAGE_TYPE_STYLE } from "../linked-text/lt-terms.js";
 import { formatHitChance, isConcealedRoll } from "./check.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
@@ -109,6 +110,21 @@ function announceAllyDeciding(director, rowKey, carrierUuid, fromUserId, on) {
       menuSpec: { kind: "action-card-pill-update", combatId: director.combatId, rowKey, carrierUuid, decision: "deciding", on: !!on },
     });
   } catch (e) { warn("announceAllyDeciding: broadcast threw", e); }
+}
+
+// Tell the other players that this reaction's owner is holding its card in a
+// drag (on) or let go (off). Display only: their reaction hand makes the ally's
+// small card glow in the owner's colour (reaction-hand.js). Relayed by the host
+// because players only talk to the host.
+function announceAllyHolding(director, rowKey, carrierUuid, fromUserId, on) {
+  const targetUserIds = cardAudience().filter((u) => u.active && !u.isGM && u.id !== fromUserId).map((u) => u.id);
+  if (!targetUserIds.length) return;
+  try {
+    director?.intentChannel?.broadcastMenuOpen({
+      targetUserIds,
+      menuSpec: { kind: "action-card-pill-hold", combatId: director.combatId, rowKey, carrierUuid, on: !!on },
+    });
+  } catch (e) { warn("announceAllyHolding: broadcast threw", e); }
 }
 
 // An online owner first, else the owner who is away. A card must still name an
@@ -1341,7 +1357,7 @@ export function ensureStyles() {
     :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))):is(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]) { display: none !important; }
     /* No reaction in effect and none to answer here: no Reactions box at all. */
     .fud-bf-card .fud-bf-reactions-row:not(:has(.fud-bf-reaction-pill:is(.is-applied, .is-auto):not(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]))):not(:has(.fud-bf-reaction-pill:not([data-gmd-rx]) [data-fud-reaction-action="apply"])),
-    body.fud-rx-hand .fud-bf-card .fud-bf-reactions-row:not(:has(.fud-bf-reaction-pill:is(.is-applied, .is-auto):not(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]))) { display: none !important; }
+    body.fud-rx-hand .fud-bf-card .fud-bf-reactions-row:not(.rxh-preview):not(:has(.fud-bf-reaction-pill:is(.is-applied, .is-auto):not(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]))) { display: none !important; }
 
     /* ── Auto-confirm veto strip (Summon Autopilot) ─────────────────────────
        Sits directly above the button row: a thin draining bar plus a one-line
@@ -2952,6 +2968,9 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
     // green number that contradicts what actually happens.
     if (r.vismagusSuppressed) return "NO HEAL · VISMAGUS";
     const amt = Math.max(0, r.grantAmount);
+    // Undead / Zombie heal reversal (A1): the heal lands as damage. Checked
+    // before the FULL test — a full-HP undead still takes the hit.
+    if (r.healReversed) return `UNDEAD · HIT <span class="t-num">${amt}</span>`;
     // Target already at cap → the restore lands nothing. Say so explicitly
     // instead of a green number that contradicts what happens (shields have no
     // cap, so they always show the amount).
@@ -3007,6 +3026,7 @@ export function resultClsFor(r) {
   if (r.damageOverride && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) return "miss";
   if (typeof r.grantAmount === "number") {
     if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
+    if (r.healReversed) return "hit";        // Undead / Zombie: the heal hurts
     if (r.grantResource === "mp")     return "restore-mp";
     if (r.grantResource === "shield") return "shield";
     return "heal";
@@ -5653,10 +5673,14 @@ export function parseEffectDescription(html) {
 
       if (entry?.kind === "keyword") {
         const key = entry.key ?? uuid;
-        const dedup = `${key}|${label}`;
+        // "Chain" + " 2 Pick" authored outside the link → one chip, CHAIN 2
+        // (see keyword-value.js). Must run before the anchor is removed.
+        const value = absorbKeywordValue(a, root);
+        const chipLabel = value ? `${label} ${value}` : normalizeKeywordLabel(label);
+        const dedup = `${key}|${chipLabel}`;
         if (!seenKw.has(dedup)) {
           seenKw.add(dedup);
-          keywords.push({ key, label, icon: entry.icon ?? null });
+          keywords.push({ key, label: chipLabel, icon: entry.icon ?? null });
         }
         a.remove();
         continue;
@@ -5719,11 +5743,24 @@ function buildEffectSectionHTML({ descriptionHtml }) {
       </fieldset>`;
 }
 
+// timed_strikes (Renzokuken) preview: the per-strike TRIGGER / otherwise values
+// and the whole range, fumble (no triggers) → perfect (all + finisher). Numbers
+// are before affinity (each strike checks the target's affinity on its own).
+function buildTimedStrikesPreviewHTML(ts) {
+  const el = escapeHtml(String(ts.element ?? "physical"));
+  const fin = ts.finisher > 0 ? ` · ${escapeHtml(ts.finisherLabel || "Finisher")} <b>${ts.finisher}</b> on ${ts.count}/${ts.count}` : "";
+  return `<div class="fud-bf-timed-strikes" data-fud-timed-strikes="${ts.min}-${ts.max}" style="margin:6px 0;padding:6px 10px;border:1px solid rgba(122,106,85,.6);border-radius:8px;background:rgba(255,250,240,.6);font-size:12px;line-height:1.45;">
+    <div style="font-weight:800;letter-spacing:.04em;">${ts.count} strikes · no roll · ${el}</div>
+    <div>TRIGGER <b>${ts.hit}</b> · otherwise <b>${ts.miss}</b> per strike${fin}</div>
+    <div>Total <b>${ts.min}–${ts.max}</b> <span style="opacity:.7">(swing ${ts.swing}${ts.hr != null ? `, HR ${ts.hr}` : ""}; before affinity)</span></div>
+  </div>`;
+}
+
 function buildSkillCard(payload) {
   const {
     attacker, skillName, skillImg, skillType, skillRange,
     damageType, hasDamage, hasHealing, rawCost, targets, roll, damage,
-    perTargetResults, descriptionHtml, defenseTargetType,
+    perTargetResults, descriptionHtml, defenseTargetType, timedStrikes,
   } = payload ?? {};
 
   // Visual identity (title icon, subtitle, "Spell" label) — driven by
@@ -5796,6 +5833,7 @@ function buildSkillCard(payload) {
   // with buildAttackCard via buildEffectSectionHTML so keywords/statuses render
   // identically wherever a description appears.
   const descHTML = tryBuild("skillEffect", () => buildEffectSectionHTML({ descriptionHtml }));
+  const timedHTML = timedStrikes ? tryBuild("skillTimedStrikes", () => buildTimedStrikesPreviewHTML(timedStrikes)) : "";
 
   // Portrait slots: use perTargetResults if we have damage rows,
   // otherwise synthesise from targets so a no-damage skill still gets
@@ -5817,6 +5855,7 @@ function buildSkillCard(payload) {
       ${tryBuild("skillAttacker", () => buildAttackerHTML({ attacker, targets }))}
       ${accuracyHTML}
       ${damageHTML}
+      ${timedHTML}
       ${perTargetHTML}
       ${descHTML}
     `,
@@ -5911,7 +5950,7 @@ const ACTION_CARD_RENDER_KEYS = [
   // Skill / Spell:
   "skillName", "skillImg", "skillType", "defenseTargetType", "skillRange",
   "skillTarget", "damageType", "hasDamage", "hasHealing", "rawCost",
-  "costSerialized", "descriptionHtml",
+  "costSerialized", "descriptionHtml", "timedStrikes",
   // Ultima actions (Domination / Escape / Recovery):
   "ultimaCost", "dominanceCost",
   "reason",
@@ -6073,6 +6112,7 @@ export function projectActionResultForRender(ar) {
         resourceCur: r.resourceCur ?? null,
         resourceMax: r.resourceMax ?? null,
         vismagusSuppressed: r.vismagusSuppressed ?? null,
+        healReversed: r.healReversed ?? null,
         damageOverride: r.damageOverride
           ? { from: r.damageOverride.from ?? null, to: r.damageOverride.to ?? null }
           : null,
@@ -7564,7 +7604,9 @@ function chainBulletHTML(chain, targets) {
     const n = Number(chain?.count) || 0;
     if (n < 2 || chain?.hidden || chain?.mode === "single") return "";
     // One keyword for players; the tooltip says how THIS Chain resolves.
-    let tip = `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
+    let tip = chain.mode === "volley"
+      ? `Chain ${n} Volley: ${n} shots on one card — each rolls its own Accuracy Check; damage bonuses are shared across the shots.`
+      : `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
     if (Array.isArray(chain.strikeTargets) && chain.strikeTargets.length) {
       const nameOf = new Map((Array.isArray(targets) ? targets : []).map((t) => [t?.tokenUuid, t?.name ?? "?"]));
       const counts = new Map();
@@ -7572,7 +7614,7 @@ function chainBulletHTML(chain, targets) {
       tip += ` Strikes: ${[...counts].map(([u, c]) => `${nameOf.get(u) ?? "?"} ×${c}`).join(", ")}.`;
       if (chain.mode === "seek") tip += " A strike on a creature already at 0 HP seeks another target.";
     }
-    const mode = (chain.mode === "random" || chain.mode === "seek") ? " (Random)" : chain.mode === "pick" ? " (Pick)" : "";
+    const mode = (chain.mode === "random" || chain.mode === "seek") ? " (Random)" : chain.mode === "pick" ? " (Pick)" : chain.mode === "volley" ? " (Volley)" : "";
     return `<span class="bullet fud-bf-chain-bullet" title="${escapeHtml(tip)}"><i class="fa-solid fa-burst" aria-hidden="true"></i>Chain ×${n}${mode}</span>`;
   } catch { return ""; }
 }
@@ -9825,6 +9867,7 @@ export async function postActionCard({ director, kind, payload }) {
     let confirmAwait = null;
     let cancelAwait = null;
     let reactionAwait = null;
+    let holdAwait = null;
     let invokeAwait = null;
     let editAwait = null;
     let hudOpenAwait = null;
@@ -9834,6 +9877,7 @@ export async function postActionCard({ director, kind, payload }) {
       try { confirmAwait?.abort?.("postActionCard-finish"); } catch {}
       try { cancelAwait?.abort?.("postActionCard-finish"); } catch {}
       try { reactionAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { holdAwait?.abort?.("postActionCard-finish"); } catch {}
       try { invokeAwait?.abort?.("postActionCard-finish"); } catch {}
       try { editAwait?.abort?.("postActionCard-finish"); } catch {}
       try { hudOpenAwait?.abort?.("postActionCard-finish"); } catch {}
@@ -10132,6 +10176,27 @@ export async function postActionCard({ director, kind, payload }) {
           });
         };
         armReactionAwait();
+
+        // Reaction-hold relay — a player picked up (or let go of) one of their
+        // reaction cards in a drag. Display only: pass it on to the other
+        // players so the ally's small card glows; the card itself is untouched.
+        const armHoldAwait = () => {
+          if (resolved) return;
+          if (initialPending === 0) return;
+          holdAwait = director.intentChannel.awaitIntent(INTENTS.REACTION_HOLD, { timeoutMs: AWAIT_MS });
+          holdAwait.then((intent) => {
+            const body = intent?.body ?? {};
+            const fromUid = intent?.fromUserId ?? null;
+            if (fromUid && fromUid !== game.user?.id) {
+              announceAllyHolding(director, String(body.rowKey ?? ""), String(body.carrierUuid ?? ""), fromUid, !!body.on);
+            }
+            armHoldAwait();
+          }).catch((e) => {
+            if (expired(e)) { armHoldAwait(); return; }
+            if (!resolved) log(`postActionCard: REACTION_HOLD await aborted (${e?.message})`);
+          });
+        };
+        armHoldAwait();
 
         // Invoke-choice loop — re-arm after each pick so the player can use
         // both Trait and Bond if their actor supports full invoke.
@@ -10611,6 +10676,10 @@ export async function postActionCard({ director, kind, payload }) {
         if (!pill) return;
         const rowKey = pill.dataset.fudReactionKey ?? "";
         const carrier = pill.dataset.fudReactionCarrier ?? "";
+        // A drag's hold signal is a player's display-only message (reaction hand);
+        // it must never fall through to Skip below.
+        const holdAct = reactionBtn.dataset.fudReactionAction;
+        if (holdAct === "hold" || holdAct === "unhold") return;
         const decision = reactionBtn.dataset.fudReactionAction === "apply" ? "apply" : "skip";
         recordPillDecision(rowKey, carrier, decision);
         return;
@@ -11612,6 +11681,20 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       { pendingCount: menuSpec.pendingCount ?? 0, gm: !!menuSpec.gm });
   });
 
+  // "Holding" — another player is holding one of their reaction cards in a drag
+  // (reaction-hand.js), or let go. Display only: the reaction hand makes their
+  // small card glow. Its own kind ON PURPOSE: an "action-card-pill-update" with a
+  // decision a client doesn't know falls through to "skip" above.
+  const offPillHold = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card-pill-hold") return;
+    const pillEl = document.getElementById(MIRROR_ROOT_ID)?.querySelector(
+      `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(String(menuSpec.rowKey ?? ""))}"][data-fud-reaction-carrier="${CSS.escape(String(menuSpec.carrierUuid ?? ""))}"]`
+    );
+    if (!pillEl) return;
+    if (menuSpec.on && !pillEl.classList.contains("is-resolved")) pillEl.dataset.fudReactionHolding = "1";
+    else delete pillEl.dataset.fudReactionHolding;
+  });
+
   // Card body re-render handler — propagates a GM-side full-body rebuild
   // (Potion Rain heal-spread, future result mutations) to the local mirror so
   // the headline + per-target rows update together. Header/pills/buttons are
@@ -11861,6 +11944,20 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
         channel.emit({
           type: INTENTS.REACTION_CHOICE,
           body: { rowKey: pill.dataset.fudReactionKey ?? "", carrierUuid: pill.dataset.fudReactionCarrier ?? "", decision: "reopen" },
+          combatId: menuSpec.combatId,
+        });
+        return;
+      }
+      // Holding the card in a drag, or letting go (the reaction hand; no visible
+      // button carries this either). Display only, so other players see the
+      // ally's card glow. MUST return here: below, anything that isn't "apply"
+      // is treated as an optimistic Skip.
+      const holdAct = reactionBtn.dataset.fudReactionAction;
+      if (holdAct === "hold" || holdAct === "unhold") {
+        if (!isOwner) return;
+        channel.emit({
+          type: INTENTS.REACTION_HOLD,
+          body: { rowKey: pill.dataset.fudReactionKey ?? "", carrierUuid: pill.dataset.fudReactionCarrier ?? "", on: holdAct === "hold" },
           combatId: menuSpec.combatId,
         });
         return;
@@ -12402,6 +12499,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     try { offClose?.(); } catch {}
     try { offConfirmAck?.(); } catch {}
     try { offPillUpdate?.(); } catch {}
+    try { offPillHold?.(); } catch {}
     try { offPillsAppend?.(); } catch {}
     try { offTargetMutation?.(); } catch {}
     try { offBodyUpdate?.(); } catch {}

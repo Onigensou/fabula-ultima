@@ -88,6 +88,14 @@ skipPartyActors: true
     // (disable_action) and Berserk (enable_action_only).
     { key: "disable_action", label: "Disable Action(s)", category: "Action Gating", valueKind: "string" },
     { key: "enable_action_only", label: "Enable Action(s) Only", category: "Action Gating", valueKind: "string" },
+    // Grapple rules (snapshot.js grapple section; Luchador set). "N:Labels" =
+    // block those labels while the bearer holds N+ creatures.
+    { key: "disable_action_while_grappling", label: "Disable Action(s) While Grappling N (N:Labels)", category: "Action Gating", valueKind: "string" },
+    { key: "grapple_max", label: "Grapple: Max Creatures Held", category: "Action Gating", valueKind: "number" },
+    { key: "grapple_escape_dl", label: "Grapple: Escape DL of Your Holds", category: "Action Gating", valueKind: "number" },
+    { key: "ignore_condition_immunity", label: "Ignore Target's Immunity To (statuses)", category: "Action Gating", valueKind: "string" },
+    // Equip legality (equipment-swap.js canEquip). "no_shield" · "weapon_category:brawling".
+    { key: "equip_restrict", label: "Equip Restriction", category: "Action Gating", valueKind: "string" },
 
     // The `Trick` keyword — reverses this attack's success condition (a check
     // total BELOW the target's defense hits). Carrier-scoped: on a GEAR carrier it

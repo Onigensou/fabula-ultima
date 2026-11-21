@@ -27,7 +27,7 @@
 import { getClientOption } from "../shared/client-options.js";
 import { battleIsSettled, hudScale } from "./director-player-hud.js";
 import { faceEl, glowActionCard, HAND_GEOM } from "./reaction-hand.js";
-import { flyToReactionBox, flyToPortrait, bookLanding } from "./reaction-landing.js";
+import { flyToReactionBox, flyToPortrait, bookLanding, landInPlace } from "./reaction-landing.js";
 
 const NS = "fabula-ultima-companion";
 const TAG = "[ReactionDeck]";
@@ -734,11 +734,16 @@ export async function deckReturn(el) {
  * Reactions box when it has a `pill` (the action card's own record of this
  * reaction), and on your portrait when it doesn't (a standalone window): see
  * reaction-landing.js. Lands (glow) on SPENT when limited, back on the deck otherwise.
+ * inPlace: the card was dragged and already waits in its slot as a badge: no flight.
  */
-export async function deckPlay(el, { carrierUuid = null, pill = null } = {}) {
+export async function deckPlay(el, { carrierUuid = null, pill = null, inPlace = false } = {}) {
   if (!el?.isConnected) return;
   const e = carrierUuid ? (D.decks.get(myActorId()) ?? []).find((x) => x.carrierUuid === carrierUuid) : null;
   if (e?.limited) { D.pending.set(carrierUuid, { until: null }); render(); }
+  if (inPlace && pill && await landInPlace({ pill })) {
+    if (D.ui) glowPile(e?.limited ? D.ui.spent : D.ui.ready);
+    return;
+  }
   const flightOpts = { el, iconEl: el.querySelector(".emb img"), power: 1, collapseMs: 260, travelMs: 480, apex: 1.34 };
   const flew = pill
     ? await flyToReactionBox({ ...flightOpts, pill })

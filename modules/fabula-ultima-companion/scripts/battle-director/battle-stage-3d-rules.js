@@ -183,6 +183,47 @@ export const PRESETS = Object.freeze({
       {k:"smoke",n:4,at:[[300,60],[1100,30],[1800,50],[2400,80]],color:"#2a1a14",alpha:0.35},
       {k:"leaves",n:8,x0:0,x1:2560,y0:200,colors:["#f3e2c4","#f6d6b0"],up:true},
     ] } },
+  // Valley boss arenas (2026-11-20, "Valley Boss Arenas" mockup, approved as-is). New ChatGPT paintings placed so
+  // their floor line lands at canvas y ~420, bleed outpainted. Horizons: floor fit of the depth model, strength by the
+  // usual rule. Effects are the mockup's, coordinates in canvas px on each image.
+  // Asura's room: Abandoned Monastery Interior (statue already sliced by his entrance).
+  Valley_Battlemap005: { horizon: 94.7, strength: 0.317, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"beam",n:3,at:[[1240,0,120,470,-0.25],[1420,0,90,430,-0.32],[1080,0,70,380,-0.2]],color:"#c8c3ff",alpha:0.1},
+      {k:"pulse",n:2,at:[[690,190,150],[1930,190,150]],color:"#ffaa46",alpha:0.12},
+      {k:"motes",n:46,area:[1000,40,640,420],color:"#dcd7ff"},
+    ] } },
+  // Rakshasa's room: Feeding Pit rim.
+  Valley_Battlemap006: { horizon: 36, strength: 0.409, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"pulse",n:2,at:[[580,300,130],[1970,300,130]],color:"#ff7828",alpha:0.18},
+      {k:"embers",n:28,from:[[580,250,30],[1970,250,30]],color:"#ffa040"},
+      {k:"haze",n:9,area:[820,170,920,230],color:"#786496",alpha:0.16,rise:-4.8},
+      {k:"flash",n:1,every:7.5},
+    ] } },
+  // Deva's room: Ruined Monument (plaza at the Kneeling Colossus).
+  Valley_Battlemap007: { horizon: 69.4, strength: 0.357, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"rain",n:1,drops:150},
+      {k:"splash",n:1,count:10,area:[120,470,2320,760]},
+      {k:"haze",n:8,area:[0,300,2560,200],color:"#9682c8",alpha:0.12},
+      {k:"flash",n:1,every:6.5},
+    ] } },
+  // Sealed Cavern (Valley_Map010, the Nox Legion dungeon): poison cavern. Before this it reused the Underground art
+  // (Valley_Battlemap002.webp); a save slot that restores that URL just gets the Underground look back.
+  // 2026-11-20 rev 2 (user): slime drips removed; churning noxious gas = the altar/castle cloud sea in green,
+  // rolling outward from the glowing cave mouth like the painted plume. First, so the haze and glows sit over it.
+  Valley_Battlemap004: { horizon: 58.6, strength: 0.374, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"cloudsea",n:1,ox:1320,oy:380,cx:1300,cy:230,rx:980,ry:330,floor0:330,floor1:450,rgb:[92,168,52],speed:1,alpha:1,size:1},
+      {k:"haze",n:12,area:[760,150,1040,260],color:"#78dc3c",alpha:0.13,rise:-1.8},
+      {k:"haze",n:16,area:[-100,520,2760,640],color:"#5aaa32",alpha:0.08,low:true},
+      {k:"bubble",n:1,at:[460,470,300,50],count:9},
+      {k:"bubble",n:1,at:[2140,480,300,50],count:9},
+      {k:"pulse",n:2,at:[[460,470,190],[2140,480,190]],color:"#96ff3c",alpha:0.22},
+      {k:"pulse",n:2,at:[[220,380,110],[2330,240,110]],color:"#8cff50",alpha:0.15},
+      {k:"pulse",n:2,at:[[1860,260,90],[580,260,90]],color:"#8cff50",alpha:0.12},
+    ] } },
   // Fafnir Castle arenas were already v2 size; depth map + preset only.
   FafnirCastle_Battlemap001: { horizon: -1.9, strength: 0.468, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   FafnirCastle_Battlemap002: { horizon: -43.2, strength: 0.531, stage3d: { relief: true, backRow: 222, frontRow: 547 } },

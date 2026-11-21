@@ -115,8 +115,15 @@ function flyParams(token) {
 
 const _locks = new Set();
 const _waits = new Map();   // tokenId -> retries spent waiting for the idle Float to land
+// Tokens this client has asked the server to delete and that are not gone yet. A
+// filter write sent now would reach the server after the delete: the battle-end
+// sweep (stop() lifts King Gorger's Flying, then deletes every director token a
+// beat later) answered with "Token <id> does not exist!" (Nox Legion sims,
+// 2026-11-20). A token on its way out needs no lift.
+const _deleting = new Set();
+function isGoing(token) { return token.destroyed || _deleting.has(token.id) || !token.document?.parent?.tokens?.has?.(token.id); }
 export async function reconcile(token) {
-  if (!token?.document || token.destroyed || !canvas?.ready) return;
+  if (!token?.document || token.destroyed || !canvas?.ready || isGoing(token)) return;
   const fly = isAirborne(token);
   const has = hasFilter(token, FLY_FILTER_ID);
   if (!TM() || !isAuthority() || _locks.has(token.id)) return;
@@ -130,6 +137,7 @@ export async function reconcile(token) {
     if (n < 15) { _waits.set(token.id, n + 1); setTimeout(() => reconcile(token), 400); return; }
   }
   _waits.delete(token.id);
+  if (isGoing(token)) return;   // the Float wait above can outlive the token
   _locks.add(token.id);
   try {
     if (want) await TM().addUpdateFilters(token, [flyParams(token)]);
@@ -200,6 +208,15 @@ Hooks.once("ready", async () => {
     if (t) setTimeout(() => reconcile(t), 50);
   });
   Hooks.on("drawToken", (token) => setTimeout(() => reconcile(token), 250));
+  // preDeleteToken runs on the deleting client before the request goes out. If the
+  // delete is refused, the token is back in play after a short while.
+  Hooks.on("preDeleteToken", (doc) => {
+    const id = doc?.id;
+    if (!id) return;
+    _deleting.add(id);
+    setTimeout(() => _deleting.delete(id), 10000);
+  });
+  Hooks.on("deleteToken", (doc) => { _deleting.delete(doc?.id); _waits.delete(doc?.id); });
   Hooks.on("canvasReady", () => setTimeout(reconcileAll, 800));
   if (canvas?.ready) setTimeout(reconcileAll, 800);
 

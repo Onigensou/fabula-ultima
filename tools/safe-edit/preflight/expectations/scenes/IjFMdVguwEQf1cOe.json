@@ -129,6 +129,28 @@
               "maskWholeToken": false
             }
           }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Charms and wards are sold out. Folk will hang anything over the door if it promises protection.",
+              "bubbleMode": "normal",
+              "id": "Vgj7t2mFCPA3ZWhK"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Charms and wards are sold out. Folk will hang anything over the door if it promises protection.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"Vgj7t2mFCPA3ZWhK\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "aTLyASPTv1omAcIn",
@@ -245,6 +267,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Do you think a lucky charm would have stopped that beast?",
+              "bubbleMode": "normal",
+              "id": "ywxcQz2G8ClB96ui"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Do you think a lucky charm would have stopped that beast?\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"ywxcQz2G8ClB96ui\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",

@@ -357,7 +357,11 @@ async function clonePersistentSummons(partyClones) {
 }
 
 async function deleteClones(clones) {
-  const ids = clones.map((c) => c?.id).filter(Boolean);
+  // Only the clones still in the world. A clone the battle already took (a cloned
+  // persistent summon killed in the fight: defeat-reactor deletes its Actor) would
+  // make Foundry reject the WHOLE batch ("Actor id [...] does not exist"), and every
+  // other clone of the run was left in the BD Sim folder. Seen 2026-11-20.
+  const ids = clones.map((c) => c?.id).filter((id) => id && game.actors?.has?.(id));
   if (!ids.length) return;
   try {
     await Actor.deleteDocuments(ids);

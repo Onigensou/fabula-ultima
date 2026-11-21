@@ -318,5 +318,93 @@ eq("seek is a separate chain", isSeparateChain({ count: 3, mode: "seek" }), true
   eq("seek walk: B took 40", states.get("B").hp, 10);
 }
 
+// ── volley: N shots, flat bonuses counted once ───────────────────────────────
+{
+  const {
+    splitVolleyFlat, volleyShotContext, volleyTargetShare, volleyPrimary, volleyShareOps, isDrawnChainMode, CHAIN_MODES,
+  } = await import("./chain-strikes.js");
+  eq("volley keyword", parseChainKeyword(["chain 5 volley"]), { count: 5, mode: "volley" });
+  eq("volley keyword (x form)", parseChainKeyword("pierce, chain x5 volley"), { count: 5, mode: "volley" });
+  eq("volley formula keyword", parseChainKeyword(["chain {SL} volley"]), { count: null, formula: "SL", mode: "volley" });
+  eq("volley is a mode", CHAIN_MODES.includes("volley"), true);
+  eq("volley rolls each shot", isSeparateChain({ count: 5, mode: "volley" }), true);
+  eq("drawn modes", ["single", "separate", "random", "pick", "seek", "volley"].map(isDrawnChainMode), [false, false, true, false, true, true]);
+  const r = assignStrikeTargets({ count: 5, mode: "volley", pool: ["A", "B", "C"], rng: makeRng(7) });
+  const rr = assignStrikeTargets({ count: 5, mode: "random", pool: ["A", "B", "C"], rng: makeRng(7) });
+  eq("volley draws exactly like random", r.strikeTargets, rr.strikeTargets);
+
+  // The split: floor per shot, remainder to the earliest shots, exact total.
+  const shares = (t, n) => Array.from({ length: n }, (_, k) => splitVolleyFlat(t, n, k));
+  eq("10 over 5", shares(10, 5), [2, 2, 2, 2, 2]);
+  eq("16 over 5 (remainder first)", shares(16, 5), [4, 3, 3, 3, 3]);
+  eq("7 over 5", shares(7, 5), [2, 2, 1, 1, 1]);
+  eq("3 over 5 (late shots get 0)", shares(3, 5), [1, 1, 1, 0, 0]);
+  eq("negative splits with its sign", shares(-7, 5), [-2, -2, -1, -1, -1]);
+  eq("0 splits to 0", shares(0, 3), [0, 0, 0]);
+  for (const [t, n] of [[16, 5], [23, 4], [1, 7], [99, 30], [-11, 3]]) {
+    eq(`shares add up (${t}/${n})`, shares(t, n).reduce((a, b) => a + b, 0), t);
+  }
+  eq("shot past the end gets nothing", splitVolleyFlat(10, 5, 5), 0);
+
+  // Shot context: action-wide index + per-creature index.
+  const spec = { count: 5, mode: "volley", strikeTargets: [["A"], ["B"], ["A"], ["A"], ["B"]] };
+  eq("not a volley: no context", volleyShotContext({ count: 5, mode: "random", strikeTargets: spec.strikeTargets }, 1), null);
+  eq("shot 1 context", volleyShotContext(spec, 1), { shots: 5, shot: 0, targets: { A: { shots: 3, shot: 0 }, B: { shots: 2, shot: null } } });
+  eq("shot 4 context", volleyShotContext(spec, 4), { shots: 5, shot: 3, targets: { A: { shots: 3, shot: 2 }, B: { shots: 2, shot: null } } });
+  eq("shot 5 context", volleyShotContext(spec, 5).targets.B, { shots: 2, shot: 1 });
+  eq("undrawn volley: action-wide only", volleyShotContext({ count: 3, mode: "volley" }, 2), { shots: 3, shot: 1, targets: {} });
+  // A per-creature bonus (+6 on A) is counted once for A, over A's three shots.
+  const aShares = [1, 3, 4].map((k) => volleyTargetShare(volleyShotContext(spec, k), "A", 6));
+  eq("+6 on A over A's 3 shots", aShares, [2, 2, 2]);
+  const bShares = [2, 5].map((k) => volleyTargetShare(volleyShotContext(spec, k), "B", 7));
+  eq("+7 on B over B's 2 shots", bShares, [4, 3]);
+  eq("undrawn: falls back to the action-wide split", volleyTargetShare(volleyShotContext({ count: 3, mode: "volley" }, 1), "A", 7), 3);
+  eq("no volley: the full bonus", volleyTargetShare(null, "A", 6), 6);
+
+  // Zarg + Tommy Gun: weapon +4 own, Powerful Shot +10 (outgoing), no grant.
+  const z = volleyPrimary({ damageBonus: 4, grantDamageBonus: 0, outgoingTotal: 10 }, volleyShotContext({ count: 5, mode: "volley" }, 1));
+  eq("Zarg shot 1 split", [z.ownBonus, z.flatTotal, z.flatShare], [4, 10, 2]);
+  // A free-action grant's damage is the attacker's, shared too; the weapon's own stays per shot.
+  const g = volleyPrimary({ damageBonus: 7, grantDamageBonus: 3, outgoingTotal: 10 }, volleyShotContext({ count: 5, mode: "volley" }, 5));
+  eq("grant is shared, weapon own stays", [g.ownBonus, g.flatTotal, g.flatShare], [4, 13, 2]);
+  eq("no volley: no split", volleyPrimary({ damageBonus: 4, outgoingTotal: 10 }, null), null);
+  // A shot's base the way action-profile builds it: floor((HR + own) x mult) + share.
+  const shotBase = (hr, v, mult) => Math.floor((hr + v.ownBonus) * mult) + v.flatShare;
+  const fiveShots = [1, 2, 3, 4, 5].map((k) => volleyPrimary({ damageBonus: 4, outgoingTotal: 10 }, volleyShotContext({ count: 5, mode: "volley" }, k)));
+  eq("Zarg HR 8 x0.25, five shots", fiveShots.map((v) => shotBase(8, v, 0.25)), [5, 5, 5, 5, 5]);
+  eq("the flats total once across the volley", fiveShots.reduce((s, v) => s + v.flatShare, 0), 10);
+  // A missed shot loses its share: only landed shots add up.
+  const landed = [true, false, true, true, true];
+  eq("a miss loses its share", fiveShots.filter((_, i) => landed[i]).reduce((s, v) => s + v.flatShare, 0), 8);
+
+  // Reaction ops: flat add / subtract shared per creature, the rest per shot.
+  const ops = [
+    { op: "add", amount: 6, source: "Aim" }, { op: "multiply", amount: 1.5, source: "Bite" },
+    { op: "subtract", amount: 3, source: "Dull" }, { op: "keyword", keyword: "pierce" },
+    { op: "add", amount: 0, finalFormula: "CUR_HP", source: "Vital" },
+  ];
+  const v1 = volleyShotContext(spec, 1);
+  eq("ops on A, shot 1", volleyShareOps(ops, v1, "A").map((o) => [o.op, o.amount ?? null]),
+    [["add", 2], ["multiply", 1.5], ["subtract", 1], ["keyword", null], ["add", 0]]);
+  eq("the op keeps its full amount for the log", volleyShareOps(ops, v1, "A")[0].volleyTotal, 6);
+  eq("no volley: ops untouched", volleyShareOps(ops, null, "A"), ops);
+
+  // Final-stage bonus (Vital Strike: + DEX die when THIS shot would put the target
+  // into Crisis): still evaluated per shot, then counted once for the creature.
+  const { volleyFinalShare } = await import("./chain-strikes.js");
+  const solo = { count: 5, mode: "volley", strikeTargets: [["A"], ["A"], ["A"], ["A"], ["A"]] };
+  const vs = (amountPerShot) => [1, 2, 3, 4, 5].map((k) => volleyFinalShare("add", amountPerShot, volleyShotContext(solo, k), "A"));
+  eq("Vital Strike d12 over 5 shots", vs(12), [3, 3, 2, 2, 2]);
+  eq("Vital Strike d12 totals the die once", vs(12).reduce((a, b) => a + b, 0), 12);
+  eq("Fatal Precision d12+5 totals 17 once", vs(17).reduce((a, b) => a + b, 0), 17);
+  // Each shot decides its own condition: only shots whose formula gave 12 take a share.
+  const earned = [false, false, true, true, true];
+  eq("only shots that earned it take their share", [1, 2, 3, 4, 5].reduce((sum, k, i) =>
+    sum + (earned[i] ? volleyFinalShare("add", 12, volleyShotContext(solo, k), "A") : 0), 0), 6);
+  eq("a missed shot loses its share", vs(12).filter((_, i) => i !== 0).reduce((a, b) => a + b, 0), 9);
+  eq("a final multiply stays per shot", volleyFinalShare("multiply", 1.5, volleyShotContext(solo, 2), "A"), 1.5);
+  eq("not a volley: the full bonus", volleyFinalShare("add", 12, null, "A"), 12);
+}
+
 console.log(`chain-strikes: ${passed} passed, ${failed} failed`);
 if (failed) process.exitCode = 1;

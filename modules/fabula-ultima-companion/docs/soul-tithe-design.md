@@ -67,7 +67,8 @@ is smaller than their fragment's HP does nothing for their Max HP that round.
 **Healing happens before the round ends.** Everyone starts each round at "full" HP,
 so a heal does nothing until they are hurt again.
 
-The invariant: a fragment's Max HP always equals what its owner has lost.
+The invariant: a fragment's Max HP always equals what its owner has lost (less any
+eaten part, see Fragment Eater below).
 
 ---
 
@@ -273,6 +274,61 @@ local only).
   Max + taken (`gm-desk.js` `paintRow`); rig `tools/staging-world/soul-hp-burn-desk.mjs`.
   The desk's Take Turn tiles are not covered. **Spectators** get all-compact party cards,
   which run `syncSoul` like any player's.
+
+---
+
+## Fragment Eater (2026-11-19, approved by Oni)
+
+Heads-up for the owner: `reports/2026-11-19-soul-tithe-fragment-eater.md`. A few Nox
+Legion monsters (Sealed Cavern random fights) **eat** a fragment instead of the party
+destroying it: the Wraith's Devour Soul, the Executioner's Soul Sever and Beheading.
+
+**The rule.** Only a fragment that has Called at least once can be eaten (`soulCalledRound
+> 0`), so the party always gets one full round at it. An eaten fragment pays **no
+refund**: what it held stays lost until the battle ends, which still gives everything
+back (nobody leaves with a shorter bar).
+
+**The ledger.** The Soul-Torn AE keeps the whole loss (`soulStolen`, its `max_hp` change)
+and adds `soulEaten`, the part no fragment holds. The invariant becomes: **a fragment's
+Max HP = what its owner has lost − eaten**. Everything that set a fragment's Max to the
+loss now uses that (`heldFrom`): the Calling, the lock and the spawn, and the round-end
+re-square (`squareFragment`). An eat sets eaten to the whole loss (the eaten fragment held
+all that was not eaten before, one fragment per player), which makes it idempotent. A
+later fragment's refund returns only what it held: `releaseHeld` cuts Soul-Torn back to
+the eaten part instead of deleting it (`refundSplit`). The conflict end and start still
+delete Soul-Torn whole, so the eaten part comes back there with everything else. The HUD
+reads `soulStolen` as before, so the eaten part shows as charred; the grey-ash look the
+design asks for is not built.
+
+**F5 / rewind.** An eat writes the fragment's mark first (`soulEatenAt`, `soulEatenHp`,
+`soulReturned`, `soulRefundDone`), then the ledger, then removes it. Every refund path skips
+a mark with `soulEatenAt`. An F5 before the removal leaves a marked fragment that the
+round-end sweep (or `destroyAllFragments`) finishes: books the ledger again (a no-op if it
+landed) and removes it. A rewind restores both AEs whole, as before.
+
+**Actions** (`effect_kind: "conflict_event_action"`):
+
+- `consumeFragment`: `conflict_pick` `largest` (most current HP on the field) or
+  `trigger_subject_owner` (the fragment of the player(s) `target_ref` names; a KO'd owner
+  is fine). Blank: read from `target_ref` (a fragment token is eaten itself, a player's is
+  theirs, anything else means largest). Its current HP is left on the chain as
+  `VAR_CONSUMED_FRAGMENT_HP` (0 when nothing was eaten). With nothing eligible it returns
+  `false` and the row applies nothing (`runConflictEventAction` now reads an action's
+  `false` as "not done"; older actions return nothing and still read as done).
+- `titheWound`: Soul Ripper. Each player in `target_ref` loses `conflict_amount` Max HP at
+  once (floor 1, a KO'd player gets nothing), into their fragment, spawned if none (a new
+  one does not Call until the next round).
+
+**Trigger.** `soul_fragment_destroyed` fires once per fragment that leaves the field for
+any reason but the conflict-end/start sweeps: a party kill (`onObjectDestroyed`), the
+round-end sweep of a 0 HP one, an eat, `destroyAllFragments`. Once-only through the mark
+(`soulDestroyedFired`). It reaches every combatant (`defeat-reactor.js`
+`emitBattlefieldObjectTrigger`, subject = the fragment). Formula words: `VAR_FRAGMENT_HP`
+(HP when it went: 0 for a kill, the eaten HP for an eat), `VAR_FRAGMENT_MAX_HP`,
+`TRIGGER_AMOUNT` (= its Max HP). First user: the Nox Priest's Soul Siphon.
+
+Tests: `node scripts/conflict-event/events/soul-tithe-eater.test.mjs` (the ledger math and
+both actions on stand-in documents). Not yet run in a real battle.
 
 ---
 

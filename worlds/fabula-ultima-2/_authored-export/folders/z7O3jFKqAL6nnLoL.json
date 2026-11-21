@@ -1,0 +1,19 @@
+{
+  "_id": "z7O3jFKqAL6nnLoL",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795136047141,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Nd8LnosrPid1eX1r",
+  "name": "Sealed Cavern",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

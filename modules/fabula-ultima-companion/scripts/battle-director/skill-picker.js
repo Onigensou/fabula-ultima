@@ -289,6 +289,7 @@ const CHARGE_LABELS = {
   adoration: "Adoration",
   grave:     "Grave Points",
   brainwave: "Brainwave",
+  cartridge: "Cartridge",
 };
 
 // Build a candidate from props (shared by the live-item walk and the

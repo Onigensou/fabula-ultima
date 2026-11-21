@@ -136,6 +136,53 @@ export function martialGrants(actor) {
   return out;
 }
 
+// Item-declared equip restrictions: an `equip_restrict` change on one of the
+// item's own effects (read whether or not it is worn — the rule is about the
+// pairing). Values:
+//   "no_shield"                 nothing worn with it may be a shield (Luchador Gloves)
+//   "weapon_category:a,b"       every weapon worn with it is one of these
+//                               categories (Luchador Mask: brawling)
+// Checked both ways: the candidate's rules against what stays worn, and what
+// stays worn against the candidate. Returns a player-facing reason or null.
+function equipRestrictionsOf(item) {
+  const out = [];
+  for (const ae of item?.effects ?? []) {
+    for (const ch of (ae?.changes ?? [])) if (ch?.key === "equip_restrict") out.push(String(ch.value ?? "").trim().toLowerCase());
+  }
+  return out.filter(Boolean);
+}
+function restrictionBreach(restrictor, other) {
+  const type = String(other?.system?.props?.item_type ?? "").toLowerCase();
+  for (const r of equipRestrictionsOf(restrictor)) {
+    if (r === "no_shield" && type === ITEM_TYPE_SHIELD) return `${restrictor.name}: cannot be worn with a shield`;
+    const m = /^weapon_category\s*:\s*(.+)$/.exec(r);
+    if (m && type === ITEM_TYPE_WEAPON) {
+      const cats = m[1].split(/[\s,]+/).filter(Boolean);
+      const cat = String(other.system?.props?.category ?? "").trim().toLowerCase();
+      if (!cats.includes(cat)) return `${restrictor.name}: ${cats.map((c) => c[0].toUpperCase() + c.slice(1)).join(" / ")} weapons only`;
+    }
+  }
+  return null;
+}
+function equipRestrictionClash(actor, item, slotKey) {
+  const worn = resolveWornItems(actor);
+  const p = item.system?.props ?? {};
+  const twoHandedMain = slotKey === "main" && String(p.item_type ?? "").toLowerCase() !== ITEM_TYPE_SHIELD
+    && String(p.hand_slots ?? "").toLowerCase().includes("two");
+  const staying = [
+    slotKey !== "main" ? worn.main : null,
+    slotKey !== "off" && !twoHandedMain ? worn.off : null,
+    slotKey !== "accessory1" ? worn.acc1 : null,
+    slotKey !== "accessory2" ? worn.acc2 : null,
+    slotKey !== "armor" ? worn.armorWorn : null,
+  ].filter((it) => it && it.id !== item.id);
+  for (const other of staying) {
+    const why = restrictionBreach(item, other) ?? restrictionBreach(other, item);
+    if (why) return why;
+  }
+  return null;
+}
+
 /**
  * Can `item` go in `slotKey` on `actor` right now?
  * @returns {{ok:boolean, reason:string|null}} reason is player-facing text.
@@ -179,6 +226,10 @@ export function canEquip(actor, item, slotKey) {
     const wornTwoH = worn && String(worn.system?.props?.hand_slots ?? "").toLowerCase().includes("two");
     if (wornTwoH) return { ok: false, reason: `${worn.name} is two-handed` };
   }
+
+  // ── item equip restrictions (both directions) ──────────────────────────
+  const clash = equipRestrictionClash(actor, item, slotKey);
+  if (clash) return { ok: false, reason: clash };
 
   // ── martial proficiency ─────────────────────────────────────────────────
   const need = martialNeedOf(item);
@@ -262,7 +313,36 @@ function weaponFormsOf(item) {
     weaponType: String(f?.weapon_type ?? ""),
     damageBonus: Number(f?.damage_bonus ?? 0) || 0,
     checkBonus: Number(f?.check_bonus ?? 0) || 0,
+    // Transforming weapons (Lionheart): optional per-form accuracy pair + range.
+    attackStat: (f?.rolled_atr1 && f?.rolled_atr2) ? `${String(f.rolled_atr1).toUpperCase()}+${String(f.rolled_atr2).toUpperCase()}` : null,
+    range: f?.weapon_range ? String(f.weapon_range) : null,
   }));
+}
+
+// After a form change in combat, tell the wielder's reactions about it:
+// `creature_transforms_weapon` (subject = the wielder). A weapon's own passive
+// can then react to ITS transform (Lionheart: entering Gun form grants a
+// Cartridge + 15 Shield) via the TRANSFORMED_TO_FORM identifier. Forced pass
+// only, GM + in-combat only — out of combat a transform is just a stat swap.
+async function dispatchWeaponTransformed(actor, item, fromIdx, toIdx) {
+  try {
+    if (!game.user?.isGM) return;
+    const director = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+    const dc = director?.dCombat;
+    if (!dc?.started || dc.ended) return;
+    const token = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid)
+      ?? canvas?.tokens?.placeables?.find((t) => t.actor?.id === actor.id) ?? null;
+    if (!token) return;
+    const { dispatchReactionMenu } = await import("./standalone-reactions.js");
+    await dispatchReactionMenu({
+      director, reactor: token.actor ?? actor, token, trigger: "creature_transforms_weapon",
+      payload: {
+        trigger: "creature_transforms_weapon", transformedItemUuid: item.uuid, transformedItemId: item.id,
+        formIndex: toIdx, fromFormIndex: fromIdx, sourceActorUuid: null, round: dc.round ?? null,
+      },
+      scope: null, scene: null, phase: "forced",
+    });
+  } catch (e) { warn("dispatchWeaponTransformed threw", e); }
 }
 function activeFormOf(item) {
   return Number(item?.flags?.[FLAG_NS]?.activeForm ?? 0) || 0;
@@ -296,6 +376,7 @@ export async function applyWeaponForm(actor, slotKey, formIdx) {
     return { changed: false, ...base };
   }
   log(`applyWeaponForm: ${actor.name}'s ${item.name} → ${forms[idx].label} (form ${idx})`);
+  await dispatchWeaponTransformed(actor, item, cur, idx);
   return { changed: true, fromIdx: cur, ...base };
 }
 

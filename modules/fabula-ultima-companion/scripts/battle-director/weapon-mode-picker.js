@@ -167,7 +167,7 @@ function pairMeta(first, second) {
   ], a === b ? a : `${a} &rarr; ${b}`);
 }
 
-export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, multiAttack = null, virtualAttacks = [], rangeBlock = null, externalCancel = null, focusValue = null }) {
+export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, multiAttack = null, virtualAttacks = [], rangeBlock = null, modeBlock = null, externalCancel = null, focusValue = null }) {
   const arrow = `<i class="fa-solid fa-arrow-right" style="opacity:0.55; font-size:10.5px;"></i>`;
   const sections = [];
 
@@ -183,8 +183,14 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
   // the Skill and Spell rows. The hand is not repeated — the section says it.
   // A row is blocked when ANY weapon it would swing is range-locked out; the
   // reason becomes a rubber-stamp across the row, not a trailing chip.
-  const blockOf = (...weapons) => {
+  // `modeBlock(value)` (optional) adds a per-MODE reason judged by the caller —
+  // the Weighted keyword ("one attack per turn", "needs High Roll"), which
+  // depends on the whole swing list + HR rule of the mode, not one weapon.
+  const blockOf = (value, ...weapons) => {
     const reasons = [...new Set(weapons.map((w) => blockReasonFor(w, rangeBlock)).filter(Boolean))];
+    let extra = null;
+    try { extra = typeof modeBlock === "function" ? modeBlock(value) : null; } catch (e) { warn("pickWeaponMode: modeBlock threw", e); }
+    if (extra && !reasons.includes(extra)) reasons.push(extra);
     return reasons.length ? { disabled: true, stamp: reasons.join(" / ") } : null;
   };
   // Damage rides the trailing cell, where a skill puts its cost — same slot, and
@@ -200,7 +206,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
       primary: escapeHtml(mainWeapon.name),
       secondary: weaponMeta(mainWeapon),
       badges: [dmgChip(mainWeapon)],
-      ...(blockOf(mainWeapon) ?? {}),
+      ...(blockOf("main", mainWeapon) ?? {}),
     });
   }
   if (hasRealOffhand) {
@@ -211,7 +217,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
       primary: escapeHtml(offWeapon.name),
       secondary: weaponMeta(offWeapon),
       badges: [dmgChip(offWeapon)],
-      ...(blockOf(offWeapon) ?? {}),
+      ...(blockOf("off", offWeapon) ?? {}),
     });
   }
   // With the hand dropped from every row, a lone-weapon double still needs the
@@ -234,7 +240,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           primary: `${escapeHtml(mainWeapon.name)} ${arrow} ${escapeHtml(mainWeapon.name)}`,
           secondary: pairMeta(mainWeapon, mainWeapon),
           badges: [NO_HR_CHIP, dmgChip(mainWeapon, { noHighRoll: true })],
-          ...(blockOf(mainWeapon) ?? {}),
+          ...(blockOf("two-weapon", mainWeapon) ?? {}),
         },
       ],
     });
@@ -253,7 +259,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           secondary: pairMeta(mainWeapon, offWeapon),
           badges: [NO_HR_CHIP],
           // Either hand being locked out kills the pair, so both weapons are tested.
-          ...(blockOf(mainWeapon, offWeapon) ?? {}),
+          ...(blockOf("two-weapon", mainWeapon, offWeapon) ?? {}),
         },
         {
           value: "two-weapon-off-first",
@@ -262,7 +268,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           primary: `${escapeHtml(offWeapon.name)} ${arrow} ${escapeHtml(mainWeapon.name)}`,
           secondary: pairMeta(offWeapon, mainWeapon),
           badges: [NO_HR_CHIP],
-          ...(blockOf(mainWeapon, offWeapon) ?? {}),
+          ...(blockOf("two-weapon-off-first", mainWeapon, offWeapon) ?? {}),
         },
       ],
     });
@@ -285,7 +291,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           primary: `${escapeHtml(mainWeapon.name)} ×${n}`,
           secondary: pairMeta(mainWeapon, mainWeapon),
           badges: multiAttack.keepHr ? [dmgChip(mainWeapon)] : [NO_HR_CHIP, dmgChip(mainWeapon, { noHighRoll: true })],
-          ...(blockOf(mainWeapon) ?? {}),
+          ...(blockOf("two-weapon-multi", mainWeapon) ?? {}),
         },
       ],
     });
@@ -307,7 +313,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
       primary: escapeHtml(va.name),
       secondary: weaponMeta(va),
       badges: [dmgChip(va)],
-      ...(blockOf(va) ?? {}),
+      ...(blockOf(`virtual:${i}`, va) ?? {}),
     });
     const indexed = virtualAttacks.map((va, i) => [va, i]);
     const synthesised = indexed.filter(([va]) => va?.hand !== "versatile");

@@ -37,6 +37,15 @@
 // plays (flies onto the action card) only when the host finalises it; a cancel
 // drops it back into the same slot. Other cards stay usable meanwhile.
 //
+// Cards on an action card can also be DRAGGED onto it (reaction-drag.js, a port
+// of Fabula Arcana's drag). A drop is the same Use; the dragged copy parks where
+// it was let go and the flight starts from there. While you hold a card, the
+// other players see your small card glow in your user colour (REACTION_HOLD,
+// display only), and when the host confirms an ally's reaction a particle comet
+// carries it from their panel into the Reactions box (reaction-landing.js
+// flyComet). Standalone windows (start of conflict / round / turn) stay
+// click-only: they have no action card to drop on.
+//
 // Pass is for reactions that hold the action up: your own reactions on your own
 // action card never gate its Confirm, so its owner gets no Pass. Once nothing
 // of yours is left undecided (all used, or the rest can't be used) you count as
@@ -56,7 +65,8 @@ import { plateReactionHost, holdPlateHover } from "./director-player-hud.js";
 import { htmlToCardText } from "./drawer-views.js";
 import { shortSkillName } from "./skill-formulas.js";
 import { deckDeal, deckReturn, deckPlay, deckSetHand, deckSetAllyHand } from "./reaction-deck.js";
-import { flyToReactionBox, preloadLandingCue } from "./reaction-landing.js";
+import { flyComet, preloadLandingCue } from "./reaction-landing.js";
+import { makeDraggable, sendHome, discardGhost, abortDrag, isDragging, isTucked, preloadDragCues, handCardHome, handCardScale } from "./reaction-drag.js";
 import { massiveJoinTables } from "./massive-keyword.js";
 
 const MIRROR_ROOT_ID = "fud-bf-mirror-root";
@@ -173,6 +183,8 @@ function readPills(wrapper) {
     desc: p.dataset.fudEquipDesc ?? "",
     // A pill the host marked moot (GM removed its target, or the re-gate found it
     // no longer applies after another reaction) carries its reason in the chip.
+    // Another player is holding this card in a drag (display only).
+    holding: p.dataset.fudReactionHolding === "1",
     reason: p.querySelector(".fud-bf-reaction-reason")?.textContent?.trim()
       || (p.dataset.fudReactionMoot === "1"
         ? (p.querySelector('[data-fud-reaction-moot-chip="1"]')?.textContent?.trim() || "No longer applies")
@@ -186,7 +198,7 @@ const hand = {
   clip: null,         // .rxh-clip inside the plate unit
   pass: null,         // the Pass slot
   tag: null,          // your own PASSED tag
-  cards: new Map(),   // key → { el, state, order, gating, held, away, carrierUuid }
+  cards: new Map(),   // key → { el, state, order, gating, held, away, carrierUuid, parked }
   passShown: false,   // the Pass card is out of the deck
   described: null,    // the card whose description the plate's card is showing
   lastPill: new Map(),// key → last pill record seen (to act on it after it left the DOM)
@@ -195,6 +207,7 @@ const hand = {
 function ensureHand(unit) {
   if (hand.clip?.isConnected && hand.clip.parentElement === unit) return;
   hand.clip?.remove();
+  dropAllGhosts();
   hand.cards.clear();
   hand.passShown = false;
   hand.clip = document.createElement("div");
@@ -278,6 +291,7 @@ function makeCard(r) {
   el.setAttribute("role", "button");
   el.addEventListener("click", (ev) => { ev.stopPropagation(); useCard(r.key); });
   el.addEventListener("pointerenter", () => showDescription(r, el));
+  makeDraggable(el, dragHooks(r.key, el));
   el.addEventListener("pointerleave", () => hideDescription(el));
   fillInfo(el, r).catch((e) => console.warn(TAG, "card face info failed", e));
   return el;
@@ -317,7 +331,9 @@ const TRIGGER_TEXT = {
   creature_status_triggered: { self: "When one of your statuses triggers", other: "When a creature's status triggers" },
   creature_unleashes_zero_power: { self: "When you unleash Zero Power", other: "When a creature unleashes Zero Power" },
   creature_equips_item: { self: "When you equip an item", other: "When a creature equips an item" },
+  creature_transforms_weapon: { self: "When you transform your weapon", other: "When a creature transforms its weapon" },
   creature_unequips_item: { self: "When you unequip an item", other: "When a creature unequips an item" },
+  soul_fragment_destroyed: "When a Soul Fragment is destroyed",
   conflict_start: "At the start of the conflict",
   conflict_end: "At the end of the conflict",
   round_start: "At the start of each round",
@@ -501,6 +517,7 @@ let _descT = null;
 function showDescription(r, el) {
   clearTimeout(_descT); _descT = null;
   if (hand.described === el) return;
+  if (isDragging()) return;                                  // passing over cards while carrying one
   const unit = myUnit();
   if (!unit || unit.classList.contains("is-open")) return;   // a picker owns the plate's card
   const host = plateReactionHost(unit.dataset.actorId ?? null);
@@ -604,7 +621,8 @@ function syncHand(pills, wrapper) {
     c.gating = !!r.gating || isStandaloneKey(r.key);
     // Undecided again while held = the decision was cancelled or the host
     // turned it down: back into its slot, still live.
-    if (c.held && r.state === "live" && !isStandaloneKey(r.key)) { c.held = false; c.el.classList.remove("is-held"); }
+    // A dropped card parked over the action card slides home the same way.
+    if (c.held && r.state === "live" && !isStandaloneKey(r.key)) { c.held = false; c.el.classList.remove("is-held"); unpark(c); }
     if (c.state !== r.state) {
       c.el.classList.remove("is-live", "is-busy", "is-off", "is-skipped");
       c.el.classList.add(`is-${r.state}`);
@@ -700,7 +718,10 @@ function setPassShown(show) {
 function goAway(c) {
   c.away = true;
   hideDescription(c.el, { now: true });
-  if (!c.el.classList.contains("is-incoming") && deckReady()) deckReturn(c.el).catch(() => {});
+  // A dropped card still parked over the action card goes into the deck from there
+  // (one waiting in its slot as a badge: the badge goes, the hand card goes to the deck).
+  if (c.parked && returnParkedToDeck(c)) { /* flying from where it was parked */ }
+  else if (!c.el.classList.contains("is-incoming") && deckReady()) deckReturn(c.el).catch(() => {});
   c.el.classList.add("is-away");
   layoutHand();
 }
@@ -714,11 +735,21 @@ function leave(c, how = "back") {
   hideDescription(c.el, { now: true });
   const key = c.el.dataset.key;
   const el = c.el;
-  const drop = () => { el.remove(); if (hand.cards.get(key) === c) hand.cards.delete(key); };
+  // A dropped card's copy is parked over the action card: it plays from there. One
+  // tucked into its slot (the see-through badge) lands right there, no flight.
+  const parked = how === "play" && c.parked?.isConnected ? c.parked : null;
+  const inPlace = !!parked && isTucked(parked);
+  // Not played (the card closed, a GM verdict): a parked copy goes into the deck from where it is.
+  const sentParked = !parked && !!c.parked && returnParkedToDeck(c);
+  const drop = () => { el.remove(); parked?.remove(); c.parked = null; if (hand.cards.get(key) === c) hand.cards.delete(key); };
   if (c.away || el.classList.contains("is-incoming") || !el.isConnected) drop();
   else if (deckReady()) {
-    if (how === "play") deckPlay(el, { carrierUuid: c.carrierUuid, pill: pillFor(key) }).catch(() => {}).finally(drop);
-    else { deckReturn(el).catch(() => {}); drop(); }
+    if (how === "play") {
+      // In place, the landing takes the slot and the box over itself (takeOverPreview).
+      if (inPlace) releasePreview(); else hidePreview({ now: true, keepRow: true });
+      deckPlay(inPlace ? el : (parked ?? el), { carrierUuid: c.carrierUuid, pill: pillFor(key), inPlace }).catch(() => {}).finally(drop);
+    }
+    else { if (!sentParked) deckReturn(el).catch(() => {}); drop(); }
   } else {
     if (how === "play") glowActionCard(null);
     el.classList.add("is-leaving");
@@ -778,6 +809,153 @@ function useCard(key) {
 function hold(c) {
   c.held = true;
   c.el.classList.add("is-held");
+}
+
+// ── drag and drop (reaction-drag.js) ─────────────────────────────────────────
+const actionCardEl = () => document.getElementById(MIRROR_ROOT_ID)?.querySelector("#fud-battlefield-card-root.is-visible .fud-bf-card") ?? null;
+
+// Tell the other players we picked a card up / let it go (display only). Through
+// the pill, like Pass's "reopen": the action-card handler emits REACTION_HOLD.
+function sendHold(key, on) {
+  const pill = pillFor(key);
+  if (!pill) return;
+  const b = document.createElement("span");
+  b.dataset.fudReactionAction = on ? "hold" : "unhold";
+  b.hidden = true;
+  pill.appendChild(b);
+  try { b.click(); } finally { b.remove(); }
+}
+
+function dragHooks(key, el) {
+  return {
+    canStart: () => {
+      const c = hand.cards.get(key);
+      return !!c && c.el === el && !c.leaving && !c.held && !c.away && c.state === "live" && !isStandaloneKey(key) && !!actionCardEl() && !myUnit()?.classList.contains("is-open");
+    },
+    scale: () => handCardScale(el),
+    home: () => handCardHome(el),
+    zone: () => actionCardEl()?.getBoundingClientRect() ?? null,
+    onPickUp: () => { hideDescription(el, { now: true }); sendHold(key, true); },
+    onOver: (over) => { if (over) showPreview(key); else hidePreview(); },
+    slotCentre: () => {
+      const r = preview.slot?.isConnected ? preview.slot.getBoundingClientRect() : null;
+      return r && r.width ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
+    },
+    onDrop: (ghost) => {
+      sendHold(key, false);
+      const c = hand.cards.get(key);
+      if (!c || c.el !== el || c.leaving || c.held || c.state !== "live") { hidePreview(); return false; }
+      if (!clickPill(pillFor(key), "apply")) { hidePreview(); return false; }
+      // The same Use as a click: held while its decision runs, it plays when the
+      // host finalises it — from where it was dropped.
+      c.parked = ghost;
+      hold(c);
+      schedule();
+      return true;
+    },
+    // Accepted: the card tucks into the slot, which shows it as a see-through blinking badge.
+    parkAt: () => {
+      const slot = preview.slot?.isConnected ? preview.slot : null;
+      const r = slot?.getBoundingClientRect();
+      if (!r?.width) return null;
+      const icon = el.querySelector(".emb img");
+      slot.classList.add("is-pending");
+      if (icon?.src) { const img = document.createElement("img"); img.src = icon.src; img.alt = ""; slot.replaceChildren(img); }
+      return { rect: r, iconEl: icon };
+    },
+    onMiss: () => { sendHold(key, false); hidePreview(); },
+  };
+}
+
+// Back from the action card into its slot (a cancelled decision, the host said
+// no, or the card closed). `now`: no slide, it just goes.
+function unpark(c, { now = false } = {}) {
+  const g = c.parked;
+  c.parked = null;
+  if (!g) return;
+  hidePreview();
+  if (now) discardGhost(g, c.el);
+  else sendHome(g, c.el).catch(() => {});
+}
+
+// The reaction no longer applies (moot, skipped, the card closed) while its copy is
+// parked over the action card: that copy flies into the deck from where it is.
+// Tucked into its slot instead: the badge goes and the copy with it; returns false
+// so the caller sends the hand card into the deck the usual way. True = handled.
+function returnParkedToDeck(c) {
+  const g = c.parked;
+  c.parked = null;
+  hidePreview();
+  c.el.classList.remove("rxdg-source");
+  if (isTucked(g)) { discardGhost(g, c.el); return false; }
+  const face = g?.isConnected ? g.querySelector(".rxh-card") : null;
+  if (!face || !deckReady()) { discardGhost(g, c.el); return true; }
+  // deckReturn measures the face before its first await, so hiding the copy now is safe.
+  deckReturn(face).catch(() => {}).finally(() => g.remove());
+  g.style.visibility = "hidden";
+  return true;
+}
+
+function dropAllGhosts() {
+  abortDrag();
+  for (const c of hand.cards.values()) if (c.parked) { discardGhost(c.parked, c.el); c.parked = null; }
+  hidePreview({ now: true });
+}
+
+// ── the empty slot shown while a card is over the action card ────────────────
+// The Reactions box is not on the card until a reaction is in effect; while you
+// hold a card over the card it opens with a dashed slot where your icon will go
+// (next to the card's own hidden pill). `.rxh-preview` keeps the row showing
+// (action-card.js CSS); the landing takes the box over (reaction-landing.js).
+const preview = { row: null, slot: null, opened: false };
+const BOX_PROPS = ["height", "marginTop", "marginBottom", "paddingTop", "paddingBottom", "borderTopWidth", "borderBottomWidth"];
+function showPreview(key) {
+  const card = actionCardEl();
+  const row = card?.querySelector(".fud-bf-reactions-row");
+  const list = row?.querySelector(".fud-bf-reactions-list");
+  if (!row || !list) return;
+  if (preview.row !== row) hidePreview({ now: true });
+  if (!preview.slot?.isConnected) {
+    const slot = document.createElement("span");
+    slot.className = "rxh-slot-preview";
+    const pill = pillFor(key);
+    if (pill?.parentElement === list) pill.after(slot); else list.appendChild(slot);
+    preview.slot = slot;
+  }
+  if (preview.row === row) return;
+  const wasShown = getComputedStyle(row).display !== "none";
+  preview.row = row;
+  preview.opened = !wasShown;
+  row.getAnimations().filter((a) => a.id === "rxh-preview-box").forEach((a) => a.cancel());
+  row.classList.add("rxh-preview");
+  if (!wasShown && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const cs = getComputedStyle(row), open = {}, shut = {};
+    for (const p of BOX_PROPS) { open[p] = cs[p]; shut[p] = "0px"; }
+    row.style.overflow = "hidden";
+    const a = row.animate([{ ...shut, opacity: 0 }, { ...open, opacity: 1 }], { id: "rxh-preview-box", duration: 200, easing: "cubic-bezier(.3,.7,.3,1)" });
+    a.finished.then(() => { row.style.overflow = ""; }, () => { row.style.overflow = ""; });
+  }
+}
+// Forget the preview without touching it: a landing in place is taking it over.
+function releasePreview() { preview.slot = null; preview.row = null; preview.opened = false; }
+function hidePreview({ now = false, keepRow = false } = {}) {
+  preview.slot?.remove();
+  preview.slot = null;
+  const row = preview.row;
+  if (!row) return;
+  const opened = preview.opened;
+  preview.row = null; preview.opened = false;
+  row.getAnimations().filter((a) => a.id === "rxh-preview-box").forEach((a) => a.cancel());
+  row.style.overflow = "";
+  // keepRow: a landing is about to take the box over; it decides from the class.
+  if (keepRow) return;
+  if (!opened || now || matchMedia("(prefers-reduced-motion: reduce)").matches || !row.isConnected) { row.classList.remove("rxh-preview"); return; }
+  const cs = getComputedStyle(row), open = {}, shut = {};
+  for (const p of BOX_PROPS) { open[p] = cs[p]; shut[p] = "0px"; }
+  row.style.overflow = "hidden";
+  const a = row.animate([{ ...open, opacity: 1 }, { ...shut, opacity: 0 }], { id: "rxh-preview-box", duration: 180, easing: "ease-in", fill: "forwards" });
+  const done = () => { row.style.overflow = ""; if (preview.row !== row) row.classList.remove("rxh-preview"); try { a.cancel(); } catch {} };
+  a.finished.then(done, done);
 }
 
 function togglePass() {
@@ -903,6 +1081,13 @@ function standaloneRecords() {
 // ── allies: glow, small cards, Passed / Done ─────────────────────────────────
 const allies = new Map();   // actorId → { minis: Map(key → el), had: bool, applied: bool }
 
+// A player's Foundry user colour, for their holding glow and their comet.
+function userTint(userId) {
+  const c = userId ? game.users?.get(userId)?.color : null;
+  const css = c?.css ?? (typeof c === "string" ? c : null);
+  return /^#[0-9a-f]{6}$/i.test(String(css ?? "")) ? css : "#e2c27e";
+}
+
 function allyCardFor(actorId) {
   return actorId ? document.querySelector(`.dhud-root .dhud-card[data-actor-id="${CSS.escape(actorId)}"]`) : null;
 }
@@ -957,6 +1142,9 @@ function syncAllies(pills, wrapper) {
       }
       // The ally's own decision (a target, an option) is open on their screen.
       m.classList.toggle("is-busy", r.state === "busy");
+      // They are holding this card in a drag: it lifts and breathes in their colour.
+      m.style.setProperty("--rxh-tint", userTint(r.owner));
+      m.classList.toggle("is-holding", r.holding && r.state === "live");
     }
     for (const [key, m] of a.minis) {
       if (seen.has(key)) continue;
@@ -964,8 +1152,9 @@ function syncAllies(pills, wrapper) {
       hideDescription(m, { now: true });
       const r = rs.find((x) => x.key === key);
       if (r?.state === "applied") {
-        // The same flight as your own card, from their panel, a little softer.
-        flyToReactionBox({ el: m, iconEl: m.querySelector("img"), pill: r.el, power: 0.6, collapseMs: 140, travelMs: 560, apex: 1.12, clipBottom: MINI_HIDDEN })
+        // A particle comet in the ally's colour, from their panel into the slot.
+        m.classList.remove("is-holding");
+        flyComet({ from: m, iconEl: m.querySelector("img"), pill: r.el, tint: userTint(r.owner), power: 0.6 })
           .then((flew) => { if (!flew) glowActionCard(wrapper); })
           .catch(() => {})
           .finally(() => m.remove());
@@ -1017,7 +1206,7 @@ function observeWrapper(w) {
   _wrapperObs = new MutationObserver(schedule);
   _wrapperObs.observe(w, {
     subtree: true, childList: true, attributes: true,
-    attributeFilter: ["class", "data-fud-reaction-pending", "data-fud-reaction-submitting", "data-fud-reaction-moot"],
+    attributeFilter: ["class", "data-fud-reaction-pending", "data-fud-reaction-submitting", "data-fud-reaction-moot", "data-fud-reaction-holding"],
   });
 }
 
@@ -1051,6 +1240,7 @@ function sync() {
 }
 
 function teardown() {
+  dropAllGhosts();
   if (hand.clip) {
     const cardRoot = document.querySelector(`#${MIRROR_ROOT_ID} #fud-battlefield-card-root`);
     if (cardRoot) cardRoot.style.left = "";
@@ -1076,7 +1266,7 @@ function injectStyles() {
 Hooks.once("ready", () => {
   injectStyles();
   // So the first landing of a session makes its sound on time.
-  if (!game.user?.isGM) preloadLandingCue();
+  if (!game.user?.isGM) { preloadLandingCue(); preloadDragCues(); }
   // The mirror card is a direct child of <body>; watch only that level.
   new MutationObserver(schedule).observe(document.body, { childList: true });
   Hooks.on("fuClientOptionChanged", ({ key }) => { if (key === "reactionUi") schedule(); });
@@ -1231,6 +1421,22 @@ const CSS_TEXT = `
 .rxh-mini:hover { translate: 0 -6px; }
 /* The ally is making this reaction's decision on their own screen. */
 .rxh-mini.is-busy, .rxh-mini.is-busy:hover { translate: 0 -8px; box-shadow: 0 0 0 2px #e2c27e, 0 0 16px 4px rgba(226,194,126,.85), 0 4px 10px rgba(0,0,0,.5); }
+/* The ally is holding this card in a drag on their screen: lifted, breathing in their user colour. */
+@keyframes rxhHolding {
+  from { box-shadow: 0 0 0 2px var(--rxh-tint, #e2c27e), 0 0 8px 2px var(--rxh-tint, #e2c27e), 0 4px 10px rgba(0,0,0,.5); }
+  to   { box-shadow: 0 0 0 2px var(--rxh-tint, #e2c27e), 0 0 20px 6px var(--rxh-tint, #e2c27e), 0 4px 10px rgba(0,0,0,.5); }
+}
+.rxh-mini.is-holding, .rxh-mini.is-holding:hover { translate: 0 -12px; border-color: var(--rxh-tint, #e2c27e); animation: rxhHolding 1100ms ease-in-out infinite alternate; }
+/* The empty slot on the action card while your card is over it. */
+@keyframes rxhSlotPulse { from { background: rgba(255,255,255,.12); } to { background: rgba(255,255,255,.45); } }
+.fud-bf-card .rxh-slot-preview { flex: 0 0 auto; width: 32px; height: 32px; box-sizing: border-box; border-radius: 7px;
+  outline: 2px dashed #e2c27e; outline-offset: -2px; animation: rxhSlotPulse 700ms ease-in-out infinite alternate; }
+/* Dropped: your card waits in its slot as a see-through badge that blinks until the host confirms. */
+@keyframes rxhSlotIn { from { opacity: 0; scale: .6; } }
+@keyframes rxhSlotWait { from { opacity: .3; } to { opacity: .75; } }
+.fud-bf-card .rxh-slot-preview.is-pending { animation: none; background: rgba(255,255,255,.14); overflow: hidden; }
+.fud-bf-card .rxh-slot-preview.is-pending img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 6px; pointer-events: none;
+  opacity: .75; animation: rxhSlotIn 150ms ease-out 110ms backwards, rxhSlotWait 650ms ease-in-out 260ms infinite alternate; }
 @keyframes rxhMiniUp { from { translate: 0 72px; } 70% { translate: 0 -4px; } to { translate: 0 0; } }
 @keyframes rxhMiniDown { to { translate: 0 72px; } }
 .rxh-mini.is-dealt { animation: rxhMiniUp 340ms cubic-bezier(.2,.9,.3,1) var(--d, 0ms) backwards; }
@@ -1247,7 +1453,10 @@ const CSS_TEXT = `
   .rxh-card.is-leaving, .rxh-mini.is-leaving { animation: rxhOut ${LEAVE_MS}ms ease forwards; }
   .rxh-card.is-skipped, .rxh-card.is-skipped:hover, .rxh-card.is-held { transform: none; }
   .rxh-mini { transition: box-shadow 160ms ease; }
-  .rxh-mini:hover, .rxh-mini.is-busy, .rxh-mini.is-busy:hover { translate: none; }
+  .rxh-mini:hover, .rxh-mini.is-busy, .rxh-mini.is-busy:hover, .rxh-mini.is-holding, .rxh-mini.is-holding:hover { translate: none; }
+  .rxh-mini.is-holding { animation: none; box-shadow: 0 0 0 2px var(--rxh-tint, #e2c27e), 0 0 14px 4px var(--rxh-tint, #e2c27e); }
+  .fud-bf-card .rxh-slot-preview { animation: none; background: rgba(255,255,255,.3); }
+  .fud-bf-card .rxh-slot-preview.is-pending img { animation: none; opacity: .55; }
   .rxh-mytag, .rxh-tag { transform: none !important; }
   .dhud-unit.is-open .rxh-clip { transform: none; }
 }

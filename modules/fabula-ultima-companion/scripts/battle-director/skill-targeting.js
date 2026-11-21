@@ -310,6 +310,29 @@ function findTargetingRow(ctxOrSkill, label) {
 
 // ── Targeting row resolver ───────────────────────────────────────────────
 
+// target_sort (A3) — order a candidate pool by HP and keep the first `count`.
+// Pure (reads `t.actor.system.props` current_hp / max_hp only) so it is unit
+// tested. Returns the SAME array when the key is blank/unknown (no-op), else a new
+// array. Stable: ties keep the incoming pool order. Missing max_hp → pct 1.
+export const TARGET_SORT_KEYS = Object.freeze(["lowest_hp", "highest_hp", "lowest_hp_pct"]);
+export function sortTargetPool(pool, sortKey, count = Infinity) {
+  const key = String(sortKey ?? "").trim().toLowerCase();
+  if (!TARGET_SORT_KEYS.includes(key) || !Array.isArray(pool)) return pool;
+  const hpOf = (t) => {
+    const p = t?.actor?.system?.props ?? {};
+    const cur = Number(p.current_hp ?? p.hp ?? 0) || 0;
+    const max = Number(p.max_hp ?? 0) || 0;
+    return { cur, pct: max > 0 ? cur / max : 1 };
+  };
+  const scored = pool.map((t, i) => ({ t, i, ...hpOf(t) }));
+  const cmp = key === "highest_hp" ? (a, b) => (b.cur - a.cur) || (a.i - b.i)
+    : key === "lowest_hp_pct" ? (a, b) => (a.pct - b.pct) || (a.i - b.i)
+    : (a, b) => (a.cur - b.cur) || (a.i - b.i);
+  scored.sort(cmp);
+  const n = Number.isFinite(Number(count)) && Number(count) >= 0 ? Math.floor(Number(count)) : scored.length;
+  return scored.slice(0, n).map((s) => s.t);
+}
+
 // How many targets this row wants. Numeric strings short-circuit (the common
 // case — no resolver build, no import); anything else goes through the skill
 // formula evaluator against the REACTOR (so SL is the carrier skill's level).
@@ -584,6 +607,21 @@ async function resolveTargetingRow(row, ctx) {
       return { t, score };
     });
     pool = scored.filter((s) => s.score === best).map((s) => s.t);
+  }
+
+  // 3f. target_sort — "lowest_hp" | "highest_hp" | "lowest_hp_pct". For an
+  // exact / up_to row the sort DECIDES: the pool narrows to the first `count`
+  // candidates in that order (ties keep pool order), so the pick below is
+  // assured. The Executioner's Beheading: round_end, marked players, exact 1,
+  // lowest_hp → the weakest marked player. (A passive row otherwise returns the
+  // WHOLE pool, ignoring count — the narrowing is what makes "exact 1" hold.)
+  // mode all / random are untouched. Blank / unknown = no sort.
+  if (mode === "exact" || mode === "up_to") {
+    const sorted = sortTargetPool(pool, row.target_sort, count);
+    if (sorted !== pool) {
+      log(`skill-targeting: row "${row.effect_label ?? "?"}" target_sort ${row.target_sort} → ${sorted.length} of ${pool.length}`);
+      pool = sorted;
+    }
   }
 
   if (!pool.length) return emptyResult();

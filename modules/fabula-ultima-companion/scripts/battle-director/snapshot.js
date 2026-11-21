@@ -7,9 +7,11 @@ import { warn } from "./logger.js";
 import { isPermanentSoulFragment } from "./battlefield-object.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
-import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader, isHealReversedActor, isReviveKillTarget } from "./skill-formulas.js";
 import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
 import { classifyActionIntent } from "./skill-intent.js";
+import { weightedActorKey } from "./weighted-rules.js";
+import { tokensGrappledBy, grapplerOf } from "./grappled.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -233,8 +235,9 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
   const entry = weaponList.find((w) => w?.name === handName) ?? null;
 
   // Attribute pair. Empty/SHI means no usable weapon in this hand.
-  const A1 = String(isMain ? (props.main_attrib_1 ?? "") : (props.off_attrib_1 ?? "")).toUpperCase();
-  const A2 = String(isMain ? (props.main_attrib_2 ?? "") : (props.off_attrib_2 ?? "")).toUpperCase();
+  // `let`: a weapon form may re-project the pair (Lionheart: Sword MIG+WLP / Gun DEX+INS).
+  let A1 = String(isMain ? (props.main_attrib_1 ?? "") : (props.off_attrib_1 ?? "")).toUpperCase();
+  let A2 = String(isMain ? (props.main_attrib_2 ?? "") : (props.off_attrib_2 ?? "")).toUpperCase();
   if (!A1 || A1 === "SHI" || A1 === "UNDEFINED") return null;
 
   // Accuracy bonus + damage bonus + damage type per hand. The off-hand
@@ -252,7 +255,7 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     isMain ? (props.weapon1_damagetype ?? "Physical") : (props.weapon2_damagetype ?? "Physical")
   );
 
-  const range = String(entry?.weapon_range ?? "Melee");
+  let range = String(entry?.weapon_range ?? "Melee");
   let weaponType = String(entry?.weapon_type ?? entry?.category ?? entry?.type ?? "");
 
   // Resolve the live weapon Item. The entry's `uuid` field is canonical (the
@@ -316,6 +319,14 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
       const fAcc = Number(form.check_bonus);
       if (Number.isFinite(fDmg)) damageBonus += (fDmg - baseDmg);
       if (Number.isFinite(fAcc)) checkBonus  += (fAcc - baseAcc);
+      // Transforming weapons (Lionheart, 2026-11-21): a form may also swap the
+      // accuracy attribute pair and the range. Absolute overrides; blank keeps.
+      const fa1 = String(form.rolled_atr1 ?? "").trim().toUpperCase();
+      const fa2 = String(form.rolled_atr2 ?? "").trim().toUpperCase();
+      if (fa1 && fa1 !== "-") A1 = fa1;
+      if (fa2 && fa2 !== "-") A2 = fa2;
+      const fr = String(form.weapon_range ?? "").trim();
+      if (fr) range = fr;
     }
   } catch (e) { warn("resolveAttackerWeapon: weapon-form overlay failed", e); }
 
@@ -370,6 +381,11 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     // mechanical action keyword like Pierce (Windpiercer) — no bespoke per-quality
     // boolean; a future benign weapon is just action_keywords:"benign".
     actionKeywords: String(weaponItem?.system?.props?.action_keywords ?? ""),
+    // Weighted granted by the wielder's kit rather than the weapon itself
+    // (Titanic Shield: "Your equipped weapon gain Weighted") — see
+    // actorGrantedWeaponKeywords. The weapon's own `weighted` keyword is read
+    // straight off actionKeywords by weighted-rules.isWeightedWeapon.
+    weighted: actorGrantedWeaponKeywords(actor).includes("weighted"),
     // Explicit defense target for this weapon's Attacks ("def" | "mdef"). A weapon
     // that "deals Magic Damage" (Arc Wand) sets `defense_target_type: "mdef"` so its
     // Attack resolves vs Magic Defense; blank falls back to the kind default
@@ -794,6 +810,7 @@ export function snapshotDirectorCombatant(dc) {
       // isDominating. Drives the boss-only "Ultima" Octopath page.
       ...snapshotUltimaBundle(actor),
       ...buildWeaponBundle(actor),
+      weightedUsed: snapshotWeightedUsed(tokenDoc.uuid ?? actor.id),
     });
   } catch (e) {
     warn("snapshotDirectorCombatant threw", e);
@@ -1113,6 +1130,51 @@ export function actorLiveRuleValues(actor, key) {
   return out;
 }
 
+// ── Grapple rules (Luchador set) ────────────────────────────────────────────
+// Three rule keys a grappler's gear/set AEs carry (equip-gated like every other
+// rule key read through actorLiveRuleValues):
+//   grapple_max         how many creatures this actor may hold at once (highest
+//                       value wins). No rule = no cap — the monster grabs
+//                       (Roper's four-target Tentacle) stay as they were.
+//   grapple_escape_dl   the DL a creature this actor holds must beat to break
+//                       free (highest wins; default 10, the Grappled journal).
+//   disable_action_while_grappling   "N:Label,Label" — block those turn
+//                       actions while this actor holds N or more creatures
+//                       (read by getBlockedActionLabels below).
+const _ruleNums = (actor, key) => actorLiveRuleValues(actor, key).map((v) => Number(v)).filter(Number.isFinite);
+export function grappleHoldCount(actor) {
+  if (!actor?.uuid) return 0;
+  return tokensGrappledBy({ actorUuid: actor.uuid }).length;
+}
+export function grappleHoldCap(actor) {
+  const vals = _ruleNums(actor, "grapple_max");
+  return vals.length ? Math.max(0, ...vals) : Infinity;
+}
+export function grappleEscapeDl(grapplerActor) {
+  const vals = _ruleNums(grapplerActor, "grapple_escape_dl");
+  return vals.length ? Math.max(10, ...vals) : 10;
+}
+// The escape DL a GRAPPLED actor faces (its grappler's rule; 10 when free or
+// unknown). Published for skill-formulas' GRAPPLE_ESCAPE_DL (it cannot import
+// this module — snapshot.js imports it).
+export function escapeDlFacing(actor) {
+  const by = grapplerOf(actor);
+  if (!by) return 10;
+  let g = null;
+  try {
+    g = (by.tokenUuid ? globalThis.fromUuidSync?.(by.tokenUuid)?.actor : null)
+      ?? (by.actorUuid ? globalThis.fromUuidSync?.(by.actorUuid) : null) ?? null;
+  } catch (_) { g = null; }
+  return g ? grappleEscapeDl(g) : 10;
+}
+try { globalThis.__fuGrappleEscapeDlFacing = escapeDlFacing; } catch (_e) { /* noop */ }
+// "N:Label,Label" rows → labels blocked at the actor's current hold count.
+function grappleLockoutLabels(raw, holdCount) {
+  const m = /^\s*(\d+)\s*:\s*(.*)$/.exec(String(raw ?? ""));
+  if (!m || holdCount < Number(m[1])) return [];
+  return m[2].split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+}
+
 // True if any TARGET of the action carries a live `deny_crit_opportunity` rule —
 // "critical successes on attacks and offensive spells that include you among
 // their targets do not generate opportunities" (Armor of Heroes). Read once at
@@ -1218,6 +1280,7 @@ export function resolveVersatileWeapons(actor) {
         skillTarget: String(p.skill_target ?? "").trim(),
         descriptionHtml: String(p.description ?? ""),
         actionKeywords: String(p.action_keywords ?? ""),
+        weighted: actorGrantedWeaponKeywords(actor).includes("weighted"),
         defenseTargetType: String(p.defense_target_type ?? "").trim().toLowerCase(),
       }));
     }
@@ -1397,12 +1460,16 @@ export function getBlockedActionLabels(actor) {
     const L = canonActionLabel(label);
     if (L && !out.has(L)) out.set(L, reason);   // first source wins the stamp text
   };
+  let holds = null;
   for (const ae of effects) {
     if (ae?.disabled) continue;
     const reason = String(ae?.name ?? "").trim() || "Disabled";
     for (const ch of (ae?.changes ?? [])) {
       if (ch?.key === "disable_action") {
         for (const lbl of splitList(ch.value)) add(lbl, reason);
+      } else if (ch?.key === "disable_action_while_grappling") {
+        holds ??= grappleHoldCount(actor);   // read once, only when a lockout row exists
+        for (const lbl of grappleLockoutLabels(ch.value, holds)) add(lbl, reason);
       } else if (ch?.key === "enable_action_only") {
         const allow = new Set(splitList(ch.value).map(canonActionLabel));
         for (const lbl of GATEABLE_ACTION_LABELS) if (!allow.has(lbl)) add(lbl, reason);
@@ -1467,6 +1534,7 @@ export function getActionLabelBlockers(actor) {
     ? Array.from(actor.appliedEffects)
     : (actor?.effects?.contents ?? actor?.effects ?? []);
   const splitList = (raw) => String(raw ?? "").split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+  let holds = null;
   for (const ae of effects) {
     if (ae?.disabled) continue;
     const reason = String(ae?.name ?? "").trim() || "Disabled";
@@ -1474,6 +1542,9 @@ export function getActionLabelBlockers(actor) {
     for (const ch of (ae?.changes ?? [])) {
       if (ch?.key === "disable_action") {
         for (const lbl of splitList(ch.value)) add(lbl, reason, slug);
+      } else if (ch?.key === "disable_action_while_grappling") {
+        holds ??= grappleHoldCount(actor);
+        for (const lbl of grappleLockoutLabels(ch.value, holds)) add(lbl, reason, slug);
       } else if (ch?.key === "enable_action_only") {
         const allow = new Set(splitList(ch.value).map(canonActionLabel));
         for (const lbl of GATEABLE_ACTION_LABELS) if (!allow.has(lbl)) add(lbl, reason, slug);
@@ -1633,7 +1704,49 @@ export function refreshTurnSnapshot(snap, actor) {
     attributes: snapshotAttributes(actor),
     fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
     ...buildWeaponBundle(actor),
+    // Weighted weapons already swung this turn (free attacks re-enter DECLARE,
+    // which calls this, so the picker sees the attack that just resolved).
+    weightedUsed: snapshotWeightedUsed(weightedActorKey(snap)),
   });
+}
+
+// Weighted keyword — weapon keys this creature has already attacked with this
+// turn, read off the GM's live DirectorCombat (the tally lives there). Frozen
+// array so it survives the IntentChannel hop to a player's compose menu; empty
+// off-GM / outside a Director battle (the GM TARGET gate is the enforcement).
+function snapshotWeightedUsed(creatureKey) {
+  try {
+    const dc = globalThis.__fudActiveDCombat ?? null;
+    return Object.freeze([...(dc?.weightedWeaponsUsedThisTurn?.(creatureKey) ?? [])]);
+  } catch (e) {
+    warn("snapshotWeightedUsed threw", e);
+    return Object.freeze([]);
+  }
+}
+
+// Keywords the bearer's kit grants to its equipped WEAPONS — the AE change
+// `{ key: "grant_weapon_keywords", value: "weighted" }` (comma list). Titanic
+// Shield: "Your equipped weapon gain Weighted". A pure change-row marker the
+// engine reads itself (like disable_attack_range); a GEAR carrier is dormant
+// unless equipped (gearCarrierDormant). Lower-cased, deduped.
+export function actorGrantedWeaponKeywords(actor) {
+  const out = new Set();
+  try {
+    const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
+    for (const ae of effs) {
+      if (ae?.disabled) continue;
+      if (gearCarrierDormant(ae)) continue;
+      for (const ch of (ae.changes ?? [])) {
+        const k = String(ch?.key ?? "").replace(/^system\.props\./, "");
+        if (k !== "grant_weapon_keywords") continue;
+        for (const kw of String(ch.value ?? "").split(/[,\n]+/)) {
+          const t = kw.trim().toLowerCase();
+          if (t) out.add(t);
+        }
+      }
+    }
+  } catch (e) { warn("actorGrantedWeaponKeywords threw", e); }
+  return [...out];
 }
 
 // AE-driven target exclusion. Walks the chooser's active effects, collects
@@ -1893,6 +2006,32 @@ export function targetsKnockedOut(text) {
   return /\bKO\b/i.test(String(text ?? ""));
 }
 
+// Revive on Undead (A2, Nox Legion 2026-11-19): a KO-ALLY revive text (Phoenix
+// Feather "One KO Ally") may ALSO aim at a LIVING creature that is Undead or
+// Zombie'd — on either side, a Zombie'd player included — and on such a target the
+// revive defeats it outright (skill-effects setResourceApply). "One KO Creature"
+// (Raise Dead) is not a revive of an ally and is left alone.
+export function targetsKnockedOutAlly(text) {
+  const t = String(text ?? "");
+  return targetsKnockedOut(t) && /\ball(?:y|ies)\b/i.test(t);
+}
+
+// Append the living Undead/Zombie candidates (snapshot `undeadOrZombie`) from the
+// given living lists to a KO pool, deduped by token. Pure — shared by the compose
+// picker and the target survey so the player and the AI see the same pool.
+export function mergeUndeadRevivePool(koPool, ...livingLists) {
+  const out = [...(koPool ?? [])];
+  const seen = new Set(out.map((t) => t?.tokenUuid));
+  for (const list of livingLists) {
+    for (const t of (list ?? [])) {
+      if (!t?.undeadOrZombie || seen.has(t.tokenUuid)) continue;
+      seen.add(t.tokenUuid);
+      out.push(t);
+    }
+  }
+  return out;
+}
+
 export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { category = "any", defeated = "exclude" } = {}) {
   const combatants = dCombat?.combatants ?? [];
   const attackerDisp = attackerSnapshot?.disposition ?? 0;
@@ -2016,6 +2155,8 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       // Informational only — the melee-vs-Flying RULE travels as a synthesised
       // entry in `targetingBlocks` (see getTargetSideBlocks), not from this flag.
       isFlying: targetIsFlying(actor),
+      // Living Undead / Zombie — a KO-ally revive may also aim here (A2).
+      undeadOrZombie: hp > 0 && isReviveKillTarget(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]), bypass: b.bypass ?? "" })
       )),
@@ -2599,6 +2740,8 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       // Informational only — the melee-vs-Flying RULE travels as a synthesised
       // entry in `targetingBlocks` (see getTargetSideBlocks), not from this flag.
       isFlying: targetIsFlying(actor),
+      // Living Undead / Zombie — a KO-ally revive may also aim here (A2).
+      undeadOrZombie: hp > 0 && isReviveKillTarget(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]), bypass: b.bypass ?? "" })
       )),

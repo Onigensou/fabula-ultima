@@ -370,7 +370,9 @@ function floorPointNearer(f, dzPx, P, ppm) {
   ok("every preset ships its depth map", missing.length === 0, missing.join(", "));
   const RETRO = ["Eisendrache_Battlemap002_v2", "Eisendrache_Battlemap004_v2", "Hideout_Battlemap001_v2", "Hideout_Battlemap002_v2", "Hideout_Battlemap003_v2",
     "Hideout_Battlemap004_v2", "Hideout_Battlemap005_v2", "Ruhig_Battlemap001_v2", "Ruhig_Battlemap002_v2", "Vastwind_Battlemap001_v2",
-    "Vastwind_Battlemap002_v2", "Wyrmwood_Battlemap001_v2", "Wyrmwood_Battlemap002_v2", "FafnirCastle_Battlemap001", "FafnirCastle_Battlemap002"];
+    "Vastwind_Battlemap002_v2", "Wyrmwood_Battlemap001_v2", "Wyrmwood_Battlemap002_v2", "FafnirCastle_Battlemap001", "FafnirCastle_Battlemap002",
+    // Valley boss arenas (2026-11-20): Monastery (Asura), Feeding Pit (Rakshasa), Ruined Monument (Deva), Sealed Cavern poison cavern
+    "Valley_Battlemap005", "Valley_Battlemap006", "Valley_Battlemap007", "Valley_Battlemap004"];
   for (const key of RETRO) {
     const cfg = resolvePreset(FORGE + key + ".webp");
     ok(`${key}: preset resolves with a relief camera`, cfg && cfg.stage3d?.relief === true);
@@ -390,6 +392,10 @@ function floorPointNearer(f, dzPx, P, ppm) {
     ok(`${key}: ambient stays within the sprite budget (<= 70)`, sprites <= 70, String(sprites));
   }
   ok("Highroad stays vanilla (first battlemap)", !PRESETS.Eisendrache_Battlemap002_v2.ambient);
+  {
+    const fx = PRESETS.Valley_Battlemap004.ambient.fx;
+    ok("Sealed Cavern: churning gas cloud sea first, slime drips gone (rev 2)", fx[0]?.k === "cloudsea" && !fx.some((f) => f.k === "slime"), JSON.stringify(fx.map((f) => f.k)));
+  }
 }
 
 // ── Past the painting's edge (2026-11-19: the battle opening's 35-degree reveal saw streaks, a flat wedge, the void) ──

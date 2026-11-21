@@ -52,6 +52,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTarg
 // resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
+import { isWeightedWeapon, weaponKey, weightedActorKey, weightedBlockReason, weightedModeBlock, modeDropsHighRoll } from "./weighted-rules.js";
 import { isActorDefeated } from "./defeat-reactor.js";
 import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
 // skill-effects is routed through the hot-reload registry so edits to it take
@@ -78,6 +79,7 @@ import { STANDALONE_TRIGGERS, phaseOf } from "./director-triggers.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, topIsResolveDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 // Grappled (Advanced Debuff) — turn-start break-free helpers.
 import { isGrappled, breakFree } from "./grappled.js";
+import { escapeDlFacing } from "./snapshot.js";
 // Boss "Super Armor" — Domination State / Ultima actions (Domination /
 // Escape / Recovery). See [[domination.js]].
 import {
@@ -120,6 +122,7 @@ import { holdsKnockoutRevive } from "./knockout-revive.js";
 import { holdsStaysDown } from "./stays-down.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
+import { volleyShotContext } from "./chain-strikes.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
 import { beginHitCounter, endHitCounter } from "./hit-counter.js";
 import { emitBattlerPose } from "./battler-pose.js";
@@ -1367,6 +1370,12 @@ async function resolveAction(director, ar, opts = {}) {
     // for half), which are misses, so filter to real hits. Bumped here, AFTER
     // this action's bonuses were computed, so the tally a bonus reads is "hits
     // that landed before this attack" — see hitsOnTargetThisTurn.
+    // Weighted keyword — this attack used up the weapon's one attack this turn.
+    // Recorded on RESOLVE (a cancelled card never swung), hit or miss alike.
+    if (director.dCombat?.addWeightedAttack && isWeightedWeapon(ar.weapon)) {
+      director.dCombat.addWeightedAttack(weightedActorKey(ar.attacker), weaponKey(ar.weapon));
+      log(`RESOLVE: ${ar.attacker?.name ?? "?"} used Weighted ${ar.weapon?.name ?? "weapon"}'s one attack this turn`);
+    }
     if (director.dCombat && ar.attacker?.actorId) {
       for (const r of hits) {
         if (!(r.hit && r.tokenUuid)) continue;
@@ -1640,6 +1649,17 @@ async function resolveAction(director, ar, opts = {}) {
           sourceSkillName:   skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
           actionKind:        ar.kind ?? null,
           actionCanMiss:     !!ar.canMiss,
+          // Which Defense the hit resolved against, "def" (strike) | "mdef"
+          // (magic) | null (no Check). Same derivation as CONFIRM's actionBase.
+          // payloadForPassives doesn't carry it, so ATTACK_VS_DEF / _MDEF read
+          // 0 here and a Defense-gated "when hit" row never fired. Nox Wraith
+          // Ethereal's cue gates on ATTACK_VS_DEF == 1 (it resists Strike).
+          defenseResolved:   ar.canMiss
+            ? (resolvesVsMagicDefense({
+                defenseTargetType: ar.defenseTargetType,
+                isSpell: String(ar.skillType ?? "").toLowerCase() === "spell",
+              }) ? "mdef" : "def")
+            : null,
           incomingDamage:    Math.max(0, Number(r.damage ?? 0) || 0),
           // ATTACK_CHECK_RESULT reads `checkTotal` SPECIFICALLY — not `total`
           // or `accuracyTotal`. Absent it folds to 0, and an "even Accuracy
@@ -2482,12 +2502,14 @@ async function maybeRunBreakFree(director, snap) {
     }
 
     const _bfInterrupt = director?._battleEndInterruptPromise ?? null;
+    // The grappler may raise the DL (`grapple_escape_dl` rule — Luchador Pant: 13).
+    const _bfDL = escapeDlFacing(actor);
     const _bfSpec = {
       titleText: `${snap.name}: Break Free?`,
-      subtitle: `Free action. DL 10 Check — the pair must include at least one MIG or DEX die (RAW). Cancel to skip.`,
+      subtitle: `Free action. DL ${_bfDL} Check — the pair must include at least one MIG or DEX die (RAW). Cancel to skip.`,
       defaults: { A1: "MIG", A2: "DEX" },
       includeDL: true,
-      defaultDL: 10,
+      defaultDL: _bfDL,
       requireAnyOf: ["MIG", "DEX"],
     };
     // SimMode has nobody to answer: pickAttributePair auto-answers it, so never route out.
@@ -2513,7 +2535,7 @@ async function maybeRunBreakFree(director, snap) {
 
     const A1 = cfg.A1;
     const A2 = cfg.A2;
-    const DL = Math.max(1, Number(cfg.dl) || 10);
+    const DL = Math.max(1, Number(cfg.dl) || _bfDL);
     // BD-canonical check (roll + prop-aware crit/fumble) + vs-DL comparison.
     const check = await rollCheck({ actor, A1, A2 });
     const { rA, rB, dA, dB, total, isFumble, isCrit } = check;
@@ -2977,6 +2999,9 @@ const TurnStart = {
     // Champion Gloves / Hot Pants — the per-target landed-hit tally is also
     // turn-scoped, so HITS_ON_TARGET_THIS_TURN never carries across turns.
     if (director.dCombat && snap?.actorId) director.dCombat.resetHitsOnTargets(snap.actorId);
+    // Weighted — "one attack per turn" starts fresh (the tally's turn stamp also
+    // expires it on any turn change; this clears the acting creature eagerly).
+    director.dCombat?.resetWeightedAttacks?.(weightedActorKey(snap));
     // Label describes what the GM lands at on rewind: this combatant's
     // DECLARE menu (TURN_START re-auto-picks the saved id and routes
     // through to DECLARE). Subtitle records the situational context.
@@ -4839,6 +4864,13 @@ const Target = {
               melee: attackRangeBlockedBy(liveActorForBlock, "Melee"),
               ranged: attackRangeBlockedBy(liveActorForBlock, "Ranged"),
             },
+            // Weighted keyword rows — disabled + stamped (the gate below enforces).
+            modeBlock: (value) => weightedModeBlock(value, {
+              mainWeapon: attacker.weapon, offWeapon: attacker.offWeapon,
+              multiAttack: attacker.multiAttack ?? null, virtualAttacks,
+              grant: attacker?.actorId ? (freeActions.get(attacker.actorId) ?? null) : null,
+              usedKeys: director.dCombat?.weightedWeaponsUsedThisTurn?.(weightedActorKey(attacker)) ?? [],
+            }),
           });
           if (!picked) {
             director.enqueue({ type: INTENTS.TARGET_BACK });
@@ -4879,6 +4911,33 @@ const Target = {
       director.ctx.totalPasses = weaponsUsed.length;
       director.ctx.passIndex = 0;
       } // end PC weapon-mode branch
+
+      // Weighted keyword (journal ljKBtlzPVvhhmdHW) — the authoritative gate.
+      // "One attack per turn with this weapon" and "no attacks without HR with
+      // this weapon": judged once, on first entry, against EVERY weapon this
+      // attack will swing (a multi-pass mode is refused up front, not halfway).
+      // The picker already shows these rows disabled + stamped; this catches the
+      // pre-composed / auto-selected / NPC / free-attack paths that skip it.
+      // The free-action grant is still pending here (COMPUTE consumes it), so
+      // its hrAsZero / chain flags are read straight off the registry.
+      {
+        let wReason = null;
+        try {
+          wReason = weightedBlockReason({
+            weapons: director.ctx.weaponsUsed ?? [],
+            dropsHr: modeDropsHighRoll(director.ctx.attackMode, attacker?.multiAttack),
+            grant: attacker?.actorId ? (freeActions.get(attacker.actorId) ?? null) : null,
+            usedKeys: director.dCombat?.weightedWeaponsUsedThisTurn?.(weightedActorKey(attacker)) ?? [],
+          });
+        } catch (e) { warn("TARGET Attack: Weighted gate threw — allowing the attack", e); }
+        if (wReason) {
+          const wName = (director.ctx.weaponsUsed ?? []).find((w) => isWeightedWeapon(w))?.name ?? "this weapon";
+          warn(`TARGET Attack: ${attacker?.name ?? "?"} refused — ${wReason} (${wName}, mode=${director.ctx.attackMode})`);
+          ui.notifications?.warn(`${wReason} — ${attacker?.name ?? "This creature"} can't attack with ${wName} now.`);
+          director.enqueue({ type: INTENTS.TARGET_BACK });
+          return;
+        }
+      }
     }
 
     // Both first-entry and multi-pass re-entry: resolve targets via the
@@ -5485,7 +5544,7 @@ const Compute = {
         // reflects the pick. DISPLAY-ONLY (never sets hasDamage / applies damage).
         ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars, menuPicks: preActivateMenuPicks, grant: arForProfile.freeActionGrant ?? null },
       });
-      const skillProj = projectProfileToActionResult(profile, arForProfile, allTargets);
+      let skillProj = projectProfileToActionResult(profile, arForProfile, allTargets);
       // Surface the check_die_swap note on the roll so the accuracy card shows it.
       if (arForProfile.dieSwap && skillProj.roll) skillProj.roll = { ...skillProj.roll, dieSwap: arForProfile.dieSwap };
       // Menu-picked skills: show the CHOSEN option's description on the card's Effect
@@ -5543,6 +5602,18 @@ const Compute = {
       // pin covers attacks/spells only; a damaging Chain that rolls a check counts whatever the skill type.
       const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(allTargets, "", _chainCasterActor, "attack").map((e) => e.tokenUuid) : [];
       const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, allTargets.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
+      // A volley Chain is only known now: re-derive the card (strike 1) with its
+      // shot's share of the flat bonuses (chain-strikes.js volleyShotContext).
+      // Same dice and inputs, so only the volley share changes.
+      if (_chainDraw?.spec?.mode === "volley") {
+        const vProfile = await computeActionProfile({
+          view, ar: arForProfile, attacker, targets: allTargets, dice,
+          ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars, menuPicks: preActivateMenuPicks, grant: arForProfile.freeActionGrant ?? null,
+            volley: volleyShotContext(_chainDraw.spec, 1) },
+        });
+        skillProj = projectProfileToActionResult(vProfile, arForProfile, allTargets);
+        if (arForProfile.dieSwap && skillProj.roll) skillProj.roll = { ...skillProj.roll, dieSwap: arForProfile.dieSwap };
+      }
       const _chainNarrow = _chainDraw?.keep
         ? narrowToTargets({ targets: allTargets, perTargetResults: skillProj.perTargetResults ?? [], hitTokenUuids: skillProj.hitTokenUuids ?? null }, _chainDraw.keep)
         : null;
@@ -5642,7 +5713,7 @@ const Compute = {
           attacker, weapon: weaponEff, targets: targetSnapshots, dice: { rA: c.rA, rB: c.rB },
           ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, multiAttackKeepHr: !!director.ctx.multiAttackKeepHr, grant: attackGrant },
         });
-        const delta = projectProfileToActionResult(profile, null, targetSnapshots);
+        let delta = projectProfileToActionResult(profile, null, targetSnapshots);
         // An NPC attack item can print a cost (Asura's 30 MP Overflow, Tempered
         // Banestrix's 10 MP Carrion Feast). RESOLVE debits only `costSerialized`,
         // which this branch never set, so those costs were silently free. Priced
@@ -5661,10 +5732,26 @@ const Compute = {
         // Chain N on the weapon (`chain N` in its action_keywords): one card, N
         // strikes — see the Skill branch. A two-weapon pass keeps its own pass
         // loop, so it never chains on top of it.
+        // `chain {FORMULA}` on an attack: the count is evaluated now against the
+        // attacker, exactly as the Skill branch does. Without an evaluator a
+        // formula Chain is off, so an NPC attack's conditional Combo (the Spirit
+        // Hawk's Dive Strike: Combo 2 at its owner's 4-piece set) never split.
+        const _atkChainEval = (f) => evaluateFormula(String(f), buildSkillResolver({ actor: liveActor, payload: {}, skill: null, round: director.dCombat?.round ?? 0, vars: { CASTER_LEVEL: Number(liveActor?.system?.props?.level ?? 0) || 0 } }), 0);
         const _chainSpec = String(director.ctx.attackMode ?? "").startsWith("two-weapon")
-          ? null : chainSpecFor({ kind: "Attack", weapon, isCheck: true, hasDamage: true });
+          ? null : chainSpecFor({ kind: "Attack", weapon, isCheck: true, hasDamage: true, evalCount: _atkChainEval });
         const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(targetSnapshots, "", liveActor, "attack").map((e) => e.tokenUuid) : [];
         const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, targetSnapshots.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
+        // Volley: re-derive the card (strike 1) with its shot's share of the flat
+        // bonuses — see the Skill branch. Same dice, same grant.
+        if (_chainDraw?.spec?.mode === "volley") {
+          const vProfile = await computeActionProfile({
+            view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
+            attacker, weapon: weaponEff, targets: targetSnapshots, dice: { rA: c.rA, rB: c.rB },
+            ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, multiAttackKeepHr: !!director.ctx.multiAttackKeepHr, grant: attackGrant,
+              volley: volleyShotContext(_chainDraw.spec, 1) },
+          });
+          delta = projectProfileToActionResult(vProfile, null, targetSnapshots);
+        }
         const _chainNarrow = _chainDraw?.keep
           ? narrowToTargets({ targets: targetSnapshots, perTargetResults: delta.perTargetResults ?? [], hitTokenUuids: delta.hitTokenUuids ?? null }, _chainDraw.keep)
           : null;

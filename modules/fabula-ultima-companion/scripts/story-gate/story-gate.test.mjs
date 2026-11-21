@@ -86,6 +86,17 @@ check("both set: needs shown ON and hidden OFF",
 p = SG.planScene({ tokens: [npc("c", { shownWhen: "Opening Ceremony" }, false), npc("k", { shownWhen: "Opening Ceremony" }, true), { id: "party", hidden: false, flags: {} }] }, off);
 check("planScene hides only the gated token that is shown", p.tokens.length === 1 && p.tokens[0]._id === "c" && p.tokens[0].hidden === true);
 
+// ── story tiles (shownWhen / hiddenWhen on a tile: Geist's letter) ──────────
+const letter = (hidden) => npc("letter", { shownWhen: "Geist Rescued", hiddenWhen: "Geist Letter Read" }, hidden);
+p = SG.planScene({ tiles: [letter(false)] }, off);
+check("letter tile hidden before Geist is rescued", p.tiles.length === 1 && p.tiles[0].hidden === true);
+p = SG.planScene({ tiles: [letter(true)] }, only("Geist Rescued"));
+check("letter tile shown once Geist is rescued", p.tiles.length === 1 && p.tiles[0].hidden === false);
+p = SG.planScene({ tiles: [letter(false)] }, only("Geist Rescued", "Geist Letter Read"));
+check("letter tile hidden once read", p.tiles.length === 1 && p.tiles[0].hidden === true);
+p = SG.planScene({ tiles: [{ id: "plain", hidden: false, flags: {} }, npc("both", { openedBy: "S", shownWhen: "X" }, false)] }, only("X"));
+check("ungated tile untouched; openedBy wins over shownWhen", p.tiles.length === 0);
+
 // ── reconcile ────────────────────────────────────────────────────────────────
 const writes = [];
 const live = {

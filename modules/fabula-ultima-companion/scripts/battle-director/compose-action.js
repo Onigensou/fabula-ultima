@@ -49,13 +49,15 @@ import { resolveTargetPlan } from "./target-survey.js";
 import { applyNoxMassiveGate } from "./massive-keyword.js";
 import { isNoxServant } from "./nox-servant.js";
 import { freeActions } from "./free-actions.js";
+import { weightedModeBlock, weightedAttackCommandBlock } from "./weighted-rules.js";
 import { getNpcAttackItems } from "./actor-shape.js";
 import { buildUltimaMenuSpec } from "./domination.js";
 import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
 import { potionTargetText } from "../polymorph/polymorph-potions.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, snapshotEligibleTargetsFromDCombat,
-         attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate, applyAreaGate, targetsKnockedOut } from "./snapshot.js";
+         attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate, applyAreaGate, targetsKnockedOut,
+         targetsKnockedOutAlly, mergeUndeadRevivePool } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -204,6 +206,18 @@ async function composeActionChain({
     const objectiveDisabled = objectiveSpec.buttonDisabledReason
       ? [{ label: "Objective", reason: objectiveSpec.buttonDisabledReason }]
       : [];
+    // Weighted keyword: when every weapon option is out (its one attack this
+    // turn is spent, or this free attack drops HR), grey the Attack blade with
+    // the reason instead of opening a picker of struck rows. PCs only — an NPC
+    // snapshot carries no weapons (its attack items are gated per row).
+    let weightedDisabled = [];
+    try {
+      const wReason = snap?.actorKind === "npc" ? null : weightedAttackCommandBlock({
+        mainWeapon: snap?.weapon ?? null, offWeapon: snap?.offWeapon ?? null,
+        virtualAttacks: snap?.virtualAttacks ?? [], grant, usedKeys: snap?.weightedUsed ?? [],
+      });
+      if (wReason) weightedDisabled = [{ label: "Attack", reason: wReason }];
+    } catch (e) { warn("composeAction: Weighted command gate threw", e); }
     // Commands with nothing to spend them on are greyed with the reason, so
     // the player doesn't find out only after the picker opens. Skipped inside a
     // free action (its grant can make a cast free or narrow the list).
@@ -221,7 +235,7 @@ async function composeActionChain({
       // exempt skills and the GM DECLARE backstop admits only those.
       disabledLabels: [
         ...(snap?.blockedActions ?? []).filter((b) => !(snap?.gatingExemptions ?? []).some((e) => e?.label === b?.label)),
-        ...ultimaDisabled, ...objectiveDisabled,
+        ...ultimaDisabled, ...objectiveDisabled, ...weightedDisabled,
       ],
       showUltima: !!ultimaSpec,
     });
@@ -604,6 +618,12 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
         melee: attackRangeBlockedBy(token?.actor ?? null, "Melee"),
         ranged: attackRangeBlockedBy(token?.actor ?? null, "Ranged"),
       },
+      // Weighted keyword — a row whose swing breaks "one attack per turn" or
+      // "no attacks without HR" is shown disabled + stamped (GM TARGET enforces).
+      modeBlock: (value) => weightedModeBlock(value, {
+        mainWeapon: grantMain, offWeapon: grantOff, multiAttack: snap.multiAttack ?? null,
+        virtualAttacks, grant, usedKeys: snap.weightedUsed ?? [],
+      }),
       // Forward the cancel sentinel so the picker overlay tears
       // itself down if the race resolves against us.
       externalCancel: cancelSentinel,
@@ -1088,6 +1108,10 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   // lists (eligible.downedAllies / downedEnemies, same pool rule as the TARGET
   // survey), so a player's client — which has no dCombat — gets them too.
   const knockedOut = targetsKnockedOut(skillTargetText);
+  // Revive on Undead (A2): a KO-ally revive also offers LIVING Undead / Zombie'd
+  // creatures on EITHER side (captured from the living lists before the swap).
+  const undeadRevive = (knockedOut && targetsKnockedOutAlly(skillTargetText))
+    ? mergeUndeadRevivePool([], eligible?.allies, eligible?.enemies) : [];
   if (knockedOut) {
     eligible = { allies: eligible?.downedAllies ?? [], enemies: eligible?.downedEnemies ?? [] };
   }
@@ -1102,6 +1126,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   let targetList = side === "any"
     ? [...(eligible?.allies ?? []), ...(eligible?.enemies ?? [])]
     : (side === "ally" ? (eligible?.allies ?? []) : (eligible?.enemies ?? []));
+  if (undeadRevive.length) targetList = mergeUndeadRevivePool(targetList, undeadRevive);
   const categoryLabel = (knockedOut ? "knocked-out " : "")
     + (side === "any" ? "creatures" : (side === "ally" ? "allies" : "enemies"));
 

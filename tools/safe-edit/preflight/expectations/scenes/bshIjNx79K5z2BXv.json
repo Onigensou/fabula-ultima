@@ -3,11 +3,6 @@
   "name": "Eisendrache Kingdom",
   "tokens": [
     {
-      "name": "RaiRai Party A",
-      "actorId": "0Ttg3RYQZUySixH1",
-      "actorLink": false
-    },
-    {
       "name": "Guy",
       "actorId": "d4hqTGBC7ekbn3Gc",
       "actorLink": true
@@ -3307,122 +3302,6 @@
       "locked": false,
       "_regions": [
         "dhW6uWHGO5t8IhD3"
-      ]
-    },
-    {
-      "name": "RaiRai Party A",
-      "displayName": 0,
-      "actorLink": false,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/RaiRai/RaiRai_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": -1.19,
-        "scaleY": 1.19,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": -1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": null
-      },
-      "bar2": {
-        "attribute": null
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.5,
-        "angle": 360,
-        "bright": 0,
-        "color": null,
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": null,
-          "speed": 5,
-          "intensity": 5,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 0,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {}
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": true
-        }
-      },
-      "actorId": "0Ttg3RYQZUySixH1",
-      "hidden": false,
-      "sort": 2,
-      "_id": "awB5T9h5Dm9525Xh",
-      "x": 1794,
-      "y": 760,
-      "elevation": 0,
-      "locked": false,
-      "_regions": [
-        "uQaOBnoP6qLC9PPw"
       ]
     },
     {
@@ -7732,7 +7611,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1765930057957,
-      "modifiedTime": 1794157458859,
+      "modifiedTime": 1795149359504,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

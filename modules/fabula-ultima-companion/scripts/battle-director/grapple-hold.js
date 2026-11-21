@@ -126,6 +126,10 @@ async function pullNow(heldDoc, grapplerDoc, { ms = PULL_MS, easing = "easeInCir
   if (isDown(heldDoc.actor)) return false;
   // A bigger body than its grappler is not carried off (a giant stays put; the grip still shows).
   if (heldDoc.width > grapplerDoc.width || heldDoc.height > grapplerDoc.height) return false;
+  // A mutual hold (Luchador Pant's counter-grapple): the grappler already stands in
+  // the held unit's slot, so the pair is together — moving this one too would make
+  // the two chase each other's slot at every turn-start reconcile.
+  if (holdOf(grapplerDoc)?.by === heldDoc.uuid) return false;
   const scene = heldDoc.parent;
   const hold = holdOf(heldDoc);
   const same = hold?.by === grapplerDoc.uuid;

@@ -16,6 +16,19 @@ import { ownedCards, grantCard, grantStarter, canPlay } from "./fa-collection.js
 
 const sessions = new Map();
 const runtime = new Map();              // sid -> { timer, ai:[t,t], inviteTimer }
+// Event duels (event row "Card Duel", fa-event.js): reqId → resolve({ result }). The duel reports when its window closes:
+// "win" / "loss" when the series was decided, "draw" when the player left after a drawn game (a draw replays in a
+// Best of 1), "cancel" when it never finished (left mid-match or before it started, GM ended it, host reloaded).
+const eventWaiters = new Map();
+export function awaitEventDuel(reqId) { return new Promise((resolve) => eventWaiters.set(reqId, resolve)); }
+function settleEvent(s) {
+  if (!s?.event) return;
+  const done = eventWaiters.get(s.event); if (!done) return;
+  eventWaiters.delete(s.event);
+  const result = s.eventResult || "cancel";
+  console.log(TAG, `event duel ${s.seats[0].name} vs ${s.seats[1].name}: ${result}`);
+  done({ result, sid: s.sid });
+}
 const rt = (sid) => { if (!runtime.has(sid)) runtime.set(sid, { timer: null, ai: [null, null], inviteTimer: null }); return runtime.get(sid); };
 const E = () => Engine();
 const CFG = () => Catalog().CFG;
@@ -98,7 +111,7 @@ function sendInit(s, userId) {
     format: E().Format.norm(s.format), formatBy: s.kind === "pvp" ? s.seats[0].name : "", clash: s.clash || [],
     actorId: me.actorId, forms: formsOf(actor), suggestOpener: me.lastTeam ? null : (defaultForm(s, actor, owned)?.opener ?? null),   // a rematch keeps the window's own opener mark
     prize: viewer === 0 && s.prize ? s.prize.cid : null, prizeLabel: s.prize?.label, prizeHint: s.prize?.hint, oppReady: !!opp?.ready,
-    privatePick: !!s.privatePick,
+    privatePick: !!s.privatePick, noRematch: !!s.event,
   } : { kind: s.kind, bestOf: s.bestOf, spec: draftView(s) };
   const nm = names(s, viewer);
   toDuel(s, userId, { t: "init", role, myName: nm[0], oppName: nm[1], names: nm, lobby, ready: !!me?.ready, spectators: s.spectators.length, ...payload(s, viewer) });
@@ -204,6 +217,7 @@ function releaseSpectators(s) {
 async function onGameEnd(s) {
   clearTimers(s); s.deadline = null;
   E().Series.record(s.series, s.match.result);
+  if (s.event && !s.eventFrozen) s.eventResult = s.series.over ? (s.series.winner === 0 ? "win" : "loss") : s.match.result === "DRAW" ? "draw" : s.eventResult;
   if (!s.series.over) return;
   s.over = true; releaseSpectators(s);
   if (s.kind === "npc" && s.series.winner === 0 && s.prize) {
@@ -321,6 +335,7 @@ async function onDuel(s, userId, msg) {
 // Back to team select (last team preselected), a fresh series, the NPC prize re-checked (you may own it now).
 async function rematch(s, seat) {
   if (!s.over || !s.series.over) return;
+  if (s.event) return;   // an event's duel is played once; its window offers Leave only
   const t = s.seats[seat], o = s.seats[1 - seat];
   if (t.left || !t.userId) return;
   t.rematch = true;
@@ -341,6 +356,10 @@ async function rematch(s, seat) {
 
 async function leave(s, seat, userId) {
   const t = s.seats[seat], other = s.seats[1 - seat];
+  if (s.event && !s.over) {   // leaving an unfinished event duel never counts as a loss
+    s.eventResult = s.eventResult === "draw" && (!s.match || s.match.phase === "ended") ? "draw" : "cancel";
+    s.eventFrozen = true;
+  }
   if (!s.over) {
     if (s.match && s.match.phase !== "ended") { E().Match.concede(s.match, seat); await onGameEnd(s); }
     if (!s.series.over) { s.series.over = true; s.series.winner = 1 - seat; }
@@ -431,6 +450,7 @@ function closeSession(s) {
   for (const p of participants(s)) send(p.uid, "close", {}, s.sid);
   sessions.delete(s.sid); runtime.delete(s.sid);
   pushStatus(); save();
+  settleEvent(s);
 }
 
 // ------------------------------------------------------------------ creating sessions
@@ -443,7 +463,7 @@ function npcConfig(npcActor, practice) {
   return cfg;
 }
 
-async function createNpc(userId, { challengerActorId, npcActorId, npcTokenUuid, practice }) {
+async function createNpc(userId, { challengerActorId, npcActorId, npcTokenUuid, practice, event = null }) {
   const user = game.users.get(userId);
   const actor = game.actors.get(challengerActorId);
   if (!actor) return notify(userId, "Nobody to play with — no character found.", "warn");
@@ -451,7 +471,7 @@ async function createNpc(userId, { challengerActorId, npcActorId, npcTokenUuid, 
   let npcActor = npcTokenUuid ? (fromUuidSync(npcTokenUuid)?.actor ?? null) : null;
   npcActor = npcActor || game.actors.get(npcActorId) || null;
   if (!npcActor && !practice) return notify(userId, "That challenger couldn't be found.", "warn");
-  const cfg = npcConfig(npcActor, practice);
+  const cfg = npcConfig(npcActor, event ? { teams: event.team ? [event.team] : [], diff: event.diff, style: event.style, bestOf: event.bestOf, quote: event.quote } : practice);
   if (!canPlay(ownedCards(actor))) { const given = await grantStarter(actor); if (given.length) notify(userId, `${actor.name} received a starter set of ${given.length} Fabula Arcana card${given.length > 1 ? "s" : ""}.`); }
   const prizeCid = cfg.prize && Catalog().CARDS[cfg.prize] && !ownedCards(actor).includes(cfg.prize) ? cfg.prize : null;
   const s = {
@@ -463,6 +483,7 @@ async function createNpc(userId, { challengerActorId, npcActorId, npcTokenUuid, 
     spectators: [], match: null, gameKey: null, deadline: null, quote: cfg.quote || "",
     prize: prizeCid ? { cid: prizeCid, label: "Ante card", hint: cfg.bestOf > 1 ? "Win the series to take it." : "Win the duel to take it." } : null,
     npc: { actorId: npcActor?.id ?? null, tokenUuid: npcTokenUuid ?? null }, pending: false, over: false, reward: null,
+    event: event?.reqId ?? null, eventResult: null,
   };
   sessions.set(s.sid, s);
   send(userId, "open", { role: "player", hostId: s.hostId }, s.sid);
@@ -528,6 +549,16 @@ async function acceptPvp(s, userId) {
 }
 
 // ------------------------------------------------------------------ install (every client registers; only the addressed host acts)
+/** Host GM: start an event's NPC duel; resolves { result } when its window closes (see eventWaiters). */
+export async function startEventDuel({ reqId, userId, challengerActorId, npcTokenUuid, npcActorId = null, team = null, diff, style, bestOf, quote }) {
+  const wait = awaitEventDuel(reqId);
+  const before = sessions.size;
+  await createNpc(userId, { challengerActorId, npcActorId, npcTokenUuid, event: { reqId, team, diff, style, bestOf, quote } });
+  const s = [...sessions.values()].find((x) => x.event === reqId);
+  if (!s) { eventWaiters.delete(reqId); return { result: "cancel", reason: sessions.size === before ? "not-started" : "lost" }; }
+  return wait;
+}
+
 export function installHost() {
   on("challenge-npc", (d, env) => createNpc(env.from, d));
   on("challenge-pvp", (d, env) => createPvp(env.from, d));
@@ -562,6 +593,9 @@ export function installHost() {
   });
   on("cancel-all", (d, env) => { if (!game.users.get(env.from)?.isGM) return; for (const s of [...sessions.values()]) closeSession(s); });
 }
+
+// Event aborted from the GM chip: end only the duels a story event started (they report "cancel").
+export function cancelEventDuels() { for (const s of [...sessions.values()]) if (s.event) closeSession(s); }
 
 // GM tool: end every duel (e.g. before a session ends)
 export function closeAll() { for (const s of [...sessions.values()]) closeSession(s); }

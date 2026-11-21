@@ -331,9 +331,12 @@ export async function runConflictEventAction(director, action, request) {
   if (typeof handler !== "function") return false;
   try {
     const ctx = await buildEventCtx(director, active.id);
-    // A handler that returns exactly `false` reports it did not do its job (Nox Servant).
-    const r = await handler(ctx, request);
-    return r !== false;
+    // An action that returns exactly `false` found nothing to do / did not do its job
+    // (Soul Tithe's consumeFragment with no fragment that has Called; Nox Servant with
+    // nobody converted): the row applies nothing. Every older action returns undefined
+    // and keeps reading as done.
+    const res = await handler(ctx, request);
+    return res !== false;
   } catch (e) {
     warn(`"${active.id}" action "${action}" threw — the conflict continues without it`, e);
     return false;

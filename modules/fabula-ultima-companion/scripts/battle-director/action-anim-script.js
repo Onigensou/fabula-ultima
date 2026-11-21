@@ -52,6 +52,9 @@ async function DEFAULT_INNER() {
     follow = function () {
       const m = caster.mesh;
       if (!m || !clone || clone.destroyed) return;
+      // The caster's token can be deleted while this still ticks (battle end); its mesh
+      // is then destroyed (anchor null) and a throw here stops the whole canvas ticker.
+      if (m.destroyed || !m.anchor) { try { canvas.app.ticker.remove(follow); } catch (e) {} return; }
       if (clone.texture !== m.texture) clone.texture = m.texture;
       clone.anchor.copyFrom(m.anchor);
       clone.scale.copyFrom(m.scale);

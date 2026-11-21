@@ -183,6 +183,16 @@ export function patternConditionOptions() {
   return keys.map((key) => ({ key, value: getConditionLabel(key) }));
 }
 
+// action_pattern_chance → a number in [0, 100]. Blank / non-numeric = 100 (the
+// legacy "no gate"). "33" and "33%" both read as 33.
+export function normalizePatternChance(rawValue) {
+  const s = String(rawValue ?? "").trim().replace(/%$/, "").trim();
+  if (!s) return 100;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return 100;
+  return Math.min(100, Math.max(0, n));
+}
+
 function normalizePatternRow(rawRow = {}) {
   const data = rawRow?.data ?? {};
   const rowKey = rawRow?.rowKey ?? "";
@@ -220,6 +230,10 @@ function normalizePatternRow(rawRow = {}) {
   // anti-repeat block in actionReader-matchAndPickAction.js.
   const cooldownRaw = data?.[AR.keys.actionPatternCooldownKey] ?? "";
   const cooldown = AR.toInteger(cooldownRaw, 0);
+
+  // Chance gate (0-100, blank = 100). See actionPatternChanceKey.
+  const chanceRaw = data?.[AR.keys.actionPatternChanceKey] ?? "";
+  const chance = normalizePatternChance(chanceRaw);
 
   let isUsable = true;
   let skipReason = "";
@@ -267,6 +281,9 @@ function normalizePatternRow(rawRow = {}) {
 
     cooldownRaw,
     cooldown,
+
+    chanceRaw,
+    chance,
 
     raw: AR.duplicateSafe(data)
   };

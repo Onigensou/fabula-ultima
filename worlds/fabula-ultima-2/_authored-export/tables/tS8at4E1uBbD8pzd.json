@@ -1,0 +1,215 @@
+{
+  "_id": "tS8at4E1uBbD8pzd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795136048196,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "Sealed Cavern (Valley_Map010) only: the Nox Legion and its guests.",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    },
+    "fabula-ultima-companion": {
+      "noxLegion": "encounter"
+    }
+  },
+  "folder": "to3QkbU70EQKKxHW",
+  "formula": "1d100",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Valley of the Dragon Sealed Cavern - Encounter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "2Be0DLefXYO59gfu",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        96,
+        98
+      ],
+      "text": "Nox Ghoul, Roo, Nox Ghoul",
+      "type": "text",
+      "weight": 3
+    },
+    {
+      "_id": "dBIn8szXlUMtI7vd",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        28,
+        39
+      ],
+      "text": "Nox Ghoul, Nox Wraith, Nox Ghoul",
+      "type": "text",
+      "weight": 12
+    },
+    {
+      "_id": "Dtpx5ZQL1WACYHY6",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        99,
+        100
+      ],
+      "text": "Carlbero",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "FWxh5nRT71K8re52",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        84,
+        88
+      ],
+      "text": "Nox Ghoul, Nox Executioner, Nox Ghoul",
+      "type": "text",
+      "weight": 5
+    },
+    {
+      "_id": "HB3xLR3Hs0pKt7oR",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        60,
+        69
+      ],
+      "text": "Nox Hound, Nox Priest, Nox Hound",
+      "type": "text",
+      "weight": 10
+    },
+    {
+      "_id": "HdokU837vKl5APAE",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        16,
+        27
+      ],
+      "text": "Nox Hound, Nox Viper, Nox Hound",
+      "type": "text",
+      "weight": 12
+    },
+    {
+      "_id": "jVgRF01MNDojEely",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        50,
+        59
+      ],
+      "text": "Nox Hound, Nox Wraith, Nox Ghoul",
+      "type": "text",
+      "weight": 10
+    },
+    {
+      "_id": "K4JR2KqfHJBHEP9O",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        89,
+        92
+      ],
+      "text": "Obsidrax, Nox Viper, Obsidrax",
+      "type": "text",
+      "weight": 4
+    },
+    {
+      "_id": "kQwxZQwLZS6rNXgd",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        70,
+        77
+      ],
+      "text": "Nox Ghoul, Nox Priest, Nox Hound",
+      "type": "text",
+      "weight": 8
+    },
+    {
+      "_id": "LSKqRENALxasTWyO",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        78,
+        83
+      ],
+      "text": "Nox Hound, Nox Executioner, Nox Hound",
+      "type": "text",
+      "weight": 6
+    },
+    {
+      "_id": "MwV54pzgzfu95UlG",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        1,
+        15
+      ],
+      "text": "Nox Ghoul, Nox Ghoul, Nox Hound, Nox Hound",
+      "type": "text",
+      "weight": 15
+    },
+    {
+      "_id": "RPNKT9DhsO0zAOxR",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        93,
+        95
+      ],
+      "text": "Nox Hound, Kurona, Kurona, Nox Hound",
+      "type": "text",
+      "weight": 3
+    },
+    {
+      "_id": "SmttfjWbb3BZtQGu",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        40,
+        49
+      ],
+      "text": "Nox Ghoul, Nox Viper, Nox Ghoul",
+      "type": "text",
+      "weight": 10
+    }
+  ],
+  "sort": 0
+}

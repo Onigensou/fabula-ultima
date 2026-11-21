@@ -51,6 +51,7 @@ import { KNOCKOUT_TRIGGER, holdsKnockoutRevive, markReviveTried, clearReviveTrie
 import { STAYS_DOWN_TRIGGER, hasStaysDownReactor, beginStaysDown, endStaysDown, markStaysDownSettled, clearStaysDownSettled, isStaysDownSettled } from "./stays-down.js";
 import { bossRuleOwnsFall } from "./boss-rules/boss-rules.js";
 import { isOutOfPlay } from "./out-of-play.js";
+import { createRemovalGate } from "./defeat-removal-gate.js";
 
 // Property paths — kept identical to the legacy auto-defeat hook.
 const PATH_DB_OPTION = "system.props.option_autoDefeat";
@@ -341,6 +342,10 @@ const _removing = new Set();
 // Defeats scheduled by the reactor during a settle pass, awaited at the pass
 // end (drainPendingDefeats) so several deaths from one action overlap.
 const _pending = [];
+// Their token deletes wait for the pass to finish writing (defeat-removal-gate.js):
+// a rider that hits the dying creature after the kill (Muleta's Bleed) must land
+// before the token goes, or the server answers "Token ... does not exist!".
+const _removalGate = createRemovalGate();
 
 function tokenExists(tokenUuid) {
   try { return !!fromUuidSync(tokenUuid); } catch { return false; }
@@ -394,7 +399,7 @@ async function playDefeatFor(tokenDoc, actor, payload, { finisher = false, direc
 }
 
 // Run the death animation then remove the combatant + token via the director.
-async function performDefeat(director, tokenDoc, actor, payload = null, { delayMs = 0 } = {}) {
+async function performDefeat(director, tokenDoc, actor, payload = null, { delayMs = 0, removalGate = null } = {}) {
   if (!game.user?.isGM) return;            // director removal is GM-only
   const tokenUuid = tokenDoc?.uuid;
   if (!tokenUuid) return;
@@ -460,6 +465,11 @@ async function performDefeat(director, tokenDoc, actor, payload = null, { delayM
       await own.playing;
     }
     _defeatPlaying.delete(tokenUuid);
+    // A deferred defeat: the rest of its settle pass may still be writing to this
+    // creature (an on-hit rider). The token goes once that pass is done.
+    if (removalGate && !(await _removalGate.wait(removalGate))) {
+      warn(`defeat-reactor: ${name} — settle pass never released its removals; removing anyway`);
+    }
     // Back up before the removal landed (a heal later in the same action)?
     // Then it stays: show it again instead of deleting it.
     if (!isActorDefeated(actor)) {
@@ -476,6 +486,7 @@ async function performDefeat(director, tokenDoc, actor, payload = null, { delayM
   } catch (e) {
     warn("defeat-reactor: performDefeat threw — removing without animation", e);
     _defeatPlaying.delete(tokenUuid);
+    if (removalGate) await _removalGate.wait(removalGate);
     try { await remove(); } catch (e2) { warn("defeat-reactor: fallback remove threw", e2); }
   } finally {
     _removing.delete(tokenUuid);
@@ -502,6 +513,8 @@ export async function playDefeatOutsideBattle(tokenDoc) {
  */
 export async function drainPendingDefeats() {
   while (_pending.length) {
+    // The pass has finished its reactions: the removals it held may delete now.
+    _removalGate.release();
     const batch = _pending.splice(0);
     await Promise.allSettled(batch);
   }
@@ -576,7 +589,7 @@ async function evaluateDefeat(director, actor, payload, { defer = false } = {}) 
     return true;
   }
   const delayMs = Math.min(_pending.length, STAGGER_MAX_STEPS) * STAGGER_MS;
-  _pending.push(performDefeat(director, tokenDoc, actor, payload, { delayMs }));
+  _pending.push(performDefeat(director, tokenDoc, actor, payload, { delayMs, removalGate: _removalGate.current() }));
   return true;
 }
 
@@ -690,6 +703,41 @@ async function emitCreatureDefeated(director, actor, payload, firedKeys, batch) 
     }
   } catch (e) {
     warn(`defeat-reactor: emitCreatureDefeated dispatch threw for ${actor?.name}`, e);
+  }
+}
+
+// A battlefield object's own trigger, to every combatant's reactions. An object
+// raises no creature_defeated (it is not a creature: no on-kill farming), so an
+// event that wants monsters to hear about it names its own trigger. First user:
+// Soul Tithe's `soul_fragment_destroyed` (Fragment Eater, 2026-11-19; the Nox
+// Priest's Soul Siphon). The caller owns the once-only rule; this only fans out.
+//
+// Subject = the object (reaction_source "hostile"/"enemy" etc. key off it; blank
+// or "all" hears every one). `extra` is merged into the payload; each reactor gets
+// its own copy, so a chain writing VAR_* (_chainVars) cannot leak into the next.
+// Observers' automatic rows first, then their prompts, as for creature_defeated.
+export async function emitBattlefieldObjectTrigger(director, { trigger, actor, tokenDoc = null, payload: extra = {} } = {}) {
+  if (!game.user?.isGM || !director || !trigger || !actor) return;
+  const base = {
+    trigger,
+    sourceActorUuid:  actor.uuid,
+    sourceTokenUuid:  tokenDoc?.uuid ?? null,
+    subjectActorUuid: actor.uuid,
+    subjectTokenUuid: tokenDoc?.uuid ?? null,
+    ...extra,
+  };
+  const copy = () => ({ ...base, ...(base._chainVars ? { _chainVars: { ...base._chainVars } } : {}) });
+  try {
+    const { collectReactors, dispatchReactionMenu } = await import("./standalone-reactions.js");
+    const reactors = (await collectReactors(director)).filter((r) => r.actor?.uuid !== actor.uuid);
+    for (const phase of ["forced", "ask"]) {
+      for (const { actor: ra, token } of reactors) {
+        if (!ra || !token || isActorDefeated(ra)) continue;
+        await dispatchReactionMenu({ director, reactor: ra, token, phase, askPassFollows: true, trigger, payload: copy() });
+      }
+    }
+  } catch (e) {
+    warn(`defeat-reactor: ${trigger} dispatch threw for ${actor?.name}`, e);
   }
 }
 

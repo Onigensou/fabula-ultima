@@ -47,6 +47,13 @@ export const normActorId = (v) => {
 
 export const isShopActor = (actor) => gp(actor, "system.props.isShop", false) === true;
 
+// One token of a shop NPC can stand somewhere it doesn't sell (Rume tending her grape field in the rebuilt Ruhig while
+// Pomme minds the counter): flags.<mod>.noShopButton on that TOKEN hides its shop button; the actor stays a shop.
+export const tokenSellsHere = (token) => {
+  const doc = token?.document ?? token;
+  return gp(doc, "flags.fabula-ultima-companion.noShopButton", false) !== true;
+};
+
 // A GM-hidden token is treated as absent: no proximity button, for GMs too.
 // (Buttons are DOM overlays, so they don't inherit the token's canvas visibility.)
 export const isTokenHidden = (token) => token?.document?.hidden === true;

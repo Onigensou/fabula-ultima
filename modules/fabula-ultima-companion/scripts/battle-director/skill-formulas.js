@@ -34,6 +34,7 @@ import { log, warn } from "./logger.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { orbmentReduction } from "../orbment/orbment-dr.js";
 import { bossStage } from "./boss-rules/boss-rules.js";
+import { companionOf } from "../shared/companion-rule.js";
 
 // snapshot.getBlockedActionLabels, registered by snapshot.js at load (it already
 // imports this module, so a static import back would be a cycle). Read by the
@@ -974,6 +975,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // (OWN_PERSISTENT_SUMMON_COUNT == 0) — independent of the Grave Toll AE, which
       // can desync from the minion.
       case "OWN_PERSISTENT_SUMMON_COUNT": return ownPersistentSummonCount(actor);
+      // 1 when this actor already has a COMPANION — a standing one linked to it
+      // (Faithful Companion) or a gear-granted one on the field (the Mantle's
+      // Spirit Hawk). The one-companion house rule's gate, readable by data:
+      // Summon Spirit Hawk's availability_formula is `HAS_COMPANION == 0`.
+      case "HAS_COMPANION": return companionOf(actor?.uuid) ? 1 : 0;
       case "BOND_STRENGTH": return bondStrengthTowardSubject(actor, payload);
       case "BOND_COUNT": return countBondSlots(actor);
       case "BOND_COUNT_ADMIRATION": return countBondsByEmotion(actor, "admiration");
@@ -1125,6 +1131,13 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Always >= 0 — the direction lives in the trigger NAME, not the sign — and 0
       // outside the resource-ledger triggers, so a stray gate is inert, not wrong.
       case "TRIGGER_AMOUNT": return Math.max(0, Number(payload?.amount ?? 0) || 0);
+      // Soul Tithe (Fragment Eater, 2026-11-19). FRAGMENT_HP: the destroyed
+      // fragment's HP on a soul_fragment_destroyed reaction (payload.fragmentHp,
+      // set by soul-tithe announceDestroyed). CONSUMED_FRAGMENT_HP: the HP of the
+      // fragment a consumeFragment row ate earlier in THIS chain (Soul Sever's
+      // poison), stashed on the chain-var bag. 0 when absent.
+      case "FRAGMENT_HP": return Number(payload?.fragmentHp) || 0;
+      case "CONSUMED_FRAGMENT_HP": return Number(payload?._chainVars?.consumed_fragment_hp) || 0;
       // Combat state
       case "ROUND": return Math.max(0, Number(round ?? 0) || 0);
       // The fight's stage as a boss rule counts it (boss-rules/boss-rules.js stage()):
@@ -1635,6 +1648,22 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "HAS_ARCANE_WEAPON":   return hasEquippedWeaponOfType(actor, "arcane") ? 1 : 0;
       case "HAS_MELEE_WEAPON":    return hasEquippedWeaponOfType(actor, "melee") ? 1 : 0;
       case "HAS_RANGED_WEAPON":   return hasEquippedWeaponOfType(actor, "ranged") ? 1 : 0;
+      // Transforming weapons (Lionheart, 2026-11-21). WEAPON_FORM — the active form
+      // index (0 = base) of the weapon this skill/passive is contained in, else of
+      // the main-hand weapon; 0 when it has no forms. TRANSFORMED_TO_FORM — on a
+      // creature_transforms_weapon payload, the form just entered when the weapon
+      // that transformed is this row's carrier weapon (or the row has no carrier
+      // weapon); -1 otherwise / off that trigger.
+      case "WEAPON_FORM": {
+        const w = carrierWeaponOf(actor, skill) ?? mainHandWeaponOf(actor);
+        return Number(w?.flags?.["fabula-ultima-companion"]?.activeForm ?? 0) || 0;
+      }
+      case "TRANSFORMED_TO_FORM": {
+        if (payload?.transformedItemUuid == null || payload?.formIndex == null) return -1;
+        const w = carrierWeaponOf(actor, skill);
+        if (w && w.uuid !== payload.transformedItemUuid && w.id !== payload.transformedItemId) return -1;
+        return Number(payload.formIndex) || 0;
+      }
       // Weapon-family gate: 1 if an equipped weapon's Category is "firearm"
       // (matches the `category`/`weapon_type` field, not the range). Used by
       // Bullet Break's "with a ranged firearm weapon you have equipped" RAW gate.
@@ -2689,6 +2718,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // (see [[project_grappled_advanced_debuff]] P0). Matches TOKEN-first
         // (so one NPC token's grapple doesn't buff a sibling token sharing the
         // same base actor), with an actor-uuid fallback for linked tokens.
+        // GRAPPLE_ESCAPE_DL — the DL this actor must beat to break free of
+        // whoever holds it: the grappler's `grapple_escape_dl` rule (Luchador
+        // Pant: 13), else 10. Read by the Break Free objective's gate.
+        // snapshot.escapeDlFacing, published on globalThis (import cycle).
+        if (name === "GRAPPLE_ESCAPE_DL") {
+          const fn = globalThis.__fuGrappleEscapeDlFacing;
+          try { return typeof fn === "function" && actor ? Number(fn(actor)) || 10 : 10; }
+          catch (e) { warn("GRAPPLE_ESCAPE_DL reader threw", e); return 10; }
+        }
         if (name === "TARGET_GRAPPLED_BY_SELF") {
           const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
           if (!subjectUuid) return 0;
@@ -2777,6 +2815,35 @@ function weaponFamilyOf(item) {
   return String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
 }
 
+// A field of the weapon's ACTIVE form (weapon_forms prop / weaponForms flag), or
+// null when on the base form or the form leaves the field blank.
+function activeFormOverride(item, field) {
+  const idx = Number(item?.flags?.["fabula-ultima-companion"]?.activeForm ?? 0) || 0;
+  if (idx <= 0) return null;
+  const raw = item?.system?.props?.weapon_forms;
+  const forms = (raw && typeof raw === "object" && Object.keys(raw).length) ? Object.values(raw)
+    : (Array.isArray(item?.flags?.["fabula-ultima-companion"]?.weaponForms) ? item.flags["fabula-ultima-companion"].weaponForms : []);
+  const v = forms[idx]?.[field];
+  return (v === undefined || v === null || String(v).trim() === "") ? null : v;
+}
+
+// The weapon Item a contained skill/passive belongs to (its CSB container), or null.
+function carrierWeaponOf(actor, skill) {
+  const cid = String(skill?.system?.container ?? "").trim();
+  if (!cid) return null;
+  const it = skill?.parent?.items?.get?.(cid) ?? actor?.items?.get?.(cid) ?? null;
+  return String(it?.system?.props?.item_type ?? "").toLowerCase() === "weapon" ? it : null;
+}
+
+// The weapon Item worn in the main hand (slot prop holds its NAME), or null.
+function mainHandWeaponOf(actor) {
+  const name = actor?.system?.props?.main_hand;
+  if (!name) return null;
+  const list = (actor.items?.contents ?? []).filter((i) => i?.name === name
+    && String(i?.system?.props?.item_type ?? "").toLowerCase() === "weapon" && !i?.system?.container);
+  return list.find((i) => i.system?.props?.isEquipped === true) ?? list[0] ?? null;
+}
+
 function hasEquippedWeaponOfType(actor, weaponType) {
   if (!actor) return false;
   const wanted = String(weaponType ?? "").toLowerCase();
@@ -2791,7 +2858,8 @@ function hasEquippedWeaponOfType(actor, weaponType) {
     // HAS_MELEE_WEAPON work (via weapon_range) alongside HAS_ARCANE_WEAPON
     // and other family gates (via category).
     const cat = weaponFamilyOf(item);
-    const range = String(p.weapon_range ?? "").toLowerCase();
+    // A transforming weapon's active form may change its range (Lionheart Gun = Ranged).
+    const range = String(activeFormOverride(item, "weapon_range") ?? p.weapon_range ?? "").toLowerCase();
     if (cat === wanted || range === wanted) return true;
   }
   // "You are treated as having an <X> weapon equipped" (Red Tunic): a live
@@ -4213,6 +4281,53 @@ export function applyHealReceiving(targetActor, amount) {
   const flat = sumAeChangeKey(targetActor, "heal_receiving_flat_all");
   const scaled = mult === 1 ? base : Math.floor(base * mult);
   return Math.max(0, scaled + flat);
+}
+
+// ── Undead heal reversal (Final Fantasy style, Nox Legion 2026-11-19) ────────
+// A creature whose RULES species is Undead (its own `species` prop, or an AE's
+// `flags.fabula-ultima-companion.species_override` — see speciesOf) or that
+// carries the Zombie status takes an HP HEAL as DAMAGE of the same amount. The
+// reversed amount is the caster-side heal, NOT scaled by heal_receiving_* (those
+// describe healing received; the creature receives none). It is committed through
+// the normal damage write, so it can KO and fires damage reactions.
+//
+// Data opt-out: a grant row with `heal_ignore_undead: true` heals normally (a
+// Wraith's own Devour Soul self-heal). Revives (set_resource) are a separate
+// rule (isReviveTargetUndead / A2), and Soul Tithe fragment refunds write HP
+// directly — neither passes through here.
+export function isHealReversedActor(actor) {
+  if (!actor) return false;
+  if (String(speciesOf(actor)).replace(/_/g, " ").trim().toLowerCase() === "undead") return true;
+  return actorHasNamedStatus(actor, "zombie");
+}
+
+// Revive-kill immunity (2026-11-20, user: "Nidhogg must not die instantly to
+// revive effects"). An actor flagged `flags.fabula-ultima-companion.reviveKillImmune`
+// is never defeated by a revive cast on it while it lives, even if it is Undead or
+// Zombie'd, and is never offered as a revive target. Healing reversal is untouched.
+export function isReviveKillImmune(actor) {
+  const v = actor?.flags?.["fabula-ultima-companion"]?.reviveKillImmune;
+  return v === true || String(v ?? "").trim().toLowerCase() === "true";
+}
+
+/** A LIVING creature a KO-ally revive would defeat outright (Revive on Undead, A2). */
+export function isReviveKillTarget(actor) {
+  return isHealReversedActor(actor) && !isReviveKillImmune(actor);
+}
+
+export function rowIgnoresUndead(row) {
+  const v = row?.heal_ignore_undead;
+  return v === true || String(v ?? "").trim().toLowerCase() === "true";
+}
+
+// The single decision both the preview (action-profile) and the apply
+// (grantApply / out-of-combat healing) read. Returns true when a POSITIVE HP
+// restore on `actor` must land as damage instead.
+export function shouldReverseHeal(actor, { resource = "hp", amount = 0, row = null } = {}) {
+  if (String(resource ?? "").toLowerCase() !== "hp") return false;
+  if (!(Number(amount) > 0)) return false;
+  if (rowIgnoresUndead(row)) return false;
+  return isHealReversedActor(actor);
 }
 
 // The MP twin of applyHealReceiving — recipient-side adjustment on a positive MP

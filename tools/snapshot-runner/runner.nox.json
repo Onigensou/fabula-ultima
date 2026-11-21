@@ -1,0 +1,13 @@
+{
+  "_comment": "Sealed Cavern balance fights: the battle map, the party, the Nox Legion, the guests and the Soul Fragment template. node bin/build-snapshot.mjs --profile nox --snapshot snap-nox ; then checks/nox-fight.js (see its header).",
+  "scenes": ["Training Ground", "Valley_Battlemap004"],
+  "viewScene": "Valley_Battlemap004",
+  "actors": {
+    "types": ["_template"],
+    "flags": ["isField"],
+    "folders": [],
+    "names": ["Test Caster", "Test Target Ally", "Test Target Enemy", "Hina", "Keren", "Blanche", "Zarg", "Kalina", "Fox fire",
+      "Nox Ghoul", "Nox Hound", "Nox Wraith", "Nox Viper", "Nox Priest", "Nox Executioner",
+      "Obsidrax", "Kurona", "Roo", "Carlbero", "Soul Fragment", "Nidhogg"]
+  }
+}

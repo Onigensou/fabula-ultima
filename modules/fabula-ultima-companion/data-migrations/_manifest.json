@@ -665,6 +665,43 @@
       "idempotent": true
     },
     {
+      "key": "2026-11-20-template-options-soul-fragment-destroyed",
+      "path": "data-migrations/2026-11-20-template-options-soul-fragment-destroyed.js"
+    },
+    {
+      "key": "2026-11-20-nox-legion-author",
+      "path": "data-migrations/2026-11-20-nox-legion-author.js"
+    },
+    {
+      "key": "2026-11-20-nox-legion-tuning",
+      "path": "data-migrations/2026-11-20-nox-legion-tuning.js",
+      "idempotent": true
+    },
+    {
+      "key": "2026-11-21-hako-ch4-content",
+      "path": "data-migrations/2026-11-21-hako-ch4-content.js"
+    },
+    {
+      "key": "2026-11-21-luchador-author",
+      "path": "data-migrations/2026-11-21-luchador-author.js"
+    },
+    {
+      "key": "2026-11-21-warden-hawk-author",
+      "path": "data-migrations/2026-11-21-warden-hawk-author.js"
+    },
+    {
+      "key": "2026-11-21-warden-banner",
+      "path": "data-migrations/2026-11-21-warden-banner.js"
+    },
+    {
+      "key": "2026-11-21-spirit-hawk-art",
+      "path": "data-migrations/2026-11-21-spirit-hawk-art.js"
+    },
+    {
+      "key": "2026-11-21-lionheart",
+      "path": "data-migrations/2026-11-21-lionheart.js"
+    },
+    {
       "key": "2026-11-21-template-options-stays-down",
       "path": "data-migrations/2026-11-21-template-options-stays-down.js"
     }

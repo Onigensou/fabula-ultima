@@ -234,9 +234,34 @@ function propheticPolicy({ ar, reactorActor }) {
   }
 
   const safe = takesNothingFrom(ar, reactorActor);
-  if (!safe.safe) return { decision: "skip", why: "she would actually take damage" };
+  if (safe.safe) return { decision: "apply", why: `soaking a ${targets}-target action — ${safe.why}` };
 
-  return { decision: "apply", why: `soaking a ${targets}-target action — ${safe.why}` };
+  // It hurts her, but it can never knock her out (Gravis Alta: a share of CURRENT
+  // HP, floored). Taking it for two or more allies is the play a real player makes
+  // (user 2026-11-20): she ends low but standing, everyone else is untouched.
+  // A no-damage-prop spell (Gravis Alta) has no per-target damage rows; its
+  // targets are only on ar.targets.
+  const pool = rowsOf(ar).length ? rowsOf(ar) : (ar?.targets ?? []);
+  const allies = pool.filter((r) => r?.actorUuid && r.actorUuid !== reactorActor?.uuid).length;
+  if (allies >= 2 && cannotKnockOut(ar)) {
+    return { decision: "apply", why: `taking a ${allies}-ally hit that can't knock her out` };
+  }
+  return { decision: "skip", why: "she would actually take damage" };
+}
+
+// True when every damage row of the acting skill is a fraction of the target's
+// CURRENT HP (floor(CUR_HP * 0.5) …) and the skill has no ordinary damage: such a
+// hit can never reach 0 HP. Unknown / anything else → false (not safe).
+const CUR_HP_SHARE = /^\s*floor\(\s*CUR_HP\s*\*\s*0?\.\d+\s*\)\s*$/i;
+export function cannotKnockOut(ar) {
+  let skill = null;
+  try { skill = ar?.skillUuid ? globalThis.fromUuidSync?.(ar.skillUuid) : null; } catch { skill = null; }
+  const p = skill?.system?.props;
+  if (!p) return false;
+  const typed = String(p.type_damage ?? "").trim().toLowerCase();
+  if (typed && !["none", "n/a", "-", "no"].includes(typed)) return false;
+  const rows = Object.values(p.effect_table ?? {}).filter((r) => r && !r.$deleted && r.effect_kind === "deal_damage");
+  return rows.length > 0 && rows.every((r) => CUR_HP_SHARE.test(String(r.damage_amount ?? "")));
 }
 
 // Keren: Thermokinesis / For Whom the Bell Tolls. Damage riders on HER action.

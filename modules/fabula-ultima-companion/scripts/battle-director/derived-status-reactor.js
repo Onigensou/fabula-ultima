@@ -17,6 +17,7 @@
  */
 import { log, warn } from "./logger.js";
 import { crisisThreshold, announceCrisisTransition } from "./crisis-reactor.js";
+import { deleteEffectsOnce } from "../shared/ae-delete-once.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -264,7 +265,9 @@ async function _reconcileOnce(actor) {
   // Deletes before creates: a stale-dupe delete and a fresh create never target
   // the same status in one pass, but ordering this way keeps the icon row from
   // briefly showing two of anything.
-  if (toDelete.length) await actor.deleteEmbeddedDocuments("ActiveEffect", toDelete);
+  // Prong A, Prong B and crisis-reactor can all remove the same status in one
+  // frame; deleteEffectsOnce sends each delete once (no "does not exist!" toast).
+  if (toDelete.length) await deleteEffectsOnce(actor, toDelete);
   if (toCreate.length) await actor.createEmbeddedDocuments("ActiveEffect", toCreate);
   if (toUpdate.length) await actor.updateEmbeddedDocuments("ActiveEffect", toUpdate);
   return { changed, events };

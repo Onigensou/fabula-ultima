@@ -1761,6 +1761,12 @@
         "parent": null
       },
       {
+        "id": "z7O3jFKqAL6nnLoL",
+        "name": "Sealed Cavern",
+        "type": "Actor",
+        "parent": "Nd8LnosrPid1eX1r"
+      },
+      {
         "id": "leGdZg3m0ZJQJEV5",
         "name": "Seiryu PC",
         "type": "Actor",
@@ -4982,7 +4988,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 62
+        "effects": 63
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -22858,6 +22864,182 @@
         "effects": 0
       },
       {
+        "id": "lCrB0iEWzPkNrzry",
+        "name": "Nox Executioner",
+        "type": "character",
+        "items": [
+          {
+            "id": "YwTkYLGgh73m5yr6",
+            "name": "(Empty)"
+          },
+          {
+            "id": "IXpJDUwDPrZozpch",
+            "name": "Beheading"
+          },
+          {
+            "id": "1f379LsubBsS2qP9",
+            "name": "Nox Gibbet"
+          },
+          {
+            "id": "faNBdHKp0Yj54IA2",
+            "name": "Nox Guillotine"
+          },
+          {
+            "id": "zTFAUjnCz3731vnS",
+            "name": "Parry"
+          },
+          {
+            "id": "cKpsDtgyB6G5Vk3g",
+            "name": "Soul Sever"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "HiIGOwMq8q57TeUh",
+        "name": "Nox Ghoul",
+        "type": "character",
+        "items": [
+          {
+            "id": "TwsxlWrZv62VMn56",
+            "name": "(Empty)"
+          },
+          {
+            "id": "wQkg9XT3ZRut3Dmb",
+            "name": "Counter when enemy Healed"
+          },
+          {
+            "id": "nsOlfyyFczeRZQbn",
+            "name": "Feast on the Torn"
+          },
+          {
+            "id": "RBri53qFCqbbxMNY",
+            "name": "Grave Claw"
+          },
+          {
+            "id": "jkQeeUNyOifZMaqP",
+            "name": "Poison Blade"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "RFnNMvI0AtMQpwuP",
+        "name": "Nox Hound",
+        "type": "character",
+        "items": [
+          {
+            "id": "MjZ6RHdFGAKX6qEm",
+            "name": "(Empty)"
+          },
+          {
+            "id": "Df6zE6jUKloJ8aBc",
+            "name": "On the Hunt"
+          },
+          {
+            "id": "UWvbAUzIRiTLrmnj",
+            "name": "Rending Fangs"
+          },
+          {
+            "id": "GyRkh4l1AeALt0fu",
+            "name": "Zombie Bite"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "QlhI0YQZ0uqRKTLb",
+        "name": "Nox Priest",
+        "type": "character",
+        "items": [
+          {
+            "id": "eqSqt6xKL3HCbbX7",
+            "name": "(Empty)"
+          },
+          {
+            "id": "TYwDRF2pWcKgItgj",
+            "name": "Gravis Alta"
+          },
+          {
+            "id": "iHjsTtUmL0x1ef2G",
+            "name": "Lux Finis"
+          },
+          {
+            "id": "86mcbQMVnKdkUcD1",
+            "name": "Nox Tome"
+          },
+          {
+            "id": "ZS586T9SATVTKv8f",
+            "name": "Resurrection"
+          },
+          {
+            "id": "NZTJNCT4SzV1jjXb",
+            "name": "Soul Siphon"
+          },
+          {
+            "id": "gHMFqoihIfdcZv1Q",
+            "name": "Zombie Plague"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "gXSRiFqgfMZkQnXr",
+        "name": "Nox Viper",
+        "type": "character",
+        "items": [
+          {
+            "id": "7VvCsncNlx0a0FS6",
+            "name": "(Empty)"
+          },
+          {
+            "id": "ZzoWQK8smyEtXaaY",
+            "name": "Bile Spew"
+          },
+          {
+            "id": "QKGirAor6THNnpyG",
+            "name": "Coil"
+          },
+          {
+            "id": "xALUcw1gG8g9Gpg9",
+            "name": "Counterattack"
+          },
+          {
+            "id": "VGTE6O606rCBlGrQ",
+            "name": "Feeding Coil"
+          },
+          {
+            "id": "3M8bMlPowWjvQ0op",
+            "name": "Poison Fang"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "CzQhpNYeo3ZI0TzH",
+        "name": "Nox Wraith",
+        "type": "character",
+        "items": [
+          {
+            "id": "uKpyS9xatZsIltP0",
+            "name": "(Empty)"
+          },
+          {
+            "id": "b4CryzQS98eJnLWR",
+            "name": "Devour Soul"
+          },
+          {
+            "id": "SpaHDzbCWbO2H7hi",
+            "name": "Ethereal"
+          },
+          {
+            "id": "xgvEVdcnu76IEA2r",
+            "name": "Soul Ripper"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "HSLzklG64h0nVZGE",
         "name": "Nullis",
         "type": "character",
@@ -23406,6 +23588,94 @@
           },
           {
             "id": "wyHYZTWCMLvo72W1",
+            "name": "Tincture of Strength"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "GYN4hOxyq1dEafse",
+        "name": "Pomme (Ruhig)",
+        "type": "character",
+        "items": [
+          {
+            "id": "mgv1hi09aTjVyHHo",
+            "name": "Apple Juice"
+          },
+          {
+            "id": "UBEgeObQWBwY8ulC",
+            "name": "Apple Juice"
+          },
+          {
+            "id": "Ttmw4zro0oDcOmjH",
+            "name": "Bread"
+          },
+          {
+            "id": "uRmOhZlUAH5YsoTM",
+            "name": "Bread"
+          },
+          {
+            "id": "C6kqhHTKsfHFVlhM",
+            "name": "Forget me Nut"
+          },
+          {
+            "id": "Ppa4Yer0XHh7a5fj",
+            "name": "Grape Juice"
+          },
+          {
+            "id": "RmSSXrBB9yxrB3om",
+            "name": "Grape Juice"
+          },
+          {
+            "id": "4ddozgChSfuA8UNY",
+            "name": "Love Potion"
+          },
+          {
+            "id": "oTZBj8V64oJGD4nL",
+            "name": "Love Potion"
+          },
+          {
+            "id": "1mFC6xbNOb0QIH51",
+            "name": "Perfume"
+          },
+          {
+            "id": "47uHeXSs8KbF99pB",
+            "name": "Spicy Cocktail"
+          },
+          {
+            "id": "53nOMeHhE6KY85tZ",
+            "name": "Spicy Cocktail"
+          },
+          {
+            "id": "AfUINns1a5KQHMea",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "FqDjWkSRDAiwdRqt",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "NTDT321EMk8r4f0q",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "tyvKnguZ0YOKFOEv",
+            "name": "Tincture of Precision"
+          },
+          {
+            "id": "m9l6bECurV0SkZmE",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "xAzMXXpVRre7ywXp",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "8OfSqMAeAyjUXwtR",
+            "name": "Tincture of Strength"
+          },
+          {
+            "id": "hJ9OvZ0PS64ihhCF",
             "name": "Tincture of Strength"
           }
         ],
@@ -27474,6 +27744,16 @@
         "id": "3tGY9xvFTeQhFIzU",
         "name": "Valley of the Dragon - Zenit",
         "results": 12
+      },
+      {
+        "id": "tS8at4E1uBbD8pzd",
+        "name": "Valley of the Dragon Sealed Cavern - Encounter",
+        "results": 13
+      },
+      {
+        "id": "0A3wLpJzOfCWJdwx",
+        "name": "Valley of the Dragon Sealed Cavern - Enemies",
+        "results": 10
       },
       {
         "id": "sULKvLErNMF8JtUr",

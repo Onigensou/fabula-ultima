@@ -316,6 +316,10 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // adjust_grant (:4827), and set_resource (:4980,
   // `row.grant_amount ?? row.set_amount`). set_resource was missed on the first
   // pass despite 17 authored cells — the comment claimed "union" and wasn't one.
+  // Undead / Zombie heal reversal opt-out (Nox Legion A1/A2): a grant HP heal on
+  // an Undead / Zombie creature lands as damage, and a KO-ally set_resource revive
+  // defeats a living one — unless the row carries this. Wraith's Devour Soul.
+  checkboxCol("heal_ignore_undead", "Heal Ignores Undead", { tooltip: "grant / set_resource (hp): heal normally even when the target is Undead or Zombie'd. Off (default) = an HP heal on Undead/Zombie deals that amount as damage, and a KO-ally revive defeats a living Undead/Zombie.", vis: `or(equalText(sameRow("effect_kind",''), "grant"), equalText(sameRow("effect_kind",''), "set_resource"))` }),
   textCol("grant_amount", "Grant Amount", { tooltip: "The operand (number or formula) combined with the restore amount. adjust_grant: e.g. 5, SL * 2. grant / consume_resource / set_resource: the amount moved or set.", vis: `or(or(equalText(sameRow("effect_kind",''), "grant"), equalText(sameRow("effect_kind",''), "consume_resource")), or(${ADJUST_GRANT_VIS}, equalText(sameRow("effect_kind",''), "set_resource")))`, reconcileVis: true }),
   selectCol("grant_operation", "Grant Op", [
     { key: "add",      value: "Add" },
@@ -501,6 +505,11 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // Random-pool mode. `ae_name_pool` (hand-listed) was data-only and therefore
   // strippable on a sheet save; register both so boot-3b self-heals them.
   textCol("ae_name_pool", "AE Name Pool", { tooltip: "apply_ae: comma/semicolon/pipe-separated AE names; ONE is picked at random per target instead of Template Ref (Draconic Roar). Prefer AE Pool Tag when you mean \"any status of this kind\".", vis: APPLY_AE_VIS }),
+  // Conditional alternate pool (Nox Legion Poison Blade: Poisoned, or Envenomed on
+  // a target already Poisoned). Read by skill-effects applyApplyAeEffect; was
+  // data-only → strippable on a sheet save.
+  textCol("ae_name_pool_alt", "AE Name Pool (Alt)", { tooltip: "apply_ae: alternate AE name pool used INSTEAD of AE Name Pool for a target where AE Pool Alt Condition is truthy (evaluated per target). e.g. \"Envenomed\".", vis: APPLY_AE_VIS }),
+  textCol("ae_pool_alt_condition", "AE Pool Alt Condition", { tooltip: "apply_ae: per-target formula; when truthy (> 0) the row draws from AE Name Pool (Alt). e.g. \"TARGET_AE_COUNT_POISONED > 0\". Blank = never use the alt pool.", vis: APPLY_AE_VIS }),
   textCol("ae_pool_tag", "AE Pool Tag", { tooltip: "apply_ae: build the random pool LIVE from every curated status carrying this tag (e.g. \"debuff\"), instead of hand-listing names — so the roll keeps covering the whole library as it grows. Untagged statuses (KO/Death) can never be rolled. Takes precedence over AE Name Pool. Backs Magic Mushroom.", vis: APPLY_AE_VIS }),
   textCol("ae_pool_skip_existing", "AE Pool: No Repeats", { tooltip: "apply_ae pool mode: draw WITHOUT replacement — skip names the target already carries or that an earlier row in this same chain drew. Set this whenever several rows draw from one pool (Carlbero's Stinky Breath tiers), or the draws collide and the action under-delivers. Exhausting the pool redraws from the full list. 1/true = on, blank = off.", vis: APPLY_AE_VIS }),
   // Per-TARGET probability gate. Distinct from `effect_kind: "chance"`, which
@@ -528,6 +537,12 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // target_filter = per-candidate predicate (keep where truthy; invert for
   // exclusion). exclude = membership exclusion by ref (reserved or named).
   textCol("target_filter", "Target Filter", { tooltip: "targeting: per-candidate keep-if-truthy formula, evaluated against EACH candidate's own actor. e.g. \"AE_CHARGES_BURN >= 1\" (must carry Burn). Exclude is the inverse: \"AE_CHARGES_BURN == 0\" / \"!(...)\". Blank = no filter.", vis: TGT_VIS }),
+  selectCol("target_sort", "Target Sort", [
+    { key: "",              value: "None" },
+    { key: "lowest_hp",     value: "Lowest current HP" },
+    { key: "highest_hp",    value: "Highest current HP" },
+    { key: "lowest_hp_pct", value: "Lowest HP %" },
+  ], { tooltip: "targeting (exact / up_to): order the pool by HP and take the first Count automatically (ties keep pool order). e.g. Beheading: lowest_hp + exact 1 = the weakest marked player. Blank = no sort (player picks / passive takes all).", vis: TGT_VIS, defaultValue: "" }),
   textCol("exclude", "Exclude Refs", { tooltip: "targeting: drop any candidate appearing in these ref(s) — reserved (\"self\", \"action_targets\") or named targeting-row labels, comma-listed (\"self,tether_giver\"). Generic replacement for exclude_self / exclude_action_targets.", vis: TGT_VIS }),
   checkboxCol("allow_empty", "Allow Empty", { tooltip: "targeting: this row may legitimately resolve to ZERO targets (e.g. \"the REST of the enemies\" when there is only one). Without it, an empty pool returns ok:false and HALTS the enclosing chain; with it, an empty pool resolves to an empty set so dependent target_ref applies no-op and the chain continues.", vis: TGT_VIS }),
   // free_action config — perform ONE free turn-action (no menu). action_ref names
@@ -777,6 +792,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   ], { tooltip: "clock_advance: \"roll\" reuses the action card's check, so a better roll fills more sections. \"fixed\" ignores the roll.", vis: CLOCK_VIS, defaultValue: "roll" }),
   textCol("clock_sections", "Clock Sections", { tooltip: "clock_advance (fixed mode only): how many sections to move. Number or formula.", vis: CLOCK_VIS }),
   textCol("conflict_action", "Event Action", { tooltip: "conflict_event_action: the name of an action the active conflict event offers. Lightning Crystal: adjust_countdown, reveal.", vis: CONFLICT_ACTION_VIS }),
+  textCol("conflict_pick", "Event Pick", { tooltip: "consumeFragment: largest | trigger_subject_owner (blank = read from target_ref).", vis: CONFLICT_ACTION_VIS }),
   textCol("conflict_amount", "Event Amount", { tooltip: "conflict_event_action: the amount the action reads. adjust_countdown: turns to add, negative to take away. Number or formula.", vis: CONFLICT_ACTION_VIS }),
 
   textCol("read_window", "Read Window", { tooltip: "weapon_read: how many DIFFERENT weapon categories must be shown before a read lane returns to full efficiency. 4 means the lane itself plus four others — five distinct categories in total. Default 4.", vis: WEAPON_READ_VIS }),

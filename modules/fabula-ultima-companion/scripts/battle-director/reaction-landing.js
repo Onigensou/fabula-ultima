@@ -1,8 +1,10 @@
 // Reaction landing — a reaction card turning into its skill icon and flying into
 // the action card's Reactions box.
 //
-// Used for your own card (reaction-deck.js deckPlay) and for an ally's small card
-// (reaction-hand.js syncAllies), and for a reaction firing by itself
+// Used for your own card (reaction-deck.js deckPlay; a card you dragged is already
+// waiting in its slot as a see-through badge and lands right there, landInPlace),
+// for an ally's reaction (reaction-hand.js syncAllies: a
+// particle comet in their user colour, flyComet), and for a reaction firing by itself
 // (reaction-deck.js autoPlay). A reaction with no slot on an action card (a
 // standalone window, or a card that doesn't list it) lands on your portrait card.
 // Three beats:
@@ -104,6 +106,19 @@ function holdBoxShut(row, delayMs) {
     { id: OPEN_ID, delay: delayMs, duration: BOX_OPEN_MS, easing: "cubic-bezier(.3,.7,.3,1)", fill: "both" });
   const done = () => { row.style.overflow = ""; try { a.cancel(); } catch { /* */ } };
   a.finished.then(done, () => { row.style.overflow = ""; });
+}
+
+// A card dragged over the action card opened the box already, with a dashed slot
+// (reaction-hand.js, `.rxh-preview`). The landing takes it over: the slot goes,
+// the box stays open (the pill is Applied, so the row shows by itself now) and
+// is not opened a second time. Returns whether the box still has to open.
+function takeOverPreview(row, firstIn) {
+  if (!row.classList.contains("rxh-preview")) return firstIn;
+  row.querySelectorAll(".rxh-slot-preview").forEach((s) => s.remove());
+  row.getAnimations().filter((a) => a.id === "rxh-preview-box").forEach((a) => a.cancel());
+  row.style.overflow = "";
+  row.classList.remove("rxh-preview");
+  return false;
 }
 
 // Where the pill will be once the box is fully open, whatever the box is doing.
@@ -224,7 +239,7 @@ export async function flyToReactionBox({ el, iconEl, pill, power = 1, collapseMs
   ensureStyles();
   const alreadyShown = pill.classList.contains("is-auto");
   if (!alreadyShown) pill.classList.add("rxh-arriving");
-  const firstIn = !alreadyShown && !row.querySelector(OTHER_IN_EFFECT) && !row.getAnimations().some((a) => a.id === OPEN_ID);
+  const firstIn = takeOverPreview(row, !alreadyShown && !row.querySelector(OTHER_IN_EFFECT) && !row.getAnimations().some((a) => a.id === OPEN_ID));
   const rm = reducedMotion();
   const hold = booked ? 0 : bookLanding(rm ? FADE_MS : collapseMs + travelMs);
   try {
@@ -251,6 +266,34 @@ export async function flyToReactionBox({ el, iconEl, pill, power = 1, collapseMs
     return true;
   } catch (e) {
     console.warn(TAG, "flight failed", e);
+    return true;
+  } finally {
+    pill.classList.remove("rxh-arriving");
+  }
+}
+
+/**
+ * No flight: a card you dragged has been waiting in its slot as a see-through
+ * badge (reaction-hand.js, `.rxh-slot-preview.is-pending`). On confirm the real
+ * icon takes that spot and gets the same hit as a flight's landing. Same calling
+ * rule as flyToReactionBox: in the frame the pill turned Applied. Returns false
+ * if it couldn't (the caller flies instead).
+ */
+export async function landInPlace({ pill, power = 1 } = {}) {
+  if (!pill?.isConnected) return false;
+  const row = pill.closest(".fud-bf-reactions-row");
+  if (!row) return false;
+  ensureStyles();
+  const alreadyShown = pill.classList.contains("is-auto");
+  if (!alreadyShown) pill.classList.add("rxh-arriving");
+  const rm = reducedMotion();
+  try {
+    await sleep(bookLanding(0));
+    takeOverPreview(row, false);
+    if (pill.isConnected) land(pill, row, { power, dir: rm ? null : { x: 0, y: 1 }, moves: !rm, tone: toneOfPill(pill) });
+    return true;
+  } catch (e) {
+    console.warn(TAG, "landing failed", e);
     return true;
   } finally {
     pill.classList.remove("rxh-arriving");
@@ -311,6 +354,174 @@ export async function flyToPortrait({ el, iconEl, portrait, power = 0.6, collaps
     console.warn(TAG, "flight failed", e);
     return true;
   }
+}
+
+// ── an ally's comet ──────────────────────────────────────────────────────────
+// When the host confirms an ally's reaction, a particle comet in that player's
+// colour leaves their panel with a small puff, arcs up the screen to the slot
+// speeding up all the way (COMET_MS), and its trail pulls into the slot as the
+// badge stamps in. Replaces the small-card flight for allies (user, 2026-11-20:
+// "On confirm" — nothing shows on the board while they only hold the card).
+// Approved mockup: claude.ai/artifact/PRoeSXjL8cuiA8be4VEQ6K
+const COMET_MS = 520;
+const COMET_PX = 2;            // drawn on a 2 px grid, like the impacts
+
+function hexRgb(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex ?? ""));
+  const n = m ? parseInt(m[1], 16) : 0xe2c27e;
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+const rgbHex = (c) => `#${c.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, "0")).join("")}`;
+const mixRgb = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+/** white-hot core → light → the colour → a dark rim (keeps it readable on sand and parchment) */
+export function cometRamp(tint) {
+  const c = hexRgb(tint);
+  return ["#ffffff", rgbHex(mixRgb(c, [255, 255, 255], 0.6)), rgbHex(c), rgbHex(mixRgb(c, [0, 0, 0], 0.45))];
+}
+
+/**
+ * Fly an ally's reaction into `pill` as a particle comet from `from` (their small
+ * card; `iconEl` marks where it leaves). Same contract as flyToReactionBox: call
+ * it in the frame the pill turned Applied. Returns false if it couldn't start.
+ */
+export async function flyComet({ from, iconEl = null, pill, tint = "#e2c27e", power = 0.6, travelMs = COMET_MS, booked = false } = {}) {
+  if (!from?.isConnected || !pill?.isConnected) return false;
+  const row = pill.closest(".fud-bf-reactions-row");
+  if (!row) return false;
+  ensureStyles();
+  const alreadyShown = pill.classList.contains("is-auto");
+  if (!alreadyShown) pill.classList.add("rxh-arriving");
+  // A box held open by your own drag preview is already open: don't open it twice.
+  const firstIn = !alreadyShown && !row.classList.contains("rxh-preview") && !row.querySelector(OTHER_IN_EFFECT) && !row.getAnimations().some((a) => a.id === OPEN_ID);
+  const rm = reducedMotion();
+  const hold = booked ? 0 : bookLanding(rm ? FADE_MS : travelMs);
+  try {
+    if (rm) {
+      await sleep(hold);
+      if (!pill.isConnected) return true;
+      from.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_MS, fill: "both" });
+      pill.classList.remove("rxh-arriving");
+      if (!alreadyShown) pill.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_MS });
+      await sleep(FADE_MS);
+      if (pill.isConnected) land(pill, row, { power, dir: null, moves: false, tone: toneOfPill(pill) });
+      return true;
+    }
+    if (firstIn) holdBoxShut(row, hold);
+    await sleep(hold);
+    const src = box(iconEl?.isConnected ? iconEl : from);
+    if (!(src.w > 0) || !pill.isConnected) return true;
+    const o = { x: src.x + src.w / 2, y: src.y + src.h / 2 };
+    from.style.visibility = "hidden";
+    const slot = finalSlot(pill, row);
+    const t = { x: slot.x + slot.w / 2, y: slot.y + slot.h / 2 };
+    const dir = await runComet(o, t, cometRamp(tint), travelMs);
+    if (pill.isConnected) land(pill, row, { power, dir, moves: true, slot, tone: toneOfPill(pill) });
+    return true;
+  } catch (e) {
+    console.warn(TAG, "comet failed", e);
+    return true;
+  } finally {
+    pill.classList.remove("rxh-arriving");
+  }
+}
+
+// The comet itself, on one canvas over the screen. Resolves with the direction it
+// was travelling when it arrived (the landing's jolt and sparks follow it). Timed
+// by the clock, not by frames, so a hidden window still lands on time.
+function runComet(o, t, ramp, travelMs) {
+  const W = Math.ceil(window.innerWidth / COMET_PX), H = Math.ceil(window.innerHeight / COMET_PX);
+  const c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  c.className = "rxl-impact rxl-comet";
+  c.style.cssText = `left:0;top:0;width:${W * COMET_PX}px;height:${H * COMET_PX}px`;
+  topLayer().appendChild(c);
+  const g = c.getContext("2d");
+  // One arc bowed up the screen, as the card flight.
+  const dx = t.x - o.x, dy = t.y - o.y, len = Math.hypot(dx, dy) || 1;
+  let nx = dy / len, ny = -dx / len;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  const bow = Math.min(len * 0.3, 180);
+  const c1 = { x: o.x + dx * 0.2 + nx * bow, y: o.y + dy * 0.2 + ny * bow };
+  const c2 = { x: o.x + dx * 0.72 + nx * bow * 0.9, y: o.y + dy * 0.72 + ny * bow * 0.9 };
+  const at = (u) => {
+    const v = 1 - u, a = v * v * v, b = 3 * v * v * u, cc = 3 * v * u * u, d = u * u * u;
+    return { x: a * o.x + b * c1.x + cc * c2.x + d * t.x, y: a * o.y + b * c1.y + cc * c2.y + d * t.y };
+  };
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const parts = [];
+  for (let i = 0; i < 12; i++) {                      // the puff as it leaves the panel
+    const a = (i / 12) * Math.PI * 2, v = rnd(60, 120);
+    parts.push({ x: o.x, y: o.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 20, drag: 4, grav: 0, age: 0, life: rnd(0.22, 0.34), big: true, id: i });
+  }
+  const t0 = performance.now();
+  let last = t0, head = { ...o }, vel = { x: 0, y: 0 }, acc = 0, arrived = false, frame = 0;
+  const tl = Math.hypot(t.x - c2.x, t.y - c2.y) || 1;
+  const dir = { x: (t.x - c2.x) / tl, y: (t.y - c2.y) / tl };
+  const arrive = () => {
+    if (arrived) return;
+    arrived = true;
+    // The trail pulls into the slot as the badge stamps.
+    for (const q of parts) {
+      const L = Math.hypot(t.x - q.x, t.y - q.y) || 1;
+      Object.assign(q, { conv: true, sx: q.x, sy: q.y, tx: t.x + rnd(-5, 5), ty: t.y + rnd(-5, 5), px: -(t.y - q.y) / L, py: (t.x - q.x) / L, sw: rnd(-24, 24), age: 0, life: rnd(0.12, 0.2) });
+    }
+  };
+  const draw = () => {
+    g.clearRect(0, 0, W, H);
+    for (const q of parts) {
+      const f = q.age / q.life;
+      if (!q.conv && f > 0.72 && (q.id + (frame >> 1)) % 2) continue;      // flicker out
+      g.fillStyle = ramp[Math.min(3, Math.floor((q.conv ? f * 0.6 : f) * 4))];
+      const x = Math.round(q.x / COMET_PX), y = Math.round(q.y / COMET_PX);
+      g.fillRect(x, y, q.big && f < 0.5 ? 2 : 1, q.big && f < 0.5 ? 2 : 1);
+    }
+    if (!arrived) {                                    // the head: a small pulsing star
+      const hx = Math.round(head.x / COMET_PX), hy = Math.round(head.y / COMET_PX), p = (frame >> 2) & 1;
+      g.fillStyle = ramp[2];
+      for (let i = 2; i <= 3 + p; i++) { g.fillRect(hx + i, hy, 1, 1); g.fillRect(hx - i, hy, 1, 1); g.fillRect(hx, hy + i, 1, 1); g.fillRect(hx, hy - i, 1, 1); }
+      g.fillStyle = ramp[1];
+      for (const [a, b] of [[1, 1], [-1, 1], [1, -1], [-1, -1]]) g.fillRect(hx + a * (1 + p), hy + b * (1 + p), 1, 1);
+      g.fillStyle = "#ffffff";
+      g.fillRect(hx - 1, hy - 1, 3, 3);
+    }
+  };
+  const bail = setTimeout(() => c.remove(), travelMs + 1500);
+  const loop = (now) => {
+    if (!c.isConnected) return;
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now; frame++;
+    const u = Math.min(1, (now - t0) / travelMs);
+    if (!arrived) {
+      const p = at(Math.pow(u, 1.7));                   // speeds up all the way, like the card flight
+      if (dt > 0) vel = { x: (p.x - head.x) / dt, y: (p.y - head.y) / dt };
+      head = p;
+      const sp = Math.hypot(vel.x, vel.y), ux = sp ? vel.x / sp : 0, uy = sp ? vel.y / sp : 0;
+      acc += dt * (55 + Math.min(sp, 2400) * 0.14) * 1.4;
+      while (acc >= 1) {
+        acc -= 1;
+        const back = Math.min(sp * 0.12, 160);
+        parts.push({ x: head.x + rnd(-3, 3), y: head.y + rnd(-3, 3), vx: -ux * back + rnd(-45, 45), vy: -uy * back + rnd(-45, 30), drag: 3.2, grav: -40, age: 0, life: rnd(0.28, 0.55), big: Math.random() < 0.5, id: parts.length });
+      }
+      if (u >= 1) arrive();
+    }
+    for (const q of parts) {
+      q.age += dt;
+      if (q.conv) {
+        const k = Math.min(1, q.age / q.life), e = k * k, sw = Math.sin(k * Math.PI) * q.sw;
+        q.x = q.sx + (q.tx - q.sx) * e + q.px * sw; q.y = q.sy + (q.ty - q.sy) * e + q.py * sw;
+      } else {
+        const d = Math.exp(-q.drag * dt);
+        q.vx *= d; q.vy = q.vy * d + q.grav * dt;
+        q.x += q.vx * dt; q.y += q.vy * dt;
+      }
+    }
+    for (let i = parts.length - 1; i >= 0; i--) if (parts[i].age >= parts[i].life) parts.splice(i, 1);
+    draw();
+    if (arrived && !parts.length) { clearTimeout(bail); c.remove(); return; }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+  return new Promise((resolve) => setTimeout(() => { arrive(); resolve(dir); }, travelMs));
 }
 
 // ── the landing ──────────────────────────────────────────────────────────────
