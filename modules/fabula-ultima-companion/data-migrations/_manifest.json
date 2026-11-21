@@ -688,6 +688,10 @@
     {
       "key": "2026-11-21-warden-hawk-author",
       "path": "data-migrations/2026-11-21-warden-hawk-author.js"
+    },
+    {
+      "key": "2026-11-21-warden-banner",
+      "path": "data-migrations/2026-11-21-warden-banner.js"
     }
   ]
 }
