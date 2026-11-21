@@ -5051,6 +5051,16 @@ async function applyTimedStrikesEffect(row, ctx) {
   const tokId = (t) => t?.id ?? t?.document?.id ?? null;
   let casterTokenId = tokId(ctx.reactorToken) ?? tokId(ctx.casterToken);
   if (!casterTokenId) { try { casterTokenId = tokId((await resolveTargetRef("self", ctx))?.tokens?.[0]); } catch (_) { casterTokenId = null; } }
+  // the game's combo counter ("N HIT / X DAMAGE", as the approved mockup shows it) over the strikes:
+  // a timed_strikes skill has no damage formula, so the action itself never opens its window
+  let hc = null;
+  if (presentation) {
+    try {
+      hc = await import("./hit-counter.js");
+      const disp = Number(caster.getActiveTokens?.()?.[0]?.document?.disposition ?? 1);
+      hc.beginHitCounter({ id: `tsg-${casterTokenId ?? caster.id}`, side: disp === -1 ? "enemy" : "party" });
+    } catch (e) { hc = null; warn("skill-effects.timed_strikes: hit counter begin threw", e); }
+  }
   const run = await runTimedStrikeGauge({
     ownerUserId: (owner && !owner.isGM) ? ownerUserId : null,
     presentation,
@@ -5073,6 +5083,7 @@ async function applyTimedStrikesEffect(row, ctx) {
     finisher = strikes[strikes.length - 1];
   }
   const tier = R.tierOf(hits, cfg.count);
+  try { hc?.endHitCounter?.({ id: `tsg-${casterTokenId ?? caster.id}` }); } catch (_) {}
   try { await ctl?.finish?.({ tier, total }); } catch (e) { warn("skill-effects.timed_strikes: finish threw", e); }
   log(`skill-effects.timed_strikes: ${caster.name} ${ctx.skill?.name ?? ""} — ${tier} ${hits}/${cfg.count} (${run.judgedBy}) swing ${swing}: `
     + strikes.map((s) => `${s.finisher ? s.finisher : `#${s.i + 1}`}${s.hit ? "T" : "-"}=${s.amount}>${s.dealt}${s.affinity ? `[${s.affinity}]` : ""}`).join(" ")
