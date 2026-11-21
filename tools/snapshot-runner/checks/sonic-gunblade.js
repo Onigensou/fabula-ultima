@@ -74,16 +74,19 @@ function watch(casterName) {
 }
 const logs = [];
 const origLog = console.log;
-const cap = (...a) => { const s = a.map((x) => (typeof x === "string" ? x : "")).join(" "); if (/Chain 8|Perfect|carrier|transform_weapon|applyWeaponForm|Gunblade|Sonic Blow|OPPORTUNITY|creature_transforms_weapon|turn_end/i.test(s)) logs.push(s.slice(0, 300)); };
+const cap = (...a) => { const s = a.map((x) => (typeof x === "string" ? x : "")).join(" "); if (/card reaction|PassiveCard|Chain 8|Perfect|carrier|transform_weapon|applyWeaponForm|Gunblade|Sonic Blow|OPPORTUNITY|creature_transforms_weapon|turn_end/i.test(s)) logs.push(s.slice(0, 300)); };
 console.log = (...a) => { try { cap(...a); } catch {} return origLog(...a); };
 const origWarn = console.warn; const warns = [];
 console.warn = (...a) => { try { const s = a.map((x) => (typeof x === "string" ? x : x?.message ?? "")).join(" "); if (/carrier|Sonic|Gunblade|transform|chain|volley/i.test(s)) warns.push(s.slice(0, 300)); } catch {} return origWarn(...a); };
 
 async function sonicRun(label, card, strikes, opts = {}) {
-  const zarg = pc(O.caster || "Zarg");
+  const zarg = pc(opts.caster || O.caster || "Zarg");
   await giveWeapon(zarg, "3ZV5drjroWrvXqkw");
   const foe = O.enemy ? game.actors.getName(O.enemy) : dummy;
   if (opts.setup) await opts.setup(zarg, foe);
+  // opts.atDeclare(foeName): runs when the scripted Sonic Blow is declared (the clone's HP right before the card)
+  const SMd = sim.mode, origDecl = SMd.recordDeclaration.bind(SMd);
+  if (opts.atDeclare) SMd.recordDeclaration = (k, sg) => { try { if (/Sonic Blow/.test(String(sg))) opts.atDeclare(foe.name); } catch {} return origDecl(k, sg); };
   globalThis.__FU_CHAIN_FORCED_DICE__ = strikes;
   globalThis.__SB_TRACE = [];
   // frame gaps + long tasks (perf), wall-clock ms like the trace's wall field
@@ -112,6 +115,7 @@ async function sonicRun(label, card, strikes, opts = {}) {
       scripts: [{ caster: zarg.uuid, skill: "Sonic Blow", targets: "enemy", force: card, once: true }] }); }
   catch (e) { err = String(e?.message ?? e); }
   globalThis.__FU_CHAIN_FORCED_DICE__ = null;
+  SMd.recordDeclaration = origDecl;
   console.error = origErr; window.removeEventListener("error", onErr);
   await wait(2500); if (shotIv) clearInterval(shotIv);
   const trace = globalThis.__SB_TRACE; globalThis.__SB_TRACE = null;
@@ -183,17 +187,17 @@ if (want("F")) {
 if (want("E")) {
   const hit = O.hit || { rA: 10, rB: 9 }, all = Array(7).fill(hit);
   // a flat damage bonus (+10 melee): counted once, ×2, shared over the 8 hits
-  await sonicRun("E1 sonic +10 flat", hit, all, { setup: async (z) => { await noWellspring(z); await z.createEmbeddedDocuments("ActiveEffect", [{ name: "SG test +10 melee", changes: [{ key: "system.props.extra_damage_mod_melee", mode: 2, value: "10" }], flags: { [NS]: { sgTest: true } } }]); } });
+  await sonicRun("E0 sonic baseline (Blanche)", hit, all, { caster: "Blanche", setup: async (z) => { await noWellspring(z); } });
+  await sonicRun("E1 sonic +10 flat", hit, all, { caster: "Blanche", setup: async (z) => { await noWellspring(z); await z.createEmbeddedDocuments("ActiveEffect", [{ name: "SG test +10 melee", changes: [{ key: "system.props.extra_damage_mod_melee", mode: 2, value: "10" }], flags: { [NS]: { sgTest: true } } }]); } });
   const clearFlat = async (z) => { const ids = z.effects.filter((e) => e.flags?.[NS]?.sgTest).map((e) => e.id); if (ids.length) await z.deleteEmbeddedDocuments("ActiveEffect", ids); };
   for (const [lab, aff] of [["E2 sonic vs Resistant", "RS"], ["E3 sonic vs Vulnerable", "VU"]]) {
     let old = null;
-    await sonicRun(lab, hit, all, { setup: async (z, foe) => { await clearFlat(z); await noWellspring(z); old = await setProps(foe, { "system.props.affinity_1": aff }); } });
+    await sonicRun(lab, hit, all, { caster: "Blanche", setup: async (z, foe) => { await clearFlat(z); await noWellspring(z); old = await setProps(foe, { "system.props.affinity_1": aff }); } });
     await dummy.update(old);
   }
   // the Perfect bonus kills: HP so the 8 hits leave it standing and the Perfect strike drops it
-  let oldHp = null;
-  await sonicRun("E4 sonic Perfect kills", hit, all, { setup: async (z, foe) => { await clearFlat(z); await noWellspring(z); oldHp = await setProps(foe, { "system.props.current_hp": Number(O.killHp ?? 35) }); } });
-  await dummy.update(oldHp);
+  await sonicRun("E4 sonic Perfect kills", hit, all, { caster: "Blanche", setup: async (z) => { await clearFlat(z); await noWellspring(z); },
+    atDeclare: (name) => { const t = canvas.tokens.placeables.find((x) => x.actor && String(x.actor.name).startsWith(name)); if (t) { out.killHpSetOn = t.actor.name; t.actor.update({ "system.props.current_hp": Number(O.killHp ?? 30) }); } } });
 }
 // ── 4ae73480: will_deal_damage rows gated on the roll now land ──
 if (want("W")) {
