@@ -1,0 +1,800 @@
+{
+ "note": "game = runner GPU-visible run (snap-sonic, b5ec6f38), times from the dash start; spec = mockup run sonicblow-8of8 minus 1277.8",
+ "rows": [
+  {
+   "what": "beat Dash in",
+   "spec": 0,
+   "game": 0,
+   "dMs": 0,
+   "ok": true
+  },
+  {
+   "what": "beat 8 strikes",
+   "spec": 592.1,
+   "game": 583.6,
+   "dMs": -8.5,
+   "ok": true
+  },
+  {
+   "what": "beat Perfect",
+   "spec": 1772.8,
+   "game": 1768.4,
+   "dMs": -4.4,
+   "ok": true
+  },
+  {
+   "what": "beat Back",
+   "spec": 2720,
+   "game": 2717.1,
+   "dMs": -2.9,
+   "ok": true
+  },
+  {
+   "what": "strike 1",
+   "spec": 656.4,
+   "game": 656.3,
+   "dMs": -0.1,
+   "ok": true
+  },
+  {
+   "what": "strike 2",
+   "spec": 776.1,
+   "game": 784.4,
+   "dMs": 8.3,
+   "ok": true
+  },
+  {
+   "what": "strike 3",
+   "spec": 895.6,
+   "game": 919.1,
+   "dMs": 23.5,
+   "ok": false
+  },
+  {
+   "what": "strike 4",
+   "spec": 1015.8,
+   "game": 1018.6,
+   "dMs": 2.8,
+   "ok": true
+  },
+  {
+   "what": "strike 5",
+   "spec": 1133.4,
+   "game": 1159.5,
+   "dMs": 26.1,
+   "ok": false
+  },
+  {
+   "what": "strike 6",
+   "spec": 1251.1,
+   "game": 1260.7,
+   "dMs": 9.6,
+   "ok": true
+  },
+  {
+   "what": "strike 7",
+   "spec": 1372.2,
+   "game": 1384.1,
+   "dMs": 11.9,
+   "ok": true
+  },
+  {
+   "what": "strike 8",
+   "spec": 1490.4,
+   "game": 1483.8,
+   "dMs": -6.6,
+   "ok": true
+  },
+  {
+   "what": "Perfect gold hit",
+   "spec": 2016.7,
+   "game": 2525.9,
+   "dMs": 509.2,
+   "ok": false
+  },
+  {
+   "what": "hop home end",
+   "spec": 3265.8,
+   "game": 3233.2,
+   "dMs": -32.6,
+   "ok": false
+  }
+ ],
+ "sfx": {
+  "spec": "dash@0.45 ro_sonicblow@0.6 ro_katar2@0.35 ro_hitdagger@0.4 ro_katar@0.35 ro_hitdagger@0.4 ro_katar2@0.35 ro_hitdagger@0.4 ro_katar@0.35 ro_hitdagger@0.4 ro_katar2@0.35 ro_hitdagger@0.4 ro_katar@0.35 ro_hitdagger@0.4 ro_katar2@0.35 ro_hitdagger@0.4 ro_katar@0.35 ro_hitdagger@0.4 crit@0.5 ro_hitdagger@0.55",
+  "game": "dash@0.45 ro_sonicblow@0.6 ro_katar2@0.35 ro_hitdagger@0.4 ro_katar@0.35 ro_hitdagger@0.4 ro_katar2@0.35 ro_hitdagger@0.4 ro_katar@0.35 ro_hitdagger@0.4 ro_katar2@0.35 ro_hitdagger@0.4 ro_katar@0.35 ro_hitdagger@0.4 ro_katar2@0.35 ro_hitdagger@0.4 ro_katar@0.35 ro_hitdagger@0.4 crit@0.5 ro_hitdagger@0.55",
+  "same": true
+ },
+ "clips": {
+  "game": [
+   {
+    "atMs": 583.7,
+    "plannedMs": 592.1,
+    "type": "clip",
+    "key": "ro_sonicblow",
+    "scale": 1.1,
+    "rate": 0.725,
+    "filter": ""
+   },
+   {
+    "atMs": 656,
+    "plannedMs": 656.4,
+    "type": "clip",
+    "key": "001_hit_physical",
+    "scale": 0.55,
+    "rate": 1.3,
+    "filter": ""
+   },
+   {
+    "atMs": 784.2,
+    "plannedMs": 776.1,
+    "type": "clip",
+    "key": "001_hit_physical",
+    "scale": 0.55,
+    "rate": 1.3,
+    "filter": ""
+   },
+   {
+    "atMs": 918.7,
+    "plannedMs": 895.6,
+    "type": "clip",
+    "key": "001_hit_physical",
+    "scale": 0.55,
+    "rate": 1.3,
+    "filter": ""
+   },
+   {
+    "atMs": 1018.3,
+    "plannedMs": 1015.8,
+    "type": "clip",
+    "key": "001_hit_physical",
+    "scale": 0.55,
+    "rate": 1.3,
+    "filter": ""
+   },
+   {
+    "atMs": 1159.4,
+    "plannedMs": 1133.4,
+    "type": "clip",
+    "key": "001_hit_physical",
+    "scale": 0.55,
+    "rate": 1.3,
+    "filter": ""
+   },
+   {
+    "atMs": 1260.5,
+    "plannedMs": 1251.1,
+    "type": "clip",
+    "key": "001_hit_physical",
+    "scale": 0.55,
+    "rate": 1.3,
+    "filter": ""
+   },
+   {
+    "atMs": 1383.9,
+    "plannedMs": 1372.2,
+    "type": "clip",
+    "key": "001_hit_physical",
+    "scale": 0.55,
+    "rate": 1.3,
+    "filter": ""
+   },
+   {
+    "atMs": 1483.5,
+    "plannedMs": 1490.4,
+    "type": "clip",
+    "key": "001_hit_physical",
+    "scale": 0.55,
+    "rate": 1.3,
+    "filter": ""
+   },
+   {
+    "atMs": 1870.7,
+    "plannedMs": 1849.0000000000002,
+    "type": "clip",
+    "key": "ro_sonicblow",
+    "scale": 1.485,
+    "rate": 1.4,
+    "filter": "sepia(.6) saturate(2.2) hue-rotate(-18deg) brightness(1.25)"
+   }
+  ]
+ },
+ "gameTrace": [
+  {
+   "atMs": 0,
+   "plannedMs": 0,
+   "type": "beat",
+   "name": "Dash in"
+  },
+  {
+   "atMs": 0,
+   "plannedMs": 0,
+   "type": "sfx",
+   "key": "dash",
+   "vol": 0.45
+  },
+  {
+   "atMs": 583.6,
+   "plannedMs": 592.1,
+   "type": "beat",
+   "name": "8 strikes"
+  },
+  {
+   "atMs": 583.7,
+   "plannedMs": 592.1,
+   "type": "sfx",
+   "key": "ro_sonicblow",
+   "vol": 0.6
+  },
+  {
+   "atMs": 583.7,
+   "plannedMs": 592.1,
+   "type": "clip",
+   "key": "ro_sonicblow",
+   "scale": 1.1,
+   "rate": 0.725,
+   "filter": ""
+  },
+  {
+   "atMs": 656,
+   "plannedMs": 656.4,
+   "type": "sfx",
+   "key": "ro_katar2",
+   "vol": 0.35
+  },
+  {
+   "atMs": 656,
+   "plannedMs": 656.4,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 656,
+   "plannedMs": 656.4,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 656.3,
+   "plannedMs": 656.4,
+   "type": "hit",
+   "i": 1,
+   "kind": "hit",
+   "crit": false,
+   "lean": 14
+  },
+  {
+   "atMs": 784.2,
+   "plannedMs": 776.1,
+   "type": "sfx",
+   "key": "ro_katar",
+   "vol": 0.35
+  },
+  {
+   "atMs": 784.2,
+   "plannedMs": 776.1,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 784.2,
+   "plannedMs": 776.1,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 784.4,
+   "plannedMs": 776.1,
+   "type": "hit",
+   "i": 2,
+   "kind": "hit",
+   "crit": false,
+   "lean": -12
+  },
+  {
+   "atMs": 918.7,
+   "plannedMs": 895.6,
+   "type": "sfx",
+   "key": "ro_katar2",
+   "vol": 0.35
+  },
+  {
+   "atMs": 918.7,
+   "plannedMs": 895.6,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 918.7,
+   "plannedMs": 895.6,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 919.1,
+   "plannedMs": 895.6,
+   "type": "hit",
+   "i": 3,
+   "kind": "hit",
+   "crit": false,
+   "lean": 14
+  },
+  {
+   "atMs": 1018.3,
+   "plannedMs": 1015.8,
+   "type": "sfx",
+   "key": "ro_katar",
+   "vol": 0.35
+  },
+  {
+   "atMs": 1018.3,
+   "plannedMs": 1015.8,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 1018.3,
+   "plannedMs": 1015.8,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 1018.6,
+   "plannedMs": 1015.8,
+   "type": "hit",
+   "i": 4,
+   "kind": "hit",
+   "crit": false,
+   "lean": -12
+  },
+  {
+   "atMs": 1159.4,
+   "plannedMs": 1133.4,
+   "type": "sfx",
+   "key": "ro_katar2",
+   "vol": 0.35
+  },
+  {
+   "atMs": 1159.4,
+   "plannedMs": 1133.4,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 1159.4,
+   "plannedMs": 1133.4,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 1159.5,
+   "plannedMs": 1133.4,
+   "type": "hit",
+   "i": 5,
+   "kind": "hit",
+   "crit": false,
+   "lean": 14
+  },
+  {
+   "atMs": 1260.5,
+   "plannedMs": 1251.1,
+   "type": "sfx",
+   "key": "ro_katar",
+   "vol": 0.35
+  },
+  {
+   "atMs": 1260.5,
+   "plannedMs": 1251.1,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 1260.5,
+   "plannedMs": 1251.1,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 1260.7,
+   "plannedMs": 1251.1,
+   "type": "hit",
+   "i": 6,
+   "kind": "hit",
+   "crit": false,
+   "lean": -12
+  },
+  {
+   "atMs": 1383.9,
+   "plannedMs": 1372.2,
+   "type": "sfx",
+   "key": "ro_katar2",
+   "vol": 0.35
+  },
+  {
+   "atMs": 1383.9,
+   "plannedMs": 1372.2,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 1383.9,
+   "plannedMs": 1372.2,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 1384.1,
+   "plannedMs": 1372.2,
+   "type": "hit",
+   "i": 7,
+   "kind": "hit",
+   "crit": false,
+   "lean": 14
+  },
+  {
+   "atMs": 1483.5,
+   "plannedMs": 1490.4,
+   "type": "sfx",
+   "key": "ro_katar",
+   "vol": 0.35
+  },
+  {
+   "atMs": 1483.5,
+   "plannedMs": 1490.4,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 1483.5,
+   "plannedMs": 1490.4,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 1483.8,
+   "plannedMs": 1490.4,
+   "type": "hit",
+   "i": 8,
+   "kind": "hit",
+   "crit": false,
+   "lean": -12
+  },
+  {
+   "atMs": 1768.4,
+   "plannedMs": 1772.8000000000002,
+   "type": "beat",
+   "name": "Perfect"
+  },
+  {
+   "atMs": 1768.4,
+   "plannedMs": 1772.8000000000002,
+   "type": "sfx",
+   "key": "crit",
+   "vol": 0.5
+  },
+  {
+   "atMs": 1768.4,
+   "plannedMs": 1772.8000000000002,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.55
+  },
+  {
+   "atMs": 1870.7,
+   "plannedMs": 1849.0000000000002,
+   "type": "clip",
+   "key": "ro_sonicblow",
+   "scale": 1.485,
+   "rate": 1.4,
+   "filter": "sepia(.6) saturate(2.2) hue-rotate(-18deg) brightness(1.25)"
+  },
+  {
+   "atMs": 2525.9,
+   "plannedMs": 2016.7000000000003,
+   "type": "hit",
+   "i": "perfect",
+   "kind": "hit",
+   "crit": true
+  },
+  {
+   "atMs": 2717.1,
+   "plannedMs": 2719.6000000000004,
+   "type": "beat",
+   "name": "Back"
+  },
+  {
+   "atMs": 3233.2,
+   "plannedMs": 3239.6000000000004,
+   "type": "homeEnd"
+  }
+ ],
+ "bTrace": [
+  {
+   "atMs": 0,
+   "plannedMs": 0,
+   "type": "beat",
+   "name": "Dash in"
+  },
+  {
+   "atMs": 0,
+   "plannedMs": 0,
+   "type": "sfx",
+   "key": "dash",
+   "vol": 0.45
+  },
+  {
+   "atMs": 565.5,
+   "plannedMs": 592.1,
+   "type": "beat",
+   "name": "8 strikes"
+  },
+  {
+   "atMs": 565.5,
+   "plannedMs": 592.1,
+   "type": "sfx",
+   "key": "ro_sonicblow",
+   "vol": 0.6
+  },
+  {
+   "atMs": 565.5,
+   "plannedMs": 592.1,
+   "type": "clip",
+   "key": "ro_sonicblow",
+   "scale": 1.1,
+   "rate": 0.725,
+   "filter": ""
+  },
+  {
+   "atMs": 634.3,
+   "plannedMs": 656.4,
+   "type": "sfx",
+   "key": "ro_katar2",
+   "vol": 0.35
+  },
+  {
+   "atMs": 634.3,
+   "plannedMs": 656.4,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 634.3,
+   "plannedMs": 656.4,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 634.5,
+   "plannedMs": 656.4,
+   "type": "hit",
+   "i": 1,
+   "kind": "hit",
+   "crit": false,
+   "lean": 14
+  },
+  {
+   "atMs": 748.5,
+   "plannedMs": 776.1,
+   "type": "sfx",
+   "key": "ro_katar",
+   "vol": 0.35
+  },
+  {
+   "atMs": 748.7,
+   "plannedMs": 776.1,
+   "type": "hit",
+   "i": 2,
+   "kind": "miss",
+   "crit": false,
+   "lean": -12
+  },
+  {
+   "atMs": 900.1,
+   "plannedMs": 895.6,
+   "type": "sfx",
+   "key": "ro_katar2",
+   "vol": 0.35
+  },
+  {
+   "atMs": 900.1,
+   "plannedMs": 895.6,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 900.1,
+   "plannedMs": 895.6,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 900.3,
+   "plannedMs": 895.6,
+   "type": "hit",
+   "i": 3,
+   "kind": "hit",
+   "crit": false,
+   "lean": 14
+  },
+  {
+   "atMs": 999.4,
+   "plannedMs": 1015.8,
+   "type": "sfx",
+   "key": "ro_katar",
+   "vol": 0.35
+  },
+  {
+   "atMs": 999.4,
+   "plannedMs": 1015.8,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 999.4,
+   "plannedMs": 1015.8,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 999.8,
+   "plannedMs": 1015.8,
+   "type": "hit",
+   "i": 4,
+   "kind": "hit",
+   "crit": true,
+   "lean": -12
+  },
+  {
+   "atMs": 1112,
+   "plannedMs": 1133.4,
+   "type": "sfx",
+   "key": "ro_katar2",
+   "vol": 0.35
+  },
+  {
+   "atMs": 1112,
+   "plannedMs": 1133.4,
+   "type": "hit",
+   "i": 5,
+   "kind": "miss",
+   "crit": false,
+   "lean": 14
+  },
+  {
+   "atMs": 1232.9,
+   "plannedMs": 1251.1,
+   "type": "sfx",
+   "key": "ro_katar",
+   "vol": 0.35
+  },
+  {
+   "atMs": 1232.9,
+   "plannedMs": 1251.1,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 1232.9,
+   "plannedMs": 1251.1,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 1233.2,
+   "plannedMs": 1251.1,
+   "type": "hit",
+   "i": 6,
+   "kind": "hit",
+   "crit": false,
+   "lean": -12
+  },
+  {
+   "atMs": 1366.1,
+   "plannedMs": 1372.2,
+   "type": "sfx",
+   "key": "ro_katar2",
+   "vol": 0.35
+  },
+  {
+   "atMs": 1366.1,
+   "plannedMs": 1372.2,
+   "type": "sfx",
+   "key": "ro_hitdagger",
+   "vol": 0.4
+  },
+  {
+   "atMs": 1366.1,
+   "plannedMs": 1372.2,
+   "type": "clip",
+   "key": "001_hit_physical",
+   "scale": 0.55,
+   "rate": 1.3,
+   "filter": ""
+  },
+  {
+   "atMs": 1366.4,
+   "plannedMs": 1372.2,
+   "type": "hit",
+   "i": 7,
+   "kind": "hit",
+   "crit": false,
+   "lean": 14
+  },
+  {
+   "atMs": 1468.7,
+   "plannedMs": 1490.4,
+   "type": "sfx",
+   "key": "ro_katar",
+   "vol": 0.35
+  },
+  {
+   "atMs": 1468.7,
+   "plannedMs": 1490.4,
+   "type": "hit",
+   "i": 8,
+   "kind": "miss",
+   "crit": false,
+   "lean": -12
+  },
+  {
+   "atMs": 1749.7,
+   "plannedMs": 1772.8000000000002,
+   "type": "beat",
+   "name": "Perfect"
+  },
+  {
+   "atMs": 1855.2,
+   "plannedMs": 1872.8000000000002,
+   "type": "beat",
+   "name": "Back"
+  }
+ ]
+}
