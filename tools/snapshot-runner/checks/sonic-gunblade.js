@@ -5,6 +5,7 @@
 const NS = "fabula-ultima-companion";
 const O = Object.assign({ only: null, maxRounds: 1, pace: "fast" }, globalThis.__SG ?? {});
 const want = (k) => !O.only || O.only.includes(k);
+for (let i = 0; i < 240 && !FUCompanion.api.experimental?.sim?.mode; i++) await new Promise((r) => setTimeout(r, 250));
 const sim = FUCompanion.api.experimental?.sim;
 const bd = FUCompanion.api.experimental?.battleDirector;
 if (game.paused) await game.togglePause(false, true);
@@ -107,22 +108,22 @@ const hit = { rA: 10, rB: 9 };
 if (want("A")) await sonicRun("A sonic 8/8 perfect", hit, Array(7).fill(hit));
 if (want("B")) await sonicRun("B sonic 5/8 one crit", hit, [{ rA: 1, rB: 2 }, { rA: 10, rB: 8 }, { rA: 7, rB: 7 }, { rA: 2, rB: 3 }, { rA: 9, rB: 8 }, { rA: 11, rB: 10 }, { rA: 1, rB: 3 }]);
 if (want("C")) await sonicRun("C sonic 8/8 all crit", { rA: 8, rB: 8 }, Array(7).fill({ rA: 9, rB: 9 }));
-if (want("N")) await attackRun("N katar normal hit", "Zarg", "3ZV5drjroWrvXqkw", [10, 12, 9, 12]);
+if (want("N")) await attackRun("N katar normal hit", "Zarg", "3ZV5drjroWrvXqkw", [[10, 12, 9, 12]]);
 // Gunblade, Sword form, Blanche (DEX d12 / MIG d12): an odd total, an even total, a crit, a miss
 if (want("G")) {
-  await attackRun("G1 gunblade 5+4", "Blanche", "mODVDmjIfozcfERi", [5, 12, 4, 12]);
-  await attackRun("G2 gunblade 5+5", "Blanche", "mODVDmjIfozcfERi", [5, 12, 5, 12]);
-  await attackRun("G3 gunblade crit 7+7", "Blanche", "mODVDmjIfozcfERi", [7, 12, 7, 12]);
-  await attackRun("G4 gunblade crit 6+6", "Blanche", "mODVDmjIfozcfERi", [6, 12, 6, 12]);
+  await attackRun("G1 gunblade 5+4", "Blanche", "mODVDmjIfozcfERi", [[5, 12, 4, 12]]);
+  await attackRun("G2 gunblade 5+5", "Blanche", "mODVDmjIfozcfERi", [[5, 12, 5, 12]]);
+  await attackRun("G3 gunblade crit 7+7", "Blanche", "mODVDmjIfozcfERi", [[7, 12, 7, 12]]);
+  await attackRun("G4 gunblade crit 6+6", "Blanche", "mODVDmjIfozcfERi", [[6, 12, 6, 12]]);
 }
 // Transform after the action (turn_end ask, forced to accept) over 2 rounds: Sword → Firearm → Sword;
 // round 2's attack must be the Firearm profile.
-if (want("T")) await attackRun("T transform after, 2 rounds", "Blanche", "mODVDmjIfozcfERi", [9, 12, 8, 12], { rounds: 2, forceReactions: ["Gunblade: Transform"] });
+if (want("T")) await attackRun("T transform after, 2 rounds", "Blanche", "mODVDmjIfozcfERi", [[9, 12, 8, 12]], { rounds: 2, forceReactions: ["Gunblade: Transform"] });
 // Transform BEFORE the action (the free Equipment chip's write + stamp, done at the wielder's
 // turn start) then the after-action ask must NOT fire in the same round.
 if (want("U")) {
   let hookId = null;
-  await attackRun("U transform before → no after", "Blanche", "mODVDmjIfozcfERi", [9, 12, 8, 12], { rounds: 1, forceReactions: ["Gunblade: Transform"], setup: async () => {
+  await attackRun("U transform before → no after", "Blanche", "mODVDmjIfozcfERi", [[9, 12, 8, 12]], { rounds: 1, forceReactions: ["Gunblade: Transform"], setup: async () => {
     hookId = Hooks.on("updateActor", () => {});
     const once = { done: false };
     const iv = setInterval(async () => {

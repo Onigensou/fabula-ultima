@@ -3213,6 +3213,16 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
         weaponUuid: ar.weapon?.uuid ?? null,
         sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
         defenseResolved,
+        // The roll, as the CONFIRM scan carries it (state-handlers actionBase):
+        // without these a roll-gated row (ATTACK_CHECK_RESULT, ATTACK_IS_CRIT,
+        // HIT_MARGIN: the Gunblade's odd total, a Snipe / Conquer rider) matched
+        // at CONFIRM and then lost every subject here, so it never landed.
+        isCrit: !!ar.roll?.isCrit,
+        isFumble: !!ar.roll?.isFumble,
+        checkTotal: Number(ar.roll?.total ?? 0) || 0,
+        hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(r.defense ?? 0) || 0),
+        hr: ar.roll?.hr ?? 0,
+        ...(ar.round != null ? { round: ar.round } : {}),
       };
       let cands;
       try {
