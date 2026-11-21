@@ -652,7 +652,8 @@
               "isViewable": true
             },
             "fabula-ultima-companion": {
-              "directorPermanent": true
+              "directorPermanent": true,
+              "lifetimeMode": "target_turn_end"
             },
             "statuscounter": {
               "config": {

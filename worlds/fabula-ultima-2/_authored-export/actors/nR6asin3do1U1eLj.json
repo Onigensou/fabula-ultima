@@ -37,6 +37,7 @@
       "layoutRef": "46d57f8f0b9b6811",
       "noRewards": true,
       "opp_lucky": 0,
+      "reviveKillImmune": true,
       "sealingCrystal": true,
       "spriteShadow": false
     },
