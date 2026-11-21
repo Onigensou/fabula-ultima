@@ -320,18 +320,19 @@ const OLDER = [
       ]),
       reaction_config_table: table([{ reaction_trigger: "creature_deals_damage", reaction_passive_mode: "on", reaction_source: "self", reaction_requires_weapon_used: true, condition_formula: "DAMAGE_IS_HP == 1", reaction_effect_ref: "ku_hit" }]) } },
   // Tommy Gun (user 2026-11-21, Uncommon budget): a spray — up to 5 targets, five
-  // separate shots each on a random one of them, each (HR + 4) / 2 Physical.
+  // separate shots each on a random one of them, each (HR + 4) × 0.25 Physical, each rolling its own accuracy (user 11-21:
+  // ×0.5 was ~2.3–2.8× a normal shot because flat bonuses repeat per strike).
   { name: "Tommy Gun", props: { item_rarity: "Uncommon", damage_bonus: "4", skill_target: "Up to 5 creatures", action_keywords: "chain 5 random" },
     text: () => ul(
       `Attacks with this weapon gain ${J("ChnStrikeKeyw0rd", "Chain")} <strong>5</strong>: five separate shots, each against a random creature among your targets.`,
-      "Each shot deals <strong>half</strong> damage.",
+      "Each shot rolls its own accuracy and deals <strong>a quarter</strong> of the damage.",
     ),
     // Halving via the attacker flag Bane uses (damage_dealt_mult_attack), which
     // action-profile applies to EVERY Chain strike's own damage roll. An outgoing
     // adjust_damage passive did not reach the separate strikes (runner, 11-21).
     // The gun is two-handed, so while equipped all the wielder's attacks are its.
     ae: [{ _id: ID.tommyAe, name: "Tommy Gun: spray", transfer: true, disabled: false,
-      changes: [{ key: "flags.fabula-ultima-companion.damage_dealt_mult_attack", mode: 1, priority: 20, value: "0.5" }],
+      changes: [{ key: "flags.fabula-ultima-companion.damage_dealt_mult_attack", mode: 1, priority: 20, value: "0.25" }],
       flags: { [M]: { [FLAG]: "tommy-spray" } } }] },
   { name: "Black Mage Wand", props: { item_rarity: "Rare", item_cost: "3500" } },
   { name: "Tailwind", props: { item_rarity: "Rare" } },
