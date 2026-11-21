@@ -1,0 +1,81 @@
+/* extracted from battle-director/damage-numbers/director-hp-bar.js */
+
+/* Registered so --hpbar-color INTERPOLATES on transition (the gradual
+   green→yellow crisis shift). Unregistered custom properties snap. On a
+   browser without @property support the color still changes — just instantly. */
+@property --hpbar-color {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #57c96b;
+}
+/* Entrance: slides in left→right while fading in; exit reverses (right→left +
+   fade out). The transform is driven from JS so retargets can cancel a
+   mid-exit slide smoothly. */
+.fud-hpbar {
+  position: fixed; z-index: 99985; pointer-events: none;
+  transform: translate(calc(-50% - 16px), 0);
+  opacity: 0;
+  transition: opacity 250ms ease,
+              transform 250ms cubic-bezier(.2, .8, .3, 1);
+}
+/* Track: layered outline — bright inner rim + dark outer ring + drop shadow —
+   plus an inset bevel so it reads as a game HP BAR, not a flat block. */
+.fud-hpbar-track {
+  position: relative; width: 100%; height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, #05060a, #14161d 55%, #0a0b10);
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, .85),
+    0 0 0 1.5px rgba(235, 240, 255, .75),
+    0 0 0 3px rgba(0, 0, 0, .9),
+    0 3px 9px rgba(0, 0, 0, .6);
+  overflow: hidden;
+}
+/* Red damage ghost — sits UNDER the green fill, spanning [0 → pre-hit HP].
+   The visible red sliver is the chunk between the green edge and its own edge.
+   Its width drain (after the hold) is the "health decreasing" animation. */
+.fud-hpbar-ghost {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  border-radius: 999px 4px 4px 999px;
+  background: linear-gradient(to bottom, #ff6a55, #d92c1e 60%, #a81c12);
+  transition: width 700ms cubic-bezier(.3, .7, .3, 1);
+}
+/* Shield (temp HP) — a WHITE segment stacked to the right of the HP fill.
+   Layered between the ghost and the fill: its width spans [0 → hp+shield], so
+   the visible white part is whatever sticks out past the green edge. Slides on
+   the same fast clock as the green, and the red ghost covers combined
+   shield+HP damage. */
+.fud-hpbar-shieldbar {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  border-radius: 999px 4px 4px 999px;
+  background: linear-gradient(to bottom, #ffffff 0%, #dfe6ee 55%, #a9b6c6 100%);
+  transition: width 250ms cubic-bezier(.3, .8, .3, 1);
+}
+.fud-hpbar--gain .fud-hpbar-shieldbar {
+  transition: width 600ms cubic-bezier(.22, .9, .32, 1);
+}
+/* Current-HP fill. On damage it slides down FAST (much quicker than the red
+   drain that follows); the condition color cross-fades on the drain clock, so
+   a Crisis crossing reads as a gradual green→yellow shift. Heals override the
+   width sweep with a slower, glowing one. */
+.fud-hpbar-fill {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  border-radius: 999px 4px 4px 999px;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--hpbar-color, #57c96b) 65%, #ffffff) 0%,
+    var(--hpbar-color, #57c96b) 55%,
+    color-mix(in srgb, var(--hpbar-color, #57c96b) 70%, #000000) 100%);
+  transition: width 250ms cubic-bezier(.3, .8, .3, 1),
+              --hpbar-color 700ms ease;
+}
+.fud-hpbar--gain .fud-hpbar-fill {
+  transition: width 600ms cubic-bezier(.22, .9, .32, 1),
+              --hpbar-color 600ms ease;
+  box-shadow: 0 0 8px 1px rgba(110, 255, 140, .8);
+}
+/* Gloss highlight across the top — over every layer, part of the "bar feel". */
+.fud-hpbar-gloss {
+  position: absolute; inset: 0; border-radius: 999px;
+  background: linear-gradient(to bottom,
+    rgba(255, 255, 255, .30) 0%, rgba(255, 255, 255, .08) 42%, transparent 50%);
+}

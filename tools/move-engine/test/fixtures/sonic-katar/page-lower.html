@@ -1,0 +1,108 @@
+  <div class="lower">
+    <section class="card">
+      <div class="lhhead"><img class="px" data-icon="icon" alt="Sonic Katar icon"><div><h2 style="margin:0">Sonic Katar · Rare dagger</h2><p class="muted" style="margin:2px 0 0">Already Rare (2500 z); rarity, price and weapon stats stay. Only Sonic Blow changes, and the item text moves to the house convention.</p></div></div>
+      <div class="forms" style="margin-top:12px">
+        <div class="itemtext"><div class="meta">Sonic Katar · Dagger · Two-handed · Melee · DEX + DEX · HR + 5 Physical</div>
+          <ul><li><span class="kw">Double Strike</span></li><li>You may perform the skill 【💥<span class="kw">Sonic Blow</span>】</li></ul></div>
+        <div class="itemtext"><div class="meta">💥 Sonic Blow · Cost <b>30 MP</b> <span class="was">50 MP</span> · One creature · Instantaneous · Melee · Keywords: <span class="kw">Chain 8 Volley</span></div>
+          <p style="margin:4px 0 0">Perform an attack with this weapon against the target. It deals double damage and each of its hits has a <b>−2</b> penalty to its Accuracy Check. If every hit lands, the attack deals <b>50%</b> more damage. A hit that is a <b>Critical Success</b> deals <b>50%</b> more damage but does not generate an <b>Opportunity</b>.</p>
+          <p class="muted" style="margin:6px 0 0"><span class="was">Perform 5 free attacks … −2 … crit +50%, no Opportunity</span> (the old data really made one attack).</p></div>
+      </div>
+      <h3 style="margin-top:14px">How the numbers work</h3>
+      <ol class="plan">
+        <li><b>One action card, 8 hits, each rolls</b><span>Chain 8 Volley (the Tommy Gun engine): every hit makes its own Accuracy Check at −2 and can MISS. The attack's damage is doubled, then shared over the 8 hits, so each landed hit = 0.25 of a normal hit and a miss loses its share.</span></li>
+        <li><b>Perfect</b><span>All 8 land: ×1.5 on the whole attack, so 3.0× a normal hit. Mixed results are about break-even (4/8 = 1.0×, 6/8 = 1.5×); a cold streak is weak (2/8 = 0.5×).</span></li>
+        <li><b>iRO parody</b><span>RO's Sonic Blow is 8 hits in one bundle from a Katar, about a second long. Our version keeps the 8 hits and the RO sound and effect; it drops Stun (we don't have it) and makes each hit able to miss.</span></li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>Balance read · Sonic Blow</h2>
+      <div id="balance"></div>
+    </section>
+    <section class="card">
+      <h2>The −X accuracy penalty · recommendation: <span style="color:var(--gold)">−2</span></h2>
+      <p class="muted" style="margin-top:0">−2 works for a DEX d12 wielder: at the median DEF 12, Sonic Blow is 1.6× (Blanche) to 1.8× (Zarg) a basic attack's expected damage for 30 MP, and a Perfect stays rare (Blanche 0.2%, Zarg 5%) until accuracy pushes it, which is the synergy you asked for: Zarg's +3 against DEF 10 = 18% Perfect. −3 still pays on d12 (1.4–1.6×) but Perfect all but vanishes; −1 doubles Zarg's Perfect to 10%. With no penalty Sonic Blow is simply 2× a basic attack for everyone (the doubled damage). Keren (DEX d8) lands 11% per hit at −2 (1.13×): a DEX + DEX weapon doesn't suit her at any X, so the animation holder is just for looks.</p>
+      <div class="tablewrap" id="penmat"></div>
+      <h3 style="margin-top:14px">Full damage chain (Physical)</h3>
+      <p class="muted" style="margin:0">The Perfect ×1.5 multiplies after weapon efficiency and affinity, like every multiplier. Physical weakness is rare in the roster, Physical resistance is not.</p>
+      <div id="sbaff"></div>
+    </section>
+    <section class="card">
+      <h2>Multi-hit daggers already in the game</h2>
+      <div class="tablewrap"><table class="cmp">
+        <tr><th>Item</th><th>Rarity</th><th>Multi-hit</th><th>Notes</th></tr>
+        <tr class="new"><td><b>Sonic Katar</b> (reworked)</td><td>Rare 2500 z</td><td>Sonic Blow: Chain 8 Volley, 30 MP</td><td>2H DEX + DEX HR + 5, Double Strike</td></tr>
+        <tr><td>Tommy Gun</td><td>Uncommon 2500 z</td><td>Chain 5 Volley (every attack)</td><td>Firearm, up to 5 creatures, damage ×0.25</td></tr>
+        <tr><td>The Wasp</td><td>Rare 2700 z</td><td>Combo 3</td><td>1H dagger, no High Roll</td></tr>
+        <tr><td>Hornet</td><td>Uncommon 2200 z</td><td>Multi 3</td><td>1H dagger HR + 4</td></tr>
+        <tr><td>Rest&amp;Rage</td><td>Common 2000 z</td><td>Combo 2 (after a round without attacking)</td><td>2H dagger HR + 8, +3 accuracy</td></tr>
+        <tr><td>Jur</td><td>Common 800 z</td><td>Double Strike</td><td>2H dagger HR + 4, crit damage +50%</td></tr>
+      </table></div>
+      <p class="muted" style="margin:6px 0 0">Sonic Blow is the only one where the misses are the point and an all-hit run pays a bonus.</p>
+    </section>
+
+    <section class="card">
+      <div class="lhhead"><img data-icon="icon_gb" alt="Gunblade icon"><div><h2 style="margin:0">Gunblade · Uncommon transforming weapon</h2><p class="muted" style="margin:2px 0 0"><b>Imperial Gunblade is retired:</b> the same item is reworked and renamed "Gunblade" (it keeps its id, so any link keeps working). Icon: FF8's Revolver, Squall's first gunblade (Lionheart is the final one).</p></div></div>
+      <div class="forms" style="margin-top:12px">
+        <div class="itemtext"><div class="meta"><b>Sword</b> · Two-handed · Melee · Martial · DEX + MIG · HR + 8 Physical</div>
+          <ul><li>When you hit a creature with this weapon, if the Accuracy Check total is an <b>odd</b> number, deal <b>10</b> bonus damage and its damage becomes <span class="kw">Fire</span>.</li></ul></div>
+        <div class="itemtext"><div class="meta"><b>Firearm</b> · Two-handed · Ranged · Martial · DEX + INS · HR + 5 Physical</div>
+          <ul><li>No Quality.</li></ul></div>
+      </div>
+      <ul style="font-size:14px;margin:10px 0 0;padding-left:18px"><li>Once per turn, before your action, you may transform this weapon for free (Lionheart's rule, assumed).</li></ul>
+      <h3 style="margin-top:14px">What changes from Imperial Gunblade</h3>
+      <div class="tablewrap"><table class="cmp">
+        <tr><th></th><th>Imperial Gunblade (now)</th><th>Gunblade</th></tr>
+        <tr><td>Rarity / price</td><td>Common 2500 z</td><td>Uncommon, <b>1800 z</b> proposed</td></tr>
+        <tr><td>Sword</td><td>DEX + MIG HR + 8; odd roll <b>or crit</b>: +10, Fire</td><td>DEX + MIG HR + 8; odd roll: +10, Fire</td></tr>
+        <tr><td>Firearm</td><td>DEX + INS <b>+1</b> HR + 5; +5 vs Frightened</td><td>DEX + INS HR + 5; nothing</td></tr>
+        <tr><td>Automation</td><td>text only, no forms</td><td>real two forms (Lionheart's engine)</td></tr>
+      </table></div>
+    </section>
+    <section class="card">
+      <h2>Balance read · Gunblade Sword</h2>
+      <div id="gbbal"></div>
+    </section>
+    <section class="card">
+      <h2>Gunblade look-alikes</h2>
+      <div class="tablewrap"><table class="cmp">
+        <tr><th>Item</th><th>Rarity</th><th>Profile</th><th>Fire / bonus rule</th></tr>
+        <tr class="new"><td><b>Gunblade</b></td><td>Uncommon</td><td>Sword 2H DEX + MIG HR + 8 / Firearm DEX + INS HR + 5</td><td>odd roll: +10 and Fire</td></tr>
+        <tr><td>Lionheart</td><td>Legendary</td><td>Sword MIG + WLP HR + 10 / Gun DEX + INS + 1 HR + 5</td><td>Renzokuken, Cartridge, Shield on transform</td></tr>
+        <tr><td>Gunsword</td><td>— 1000 z</td><td>Sword 2H DEX + MIG HR + 10, Martial</td><td>spend a crit's Opportunity: +10 and Fire; hits Flying</td></tr>
+        <tr><td>Blazing Sword</td><td>Rare 2000 z</td><td>Sword 2H DEX + MIG HR + 15 Fire</td><td>cash in the target's Burn for +5</td></tr>
+        <tr><td>Flamberge</td><td>Uncommon 500 z</td><td>Sword 2H DEX + MIG HR + 10 Fire</td><td>none</td></tr>
+        <tr><td>Ironbuck</td><td>— 900 z</td><td>Firearm 2H DEX + DEX HR + 12</td><td>attacks as Melee or Ranged</td></tr>
+      </table></div>
+      <p class="muted" style="margin:6px 0 0">Closest overlaps: Gunsword (same +10 Fire idea, on a crit's Opportunity) and Ironbuck (also melee or ranged, no Fire). Gunblade is the one that changes its whole profile with the range.</p>
+    </section>
+    <section class="card open">
+      <span class="flag">Open · your call</span>
+      <h2>Before I build</h2>
+      <ol class="plan">
+        <li><b>Gunblade: odd roll and crits</b><span>A Critical Success is matching dice, so with no accuracy bonus (or an even one) its total is always even and a crit never fires the gun; with an odd bonus (Zarg +3) every crit fires. Imperial Gunblade had "odd roll <i>or</i> a crit". Recommend adding "or a Critical Success" back.</span></li>
+        <li><b>Gunblade price</b><span>1800 z proposed (Uncommon two-handed swords sit at 1400–2200).</span></li>
+        <li><b>Gunblade transform timing</b><span>Assumed Lionheart's: free, once per turn, before your action.</span></li>
+        <li><b>Sonic Blow: the Perfect in the engine</b><span>The Perfect needs a "hits landed" count on the volley. I'll check on the runner whether HIT_COUNT already gives it; if not, it is a small engine add. Same check for whether High Roll is added per hit (Tommy Gun's ×0.25 handled that).</span></li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>Real assets vs stand-ins</h2>
+      <ol class="plan">
+        <li><b>Ragnarok Online, ripped from your client</b><span>The sonicblow effect (RO effect library, already on Forge) and the sounds from data.grf: effect\assasin_sonicblow.wav (the skill), _attack_katar.wav + attack_katar.wav (swings), _hit_dagger.wav (hits). The wavs are not on Forge yet.</span></li>
+        <li><b>The game's own look</b><span>Valley_Battlemap001 on the 3D stage, the party battlers and HUD plate, damage numbers incl. the MISS word, hit counter, NPC HP bar, namecard and crit cut-in, RPG Maker MV hit clips, Forge sounds.</span></li>
+        <li><b>Stand-ins</b><span>No battler holds a katar or gunblade, so the holder's own idle art does the strikes (lean, step, afterimage). The Gunblade form badge in the plate shelf is the Lionheart badge with the Revolver icon. Damage values are examples from the sliders.</span></li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>How to review</h2>
+      <ol class="plan">
+        <li><b>Play each move</b><span>Sonic Blow rolls its 8 hits with the dice sliders; use "Strike results" to force 8/8 Perfect, 6/8, 4/8, 2/8 or 0/8.</span></li>
+        <li><b>Approve, ask for changes or reject</b><span>Review card under each move. Pause &amp; comment (C) pins the exact moment; Space pauses and resumes.</span></li>
+        <li><b>Tune</b><span>Every number is a slider; the balance reads update as you drag. Moved sliders travel with your feedback.</span></li>
+        <li><b>Send feedback</b><span>One button in the side panel.</span></li>
+      </ol>
+    </section>
+  </div>
+  <footer>Sonic Katar · Sonic Blow + Gunblade · mockup v2 · 2026-11-21 · all 5 moves approved (round rmwqcke9s); Sonic Blow's hop back is silent. Nothing built in game yet. Stage, battlers and hit feedback = the Lionheart / Nox mockup engine on Valley_Battlemap001.</footer>
+</div>

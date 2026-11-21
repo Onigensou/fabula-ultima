@@ -1,0 +1,38 @@
+/* extracted from scripts/namecard-receiver.js */
+
+#nc-layer {
+  position: fixed; inset: 0 0 auto 0; top: 8px; width: 100%;
+  display: grid; place-items: start center;
+  pointer-events: none; z-index: 999999;
+}
+.oni-namecard { pointer-events: none; opacity: 0; will-change: transform, opacity;
+  position: relative; border-radius: var(--oni-radius, 12px);
+  padding: 6px 18px; transform-origin: center center; }
+.oni-namecard__plate { position:absolute; inset:0; border-radius:var(--oni-radius,12px);
+  background: rgba(var(--oni-bg-r), var(--oni-bg-g), var(--oni-bg-b), var(--oni-plate-alpha,.55));
+  border:1px solid var(--oni-border, rgba(255,255,255,.10));
+  box-shadow:var(--oni-shadow,0 10px 22px rgba(0,0,0,.35));
+  backdrop-filter:blur(var(--oni-blur,1.5px)) saturate(105%);
+  -webkit-backdrop-filter:blur(var(--oni-blur,1.5px)) saturate(105%);
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,.18)); pointer-events:none;
+}
+.oni-namecard__plate::before, .oni-namecard__plate::after {
+  content:""; position:absolute; left:0; right:0; height:var(--oni-line-th,2px);
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--oni-accent,#d9b56f) 12%, var(--oni-accent,#d9b56f) 88%, rgba(0,0,0,0) 100%);
+  border-radius:999px; box-shadow: 0 0 6px rgba(217,181,111,.45);
+}
+.oni-namecard__plate::before { top: var(--oni-line-gap, 2px); }
+.oni-namecard__plate::after  { bottom: var(--oni-line-gap, 2px); }
+.oni-namecard__plate[data-mask="1"]{
+  --oni-fade: 12%;
+  -webkit-mask-image:linear-gradient(to right, transparent var(--oni-fade), #000 calc(var(--oni-fade)+1%), #000 calc(100% - var(--oni-fade) - 1%), transparent 100%);
+  mask-image:linear-gradient(to right, transparent var(--oni-fade), #000 calc(var(--oni-fade)+1%), #000 calc(100% - var(--oni-fade) - 1%), transparent 100%);
+}
+.oni-namecard__titlewrap{ position:relative; z-index:1; display:flex; align-items:center; justify-content:center; width:100%; overflow:hidden; white-space:nowrap; }
+.oni-namecard__line{ display:inline-flex; align-items:baseline; gap: var(--oni-icongap, 8px); transform-origin:center center; }
+.oni-namecard__icon{ display:inline-block; line-height:1; transform-origin:center center; }
+.oni-namecard__text{ display:inline-block; line-height:1.05; font-weight:var(--oni-weight,900); letter-spacing:var(--oni-track,.06em); transform-origin:center center; font-family:var(--oni-font,system-ui,sans-serif); }
+@keyframes oni-in { from{opacity:0; transform: var(--oni-enter-transform, translateY(-16px)) scale(.99);} to{opacity:1; transform: translate(0,0) scale(1);} }
+@keyframes oni-out{ from{opacity:1; transform: translate(0,0) scale(1);} to{opacity:0; transform: var(--oni-exit-transform, translateY(-14px)) scale(.99);} }
+@media (prefers-reduced-motion: reduce){ .oni-namecard{ animation:none !important; transition:none !important; } }
+      

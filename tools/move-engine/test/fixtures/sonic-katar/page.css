@@ -1,0 +1,89 @@
+/* ── mockup glue: the game's fixed-position overlays live inside the 1682×788 stage view here ── */
+#hud { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
+#hud .dhud-root, #hud .dhud-plate-root { position: absolute; }
+#hud .dhud-plate-root { right: 16px; }
+#dn2 .fud-dn { position: absolute; }
+#dn2 .fud-hpbar { position: absolute; z-index: 1; transition: opacity 250ms ease, transform 250ms cubic-bezier(.2,.8,.3,1); }
+#ovl { position: absolute; inset: 0; z-index: 90; pointer-events: none; overflow: hidden; }
+#ovl .oni-namecard { --oni-bg-r: 0; --oni-bg-g: 0; --oni-bg-b: 0; --oni-plate-alpha: .55; --oni-fade: 12%; --oni-border: rgba(255,255,255,.10); --oni-shadow: 0 10px 22px rgba(0,0,0,.35); --oni-blur: 1.5px; --oni-line-th: 2px; --oni-line-gap: 2px; --oni-icongap: 10px; }
+#ovl .oni-namecard__text { font-size: 30px; --oni-weight: 700; --oni-track: .06em; --oni-font: "Pixel Operator", system-ui, sans-serif;
+  background: linear-gradient(180deg, #ffffff, #d7e9ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; -webkit-text-stroke: .1px rgba(0,0,0,.55); }
+
+/* ── the trigger gauge: OUR art, in the HUD's parchment family (umber stroke, gold hairline, ink labels) ── */
+.lh-gauge { position: absolute; right: 10px; bottom: calc(100% + 18px); width: 500px; box-sizing: border-box; padding: 10px 14px 10px; pointer-events: auto;
+  background: linear-gradient(180deg, var(--dhud-parch-top), var(--dhud-parch-bot)); border: 2px solid var(--dhud-stroke); border-radius: 12px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.7) inset, 0 8px 22px rgba(0,0,0,.42); font-family: var(--dhud-ui); color: var(--dhud-ink);
+  opacity: 0; transform: translateY(12px); transition: opacity 200ms ease, transform 260ms cubic-bezier(.2,.8,.2,1); }
+.lh-gauge::before { content: ""; position: absolute; inset: 4px; pointer-events: none; border: 1px solid var(--dhud-gold-1); border-radius: 8px; }
+.lh-gauge.on { opacity: 1; transform: none; }
+.lh-ghead { display: flex; align-items: center; gap: 8px; }
+.lh-gicon { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px var(--dhud-gold-2); }
+.lh-gtitle { font: 900 11px var(--dhud-ui); letter-spacing: .16em; text-transform: uppercase; color: var(--dhud-stroke); }
+.lh-gres { font: 900 15px var(--dhud-ui); letter-spacing: .08em; color: #c2410c; }
+.lh-gauge.done .lh-gres { animation: lhPop 380ms cubic-bezier(.2,1.5,.4,1); }
+@keyframes lhPop { 0% { transform: scale(.4); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+.lh-pips { display: flex; gap: 9px; margin-left: auto; padding-right: 4px; }
+.lh-pip { display: block; width: 15px; height: 10px; background: #15110c; box-shadow: inset 0 0 0 1px rgba(122,106,85,.9); }
+.lh-pip.now { box-shadow: inset 0 0 0 2px var(--dhud-gold-2), 0 0 6px rgba(213,182,122,.9); animation: lhBlink 500ms steps(2) infinite; }
+@keyframes lhBlink { 50% { background: rgba(120,130,255,.75); } }
+.lh-pip.hit { background: linear-gradient(180deg, #fff0a8, #ffb21e 60%, #c86a08); box-shadow: 0 0 8px rgba(255,190,60,.9), inset 0 0 0 1px #fff3c0; }
+.lh-pip.miss { background: #4a4440; box-shadow: inset 0 0 0 1px #2a2420; }
+/* v2/v3: the FF8-style slot (our art): dark well, a light head with a short comet tail, a gunmetal TRIGGER end; the whole bar turns gold on a TRIGGER */
+.lh-track { position: relative; height: 30px; margin-top: 8px; border-radius: 3px; overflow: hidden;
+  background: linear-gradient(180deg, #05060c, #10132a 55%, #05060c); box-shadow: inset 0 2px 5px rgba(0,0,0,.9), 0 0 0 1px rgba(122,106,85,.95), 0 0 0 3px rgba(213,182,122,.45); transition: box-shadow 120ms ease; }
+.lh-track::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px); }
+.lh-trail { position: absolute; left: 0; top: 5px; bottom: 5px; width: 0; z-index: 1; will-change: transform, width; border-radius: 2px 0 0 2px;
+  background: linear-gradient(90deg, rgba(75,72,214,0), rgba(110,118,255,.55) 55%, rgba(190,200,255,.95)); box-shadow: 0 0 10px rgba(110,120,255,.5); transition: opacity 160ms ease; }
+.lh-zone { position: absolute; top: 0; bottom: 0; display: grid; place-items: center; background: linear-gradient(180deg, #3a3630, #22201c 55%, #141210);
+  box-shadow: inset 0 0 0 2px rgba(213,182,122,.75); }
+.lh-zone span { font: 900 10px var(--dhud-ui); letter-spacing: .24em; text-transform: uppercase; color: #e9cf8e; text-shadow: 0 1px 0 #000; white-space: nowrap; }
+.lh-needle { position: absolute; left: 0; top: -2px; bottom: -2px; width: 6px; margin-left: -3px; border-radius: 2px; background: #fff; will-change: transform;
+  box-shadow: 0 0 6px 2px rgba(220,226,255,1), 0 0 16px 5px rgba(130,140,255,.85); z-index: 2; transition: opacity 160ms ease; }
+.lh-needle.off, .lh-trail.off { opacity: .35; }
+.lh-track.hit { box-shadow: inset 0 2px 5px rgba(0,0,0,.6), 0 0 0 2px #ffe07a, 0 0 0 4px #c98a1c, 0 0 22px 6px rgba(255,200,80,.9); animation: lhTrig 300ms ease-out; }
+.lh-track.hit .lh-trail.off { opacity: .9; background: linear-gradient(90deg, rgba(224,154,30,0), rgba(255,200,80,.6) 55%, #fff3c0); box-shadow: 0 0 12px rgba(255,200,80,.85); }
+.lh-track.hit .lh-zone { background: linear-gradient(180deg, #fff6c8, #ffc844 55%, #e08a10); box-shadow: inset 0 0 0 2px #fff; }
+.lh-track.hit .lh-zone span { color: #6a2a00; text-shadow: none; }
+.lh-track.hit .lh-zone span::after { content: "!"; }
+@keyframes lhTrig { 0% { filter: brightness(2.2); } 100% { filter: brightness(1); } }
+.lh-track.miss .lh-needle { background: #6e6a74; box-shadow: none; }
+.lh-gauge.perfect .lh-gres { color: #b8860b; text-shadow: 0 0 8px rgba(255,210,90,.8); }
+.lh-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 6px; font: 700 11px var(--dhud-ui); color: var(--dhud-ink-soft); }
+.lh-foot kbd { font: 800 10px var(--dhud-ui); padding: 0 5px; border-radius: 3px; border: 1px solid var(--dhud-stroke); background: #fffaf0; color: var(--dhud-ink); }
+.lh-tot { font: 800 13px var(--dhud-ui); color: var(--dhud-ink); font-variant-numeric: tabular-nums; }
+.lh-form .dhud-rslot { width: 32px; height: 32px; }
+
+/* ── balance + drawback cards ── */
+.bal-big { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.bal-big b { font: 700 34px var(--font-display); color: var(--gold); font-variant-numeric: tabular-nums; }
+.bal-big span { color: var(--muted); font-size: 14px; }
+table.bal { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 14px; }
+table.bal th { text-align: left; font-weight: 400; color: var(--muted); padding: 4px 0; border-bottom: 1px solid var(--line); }
+table.bal td { text-align: right; font-variant-numeric: tabular-nums; padding: 4px 0; border-bottom: 1px solid var(--line); font-weight: 600; }
+.open { border: 1px dashed var(--risk); }
+.open .flag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--risk); border: 1px solid currentColor; border-radius: 3px; padding: 0 6px; margin-bottom: 8px; }
+.forms { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.forms > div { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; background: var(--page); }
+.forms b { font-family: var(--font-display); }
+.forms ul { margin: 6px 0 0; padding-left: 18px; font-size: 14px; }
+.lhhead { display: flex; gap: 14px; align-items: center; }
+.lhhead img { width: 64px; height: 64px; border-radius: 8px; box-shadow: 0 0 0 2px var(--gold); flex: none; }
+/* ── Sonic Katar / Gunblade page additions */
+.lhhead img.px { image-rendering: pixelated; background: #1a120c; }
+table.bal tr.hl th, table.bal tr.hl td, table.bal th.hl, table.bal td.hl { color: var(--gold); }
+table.bal td.hl, table.bal th.hl { background: color-mix(in srgb, var(--gold-soft) 35%, transparent); }
+table.bal thead th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+table.mat td, table.mat th:not(:first-child) { text-align: center; padding: 5px 4px; }
+table.mat td small { font-weight: 400; color: var(--muted); font-size: 11.5px; }
+.tablewrap { overflow-x: auto; }
+table.cmp { border-collapse: collapse; width: 100%; font-size: 13.5px; margin-top: 8px; }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 5px 6px; border-bottom: 1px solid var(--line); }
+table.cmp th { color: var(--muted); font-weight: 400; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; }
+table.cmp tr.new td { background: color-mix(in srgb, var(--gold-soft) 30%, transparent); }
+.itemtext { border: 1px solid var(--line); border-radius: 6px; background: var(--page); padding: 10px 12px; font-size: 14px; }
+.itemtext .meta { font-size: 12.5px; color: var(--muted); margin-bottom: 4px; }
+.itemtext ul { margin: 6px 0 0; padding-left: 18px; }
+.was { text-decoration: line-through; color: var(--muted); }
+.kw { font-weight: 700; text-decoration: underline; }
+.pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.pill.ok { color: var(--ok); border-color: var(--ok); } .pill.risk { color: var(--risk); border-color: var(--risk); }
