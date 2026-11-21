@@ -329,6 +329,9 @@ Hooks.once("ready", () => {
 // finisher's damage, then `await finish({ tier, total })` after it has landed
 // (shows the result, closes, holds the restore tail).
 export async function runTimedStrikeGauge({ ownerUserId = null, presentation = true, spec, onStrike, rng = Math.random }) {
+  // A cast with a cinematic (the caster's token is known) holds its intro before the HUD;
+  // resolved here so every client reads the same number from OPEN.
+  spec = { ...spec, introMs: spec.introMs ?? (spec.casterTokenId ? TSG_TIMING.introMs : 0) };
   const requestId = foundry.utils?.randomID?.() ?? `tsg-${Date.now()}`;
   const count = spec.count;
   const hits = new Array(count).fill(null);
