@@ -159,6 +159,7 @@ export function ensureDrawerStyles() {
 .dhv-list.is-one { grid-template-columns: minmax(0, 1fr); max-width: 330px; }
 .dhv-list.is-more { mask-image: linear-gradient(180deg, #000 78%, rgba(0,0,0,.25)); -webkit-mask-image: linear-gradient(180deg, #000 78%, rgba(0,0,0,.25)); }
 .dhv-sec { grid-column: 1 / -1; height: 14px; display: flex; align-items: flex-end; gap: 6px; font: 800 9.5px var(--dhud-ui, "Signika", sans-serif); letter-spacing: .1em; text-transform: uppercase; color: #7a6a55; padding-left: 4px; }
+.dhv-note { grid-column: 1 / -1; padding: 0 4px 2px; font: italic 600 12px/16px var(--dhud-ui, "Signika", sans-serif); color: #4b4338; }
 .dhv-sec .h { font-weight: 600; letter-spacing: .02em; text-transform: none; color: #8a7d68; }
 .dhv-empty { grid-column: 1 / -1; font: italic 600 12.5px var(--dhud-ui, "Signika", sans-serif); color: #8a7d68; padding: 6px 4px; }
 .dhv-row { position: relative; cursor: pointer; display: grid; grid-template-columns: 12px 20px minmax(0, 1fr) auto; align-items: center; column-gap: 7px; height: 27px; padding: 0 6px 0 3px;
@@ -458,7 +459,7 @@ function sameValue(a, b) {
  * Returns { promise, cleanup }.
  */
 export function pickDocked(host, {
-  title = "Choose", crumb = null, groups, tabbed = false, multiSelect = false, maxSelect = 0,
+  title = "Choose", subtitle = null, crumb = null, groups, tabbed = false, multiSelect = false, maxSelect = 0,
   preselectAll = false, preselect = null, confirmLabel = null, cancelLabel = "Cancel", verb = null,
   onFocusRow = null, focusValue = null, numberShortcuts = true, externalCancel = null, onDone = null,
   contextCard = null,
@@ -512,6 +513,12 @@ export function pickDocked(host, {
   function mainHTML() {
     if (tiles) return `<div class="dhv-tiles" style="--n:${flat.length}">${flat.map(tileHTML).join("")}</div>`;
     let html = "";
+    // A multi-pick menu says how many to pick and what each pick does ("choose
+    // up to 2"): without it the drawer read like a one-of-three choice, and
+    // Zarg's Warning Shot + Perfect Aim went out with only one effect (11-22).
+    // Single-select lists keep their old look.
+    const note = multiSelect && subtitle ? plainText(String(subtitle)) : "";
+    if (note) html += `<div class="dhv-note">${escapeHtml(note)}</div>`;
     groups.forEach((g, si) => {
       if (useTabs && si !== activeTab) return;
       const idxs = flat.map((_, i) => i).filter((i) => secOf[i] === si);

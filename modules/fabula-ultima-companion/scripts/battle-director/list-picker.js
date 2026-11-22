@@ -623,7 +623,7 @@ export async function pickFromList({
     const host = plateDrawerHost({ autoOpen: true });
     if (host) {
       const docked = pickDocked(host, {
-        title, crumb, groups, tabbed, multiSelect, maxSelect, preselectAll, preselect,
+        title, subtitle, crumb, groups, tabbed, multiSelect, maxSelect, preselectAll, preselect,
         confirmLabel: multiSelect ? confirmLabel : null, cancelLabel, verb, onFocusRow, focusValue,
         numberShortcuts, externalCancel, contextCard, onDone: () => host.release(),
       });

@@ -10242,6 +10242,15 @@ async function selectMenuPicks(row, ctx, options) {
   for (let pick = 0; pick < pickCount; pick++) {
     const queue = Array.isArray(ctx?.harnessPicks) ? ctx.harnessPicks
       : (Array.isArray(ctx?.menuPicks) ? ctx.menuPicks : null);
+    // A replay that runs dry mid-menu means the player picked FEWER than the
+    // cap ("up to 2" → they ticked 1). That is the whole answer: asking again
+    // at RESOLVE opened a second, unasked-for Warning Shot menu (and the
+    // harness auto-filled Slow). Only a menu that STARTED on a queue stops
+    // here; one that starts with the queue empty still prompts as before.
+    if (_hasPickQueue && pick > 0 && !(queue && queue.length > (ctx._harnessPicksCursor ?? 0))) {
+      log(`skill-effects.open_action_menu: replayed ${pick} of up to ${pickCount} pick(s) for "${row.effect_label}" — no more chosen`);
+      break;
+    }
     let idx = -1;
     if (queue && queue.length > (ctx._harnessPicksCursor ?? 0)) {
       const cursor = ctx._harnessPicksCursor ?? 0;

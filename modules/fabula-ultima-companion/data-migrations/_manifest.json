@@ -748,6 +748,10 @@
     {
       "key": "2026-11-22-equip-slot-ids",
       "path": "data-migrations/2026-11-22-equip-slot-ids.js"
+    },
+    {
+      "key": "2026-11-22-warning-shot-mp-drain",
+      "path": "data-migrations/2026-11-22-warning-shot-mp-drain.js"
     }
   ]
 }

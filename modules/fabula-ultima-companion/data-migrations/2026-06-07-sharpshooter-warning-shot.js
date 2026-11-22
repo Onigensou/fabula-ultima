@@ -38,9 +38,10 @@
  * melee swing — acceptable for now; a per-attack range payload gate is a future
  * engine refinement.
  *
- * NOTE on the MP option: consume_resource with on_empty:"skip" debits SL×10 MP;
- * a target with less than that keeps its MP (rather than draining to 0). Edge
- * case only — a flooring MP-drain primitive is a future refinement.
+ * NOTE on the MP option: on_empty:"drain" (was "skip" until 2026-11-22). "skip"
+ * left a target with less than SL×10 MP untouched, so SL 4 did nothing to a
+ * 30-MP monster; "drain" takes what is left, floored at 0. Live copies moved by
+ * 2026-11-22-warning-shot-mp-drain.
  *
  * IDEMPOTENT: create-if-missing + drift-correct on the master; create-if-absent
  * copy on the dummy.
@@ -112,7 +113,7 @@ const EFFECT_TABLE = {
   },
   "5": {
     effect_label: "ws_mp", effect_kind: "consume_resource",
-    consume_resource: "mp", consume_amount: "SL * 10", target_ref: "hit_action_targets", on_empty: "skip",
+    consume_resource: "mp", consume_amount: "SL * 10", target_ref: "hit_action_targets", on_empty: "drain",
     menu_label: "Drain Mind Points", menu_description: "Each target hit loses SL × 10 Mind Points.",
   },
 };
