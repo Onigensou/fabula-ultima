@@ -269,6 +269,16 @@ export function skillBucket(item) {
   return "other";
 }
 
+function skillLevelBonusesOf(item) {
+  const actor = item?.parent;
+  if (actor?.documentName !== "Actor") return [];
+  try {
+    return globalThis.FUCompanion?.api?.activeEffectConditionalGate?.skillLevelBonusSources?.(actor, item) ?? [];
+  } catch (_) {
+    return [];
+  }
+}
+
 export function skillSummary(item) {
   const p = item?.system?.props ?? {};
   const cost = str(p.cost);
@@ -283,6 +293,9 @@ export function skillSummary(item) {
     cls: str(p.class),
     level: num(p.level, 0),
     maxLevel: num(p.max_level, 0),
+    // Gear/effect grants on this skill's level ([{ source, amount }]); summed
+    // by the AE gate from the same table the rules use. May exceed maxLevel.
+    levelBonuses: skillLevelBonusesOf(item),
     target: str(p.skill_target),
     range: str(p.skill_range),
     duration: str(p.duration),

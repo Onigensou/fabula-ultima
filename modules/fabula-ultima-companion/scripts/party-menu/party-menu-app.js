@@ -588,6 +588,28 @@ function navTo(up) {
   for (let i = 0; i < Number(up); i++) handleKey("Escape");
 }
 
+/**
+ * "Level" fact. Plain "4 / 4" unless gear/effects change the level: then the
+ * effective level is bold and coloured (green up, red down) with a bobbing
+ * ▲/▼ pip, and hovering it shows base + each source + total (MMO convention;
+ * same tooltip look as the item windows' modified values). Gear may push the
+ * level past the max, so the max stays plain beside it.
+ */
+function skillLevelCell(s) {
+  const bonuses = s.levelBonuses ?? [];
+  const bonus = bonuses.reduce((n, b) => n + (Number(b.amount) || 0), 0);
+  if (!bonus) return s.maxLevel ? `${s.level} / ${s.maxLevel}` : (s.level || "");
+  const total = Math.max(0, s.level + bonus);
+  const dir = bonus > 0 ? "is-up" : "is-down";
+  const sign = (n) => (n > 0 ? `+${n}` : `−${Math.abs(n)}`);
+  const tip = `<div class="fu-iw-formula"><div><span>Base</span><b>${esc(s.level)}</b></div>`
+    + bonuses.map((b) => `<div><span>${esc(b.source)}</span><b>${esc(sign(b.amount))}</b></div>`).join("")
+    + `<div class="is-total"><span>Total</span><b>${esc(total)}</b></div></div>`;
+  const cell = `<span class="pm-sl-mod ${dir}" data-tooltip="${esc(tip)}" data-tooltip-direction="UP">`
+    + `<strong>${esc(total)}</strong><span class="fu-iw-dlt ${dir}"><span class="fu-iw-arrow">${bonus > 0 ? "▲" : "▼"}</span></span></span>`;
+  return { html: s.maxLevel ? `${cell} / ${esc(s.maxLevel)}` : cell };
+}
+
 function renderDetail(actor, item) {
   const s = skillSummary(item);
   const src = sourceOf(actor, item);
@@ -595,7 +617,7 @@ function renderDetail(actor, item) {
   const facts = [
     ["Source", companionOf(actor) ? "" : src.from ? `${src.from} (${typeWord(src.fromType)})` : (src.kind === "class" ? "" : src.label)],
     ["Class", s.cls], ["Type", s.type], ["Cost", s.cost],
-    ["Level", s.maxLevel ? `${s.level} / ${s.maxLevel}` : (s.level || "")],
+    ["Level", skillLevelCell(s)],
     ["Target", s.target], ["Range", s.range], ["Duration", s.duration],
   ].filter(([, v]) => v !== "" && v !== "-" && v != null);
   const flags = [s.isHeroic ? "Heroic" : "", s.isZeroPower ? "Zero Power" : ""].filter(Boolean);
@@ -608,7 +630,7 @@ function renderDetail(actor, item) {
       ${flags.length ? `<div class="pm-sub">${esc(flags.join(" · "))}</div>` : ""}</div>
     </div>
     ${access.ok ? "" : `<div class="pm-locked"><i class="fas fa-lock"></i> Unavailable — ${esc(access.reason)}</div>`}
-    <dl class="pm-facts">${facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
+    <dl class="pm-facts">${facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v?.html ?? esc(v)}</dd>`).join("")}</dl>
     ${slots.length ? renderSlots(actor, slots) : ""}
     <div class="pm-desc">${safeHtml(s.description) || "<p><em>No description.</em></p>"}</div>`;
 }
@@ -1383,6 +1405,11 @@ function ensureStyles() {
 #${ROOT_ID} .pm-facts { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; margin: 0 0 10px; font-size: 14px; }
 #${ROOT_ID} .pm-facts dt { color: var(--ink-soft); font-weight: 700; }
 #${ROOT_ID} .pm-facts dd { margin: 0; }
+#${ROOT_ID} .pm-sl-mod { cursor: help; white-space: nowrap; }
+#${ROOT_ID} .pm-sl-mod strong { font-weight: 800; }
+#${ROOT_ID} .pm-sl-mod.is-up strong { color: #2f7a2a; }
+#${ROOT_ID} .pm-sl-mod.is-down strong { color: #a3321c; }
+#${ROOT_ID} .pm-sl-mod .fu-iw-dlt { margin-left: 3px; }
 #${ROOT_ID} .pm-desc { font-size: 14px; line-height: 1.45; border-top: 1px solid rgba(92,66,30,.3); padding-top: 8px; }
 #${ROOT_ID} .pm-desc p { margin: 0 0 6px; }
 #${ROOT_ID} .pm-desc img { max-width: 100%; height: auto; vertical-align: middle; border: 0; }

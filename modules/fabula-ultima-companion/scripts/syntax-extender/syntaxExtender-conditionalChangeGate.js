@@ -67,7 +67,7 @@
   const MODULE_ID = "fabula-ultima-companion";
   const TAG = "[ONI][AE-Gate]";
   const TRACE_TAG = "[ONI][AE-Gate][TRACE]";
-  const VERSION = "6.4.0-affinity-step-2026-09-20";
+  const VERSION = "6.5.0-skill-level-bonus-2026-11-23";
 
   const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor", "aeAffinityStep", "aeAffinityCap"];
 
@@ -1407,12 +1407,14 @@ function getBaseValueForChange(actor, change) {
     const original = proto.apply;
 
     proto.apply = function oniAeConditionalGateApply(...args) {
-      if (!isEnabled()) {
-        return original.apply(this, args);
-      }
+      return withBoostedSkillLevel(this, () => {
+        if (!isEnabled()) {
+          return original.apply(this, args);
+        }
 
-      const result = transformApplyArgs(this, args);
-      return original.apply(this, result.args);
+        const result = transformApplyArgs(this, args);
+        return original.apply(this, result.args);
+      });
     };
 
     proto[PATCH_FLAGS.effectPatched] = true;
@@ -1435,12 +1437,14 @@ function getBaseValueForChange(actor, change) {
         MODULE_ID,
         "CONFIG.ActiveEffect.documentClass.prototype.apply",
         function oniAeConditionalGateApplyWrapper(wrapped, ...args) {
-          if (!isEnabled()) {
-            return wrapped(...args);
-          }
+          return withBoostedSkillLevel(this, () => {
+            if (!isEnabled()) {
+              return wrapped(...args);
+            }
 
-          const result = transformApplyArgs(this, args);
-          return wrapped(...result.args);
+            const result = transformApplyArgs(this, args);
+            return wrapped(...result.args);
+          });
         },
         "WRAPPER"
       );
@@ -1463,6 +1467,121 @@ function getBaseValueForChange(actor, change) {
   }
 
   // ------------------------------------------------------------
+  // Gear-granted skill levels for a skill's OWN effects
+  // ------------------------------------------------------------
+  //
+  // Gear raises a skill's level with an ADD change on
+  // flags.fabula-ultima-companion.skill_level_bonus_<slug> (or _all). The SL /
+  // SL_<NAME> formula identifiers read that flag when a skill is used, but a
+  // passive built as an always-on effect (Fortress `max_hp + ${level * 5}$`,
+  // Defensive Mastery, Dodge, Adrenaline) is computed by CSB from the skill
+  // item's own props, so it only ever saw the stored level. Measured 2026-11-23:
+  // Blanche's +4 Royal Shield granted Fortress +2 / Defensive Mastery +1 and
+  // neither changed her max HP or damage reduction.
+  //
+  // Fix: while a skill's own effect is computed, its `level` prop reads
+  // stored + bonus (no max-level cap, by house rule), then is restored. The
+  // bonus is summed straight from the actor's active effects, not read from the
+  // flag, because the flag is written by the same pass and might not have
+  // landed yet when the skill's effect runs.
+  //
+  // The table is cached per actor for one effect pass and dropped when the
+  // next pass starts (seedAeAccumulators). The party menu reads the same table
+  // for its hover breakdown, so the panel and the rules cannot disagree.
+
+  const SLB_PREFIX = `flags.${MODULE_ID}.skill_level_bonus_`;
+  const skillBonusCache = new WeakMap();
+
+  function skillLevelSlug(name) {
+    return String(name ?? "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  }
+
+  function isOwnedSkillItem(item) {
+    if (item?.documentName !== "Item") return false;
+    if (item.parent?.documentName !== "Actor") return false;
+    return String(item.system?.props?.skill_type ?? "").trim() !== "";
+  }
+
+  function evalSkillBonusValue(effect, actor, raw) {
+    const text = String(raw ?? "").trim();
+    if (!text.includes("${")) return Number(text) || 0;
+    const CP = game?.CustomSystemBuilder?.API?.Formulas?.ComputablePhrase;
+    if (!CP) return 0;
+    const parent = effect?.parent;
+    const props = { ...(parent?.system?.props ?? {}), target: actor?.system?.props ?? {} };
+    try {
+      const out = CP.computeMessageStatic(text, props, {
+        source: `activeEffect.${effect?.name}.value`,
+        triggerEntity: parent?.templateSystem
+      });
+      return Number(out?.result) || 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  function skillBonusSourceLabel(effect) {
+    const parent = effect?.parent;
+    if (parent?.documentName === "Item") return parent.name;
+    try {
+      const origin = effect?.origin ? fromUuidSync(effect.origin) : null;
+      if (origin?.name) return origin.name;
+    } catch (_) { /* origin may be a dead uuid */ }
+    return effect?.name ?? "Effect";
+  }
+
+  /** slug ("fortress", "all") -> [{ source, amount }] for every active grant. */
+  function collectSkillLevelBonuses(actor) {
+    const table = new Map();
+    for (const effect of actor?.allApplicableEffects?.() ?? []) {
+      if (!effect?.active) continue;
+      for (const change of effect.changes ?? []) {
+        const key = String(change?.key ?? "");
+        if (Number(change?.mode) !== 2 || !key.startsWith(SLB_PREFIX)) continue;
+        const slug = key.slice(SLB_PREFIX.length);
+        if (!slug || slug.includes(".")) continue;
+        const amount = evalSkillBonusValue(effect, actor, change.value);
+        if (!amount) continue;
+        if (!table.has(slug)) table.set(slug, []);
+        table.get(slug).push({ source: skillBonusSourceLabel(effect), amount });
+      }
+    }
+    return table;
+  }
+
+  function skillLevelBonusTable(actor) {
+    let table = skillBonusCache.get(actor);
+    if (!table) {
+      table = collectSkillLevelBonuses(actor);
+      skillBonusCache.set(actor, table);
+    }
+    return table;
+  }
+
+  /** Every grant lifting this skill (its own slug + _all), with source names. */
+  function skillLevelBonusSources(actor, skill) {
+    if (!actor || !skill) return [];
+    const table = skillLevelBonusTable(actor);
+    const slug = skillLevelSlug(skill.name);
+    return [...(slug ? table.get(slug) ?? [] : []), ...(table.get("all") ?? [])];
+  }
+
+  function withBoostedSkillLevel(effect, run) {
+    const item = effect?.parent;
+    if (!isOwnedSkillItem(item)) return run();
+    const bonus = skillLevelBonusSources(item.parent, item).reduce((n, s) => n + s.amount, 0);
+    if (!bonus) return run();
+    const props = item.system.props;
+    const stored = props.level;
+    props.level = Math.max(0, (Number(stored) || 0) + bonus);
+    try {
+      return run();
+    } finally {
+      props.level = stored;
+    }
+  }
+
+  // ------------------------------------------------------------
   // Patch 2: Actor.applyActiveEffects
   // This creates the source baseline used by false gates.
   // ------------------------------------------------------------
@@ -1476,6 +1595,8 @@ function getBaseValueForChange(actor, change) {
   // carrying a `damage_taken_mult` ×N MULTIPLY change compose (two ×2 → ×4). Read by
   // the incoming-damage ruleset (damage-ruleset.js / apply-damage-core.js).
   function seedAeAccumulators(actor) {
+    // A new effect pass: the gear skill-level table is rebuilt on first use.
+    skillBonusCache.delete(actor);
     try {
       foundry.utils.setProperty(actor, "flags.fabula-ultima-companion.damage_taken_mult", 1);
       // Attacker-side OUTGOING damage multiplier FAMILY, scoped by action kind
@@ -1771,6 +1892,11 @@ function getBaseValueForChange(actor, change) {
     globalThis.FUCompanion.api ??= {};
 
     globalThis.FUCompanion.api.activeEffectConditionalGate = {
+      // [{ source, amount }] of gear/effects lifting this skill's level.
+      skillLevelBonusSources(actor, skill) {
+        return skillLevelBonusSources(actor, skill).map((s) => ({ ...s }));
+      },
+
       status() {
         const enabled = isEnabled();
         const ok = enabled && !!state.actorPatched && !!state.effectPatched;
