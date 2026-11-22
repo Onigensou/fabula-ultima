@@ -266,8 +266,11 @@ function meGlow(key, color) {
     if (w && h) { const k = w / Math.max(1, T.w), pad = Math.ceil(ME_GLOW_R[0] / 2 * KP * k * 3);
       const sil = document.createElement("canvas"); sil.width = w + 2 * pad; sil.height = h + 2 * pad; const s = sil.getContext("2d");
       s.drawImage(img, pad, pad, w, h); s.globalCompositeOperation = "source-in"; s.fillStyle = color; s.fillRect(0, 0, sil.width, sil.height);
-      const levels = ME_GLOW_R.map((R) => { const out = document.createElement("canvas"); out.width = sil.width; out.height = sil.height; const o = out.getContext("2d");
-        o.filter = "blur(" + (R / 2 * KP * k).toFixed(2) + "px)"; o.drawImage(sil, 0, 0); return { R, c: out }; });
+      // HALF resolution (a blur looks the same, a quarter of the pixels) and FLUSHED now: canvas drawing is lazy, so without the
+      // 1-pixel read the six blurs ran on the glint's first frame (a 140-200 ms hitch in 1.2.1, found by a clean parity run)
+      const levels = ME_GLOW_R.map((R) => { const out = document.createElement("canvas"); out.width = Math.ceil(sil.width / 2); out.height = Math.ceil(sil.height / 2);
+        const o = out.getContext("2d"); o.filter = "blur(" + (R / 4 * KP * k).toFixed(2) + "px)"; o.drawImage(sil, 0, 0, out.width, out.height);
+        try { o.getImageData(0, 0, 1, 1); } catch (e) {} return { R, c: out }; });
       res = { levels, padW: pad / k }; } } catch (e) { res = null; }
   ME_GLOW.set(id, res); return res;
 }

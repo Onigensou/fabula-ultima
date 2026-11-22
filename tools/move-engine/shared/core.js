@@ -4,7 +4,7 @@
 //
 // Units: every position / size a move uses is MOCKUP px on the 1682 x 788 stage. The game runtime maps them to
 // the board (see game/runtime.js "mockup space").
-const MOVE_ENGINE_VERSION = "1.2.1";
+const MOVE_ENGINE_VERSION = "1.2.2";
 const W = 1682, H = 788;
 const EASE = { lin: (t) => t, quad: (t) => t < .5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2, out: (t) => 1 - (1-t)*(1-t), in: (t) => t*t,
   sine: (t) => -(Math.cos(Math.PI*t) - 1)/2, outCubic: (t) => 1 - Math.pow(1-t, 3), inCubic: (t) => t*t*t, outQuart: (t) => 1 - Math.pow(1-t, 4),
