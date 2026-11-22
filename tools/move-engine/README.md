@@ -170,7 +170,9 @@ new `weapon_category_alias` AE key, `scripts/battle-director/weapon-alias.js`).
 **On the page** (`mockup/skill-panel.js`, part `skillPanel(family)`): a "Game item" card under the balance read shows each
 block of the move on screen, its slider-bound fields following the sliders live, changes from the approved values marked,
 and "Copy my changes" (block, slider, field, old → new) for the review. Under it, the game's own numbers: a **pack**
-(`moves/<family>/packs/<block>.json`) measured in real Battle Director sim battles, flagged when the sliders moved since.
+(`moves/<family>/packs/<block>.json`) measured in real Battle Director sim battles (`move-engine.js pack <family> <block> [--runs 3]`:
+canvas off, batch pace, ~20 s a battle; `--full` = canvas on, read as drawn, ~7 min a battle), flagged when a slider that changes
+the numbers moved since (a binding marked `numbers: false`, like the MP cost, never flags them).
 Check: `node test/skill-panel-check.js`.
 
 ## Known limits (Phase 1)
