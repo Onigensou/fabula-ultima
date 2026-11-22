@@ -214,7 +214,13 @@ const face = (a) => a.kind === "party" ? -1 : 1;
 async function slide(a, dx, ms = 420, dy = a.dy, ease = EASE.quad) { const x0 = a.dx, y0 = a.dy; await tween(ms, ease, (t) => setPos(a, lerp(x0, dx, t), lerp(y0, dy, t))); }
 const stepOut = (a, d = 40) => slide(a, face(a) * d, 380);
 const stepBack = (a) => slide(a, 0, 460, 0);
-function flashActor(a, color = "#fff", ms = 260) { const m = a.media; return tween(ms, EASE.out, (t) => { m.style.filter = `drop-shadow(0 0 ${14*(1-t)}px ${color}) brightness(${1 + 1.3*(1-t)})`; }).then(() => { m.style.filter = ""; }); }
+// flashActor: the mockup's CSS glow (drop-shadow 14 px → 0 + brightness 2.3 → 1). The game paints it WITHOUT a per-frame canvas
+// filter (a blur filter on the art every frame is a 100+ ms hitch, found by `move-engine parity`): the glow of each colour is
+// rendered once before playback (meGlow), then drawn with the fading strength glowK, plus an additive brighten of the art.
+const ME_GLOWS = new Set();
+function flashActor(a, color = "#fff", ms = 260) { const m = a.media; if (PHASE === "dry") ME_GLOWS.add(meRaw(a).key + "|" + color);
+  return tween(ms, EASE.out, (t) => { m.style.filter = `drop-shadow(0 0 ${14*(1-t)}px ${color}) brightness(${1 + 1.3*(1-t)})`; a.glowC = color; a.glowK = 1 - t; })
+    .then(() => { m.style.filter = ""; a.glowK = 0; }); }
 async function hurt(a, color) { flashActor(a, color).catch(() => {}); const d = -face(a); await tween(300, EASE.lin, (t) => setPos(a, d * Math.sin(t * Math.PI * 4) * 7 * (1 - t), a.dy)); setPos(a, 0, a.dy); }
 function buffBeat(a) { clip("051_powerup_1", feet(a), { scale: tokenScaleAt(OY(a)) }); sfx("powerup", .35 / .75); }
 // afterimage (replaces shared/common.js's DOM version in game/overrides.js): the actor's pose is read when it shows
@@ -240,16 +246,48 @@ const ME_CLEANUP = [];
 
 // ───────── playback painter
 const ME_BLANK = document.createElement("canvas"); ME_BLANK.width = 2; ME_BLANK.height = 2;
+// the "blank" pose: an actor the runtime paints itself (glow, filter) sets pose "blank" so the timeline does not ALSO draw the token
+// art (unregistered, drawTok fell back to the art: the token was drawn twice, a double-bright glint)
+for (const k of Object.keys(ME_TOKENS)) (TL.POSE[k] = TL.POSE[k] || {}).blank = { img: ME_BLANK, foot: 1, w: 0.01, h: 0.01 };
 const ME_LAYER_Z = { ground: 2, field: 4, dim: 3, hit: 30 };
 const ME_BAKE = new Map();
 function meBaked(key, filter) { const img = TL.art(key); if (!filter || !img) return img; const id = key + "|" + filter; let c = ME_BAKE.get(id); if (c) return c;
   const w = img.videoWidth || img.naturalWidth || img.width, h = img.videoHeight || img.naturalHeight || img.height; if (!w || !h) return img;
   c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d"); x.filter = filter.replace(/([\d.]+)px/g, (m0, n) => (Number(n) * w / Math.max(1, TL.TOK[key].w / KP)).toFixed(2) + "px"); x.drawImage(img, 0, 0, w, h); ME_BAKE.set(id, c); return c; }
-function meSnap(a) { const o = parseFloat(a.el.style.opacity); return { dx: a.dx, dy: a.dy, air: (a.lift || 0) - (a.bob || 0), rot: a.rot || 0, kx: a.kx == null ? 1 : a.kx, ky: a.ky == null ? 1 : a.ky, alpha: Number.isFinite(o) ? o : 1, filter: a.media.style.filter || "" }; }
-function mePaint(g, a, st, img, alpha) {
+function meSnap(a) { const o = parseFloat(a.el.style.opacity); return { dx: a.dx, dy: a.dy, air: (a.lift || 0) - (a.bob || 0), rot: a.rot || 0, kx: a.kx == null ? 1 : a.kx, ky: a.ky == null ? 1 : a.ky, alpha: Number.isFinite(o) ? o : 1, filter: a.media.style.filter || "", glowK: a.glowK || 0, glowC: a.glowC || null }; }
+// the glow of an actor's art in one colour, rendered once: a colour silhouette blurred like CSS drop-shadow(0 0 14px) (σ = 7 px)
+const ME_GLOW = new Map();
+function meGlow(key, color) {
+  const id = key + "|" + color; if (ME_GLOW.has(id)) return ME_GLOW.get(id);
+  const img = TL.art(key), T = TL.TOK[key]; let res = null;
+  try { const w = img && (img.videoWidth || img.naturalWidth || img.width), h = img && (img.videoHeight || img.naturalHeight || img.height);
+    if (w && h) { const k = w / Math.max(1, T.w), blur = 7 * KP * k, pad = Math.ceil(blur * 3);
+      const sil = document.createElement("canvas"); sil.width = w + 2 * pad; sil.height = h + 2 * pad; const s = sil.getContext("2d");
+      s.drawImage(img, pad, pad, w, h); s.globalCompositeOperation = "source-in"; s.fillStyle = color; s.fillRect(0, 0, sil.width, sil.height);
+      const out = document.createElement("canvas"); out.width = sil.width; out.height = sil.height; const o = out.getContext("2d");
+      o.filter = "blur(" + blur.toFixed(2) + "px)"; o.drawImage(sil, 0, 0); o.drawImage(sil, 0, 0);
+      res = { c: out, padW: pad / k }; } } catch (e) { res = null; }
+  ME_GLOW.set(id, res); return res;
+}
+function mePaintGlow(g, a, st, alpha) {
+  const T = TL.TOK[a.key], img = TL.art(a.key); if (!img) return; const f = TL.feet(T), wx = T.x + st.dx * KP, wy = f.y + st.dy * KP;
+  const r = (st.dx || st.dy) ? TL.depthRatio(f, { x: f.x + st.dx * KP, y: wy }) : 1, gl = meGlow(a.key, st.glowC), k = st.glowK;
+  g.save(); g.translate(wx, wy - st.air * KP); if (st.rot) g.rotate(st.rot * Math.PI / 180); g.scale(T.flip * st.kx * r, st.ky * r);
+  const x0 = -T.w / 2, y0 = -T.h * T.foot;
+  if (gl) { g.globalAlpha = alpha * k; g.globalCompositeOperation = "lighter"; g.drawImage(gl.c, x0 - gl.padW, y0 - gl.padW, T.w + 2 * gl.padW, T.h + 2 * gl.padW); }
+  g.globalCompositeOperation = "source-over"; g.globalAlpha = alpha; g.drawImage(img, x0, y0, T.w, T.h);
+  // brightness(1 + 1.3 k) ≈ the art added on top 1.3 k times
+  let extra = 1.3 * k; g.globalCompositeOperation = "lighter"; while (extra > 0.01) { g.globalAlpha = alpha * Math.min(1, extra); g.drawImage(img, x0, y0, T.w, T.h); extra -= 1; }
+  g.restore(); }
+// liveFilter: a CSS filter that changes every frame (flashActor's fading glow) is applied while drawing instead of baked: a bake
+// per frame is a new full-size canvas each frame (a 100 ms hitch on Gunblade's transform glint, found by `move-engine parity`).
+// Its px are mockup px: canvas filter lengths ignore the current transform, so they scale by KP and the transform's scale.
+function mePaint(g, a, st, img, alpha, liveFilter) {
   const T = TL.TOK[a.key]; if (!img) return; const f = TL.feet(T), wx = T.x + st.dx * KP, wy = f.y + st.dy * KP;
   const r = (st.dx || st.dy) ? TL.depthRatio(f, { x: f.x + st.dx * KP, y: wy }) : 1;
-  g.save(); g.translate(wx, wy - st.air * KP); if (st.rot) g.rotate(st.rot * Math.PI / 180); g.scale(T.flip * st.kx * r, st.ky * r); g.globalAlpha = alpha;
+  g.save();
+  if (liveFilter) { let sc = 1; try { sc = Math.abs(g.getTransform().a) || 1; } catch (e) {} g.filter = liveFilter.replace(/([\d.]+)px/g, (m0, n) => (Number(n) * KP * sc).toFixed(2) + "px"); }
+  g.translate(wx, wy - st.air * KP); if (st.rot) g.rotate(st.rot * Math.PI / 180); g.scale(T.flip * st.kx * r, st.ky * r); g.globalAlpha = alpha;
   g.drawImage(img, -T.w / 2, -T.h * T.foot, T.w, T.h); g.restore(); }
 function meFrame(t, S) {
   // test hook (inert unless a test sets both globals): globalThis.__MOVE_SHOT_AT = [{ at, name }], __MOVE_SHOT(shot) is called at
@@ -266,7 +304,8 @@ function meFrame(t, S) {
   // actors: plain moves go through the timeline's own token painting; a filtered one (flashActor) is painted here
   for (const a of ME_ACTORS) { const st = meSnap(a), q = S.tok[a.key]; if (!q) continue;
     q.dx = st.dx * KP; q.dy = st.dy * KP; q.air = st.air * KP; q.rot = st.rot * Math.PI / 180; q.sx = st.kx; q.sy = st.ky; q.alpha = st.alpha;
-    if (st.filter) { q.pose = "blank"; const ra = meRaw(a); S.world.push({ z: 20, draw: (g) => mePaint(g, ra, st, meBaked(ra.key, st.filter), st.alpha) }); } }
+    if (st.glowK > 0 && st.glowC) { q.pose = "blank"; const ra = meRaw(a); S.world.push({ z: 20, draw: (g) => mePaintGlow(g, ra, st, st.alpha) }); }
+    else if (st.filter) { q.pose = "blank"; const ra = meRaw(a); S.world.push({ z: 20, draw: (g) => mePaint(g, ra, st, TL.art(ra.key), st.alpha, st.filter) }); } }
   // afterimages (pose read the first frame they show)
   const live = ME_AFTER.filter((x) => t >= x.t0 && t < x.t0 + x.ms);
   if (live.length) { for (const x of live) if (!x.snap) x.snap = meSnap(x.a);
@@ -319,6 +358,8 @@ async function MOVE_PLAY(key, opts = {}) {
   const report = { key, engine: MOVE_ENGINE_VERSION, host: MOVE_HOST, dryMs, end, total, gate: ME_GATE, markGate: ME_MARK, firstHit: ME_FIRST_HIT, variant: moveVariant(), result: moveResult(moveTarget()), events: TRACE.list.length, trace: TRACE.list, warnings: [...ME_WARN] };
   globalThis.__MOVE_LAST = report; if (Array.isArray(globalThis.__MOVE_RUNS)) globalThis.__MOVE_RUNS.push(report);   // tests collect every run
   if (ME_CFG.dryOnly) { oni.fireDone(); return report; }
+  // the glows this move uses, rendered now (before frame 0) so playback never renders one
+  for (const id of ME_GLOWS) { const i = id.indexOf("|"); meGlow(id.slice(0, i), id.slice(i + 1)); }
   TM.hold(0, total, (t, S) => meFrame(t, S));
   for (const o of ME_ONCE) { let did = false; TRK.push({ t0: o.at, t1: 1e9, fn: () => { if (did) return; did = true; try { o.fn(); } catch (e) { console.warn("[move-engine] cue threw", e); } } }); }
   { let did = false; TRK.push({ t0: ME_GATE, t1: 1e9, fn: () => { if (did) return; did = true; oni.fireDone(); } }); }

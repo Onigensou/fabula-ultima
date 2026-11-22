@@ -44,7 +44,7 @@ const base = canvas.stage.children.length;
 const out = { scene: sc.name, stage3d: !!globalThis.__ONI_BATTLE_STAGE_3D__?.cameraLive?.(), caster: caster?.name, target: foe?.name, moves: {} };
 globalThis.__MOVE_TRACE_ON = true;
 for (const m of MOVES) {
-  globalThis.__MOVE_LAST = null; globalThis.__oniTimelineLast = null; hits = []; const e0 = errs.length;
+  globalThis.__MOVE_LAST = null; globalThis.__oniTimelineLast = null; hits = []; const e0 = errs.length; globalThis.__MOVE_PROBE = null;   // a test may fill it from inside the move
   const shots = (m.shots || []).map((s, i) => ({ ...s, i })); globalThis.__MOVE_SHOT_AT = shots; globalThis.__MOVE_SHOT = (s) => { try { s.data = grab(); } catch (e) { s.err = String(e?.message ?? e); } };
   // every frame's time, to find stalls (a frame over 40 ms) and where in the move they fall
   const frames = []; const tick = () => frames.push(performance.now()); canvas.app.ticker.add(tick);
@@ -62,7 +62,7 @@ for (const m of MOVES) {
     frames: tl?.frames, ranMs: tl?.ranMs, prerollMs: tl?.prerollMs, fps: tl?.ranMs ? Math.round(tl.frames / tl.ranMs * 1000) : null, stalls,
     cues: hits.map((h, i) => ({ planned: plan[i] ?? null, shown: w0 != null ? Math.round(h - w0) : null })),
     shots: shots.map((s) => ({ i: s.i, at: s.at, name: s.name, shownAt: s.frameT ?? null, data: s.data || null, err: s.err || null })),
-    errors: errs.slice(e0), trace: rep?.trace || [] };
+    errors: errs.slice(e0), probe: globalThis.__MOVE_PROBE ?? null, trace: rep?.trace || [] };
 }
 Hooks.off("oni:hit", hh);
 const leftover = canvas.stage.children.length;

@@ -7,7 +7,7 @@
  "mockupActors": { "caster": "keren", "target": "orc" },
  "shipped": { "module": "modules/fabula-ultima-companion/data-migrations/_gunblade-move-engine-anims.js",
   "moves": { "gb_sword": "GUNBLADE_ATTACK_SCRIPT", "gb_gun": "GUNBLADE_ATTACK_SCRIPT", "gb_tf": "GUNBLADE_TRANSFORM_SCRIPT" },
-  "rebuild": "node tools/move-engine/build/pilot-gunblade.js (+ a migration that refreshes move-engine scripts of another engine version)" },
+  "rebuild": "node tools/move-engine/build/pilot-gunblade.js + a 2-line migration calling data-migrations/_move-engine-refresh.js" },
  "game": { "snapshot": "snap-lionheart", "scene": "Valley_Battlemap001", "caster": "Keren", "target": "Test Target Enemy", "casterAt": [0.72, 0.62], "targetAt": [0.30, 0.60] },
  "moves": {
   "gb_sword": { "label": "Gunblade · Attack · Sword (odd total → fires)", "files": ["head", "gunblade"], "pageTune": { "roll": 1 }, "gameOutcome": { "hit": true, "crit": false, "total": 7 },
