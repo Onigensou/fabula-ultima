@@ -33,7 +33,7 @@ Actors and items:
 - Preflight: 0 FAIL after re-blessing the 12 scenes the party touched (Ruhig_Village011, Valley_Map004–007, 013–015, 018, 019, 021, 029).
 - Every staged store's CURRENT → MANIFEST is present. The commit used `--no-verify` because the hook blocks on the play removals.
 
-## Bugs found during the session (for this week)
+## Bugs found during the session (details; the to-do list below has them in priority order)
 
 1. **Refining renames the weapon but not `main_hand`.** Zarg's bow became "+6 Zarg's Bow" while `main_hand` still said "+5 Zarg's Bow", so `snapshot.js` resolveAttackerWeapon (matched by name) found no weapon. That gave him 1 target instead of Multi 2, and Barrage failed. Hina and Keren had the same thing. Refinement should update `main_hand`/`off_hand`, or BD should resolve by id.
 2. **Warning Shot with Multi:** the `ws_menu` choice is made once and applied to every target. With his heroic skill, Zarg should pick Shaken for one target and MP Burn for the other. Log: `pre-chosen pick → "Inflict Shaken"`, then `applied "Shaken" to 2 actor(s)`.
@@ -45,39 +45,56 @@ Actors and items:
 8. **Keren's client** could see under an Unknown tile from 2 tiles away (Valley_Map006). Not investigated yet.
 9. **GM host performance in battle:** about 30 fps with ~100 ms hitches (p95) and the main thread ~96% busy; the spectator is smooth. Next step is a CPU profile.
 
-## To-do list until the next session (Saturday 2026-11-28)
+## To-do list until the next session (Saturday 2026-11-28), by priority
 
-Bugs (fix and sandbox-test, numbers match the list above):
-- [ ] 1. Refining renames the weapon but not `main_hand`/`off_hand`. **Keren must re-equip "+7 Psychic Dagger"** before next session.
-- [ ] 2. Warning Shot (Multi + heroic skill): one menu choice per target.
-- [ ] 3. Looted items keep their transfer AEs enabled in the stash (Happy Feet still leaks).
-- [ ] 4. Spectator: dungeon Party Status HUD disappears.
-- [ ] 5. Spectator: missing API/minigame SFX.
-- [ ] 6. Fishing: stuck item tooltip.
-- [ ] 7. Stale party `total_zenit` roll-up, plus **party zenit UX** (players complained mid-session):
-  - Players have **no way to move zenit between the central party stash and their own wallets** (in either direction); only the GM could do it tonight.
-  - There's **no clear way to see how much is in the central party stash**.
-  - Players read the **total zenit** shown on the party HUD as the stash amount. It's actually the roll-up (members + stash), and it was stale too: it showed 16,178 against a real 21,043.
-  - To do: a player-facing stash view plus deposit/withdraw (the game already has `oni.ItemTransferCore.transferZenit`), clear labels separating the stash from the party total, and a fixed roll-up.
-- [ ] 8. Unknown tile seen from 2 tiles away (Keren's client).
-- [ ] 9. GM host battle performance: take a CPU profile.
+How the user defines priority:
+- **Critical:** a player tried to do something in play that they should be able to do, and couldn't.
+- **Minor:** visual bugs and the like.
 
-Level-up skills to author (every PC went from level 45 to 47 during the session; compared `8a41eb0e` with `b464ba3d`):
-- [ ] **Keren, new class Spell Fencer:** **Spellblade Rhapsody** (Active, SL 1) and **Spellweave** (Passive, SL 2) have **no automation**. The **Resonance** resource they spend and gain doesn't exist in the game yet. The whole Spell Fencer class in the world is unautomated (Master of Duality, Bladework, Book and Blade and Mystic Infusion too), so do the class as one job: the Resonance counter first, then the skills Keren owns. **Before any automation:** Spell Fencer is an old custom class, so run it through the current balance metrics first (a balance pass on all 6 skills and the Resonance economy), and automate the reviewed version.
-- [ ] **Zarg, Bane Oils SL 2 → 5:** the level-up ledger says he chose Elemental, Humanoid and Demon. His actor only has `bane_oil_beast` and `bane_oil_monster`, and the skill's menu rows are gated on `FLAG_BANE_OIL_<SPECIES> == 1`, so **the three new oils won't show up in the menu**. Set the three flags, and find out why the level-up choice didn't write them.
-- [ ] Zarg, **Wildlife Expert** (Passive, SL 1): GM questions while resting in the wilderness. Pure narration, so it needs no automation; just make sure the GM knows he has it.
-- [x] Zarg refunded **Lockdown** (gone, as intended).
-- [x] Hina, **Defensive Mastery SL 1 → 3**: already automated and scales with SL. Her new Magic Mirror (Passive) comes from an item and is automated too.
-- [ ] Blanche has **2 unspent skill points**. Nothing new to author until she spends them.
+Before Saturday: a GM boot so the pending migrations run (Blade Adept, Sonic/Gunblade); Keren re-equips "+7 Psychic Dagger"; the usual pre-session checkup + re-bless.
 
-Design decisions pending (no choice made yet; proposals come first, then a pick):
-- [ ] **Hako Gacha button** (Shop + Gacha on Hako; no NPC opens the gacha today).
-- [ ] **Gacha pity readout** back on screen (removed on purpose in `f8fd9574`). Mock up the placement first.
-- [ ] **Oathsworn Paladin set bonus.** 2 pieces: A "Oathbound Aegis" (+2 DEF/MDEF after Protect) or B "Sworn Bulwark" (−3 damage taken). 3 pieces: "Radiant Oath" (Guard → an ally recovers 10 HP). Also Paladin Armor's free spell on Cover/Protect: a reaction prompt, or keep it as GM-run text. Save the Queen's +5 vs Dark is already done; playtest it.
-- [ ] **Royal Shield bug (Blanche, reported after the session):** after she equipped the Oathsworn Paladin shield, its **Fortress SL+2** and **Defensive Mastery SL+1** grants didn't work right away. They're effects on the shield ("Guardian skills empowered": `skill_level_bonus_fortress` / `skill_level_bonus_defensive_mastery` = `isEquipped ? n : 0`). Check whether the bonus only lands after a re-prepare or reload, or never, and fix it. Note: she owns a refined copy ("+4 Royal Shield"), so check that copy, not the world item.
-- [ ] **Oathsworn Paladin as a whole set:** automate the full set (set definition + 2/3-piece bonuses via `set_bonus_table` and the bonus skills), not just each piece's own effects.
-- [ ] **Blade Adept** rest of the automation: +1 DEF/MDEF while a dagger is equipped; daggers count as brawling/sword/thrown. Flying reach is done; playtest it.
-- [ ] **Deva affinities:** none today. The elite rule asks for at least 1 VU, plus a Strike/Magic class affinity.
-- [ ] **Victory MVP scoring:** Zarg wins every fight. Review the weights.
-- [ ] **Soul Steal limit:** per stealer or per monster (expected: per monster).
-- [ ] **Canis Fabula Arcana card** ("Armor Break"): idea only, not requested yet.
+### 🔴 Critical: a player can't do what they should be able to
+
+- [ ] **1. Zarg's bow loses Multi; Barrage fails.** Refining renames the weapon (+5 → +6), but `main_hand`/`off_hand` keep the old name. BD's snapshot.js resolveAttackerWeapon matches by name, finds no weapon, and the attack drops to 1 target with no ranged-attack gate. Zarg and Hina were fixed live. Still to do: the code fix (refine updates main_hand/off_hand, or BD resolves by id), and an audit of other actors for stale names. **Keren must re-equip "+7 Psychic Dagger"** (stale main_hand, isEquipped false).
+- [x] **2. Keren's Blade Adept:** done in v1.0.656 / v1.0.657 (+1 DEF/MDEF with a melee dagger, weapon_category_alias brawling/sword/thrown, damage mods follow the alias, flying reach). Owed: a GM boot so the migration runs, then a playtest against a Flying enemy.
+- [ ] **3. Blanche's Royal Shield:** its **Fortress SL+2** and **Defensive Mastery SL+1** grants didn't apply right after she equipped it. These are effects on the shield ("Guardian skills empowered": `skill_level_bonus_fortress` / `skill_level_bonus_defensive_mastery` = `isEquipped ? n : 0`). Check whether the bonus only lands after a re-prepare or reload, or never. She owns a refined copy ("+4 Royal Shield"), so check that copy.
+- [ ] **4. Warning Shot with Multi + Zarg's heroic skill:** the `ws_menu` choice is made once and applied to every target. He wanted Shaken on one target and MP Burn on the other; both got Shaken. Log: `pre-chosen pick → "Inflict Shaken"`, then `applied "Shaken" to 2 actor(s)`. Make the choice per target.
+- [ ] **5. Zarg's Bane Oils SL 2 → 5:** the level-up ledger says he chose Elemental, Humanoid and Demon, but his actor only has `bane_oil_beast` and `bane_oil_monster`. The menu rows are gated on `FLAG_BANE_OIL_<SPECIES> == 1`, so the three new oils never show up. Set the flags, and find out why the level-up choice didn't write them.
+- [ ] **6. Keren's new class, Spell Fencer:** Spellblade Rhapsody (Active, SL 1) and Spellweave (Passive, SL 2) have no automation, and the **Resonance** resource doesn't exist. The whole class (6 skills: also Master of Duality, Bladework, Book and Blade, Mystic Infusion) is unautomated. **First a balance pass:** it's an old custom class, so run all 6 skills and the Resonance economy through the current balance metrics and get the user's picks. Then build Resonance and automate the reviewed version.
+
+### 🟠 High
+
+- [ ] **7. Gacha QoL:**
+  - (a) **Show pity on screen.** It was removed on purpose in `f8fd9574`; the party shares pity per banner (5★ guaranteed by 30 wishes, 4★ by 10). Mock up the placement first.
+  - (b) **A Gacha button on Hako** (Shop + Gacha). No NPC opens the gacha today; it's a scene (`TtaYOziufAG0pZuT`).
+- [ ] **8. Oathsworn Paladin set** (Blanche now owns pieces):
+  - Automate the **full set**: a set definition + 2/3-piece bonuses via `set_bonus_table` and the bonus skills. Options proposed: 2 pieces A "Oathbound Aegis" (+2 DEF/MDEF after Protect) or B "Sworn Bulwark" (−3 damage taken); 3 pieces "Radiant Oath" (Guard → an ally recovers 10 HP). User pick pending.
+  - Paladin Armor's "free spell on Cover/Protect": a reaction prompt, or keep it as GM-run text.
+  - Playtest Save the Queen's +5 vs Dark (already done).
+- [ ] **9. Looted items keep their transfer AEs enabled in the party stash.** A Gravedigger Shovel put "Cursed" on the party token; Happy Feet still leaks. Unequipping disables them, but a fresh loot never goes through that.
+- [ ] **10. Unknown tile seen from 2 tiles away** on Keren's client (Valley_Map006). Spoils exploration.
+
+### 🟡 Medium
+
+- [ ] **11. GM host performance in battle:** ~30 fps with ~100 ms hitches (p95), main thread ~96% busy; the spectator is smooth. Take a CPU profile.
+- [ ] **12. Spectator: the dungeon Party Status HUD disappears.** Suspect: `hide()` removes the panel after 350 ms, and a `show()` inside that window gets deleted.
+- [ ] **13. Spectator: missing API/minigame SFX** (local-only sounds don't reach the stream).
+- [ ] **14. Party zenit UX** (players complained mid-session):
+  - No way to move zenit between the **central party stash** and their **own wallets**; only the GM could.
+  - No clear way to **see the stash** amount.
+  - Players read the HUD's **total zenit** as the stash. It's the roll-up (members + stash), and it was also stale (16,178 shown vs 21,043 real).
+  - To do: a player-facing stash view + deposit/withdraw (via `oni.ItemTransferCore.transferZenit`), clear "Party stash" vs "Party total" labels, and a roll-up that recalculates. Mock up first.
+- [ ] **15. Deva has no affinities** (all neutral, no attribute, Strike/Magic neutral). The elite rule asks for at least 1 VU.
+- [ ] **16. Soul Steal limit:** per stealer or per monster (expected: per monster).
+- [ ] **17. Victory MVP scoring:** Zarg won it every fight. Review the weights.
+
+### 🟢 Minor
+
+- [ ] **18. Fishing:** an item tooltip gets stuck when the panel hides while the pointer is over the item.
+- [ ] **19. Zarg's Wildlife Expert** (Passive, SL 1): GM questions while resting in the wilderness. Narration only, no automation needed.
+- [ ] **20. Blanche has 2 unspent skill points.** Check again after she spends them.
+- [x] Zarg refunded Lockdown (as intended). Hina's Defensive Mastery SL 1 → 3 is already automated and scales with SL.
+
+### 💡 Ideas (not requested)
+
+- [ ] **21. Canis Fabula Arcana card** ("Armor Break": hits lower the target's DEF by 1 for the rest of the match).
