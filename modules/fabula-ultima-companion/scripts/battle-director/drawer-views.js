@@ -36,6 +36,17 @@ export function keysBlockedFor(node) {
   return !!layer.closest(".gmd")?.classList.contains("is-card");
 }
 const stripTags = (html) => String(html ?? "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+// A row label as PLAIN text: tags stripped AND entities decoded. Row labels arrive
+// HTML-escaped ("+7 Zarg&#39;s Bow"); a card name is escaped again when it is drawn,
+// so a name taken with stripTags alone showed the entity itself ("Zarg&#39;s").
+// Decoded through a <textarea>, which parses entities and never runs markup.
+const plainText = (html) => {
+  const s = stripTags(html);
+  if (!s.includes("&") || typeof document === "undefined") return s;
+  const ta = document.createElement("textarea");
+  ta.innerHTML = s;
+  return ta.value.replace(/\s+/g, " ").trim();
+};
 // Rich text → plain text that keeps its paragraphs and list items as lines, and its
 // bold: \u0001 and \u0002 mark where it starts and ends, and cardFaceHTML turns them
 // back into <b> after escaping. Anything else printing this text strips them.
@@ -410,7 +421,7 @@ function rowReason(r) {
 function rowCardEntry(r, kind) {
   const tip = r.tooltip;
   const tipObj = tip && typeof tip === "object" ? tip : null;
-  const name = tipObj?.name ?? stripTags(r.primary);
+  const name = tipObj?.name ?? plainText(r.primary);
   // A sentence secondary (a menu option's description: "Target recovers 40 HP.")
   // is the card's text, never a chip too — it used to show twice, as a chip
   // AND as the body. A facts secondary ("10 MP • Single") stays chips only.
@@ -549,7 +560,7 @@ export function pickDocked(host, {
     // whole parent skill's description, so half a menu read the same.
     const worthACard = entry && (entry.img || (entry.body && entry.body !== entry.name));
     return worthACard ? (ctxEntry ? { ...entry, from: ctxEntry.from } : entry)
-      : ctxEntry && r ? { ...ctxEntry, key: `${ctxEntry.key}|${i}`, name: stripTags(r.primary) || ctxEntry.from } : ctxEntry;
+      : ctxEntry && r ? { ...ctxEntry, key: `${ctxEntry.key}|${i}`, name: plainText(r.primary) || ctxEntry.from } : ctxEntry;
   }
   // Any row's card, for the players watching this list (ally-watch.js).
   view._dhvCardOf = cardFor;
