@@ -4183,7 +4183,11 @@ export function resolveOutgoingDamageParts({ actor = null, props = null, kind = 
   const el = String(elementType ?? "").toLowerCase();
   if (el && !isNullElement(el)) add(`extra_damage_mod_${el}`, `Damage (${_capWord(el)})`);
   const wk = String(weaponKey ?? "").toLowerCase();
-  if (wk && wk !== "none") add(`extra_damage_mod_${wk}`, `Damage (${_capWord(wk)})`);
+  if (wk && wk !== "none") {
+    add(`extra_damage_mod_${wk}`, `Damage (${_capWord(wk)})`);
+    // Blade Adept-style alias: a weapon that also COUNTS AS other categories takes their damage mods too (weapon-alias.js)
+    if (actor) for (const c of aliasCategories(actor, wk, kind ?? "")) if (c !== wk) add(`extra_damage_mod_${c}`, `Damage (${_capWord(c)})`);
+  }
   return parts;
 }
 

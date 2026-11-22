@@ -12,7 +12,8 @@ const MOVE_SKILLS = {
     move: "sonicblow",
     props: { skill_type: "Active", cost: "30 MP", skill_target: "One creature", duration: "Instantaneous", skill_range: "Melee",
       isCheck: true, rolled_atr1: "DEX", rolled_atr2: "DEX", check_bonus: "-2", damage_bonus: "", type_damage: "",
-      defense_target_type: "def", action_keywords: "chain 8 volley", attack_with_carrier: true, on_activate_effect_ref: "" },
+      defense_target_type: "def", action_keywords: "chain 8 volley", attack_with_carrier: true, on_activate_effect_ref: "",
+      action_command: "skill" },   // picked from the Skill menu (validator ACTION_COMMAND_MISSING, 2026-11-22)
     effects: [],
     reactions: [],
     flags: { carrierAttack: { damageMult: 2, critDamageMult: 1.5, noCritOpportunity: true, perfectMult: 1.5 } },

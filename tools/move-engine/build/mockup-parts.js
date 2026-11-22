@@ -22,6 +22,13 @@ const fxMelee = () => rd("shared/fx-melee.js");
 const moves = () => [rd("shared/moves.js"), rd("shared/results.js")].join("\n");
 // the shared result picker (page UI): mountResultPicker(el) after the page UI is built
 const resultPicker = () => rd("mockup/result-picker.js");
+// the skill panel (page UI): the family's skill blocks + its measured packs (moves/<family>/packs/<block>.json) + the panel
+function skillPanel(fam) {
+  const dir = path.join(ROOT, "moves", fam, "packs"), packs = {};
+  if (fs.existsSync(dir)) for (const f of fs.readdirSync(dir).filter((f) => f.endsWith(".json"))) packs[f.slice(0, -5)] = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"));
+  const skills = fs.existsSync(path.join(ROOT, "moves", fam, "skills.js")) ? rd("moves/" + fam + "/skills.js") : "const MOVE_SKILLS = {};";
+  return [skills, "const MOVE_PACKS = " + JSON.stringify(packs) + ";", rd("mockup/skill-panel.js")].join("\n");
+}
 // a family's host-neutral move files (tools/move-engine/moves/<family>/<file>.js)
 const family = (fam, file) => rd("moves/" + fam + "/" + file + ".js");
 const css = (names) => names.map((n) => rd("mockup/vendor/" + n + ".css")).join("\n");
@@ -48,4 +55,4 @@ const PARTY_LINE = {
   keren: { cx: 1312, cy: 382, sc: 1.47, kind: "party" }, blanche: { cx: 1367, cy: 492, sc: 1.55, kind: "party" },
 };
 
-module.exports = { ROOT, engine, common, fxMelee, moves, resultPicker, family, css, pageHead, hpbarTiming, stageScript, PRESETS, PARTY_LINE };
+module.exports = { ROOT, engine, common, fxMelee, moves, resultPicker, skillPanel, family, css, pageHead, hpbarTiming, stageScript, PRESETS, PARTY_LINE };

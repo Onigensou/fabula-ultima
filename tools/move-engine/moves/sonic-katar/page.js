@@ -48,8 +48,10 @@ function build({ out, version = "test", publish = false, notes = "" } = {}) {
   const stage = ME.stageScript({ preset: ME.PRESETS.valley001, actors: { ...ME.PARTY_LINE, orc: { cx: 400, cy: 320, sc: 1.84, kind: "enemy" } }, seed: 2611,
     roles: "{ caster: () => ACT[WIELD], target: () => ACT.orc }" });
   const parts = [ME.engine(), ME.common(), rd(path.join(PAGE, "part-hud.js")), ME.fxMelee(), ME.moves(), ME.family("sonic-katar", "head"), pagePart(),
-    ME.family("sonic-katar", "sonic"), ME.family("sonic-katar", "gunblade"), notes, ME.resultPicker(), rd(path.join(PAGE, "part-ui.js")),
-    'mountResultPicker(document.querySelector(".panel"));'];
+    ME.family("sonic-katar", "sonic"), ME.family("sonic-katar", "gunblade"), notes, ME.resultPicker(), ME.skillPanel("sonic-katar"), rd(path.join(PAGE, "part-ui.js")),
+    'mountResultPicker(document.querySelector(".panel"));',
+    // the game-item panel under the balance read, following the sliders and the move picked
+    'mountSkillPanel($("balance").closest("section")); { const rb = renderBalance; renderBalance = (...a) => { rb(...a); renderSkillPanel(); }; const ps = pickSkill; pickSkill = (...a) => { ps(...a); renderSkillPanel(); }; }'];
   const js = KITB.wrap(parts.join("\n"), publish ? { page: "sonic-katar-gunblade", version } : { page: "sonic-katar-gunblade-me", version: "me-test" });
   let lower = rd(path.join(PAGE, "page-lower.html"));
   if (publish) lower = lower.replace(/<footer>[^]*?<\/footer>/, `<footer>Sonic Katar · Sonic Blow + Gunblade · mockup ${version} · built on move-engine (tools/move-engine, the same move files the game runs). All 5 moves approved (round rmwqcke9s). Stage, battlers and hit feedback = the move-engine mockup host on Valley_Battlemap001.</footer>`);
