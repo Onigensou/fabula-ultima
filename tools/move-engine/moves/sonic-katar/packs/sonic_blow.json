@@ -9,7 +9,8 @@
   "strikes": 8
  },
  "measuredAt": "2026-11-22",
- "code": "12005bb0",
+ "code": "1224bf48",
+ "mode": "no canvas, batch pace",
  "bound": {
   "mp": 30,
   "pen": 2,
@@ -23,33 +24,35 @@
    "strikes": [
     4,
     4,
-    null,
     3,
-    null,
+    4,
     4,
     3,
+    4,
     4
    ],
-   "extra": [],
-   "total": 22,
+   "extra": [
+    15
+   ],
+   "total": 45,
    "crit": true,
-   "perfect": false,
+   "perfect": true,
    "element": "Physical",
    "affinity": "NE"
   },
   {
    "strikes": [
+    8,
+    6,
+    6,
+    8,
     6,
     null,
-    6,
-    null,
-    6,
-    6,
-    6,
+    8,
     null
    ],
    "extra": [],
-   "total": 30,
+   "total": 42,
    "crit": false,
    "perfect": false,
    "element": "bolt",
@@ -57,23 +60,21 @@
   },
   {
    "strikes": [
-    6,
-    6,
-    6,
-    8,
-    6,
-    8,
-    6,
-    8
+    2,
+    null,
+    3,
+    3,
+    4,
+    4,
+    4,
+    3
    ],
-   "extra": [
-    27
-   ],
-   "total": 81,
-   "crit": true,
-   "perfect": true,
+   "extra": [],
+   "total": 23,
+   "crit": false,
+   "perfect": false,
    "element": "bolt",
-   "affinity": "VU"
+   "affinity": "NE"
   }
  ]
 }

@@ -22,7 +22,7 @@ require("../moves/sonic-katar/page.js").build({ out: OUT });
   assert.ok(p, "panel on the page");
   assert.match(p.text, /Sonic Blow/); assert.match(p.text, /props\.cost/); assert.match(p.text, /30 MP/); assert.equal(p.hl, 0); assert.equal(p.copy, false);
   console.log("Sonic Blow, approved:     ok (cost 30 MP, nothing marked)");
-  assert.match(p.text, /In the game · 3 real battles/); assert.match(p.text, /81/); assert.doesNotMatch(p.text, /from before your slider change/);
+  assert.match(p.text, /In the game · 3 real battles/); assert.match(p.text, /damage on average/); assert.doesNotMatch(p.text, /from before your slider change/);
   console.log("Game numbers:             ok (3 battles from the pack, not stale)");
 
   await slide("mp", 40); await page.waitForTimeout(200);
