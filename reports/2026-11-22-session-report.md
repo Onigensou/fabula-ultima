@@ -70,6 +70,8 @@ Design decisions pending (no choice made yet; proposals come first, then a pick)
 - [ ] **Hako Gacha button** (Shop + Gacha on Hako; no NPC opens the gacha today).
 - [ ] **Gacha pity readout** back on screen (removed on purpose in `f8fd9574`). Mock up the placement first.
 - [ ] **Oathsworn Paladin set bonus.** 2 pieces: A "Oathbound Aegis" (+2 DEF/MDEF after Protect) or B "Sworn Bulwark" (−3 damage taken). 3 pieces: "Radiant Oath" (Guard → an ally recovers 10 HP). Also Paladin Armor's free spell on Cover/Protect: a reaction prompt, or keep it as GM-run text. Save the Queen's +5 vs Dark is already done; playtest it.
+- [ ] **Royal Shield bug (Blanche, reported after the session):** after she equipped the Oathsworn Paladin shield, its **Fortress SL+2** and **Defensive Mastery SL+1** grants didn't work right away. They're effects on the shield ("Guardian skills empowered": `skill_level_bonus_fortress` / `skill_level_bonus_defensive_mastery` = `isEquipped ? n : 0`). Check whether the bonus only lands after a re-prepare or reload, or never, and fix it. Note: she owns a refined copy ("+4 Royal Shield"), so check that copy, not the world item.
+- [ ] **Oathsworn Paladin as a whole set:** automate the full set (set definition + 2/3-piece bonuses via `set_bonus_table` and the bonus skills), not just each piece's own effects.
 - [ ] **Blade Adept** rest of the automation: +1 DEF/MDEF while a dagger is equipped; daggers count as brawling/sword/thrown. Flying reach is done; playtest it.
 - [ ] **Deva affinities:** none today. The elite rule asks for at least 1 VU, plus a Strike/Magic class affinity.
 - [ ] **Victory MVP scoring:** Zarg wins every fight. Review the weights.
