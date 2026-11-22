@@ -16,7 +16,9 @@
  * stats corrected on 6 — Zarg weapon1_base_damage 21 → 22 and Hina 9 → 13
  * (refine bonuses that never reached the attack), Kiki's Wakizashi DEX+INS →
  * DEX+MIG and off-hand damage 0 → 6 (stale copy; the items read MIG / 6), Varan
- * damage type "" → Physical, plus refreshed slot descriptions.
+ * damage type "" → Physical, plus refreshed slot descriptions. The sheet's
+ * armor label is corrected where one worn armor was refined after it was
+ * written (Zarg: "+4 Apothecary Robes" → "+5 Apothecary Robes"; label only).
  *
  * Idempotent: the plan is a diff, so a re-run writes nothing.
  */

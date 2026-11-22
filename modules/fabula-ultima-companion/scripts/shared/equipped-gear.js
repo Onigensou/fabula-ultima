@@ -71,7 +71,8 @@ export function slotIdsOf(actor) {
 // of daggers, Kiki's three Wakizashi). Prefer a copy flagged isEquipped and never
 // hand a second slot the copy the first slot took while another copy exists.
 function pickByName(pool, name, taken) {
-  const matches = pool.filter((it) => nameOf(it) === name);
+  const want = String(name ?? "").trim();
+  const matches = pool.filter((it) => nameOf(it).trim() === want);
   if (!matches.length) return null;
   const free = matches.filter((it) => !taken.has(it.id));
   const list = free.length ? free : matches;
@@ -121,6 +122,14 @@ export function resolveWornSlots(actor, opts = {}) {
     if (r.item) accTaken.add(r.item.id);
   }
   return out;
+}
+
+export const isArmorItem = (it) => typeOf(it) === "armor";
+
+/** The one armor flagged isEquipped, or null when none or more than one is. */
+export function wornArmorOf(actor) {
+  const worn = itemsOf(actor).filter((it) => isArmorItem(it) && !isHiddenGear(it) && it?.system?.props?.isEquipped === true);
+  return worn.length === 1 ? worn[0] : null;
 }
 
 /** The item worn in one slot ("main" | "off" | "acc1" | "acc2"), or null. */
@@ -205,25 +214,70 @@ export function planEquipSync(actor) {
     }
     if (touched) slots.push(slot);
   }
+  // Armor has no slot (its own isEquipped is the truth), but the sheet shows an
+  // `armor_name` LABEL that a refine leaves behind the same way ("+4 Apothecary
+  // Robes" on the sheet, "+5" worn). Label only — the armor's DEF fields follow
+  // their own rules and are not touched. Only when it is unambiguous: one armor
+  // worn, and a label already there to correct.
+  const armor = wornArmorOf(actor);
+  const armorLabel = String(getPath(src, "system.props.armor_name") ?? "");
+  if (armor && armorLabel.trim() && armorLabel.trim() !== nameOf(armor).trim()) {
+    update["system.props.armor_name"] = nameOf(armor);
+    slots.push("armor");
+  }
   return { update, slots };
+}
+
+/**
+ * After something wrote slot LABELS without their ids (the legacy Equipment
+ * macro, a GM typing on the sheet, a save restore), make the ids follow: whoever
+ * writes a label without an id means the label. For each of `slots`:
+ *   - empty label                         → id cleared;
+ *   - id's item still carries that name   → nothing to do;
+ *   - the label names an owned item       → nothing here (planEquipSync stamps it);
+ *   - the label names NO owned item       → id cleared (a bare typed name — e.g. an
+ *     NPC cloned from a PC and relabelled "Claws" must not snap back to the bow).
+ * A RENAME never comes through here (that is an item update; the id then resolves
+ * via "id-stale-label" until the sync re-stamps the label). Pure.
+ * @returns {object} the flag update ({} when nothing to clear)
+ */
+export function planLabelWrite(actor, slots = EQUIP_SLOT_KEYS) {
+  const update = {};
+  if (!actor) return update;
+  const props = actor?.system?.props ?? actor?.system ?? {};
+  const ids = slotIdsOf(actor);
+  const all = itemsOf(actor).filter((it) => !isHiddenGear(it));
+  for (const slot of slots) {
+    const def = EQUIP_SLOT_DEFS[slot];
+    if (!def || !ids[slot]) continue;
+    const label = String(props[def.labelProp] ?? "").trim();
+    const pool = all.filter(def.family === "hand" ? isHandItem : isAccessoryItem);
+    const byId = pool.find((it) => it?.id === String(ids[slot])) ?? null;
+    const keeps = !!label && (
+      (byId && nameOf(byId).trim() === label) || pool.some((it) => nameOf(it).trim() === label));
+    if (!keeps) update[`flags.${EQUIP_FLAG_NS}.${EQUIP_SLOTS_FLAG}.${slot}`] = null;
+  }
+  return update;
 }
 
 /**
  * Damage / accuracy bonus for an attack with `item` in `hand`, read from the ITEM
  * plus the actor-level buffs CSB layers on top of the cached base (the computed
- * `weapon1_mod` − `weapon1_base_mod`, etc.). Correct even while the cache is a
- * beat behind the item (the GM sync writes asynchronously). null when the actor
- * has no cached base to diff against.
+ * `weapon1_mod` − the STORED `weapon1_base_mod`, etc.; the stored base, not the
+ * derived one, so an effect on the base field itself still counts as a buff).
+ * Correct even while the cache is a beat behind the item (the GM sync writes
+ * asynchronously). null when the actor has no cached base to diff against.
  */
 export function itemAttackBonuses(actor, item, hand = "main") {
   const p = actor?.system?.props ?? {};
+  const sp = actor?._source?.system?.props ?? p;
   const ip = item?.system?.props ?? {};
   const k = hand === "off"
     ? { acc: "off_mod_1", accBase: "off_base_mod_1", dmg: "off_mod_2", dmgBase: "off_base_mod_2" }
     : { acc: "weapon1_mod", accBase: "weapon1_base_mod", dmg: "weapon1_damage", dmgBase: "weapon1_base_damage" };
-  const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
-  const acc = num(p[k.acc]), accBase = num(p[k.accBase]);
-  const dmg = num(p[k.dmg]), dmgBase = num(p[k.dmgBase]);
+  const num = (v) => { if (v === undefined || v === null || String(v).trim() === "") return null; const n = Number(v); return Number.isFinite(n) ? n : null; };
+  const acc = num(p[k.acc]), accBase = num(sp[k.accBase]) ?? num(p[k.accBase]);
+  const dmg = num(p[k.dmg]), dmgBase = num(sp[k.dmgBase]) ?? num(p[k.dmgBase]);
   if (acc === null || accBase === null || dmg === null || dmgBase === null) return null;
   return {
     checkBonus:  (num(ip.check_bonus) ?? 0)  + (acc - accBase),

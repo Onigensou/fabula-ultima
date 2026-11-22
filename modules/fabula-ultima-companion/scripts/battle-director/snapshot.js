@@ -252,10 +252,15 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
   const entry = (weaponItem
     ? weaponList.find((w) => String(w?.uuid ?? "").split(".").pop() === weaponItem.id)
     : null) ?? weaponList.find((w) => w?.name === handName) ?? null;
+  // `wip` = the props of a weapon resolved THROUGH THE SLOT: only then do the item's
+  // own stats (attributes, damage type, damage/accuracy) win over the actor's cached
+  // props below. A weapon reached only through its weapon_list row keeps the cached
+  // numbers exactly as before — legacy items with no item_type (Halsten's Spell
+  // Sever, Suzume's Pistol: sheets hand-set to 0) must not change under this.
+  const wip = weaponItem?.system?.props ?? null;
   if (!weaponItem && entry?.uuid) {
     try { weaponItem = actor.items?.get?.(String(entry.uuid).split(".").pop()) ?? null; } catch (_) {}
   }
-  const wip = weaponItem?.system?.props ?? null;
 
   // Attribute pair. Empty/SHI means no usable weapon in this hand.
   // `let`: a weapon form may re-project the pair (Lionheart: Sword MIG+WLP / Gun DEX+INS).

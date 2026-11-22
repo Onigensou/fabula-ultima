@@ -1,6 +1,6 @@
 // node scripts/shared/equipped-gear.test.mjs — equip slots by item id.
 import assert from "node:assert/strict";
-import { resolveWornSlots, slotStamp, planEquipSync, itemAttackBonuses, slotIdsOf } from "./equipped-gear.js";
+import { resolveWornSlots, slotStamp, planEquipSync, planLabelWrite, itemAttackBonuses, slotIdsOf } from "./equipped-gear.js";
 
 let pass = 0, fail = 0;
 const t = async (name, fn) => {
@@ -131,6 +131,47 @@ await t("itemAttackBonuses = item stats + actor buffs over the cached base", () 
   const off = mkActor({ off_base_mod_1: 0, off_mod_1: 0, off_base_mod_2: 0, off_mod_2: 2 }, [bow]);
   assert.deepEqual(itemAttackBonuses(off, bow, "off"), { checkBonus: 1, damageBonus: 24 });
   assert.equal(itemAttackBonuses(mkActor({}, [bow]), bow, "main"), null);
+});
+
+await t("names match with stray whitespace on either side", () => {
+  const bow = weapon("B1", "Bow ");
+  assert.equal(resolveWornSlots(mkActor({ main_hand: "Bow " }, [bow])).main, bow);
+  assert.equal(resolveWornSlots(mkActor({ main_hand: "Bow" }, [bow], { main: "B1" })).via.main, "id");
+});
+
+await t("planLabelWrite: a label-only write makes the id follow the label", () => {
+  const bow = weapon("B1", "+7 Zarg's Bow"), sword = weapon("S1", "Cursed Sword"), ring = acc("R1", "Ring");
+  const F = (slot) => `flags.${NS}.equipSlots.${slot}`;
+  // GM types a bare name on an NPC cloned from a PC: the old id must go.
+  assert.deepEqual(planLabelWrite(mkActor({ main_hand: "Claws" }, [bow, sword], { main: "B1" }), ["main"]), { [F("main")]: null });
+  // Label cleared (legacy unequip): id goes.
+  assert.deepEqual(planLabelWrite(mkActor({ main_hand: "" }, [bow], { main: "B1" }), ["main"]), { [F("main")]: null });
+  // Label names another owned item: nothing to clear (planEquipSync re-stamps it).
+  assert.deepEqual(planLabelWrite(mkActor({ main_hand: "Cursed Sword" }, [bow, sword], { main: "B1" }), ["main"]), {});
+  // Label still names the id item: untouched.
+  assert.deepEqual(planLabelWrite(mkActor({ main_hand: "+7 Zarg's Bow" }, [bow], { main: "B1" }), ["main"]), {});
+  // Only the slots asked about; a hand name never matches an accessory.
+  assert.deepEqual(planLabelWrite(mkActor({ main_hand: "Claws", accessory_name: "Cursed Sword" }, [bow, sword, ring], { main: "B1", acc1: "R1" }), ["acc1"]), { [F("acc1")]: null });
+  // No id stored: nothing to do.
+  assert.deepEqual(planLabelWrite(mkActor({ main_hand: "Claws" }, [bow]), ["main"]), {});
+});
+
+await t("itemAttackBonuses diffs against the STORED base, and a blank base gives null", () => {
+  const bow = weapon("B1", "Bow", { damage_bonus: 22, check_bonus: 1 });
+  const a = mkActor({ weapon1_base_mod: 1, weapon1_mod: 1, weapon1_base_damage: 23, weapon1_damage: 28 }, [bow]);
+  a._source = { system: { props: { weapon1_base_mod: 1, weapon1_base_damage: 21 } } };   // an effect added +2 to the derived base
+  assert.deepEqual(itemAttackBonuses(a, bow, "main"), { checkBonus: 1, damageBonus: 29 });
+  assert.equal(itemAttackBonuses(mkActor({ weapon1_base_mod: "", weapon1_mod: 0, weapon1_base_damage: "", weapon1_damage: 0 }, [bow]), bow, "main"), null);
+});
+
+await t("armor label follows a refined worn armor; blank label / two worn / none are left alone", () => {
+  const armor = (id, name, eq = true) => ({ id, name, system: { props: { name, item_type: "armor", isEquipped: eq } } });
+  const A = (label, items) => planEquipSync(mkActor({ armor_name: label }, items));
+  assert.deepEqual(A("+4 Apothecary Robes", [armor("A1", "+5 Apothecary Robes")]), { update: { "system.props.armor_name": "+5 Apothecary Robes" }, slots: ["armor"] });
+  assert.equal(A("+5 Apothecary Robes", [armor("A1", "+5 Apothecary Robes")]).slots.length, 0);
+  assert.equal(A("", [armor("A1", "Sage Robe")]).slots.length, 0);
+  assert.equal(A("Old", [armor("A1", "X"), armor("A2", "Y")]).slots.length, 0);
+  assert.equal(A("Old", [armor("A1", "X", false)]).slots.length, 0);
 });
 
 await t("slotIdsOf tolerates missing flags", () => {
