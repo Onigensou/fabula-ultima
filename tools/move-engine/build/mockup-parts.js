@@ -18,7 +18,10 @@ const rd = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/
 const engine = () => [rd("shared/core.js"), rd("mockup/engine.js"), rd("shared/fx-core.js")].join("\n");
 const common = () => rd("shared/common.js");
 const fxMelee = () => rd("shared/fx-melee.js");
-const moves = () => rd("shared/moves.js");
+// the move framework (def / T / TO) + the shared results (moveCheck / moveChain / the dice rule)
+const moves = () => [rd("shared/moves.js"), rd("shared/results.js")].join("\n");
+// the shared result picker (page UI): mountResultPicker(el) after the page UI is built
+const resultPicker = () => rd("mockup/result-picker.js");
 // a family's host-neutral move files (tools/move-engine/moves/<family>/<file>.js)
 const family = (fam, file) => rd("moves/" + fam + "/" + file + ".js");
 const css = (names) => names.map((n) => rd("mockup/vendor/" + n + ".css")).join("\n");
@@ -45,4 +48,4 @@ const PARTY_LINE = {
   keren: { cx: 1312, cy: 382, sc: 1.47, kind: "party" }, blanche: { cx: 1367, cy: 492, sc: 1.55, kind: "party" },
 };
 
-module.exports = { ROOT, engine, common, fxMelee, moves, family, css, pageHead, hpbarTiming, stageScript, PRESETS, PARTY_LINE };
+module.exports = { ROOT, engine, common, fxMelee, moves, resultPicker, family, css, pageHead, hpbarTiming, stageScript, PRESETS, PARTY_LINE };

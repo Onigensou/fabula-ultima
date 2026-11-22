@@ -720,6 +720,10 @@
     {
       "key": "2026-11-22-gunblade-move-engine",
       "path": "data-migrations/2026-11-22-gunblade-move-engine.js"
+    },
+    {
+      "key": "2026-11-22-gunblade-move-results",
+      "path": "data-migrations/2026-11-22-gunblade-move-results.js"
     }
   ]
 }

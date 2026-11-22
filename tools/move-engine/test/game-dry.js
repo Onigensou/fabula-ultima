@@ -17,6 +17,10 @@ args.forEach((a, i) => { if (a === "--tune") { const [k, v] = args[i + 1].split(
 const RES = (() => { const i = args.indexOf("--result"); if (i < 0) return null; const [kind, tot] = args[i + 1].split(":");
   return { tokenUuid: "t0", hit: kind !== "miss", crit: kind === "crit", total: tot == null ? null : Number(tot), fumble: false }; })();
 const VARIANT = (() => { const i = args.indexOf("--variant"); return i < 0 ? null : args[i + 1]; })();
+// --strikes hit,miss,crit,…[,perfect]: a Chain plan in BD's shape ({ index, outcomes: [{ tokenUuid, kind, amount, isCrit }], perfect? })
+const STRIKES = (() => { const i = args.indexOf("--strikes"); if (i < 0) return null;
+  return args[i + 1].split(",").map((k, n) => k === "perfect" ? { index: n + 1, roll: null, perfect: true, mult: 1.5, outcomes: [{ tokenUuid: "t0", kind: "hit", amount: 29, isCrit: true }] }
+    : { index: n + 1, roll: { total: 10 }, outcomes: [{ tokenUuid: "t0", kind: k === "crit" ? "hit" : k, amount: k === "miss" ? 0 : 4, isCrit: k === "crit" }] }); })();
 const MOCK = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "out", "clock.json"), "utf8"));
 const files = LF.filesFor(KEY);
 
@@ -34,7 +38,7 @@ const TL = { STAGE: { x: 0, y: 0, w: 1682, h: 788 }, TOK, POSE: {}, load: async 
 const el = () => ({ setAttribute() {}, style: {}, getContext: () => null, appendChild() {}, innerHTML: "" });
 globalThis.document = { getElementById: () => null, createElementNS: el, createElement: el, body: { appendChild() {} }, querySelector: () => null };
 globalThis.Hooks = { callAll() {} };
-const ctx = { casterToken: { center: {} }, targetTokens: [{ center: {} }], params: { cfg: { dryOnly: true, trace: true, seed: 2611 }, assets: { clips: {}, sfx: {} }, outcomes: RES ? [RES] : null, variant: VARIANT } };
+const ctx = { casterToken: { center: {} }, targetTokens: [{ center: {} }], params: { cfg: { dryOnly: true, trace: true, seed: 2611 }, assets: { clips: {}, sfx: {} }, outcomes: RES ? [RES] : null, strikes: STRIKES || [], variant: VARIANT } };
 // every clip key the move names, so the runtime records them (sizes are irrelevant to the trace)
 const meta = JSON.parse(fs.readFileSync("E:/Art(New Com)/DND/Fabula Ultima/Resource/Animation/Sonic Katar/src/assets/meta.json", "utf8"));
 const A = GB.assetsFromMeta(meta, {}); ctx.params.assets = { clips: A.clips, sfx: A.sfx };
@@ -48,7 +52,7 @@ const canvas = { tokens: { placeables: [] }, app: null };
   console.log("move " + KEY + " · build check: " + (chk.errors.length ? chk.errors.join("; ") : "ok") + (chk.warnings.length ? " · warnings: " + chk.warnings.join("; ") : ""));
   console.log("game dry run: " + rep.dryMs + " ms real, " + game.length + " events, move ends at " + rep.end + " ms, gate " + rep.gate + " ms, warnings: " + (rep.warnings.join("; ") || "none"));
   // a game outcome / variant run: show what the move chose (no mockup trace to compare against)
-  if (RES || VARIANT) { console.log("gate " + rep.gate + " (markGate " + rep.markGate + ", first hit " + rep.firstHit + ") · result " + JSON.stringify(rep.result) + " · variant " + rep.variant);
+  if (RES || VARIANT || STRIKES) { console.log("gate " + rep.gate + " (markGate " + rep.markGate + ", first hit " + rep.firstHit + ") · result " + JSON.stringify(rep.result) + " · variant " + rep.variant);
     for (const e of game) if (["clip", "sfx", "hit", "gate", "beat"].includes(e.type)) console.log("  GAME " + String(e.at).padStart(6) + " " + e.type + " " + (e.key || e.name || e.kind || ""));
     process.exit(0); }
   if (!mock) { console.log("(no mockup trace for " + KEY + " in out/clock.json)"); process.exit(0); }
@@ -63,6 +67,7 @@ const canvas = { tokens: { placeables: [] }, app: null };
     if (!a || !b) diffs.push("missing on " + (a ? "game" : "mockup") + " side");
     else { if (Math.abs(a.at - b.at) > 0.5) diffs.push("at " + a.at + " vs " + b.at);
       for (const f of fields) if (a[f] !== b[f] && !(typeof a[f] === "number" && Math.abs(a[f] - b[f]) < 1e-3)) diffs.push(f + " " + a[f] + " vs " + b[f]);
+      if ((a.list || b.list) && String(a.list) !== String(b.list)) diffs.push("result " + a.list + " vs " + b.list);
       if (a.at2 && b.at2 && (Math.abs(a.at2.x - b.at2.x) > 1 || Math.abs(a.at2.y - b.at2.y) > 1)) diffs.push("pos " + JSON.stringify(a.at2) + " vs " + JSON.stringify(b.at2)); }
     if (diffs.length) bad++;
     console.log((diffs.length ? "✗ " : "  ") + String(a ? a.at : "").padStart(7) + " " + String(b ? b.at : "").padStart(7) + "  " + ((a || b).type + " " + ((a || b).key || (a || b).name || "")).padEnd(34) + (diffs.length ? diffs.join(" · ") : ""));

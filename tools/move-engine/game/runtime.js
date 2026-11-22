@@ -88,13 +88,21 @@ const moveCaster = () => CASTER;
 const moveTarget = (i = 0) => TARGETS[i] || TARGETS[0] || null;
 // the action's real Accuracy result for a target: { hit, crit, total, fumble, kind } (BD's payload.outcomes; a Chain's
 // per-strike results are moveStrikes()). null when the game did not say (a bench preview without an outcome).
+const meUuidOf = (t) => { const tok = t && ME_TARGET_TOKS[TARGETS.indexOf(t)]; return tok && tok.document && tok.document.uuid; };
+// RESULT-like (shared/results.js makes the final shape): hit / crit / total / fumble + the PLANNED amount, element, affinity
 function moveResult(t) {
   const list = Array.isArray(ctx.params.outcomes) ? ctx.params.outcomes : null; if (!list || !list.length) return null;
-  const tok = t && ME_TARGET_TOKS[TARGETS.indexOf(t)]; const uuid = tok && tok.document && tok.document.uuid;
-  const o = list.find((x) => x && x.tokenUuid === uuid) || list[0]; if (!o) return null;
-  return { hit: o.hit !== false, crit: !!o.crit, total: o.total == null ? null : Number(o.total), fumble: !!o.fumble, kind: o.hit === false ? "miss" : "hit" };
+  const uuid = meUuidOf(t); const o = list.find((x) => x && x.tokenUuid === uuid) || list[0]; if (!o) return null;
+  return { kind: o.hit === false ? "miss" : "hit", hit: o.hit !== false, crit: !!o.crit, total: o.total == null ? null : Number(o.total), fumble: !!o.fumble,
+    amount: o.amount == null ? null : Number(o.amount), element: o.element || null, affinity: o.affinity || null };
 }
-const moveStrikes = () => (Array.isArray(ctx.params.strikes) ? ctx.params.strikes : []);
+// a Chain's planned strikes on target t, in order (BD: { index, roll, outcomes: [{ tokenUuid, kind, amount, isCrit }], perfect? })
+function moveStrikes(t) {
+  const list = Array.isArray(ctx.params.strikes) ? ctx.params.strikes : []; const uuid = meUuidOf(t);
+  return list.map((s) => { const o = (s.outcomes || []).find((x) => x && x.tokenUuid === uuid) || (s.outcomes || [])[0] || {};
+    return { kind: o.kind || "hit", crit: !!o.isCrit, amount: o.amount == null ? null : Number(o.amount), perfect: !!s.perfect, total: s.roll && s.roll.total != null ? Number(s.roll.total) : null }; });
+}
+const movePick = () => null;   // mockup pages only (result picker)
 const moveVariant = () => ctx.params.variant || null;
 // the active form of the caster's equipped form weapon (Lionheart / Gunblade weaponForms), 0 when none
 function meWeaponForm() {

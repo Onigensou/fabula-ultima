@@ -182,7 +182,9 @@ const MOVE_ROLES = () => window.MOVE_ROLES || {};
 const moveCaster = () => (MOVE_ROLES().caster ? MOVE_ROLES().caster() : PARTY[0]);
 const moveTarget = (i = 0) => (MOVE_ROLES().target ? MOVE_ROLES().target(i) : ENEMIES[i] || ENEMIES[0] || null);
 const moveResult = (t) => (MOVE_ROLES().result ? MOVE_ROLES().result(t) : null);
-const moveStrikes = () => (MOVE_ROLES().strikes ? MOVE_ROLES().strikes() : []);
+const moveStrikes = (t) => (MOVE_ROLES().strikes ? MOVE_ROLES().strikes(t) : []);
+// the page's result picker (mockup/result-picker.js): { check: "odd" | "crit" | …, chain: "all" | 0.75 | … } or null = the move's sliders
+const movePick = () => window.MOVE_PICK || null;
 const moveVariant = () => (MOVE_ROLES().variant ? MOVE_ROLES().variant() : null);
 // the boss's side of the field for the chosen fight: who stands, where (cx, cy = token centre on the stage)
 function setLineup(list) {

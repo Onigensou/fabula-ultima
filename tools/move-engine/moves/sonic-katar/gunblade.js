@@ -3,15 +3,14 @@
 // total OR a Critical Success on a hit → +10 and Fire (the build ruling of 2026-11-21: "odd OR crit"); Firearm DEX + INS HR + 5.
 // Changes from the approved page: (1) gbRoll() takes the GAME's real roll first (moveResult), the page's sliders otherwise;
 // (2) the fire rule includes the crit (the page's v2 fired on odd only, before the build ruling).
-// the Accuracy result: the game's real roll when the host has one, else the page's sliders (rolled with the wielder's dice, or forced)
-function gbRoll(C, attrB) { const R = moveResult(ORC);
-  if (R) return { tot: R.total == null ? 0 : R.total, hit: R.hit && !R.fumble, crit: R.crit, fum: R.fumble, real: true };
-  const p = (typeof PDICE !== "undefined" && PDICE[WIELD]) || { dex: 8, mig: 8, ins: 8, acc: 0 }, mode = tv(C, "roll");
-  if (mode === 0) return rollAcc(p.dex, p[attrB], p.acc, tv(C, "def"));
-  if (mode === 1) return { a: 3, b: 4, tot: 7 + p.acc, hit: true, crit: false };                // odd, lands
-  if (mode === 2) return { a: 4, b: 4, tot: 8 + p.acc, hit: true, crit: false };                // even, lands
-  if (mode === 3) return { a: 6, b: 6, tot: 12 + p.acc, hit: true, crit: true };                // crit: matching dice = always even
-  return { a: 1, b: 1, tot: 2, hit: false, crit: false, fum: true }; }
+// the Accuracy result (shared/results.js moveCheck): the game's real roll, else the page's result picker, else this move's own
+// "Accuracy" slider (rolled with the wielder's dice, or a forced odd / even / crit / fumble that counts the wielder's bonus)
+function gbRoll(C, attrB) {
+  const p = (typeof PDICE !== "undefined" && PDICE[WIELD]) || { dex: 8, mig: 8, ins: 8, acc: 0 };
+  return moveCheck(ORC, () => { const mode = tv(C, "roll");
+    if (mode === 0) return rollCheck(p.dex, p[attrB], p.acc, tv(C, "def"));
+    return (CHECK_PRESETS[["", "odd", "even", "crit", "fumble"][mode]] || CHECK_PRESETS.fumble)(p.acc); }, p.acc);
+}
 def("gb_sword", { status: "approved", boss: "gunblade", name: "Attack · Sword", icon: "icon_gb", tag: "Melee · DEX + MIG · HR + 8 · Martial",
   intro: "A Sword swing. If the accuracy total is an <b>odd</b> number or the hit is a <b>Critical Success</b>, the blade fires: +10 damage and the damage becomes Fire (build ruling 2026-11-21: odd OR crit).",
   rules: "Roll = the wielder's real DEX + MIG dice (chips above) at the DEF slider, or forced. The Fire is a damage-type change, not Vulnerable: a Fire-weak target takes ×2, a Fire-resistant one ×½, on the whole hit.",

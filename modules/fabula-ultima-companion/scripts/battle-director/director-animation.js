@@ -507,7 +507,7 @@ async function executeAnimationScript({
     animationScriptRaw: script,
     animation_damage_timing_options: timingMode,
     animation_damage_timing_offset:  timingOffset,
-    // Per-target accuracy outcome, [{ tokenUuid, hit, crit, total, fumble }] (total / fumble = the card's one Accuracy Check), when the caller
+    // Per-target accuracy outcome, [{ tokenUuid, hit, crit, total, fumble, amount, element, affinity }] (total / fumble = the card's one Accuracy Check; amount / element / affinity = the planned damage), when the caller
     // knows it. The accuracy roll is settled before ANIMATION runs, so the FSM
     // fills this from the action result; the Anim Studio bench fills it from its
     // Outcome selector, which is how a miss cinematic gets rehearsed outside
@@ -687,6 +687,12 @@ function outcomesFromDirector(director) {
         tokenUuid: r?.tokenUuid ?? null,
         total,
         fumble,
+        // The PLANNED damage as COMPUTE left it (damage-time reactions such as Gunblade's
+        // +10 Fire are applied later, at RESOLVE): amount, its element, the target's
+        // affinity code (VU / RS / IM / AB / NE). move-engine's RESULT shape reads these.
+        amount: typeof r?.damage === "number" ? r.damage : null,
+        element: String(r?.element ?? ar?.damageType ?? "").toLowerCase() || null,
+        affinity: r?.affinity ?? null,
         hit: t ? t.landed > 0 : !!r?.hit,
         crit: t ? t.crits > 0 : !!r?.crit,
       };

@@ -40,7 +40,7 @@ function declared(text) {
 const INTERNAL = /^(ME_|me[A-Z]|TRK$|TM$|TL$|KP$|ORG$|toW$|toM$|VT$|PHASE$|REC_ON$|IN_TW$|STEPS$|TWS$|DUE|NATIVE$|CLK$|clkSync$|clockNow$|due|isVideo$|MOVE_HOST$|M$|\$$|SCR$)/;
 
 function commands(md) {
-  const shared = { core: declared(rd("shared/core.js")), "fx-core": declared(rd("shared/fx-core.js")), common: declared(rd("shared/common.js")), "fx-melee": declared(rd("shared/fx-melee.js")) };
+  const shared = { core: declared(rd("shared/core.js")), "fx-core": declared(rd("shared/fx-core.js")), common: declared(rd("shared/common.js")), "fx-melee": declared(rd("shared/fx-melee.js")), moves: declared(rd("shared/moves.js")), results: declared(rd("shared/results.js")) };
   const mock = declared(rd("mockup/engine.js")), game = declared(rd("game/runtime.js")), over = rd("game/overrides.js");
   const rows = [];
   for (const [file, names] of Object.entries(shared)) for (const n of names) {

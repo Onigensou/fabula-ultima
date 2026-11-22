@@ -32,14 +32,12 @@ for (const k of Object.keys(meta.sfx)) meta.sfx[k] = uri(meta.sfx[k]);
 // the stage the approved page used (it regex-patched these into its engine copy)
 const stage = ME.stageScript({ preset: ME.PRESETS.valley001, actors: { ...ME.PARTY_LINE, orc: { cx: 400, cy: 320, sc: 1.84, kind: "enemy" } }, seed: 2611,
   roles: "{ caster: () => ACT[WIELD], target: () => ACT.orc }" });
-// the page's own part: Sonic Blow + the attack-for-scale + the balance panels. The Gunblade moves and the family head come
-// from the repo (moves/sonic-katar), the same files the game build uses.
-const pagePart = (() => { const ps = rd(path.join(FX, "part-sonic.js"));
-  const i = ps.indexOf("// ───────── Gunblade (replaces Imperial Gunblade)"), j = ps.indexOf("// ═════════ Balance panels");
-  if (i < 0 || j < 0) throw new Error("part-sonic sections");
-  return 'WIELD = "keren";   // user 2026-11-21: Keren holds the weapons on this page (the chips switch it)\n' + ps.slice(0, i) + ps.slice(j); })();
+// every move comes from the repo (moves/sonic-katar: head, sonic, gunblade), the same files the game build uses; the page keeps
+// only its own part (the wielders' dice + the balance panels) and its UI, plus the shared result picker
+const pagePart = require("./lib-files.js").pagePart().text;
 const parts = [ME.engine(), ME.common(), rd(path.join(FX, "part-hud.js")), ME.fxMelee(), ME.moves(), ME.family("sonic-katar", "head"), pagePart,
-  ME.family("sonic-katar", "gunblade"), rd(path.join(FX, "part-ui.js"))];
+  ME.family("sonic-katar", "sonic"), ME.family("sonic-katar", "gunblade"), ME.resultPicker(), rd(path.join(FX, "part-ui.js")),
+  'mountResultPicker(document.querySelector(".panel"));'];
 const js = KITB.wrap(parts.join("\n"), { page: "sonic-katar-gunblade-me", version: "me-test" });
 const out = head + "\n" + rd(path.join(FX, "page-lower.html")) +
   "\n<script>\nwindow.META = " + JSON.stringify(meta) + ";\nwindow.HPBAR_T = " + ME.hpbarTiming() + ";\n" + stage + "\n</script>\n<script>\n" + js + "\n</script>\n";

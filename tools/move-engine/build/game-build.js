@@ -16,7 +16,7 @@ const rd = (p) => fs.readFileSync(p, "utf8").replace(/\r\n/g, "\n");
 const { encode } = require(path.join(ROOT, "..", "anim-studio", "lib", "encode.js"));
 
 const FORGE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/";
-const ORDER = ["shared/core.js", "game/runtime.js", "shared/fx-core.js", "shared/common.js", "shared/fx-melee.js", "shared/moves.js", "game/overrides.js"];
+const ORDER = ["shared/core.js", "game/runtime.js", "shared/fx-core.js", "shared/common.js", "shared/fx-melee.js", "shared/moves.js", "shared/results.js", "game/overrides.js"];
 // DOM-only mockup helpers the game runtime does not draw: a move calling one is refused (list kept in step with runtime.js)
 const UNSUPPORTED = ["silhouette", "swapArt", "restoreArt", "setLineup", "groundPortal", "impactFrame", "startDance", "wingsOn", "sprite", "battlerCopy", "castFocus", "castUnfocus"];
 const WARN_ONLY = { cutin: "the game plays Zero Power cut-ins itself; the move only keeps its length", critCutin: "BD plays the crit cut-in BEFORE the animation; the move's call is a no-op" };
