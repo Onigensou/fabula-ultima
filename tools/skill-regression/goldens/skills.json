@@ -76,8 +76,8 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 496,
-    "engineVersion": "1.0.650",
+    "count": 500,
+    "engineVersion": "1.0.660",
     "override": {
       "SL": 5,
       "CHAR_LEVEL": 50,
@@ -4118,6 +4118,19 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Keren / Spellblade Rhapsody": {
+      "caster": "Keren",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Spellblade Rhapsody",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Keren / Zero Power: Last Den of Cinders": {
       "caster": "Keren",
       "element": "fire",
@@ -7691,6 +7704,19 @@
       "skillType": "Active",
       "targets": 1
     },
+    "🌟 Nidhogg, Dragon King / Army of the Damned": {
+      "caster": "🌟 Nidhogg, Dragon King",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Army of the Damned",
+      "skillType": "Active",
+      "targets": 1
+    },
     "🌟 Nidhogg, Dragon King / Call of the Master": {
       "caster": "🌟 Nidhogg, Dragon King",
       "element": "poison",
@@ -7717,6 +7743,19 @@
       "skillType": "Active",
       "targets": 1
     },
+    "🌟 Nidhogg, Dragon King / Requiem of Soul": {
+      "caster": "🌟 Nidhogg, Dragon King",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Requiem of Soul",
+      "skillType": "Spell",
+      "targets": 1
+    },
     "🌟 Nidhogg, Dragon King / Soul Devour": {
       "caster": "🌟 Nidhogg, Dragon King",
       "element": "",
@@ -7728,6 +7767,32 @@
       "roll": null,
       "skill": "Soul Devour",
       "skillType": "Active",
+      "targets": 1
+    },
+    "🌟 Nidhogg, Dragon King / Soulflare": {
+      "caster": "🌟 Nidhogg, Dragon King",
+      "element": "poison",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 66,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Soulflare",
+      "skillType": "Spell",
       "targets": 1
     },
     "🌟 Nidhogg, Dragon King / Wailing Breath": {
