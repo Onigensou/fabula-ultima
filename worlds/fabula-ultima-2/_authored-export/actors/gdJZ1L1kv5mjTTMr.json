@@ -284,6 +284,12 @@
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "entranceStyle": "foxfire",
+      "equipSlots": {
+        "acc1": "BMk7ey9etLgHOrnI",
+        "acc2": "h2zke8eM3OaNV9Vh",
+        "main": "Ld4P1df4SK5zvtq6",
+        "off": "6Pry1DbGlFej0tVP"
+      },
       "faPity": {
         "kirin": 1
       },
@@ -632,7 +638,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -1791,7 +1797,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -8041,7 +8047,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -10062,7 +10068,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"

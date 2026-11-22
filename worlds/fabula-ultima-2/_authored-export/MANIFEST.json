@@ -15045,12 +15045,20 @@
         "type": "character",
         "items": [
           {
+            "id": "yP9hB7ylwkXr0nwM",
+            "name": "Army of the Damned"
+          },
+          {
             "id": "FXI0FkJZdecsuoma",
             "name": "Call of the Master"
           },
           {
             "id": "YrE6d5qP1KI7d9Zr",
             "name": "Claw"
+          },
+          {
+            "id": "Q2CFaR5lMkpmDLYz",
+            "name": "Requiem of Soul"
           },
           {
             "id": "jySNvluZNVA4v9ee",
@@ -15061,12 +15069,20 @@
             "name": "Soul Master"
           },
           {
+            "id": "GxNIC7NmcVANDVPo",
+            "name": "Soulflare"
+          },
+          {
             "id": "fHPY0kZb37N089Wk",
             "name": "Tail Stab"
           },
           {
             "id": "whVYUQsml3QWatCY",
             "name": "Wailing Breath"
+          },
+          {
+            "id": "mOlYcPqhqKyttB7w",
+            "name": "Zero Trigger: Nox Servant"
           }
         ],
         "effects": 0
@@ -25618,7 +25634,60 @@
         "id": "soULFRagmeNT0001",
         "name": "Soul Fragment",
         "type": "character",
-        "items": [],
+        "items": [
+          {
+            "id": "XYmkYKHLZoyUyNnY",
+            "name": "Dawnbreak Arrow"
+          },
+          {
+            "id": "sB91khweLDyEet0P",
+            "name": "Frozen Requiem"
+          },
+          {
+            "id": "oHkumny9UhvSeRon",
+            "name": "Ghost Descabello"
+          },
+          {
+            "id": "xLVBMfGyzUaQErky",
+            "name": "Hollow Charm"
+          },
+          {
+            "id": "4fxfAwvoZ9yuQLSR",
+            "name": "Hollow Muleta"
+          },
+          {
+            "id": "BYqygGR4ek0xbaia",
+            "name": "Mirror Wraith"
+          },
+          {
+            "id": "PNj0sI1FCFRTZ4az",
+            "name": "Mocking Provoke"
+          },
+          {
+            "id": "F0bXAKfObeHCb47z",
+            "name": "Phantom Volley"
+          },
+          {
+            "id": "DgWgJPWYpoBx7yy1",
+            "name": "Soul Echo"
+          },
+          {
+            "id": "SMQHUHGrbMTnBcBa",
+            "name": "Soul Siphon"
+          },
+          {
+            "id": "W2nMkgCcz1Jf8mOV",
+            "name": "Spirit Leech"
+          },
+          {
+            "id": "8hSMcfnNPZHgns8G",
+            "name": "Stolen Hour"
+          },
+          {
+            "id": "6AiIgH1Me0y5QSzz",
+            "name": "Warning Shriek"
+          }
+        ],
         "effects": 0
       },
       {

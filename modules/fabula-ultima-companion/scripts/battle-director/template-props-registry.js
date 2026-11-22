@@ -56,7 +56,10 @@
 // documents in this world name it and **it does not exist as a world item**,
 // so there is nothing to sync onto. That is a real defect, but it is a content
 // defect, not this file's business.
-export const MANAGED_PROP_TEMPLATES = Object.freeze(["j0F5Msw5RZ8aIB3j"]);
+// (Derived from MANAGED_PROPS_BY_TEMPLATE below; kept as an export for callers.)
+export const SKILL_TEMPLATE_ID = "j0F5Msw5RZ8aIB3j";
+/** Nidhogg's NPC actor template. */
+export const NPC_TEMPLATE_ID = "yegF6R8aaymhrvCg";
 
 /** The tab the managed fields live in, so the sync never touches hand-authored layout. */
 export const MANAGED_TAB_KEY = "fu_engine_fields";
@@ -150,6 +153,30 @@ export const MANAGED_PROPS = Object.freeze([
   checkProp("attack_with_carrier", "Attack With Carrier",
     "Performed as an attack with the equipped weapon (carrier-attack.js)."),
 ]);
+
+/**
+ * NPC actor template: Zero Trigger / Zero Power HUD text. Present on 84-93 NPC
+ * actors in the world but undeclared, so a reloadTemplate would prune them
+ * (2026-11-22 ruling). Strings; the two descriptions hold HTML (`<p>..`), so
+ * they are textArea. No default on any (see header).
+ */
+export const NPC_HUD_PROPS = Object.freeze([
+  textProp("zero_trigger_label", "Zero Trigger Label", "Heading of the Zero Trigger text on the player HUD."),
+  areaProp("zero_trigger_description", "Zero Trigger Description", "Zero Trigger rules text (HTML)."),
+  textProp("zero_power_name", "Zero Power Name", "Name of the Zero Power shown on the HUD."),
+  areaProp("zero_power_description", "Zero Power Description", "Zero Power rules text (HTML)."),
+]);
+
+/** template id -> the props it receives. */
+export const MANAGED_PROPS_BY_TEMPLATE = Object.freeze({
+  [SKILL_TEMPLATE_ID]: MANAGED_PROPS,
+  [NPC_TEMPLATE_ID]: NPC_HUD_PROPS,
+});
+
+export const MANAGED_PROP_TEMPLATES = Object.freeze(Object.keys(MANAGED_PROPS_BY_TEMPLATE));
+
+/** The props a template receives (empty for an unmanaged id). */
+export const propsForTemplate = (id) => MANAGED_PROPS_BY_TEMPLATE[id] ?? [];
 
 /** The tab node the sync creates when it is missing. */
 function managedTab() {

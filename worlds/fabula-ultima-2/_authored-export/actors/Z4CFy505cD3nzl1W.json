@@ -302,6 +302,11 @@
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "entranceStyle": "warningShot",
+      "equipSlots": {
+        "acc1": "tImoyJ8c71GeEmSi",
+        "acc2": "6ef3fWjmWMYTG9Kz",
+        "main": "xEHcsYyJhPaTCGcJ"
+      },
       "faPity": {
         "kirin": 1
       },
@@ -13578,7 +13583,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -16009,7 +16014,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -18066,7 +18071,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -20652,7 +20657,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -21616,7 +21621,7 @@
       "arcanism": false,
       "armor_details": "<ul>\n<li>When you use the <strong>Potion Rain</strong> Skill, the restoring effect is not halved.</li>\n</ul>",
       "armor_mod": "1",
-      "armor_name": "+4 Apothecary Robes",
+      "armor_name": "+5 Apothecary Robes",
       "backstory": "",
       "bane_status": 0,
       "base_defense": 12,
@@ -23594,7 +23599,7 @@
       "turbulence_status": 0,
       "uuid": "Actor.Z4CFy505cD3nzl1W",
       "weak_status": 0,
-      "weapon1_base_damage": "21",
+      "weapon1_base_damage": 22,
       "weapon1_base_mod": "1",
       "weapon1_damage": 21,
       "weapon1_damagetype": "Physical",

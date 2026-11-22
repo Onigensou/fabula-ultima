@@ -110,5 +110,26 @@ console.log("\n— it refuses rather than inventing a layout —");
   eq("a missing body is handled", reg.ensureManagedProps(null).changed, false);
 }
 
+console.log("\n— NPC template (HUD text props) —");
+{
+  eq("NPC template is managed", reg.MANAGED_PROP_TEMPLATES.includes("yegF6R8aaymhrvCg"), true);
+  eq("skill template still managed", reg.MANAGED_PROP_TEMPLATES.includes("j0F5Msw5RZ8aIB3j"), true);
+  // Skill template = exactly MANAGED_PROPS (21 since origin v1.0.652 added attack_with_carrier).
+  eq("skill props unchanged (= MANAGED_PROPS)", reg.propsForTemplate("j0F5Msw5RZ8aIB3j").length, reg.MANAGED_PROPS.length);
+  eq("unmanaged id gets nothing", reg.propsForTemplate("nope"), []);
+  const npc = reg.propsForTemplate("yegF6R8aaymhrvCg");
+  eq("the 4 NPC keys", npc.map((p) => p.key),
+    ["zero_trigger_label", "zero_trigger_description", "zero_power_name", "zero_power_description"]);
+  eq("NPC props carry NO default", npc.filter((p) => !!p.defaultValue).map((p) => p.key), []);
+  const body = makeBody();
+  const r = reg.ensureManagedProps(body, npc);
+  eq("adds exactly the 4", r.added.length, 4);
+  const tab = body.contents[0].contents.find((t) => t.key === reg.MANAGED_TAB_KEY);
+  eq("...in the managed tab only", tab.contents.length, 4);
+  const again = reg.ensureManagedProps(body, npc);
+  eq("second run: zero writes", [again.changed, again.added], [false, []]);
+  eq("skill sync with default arg unchanged", reg.ensureManagedProps(makeBody()).added.length, reg.MANAGED_PROPS.length);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

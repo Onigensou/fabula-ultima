@@ -207,9 +207,15 @@ export function refundSplit({ stolen, eaten } = {}) {
   return { returned: heldLoss({ stolen, eaten }), keep };
 }
 
-/** A fragment can be eaten once it has Called, while it stands and nobody has paid it out. */
-export function fragmentMayBeEaten({ hp, calledRound, returned } = {}) {
-  return whole(hp) > 0 && whole(calledRound) > 0 && returned !== true;
+/** A permanent fragment (Nox Servant's) is never eaten: AE flags soulFragmentMark + soulPermanent. */
+export function isPermanentFragmentAe(ae) {
+  const f = ae?.flags?.[FLAG_NS];
+  return f?.soulFragmentMark === true && f?.soulPermanent === true;
+}
+
+/** A fragment can be eaten once it has Called, while it stands, nobody has paid it out, and it is not permanent. */
+export function fragmentMayBeEaten({ hp, calledRound, returned, permanent } = {}) {
+  return whole(hp) > 0 && whole(calledRound) > 0 && returned !== true && permanent !== true;
 }
 
 /**
@@ -319,6 +325,54 @@ function servantOf(isServant) {
 
 function fragmentCombatants(ctx) {
   return (ctx.dCombat?.combatants ?? []).filter((c) => isFragmentActor(c?.actorDoc));
+}
+
+/** Army of the Damned: the side-wide turn priority its fragments get (director-combat grantTurnsThisRound). */
+export const ARMY_PRIORITY = 10;
+
+/**
+ * Who Army grants a turn to: a standing fragment (hp > 0) holding no turn, not already
+ * granted this round (the idempotency marker is the priority stamp's round). Permanent
+ * (Nox Servant) fragments are in the list like any other. Pure.
+ * list: [{ id, hp, turnsRemaining, grantedRound }]. Returns { grant: [id...] }.
+ */
+export function armyGrantPlan(list = [], round = 0) {
+  const grant = [];
+  for (const f of list ?? []) {
+    if (!f?.id) continue;
+    if ((Number(f.hp) || 0) <= 0) continue;
+    if ((Number(f.turnsRemaining) || 0) > 0) continue;
+    if (f.grantedRound != null && (Number(f.grantedRound) || 0) === (Number(round) || 0)) continue;
+    grant.push(f.id);
+  }
+  return { grant };
+}
+
+/** The combatant an effect context names as its caster/reactor (token or actor), or null. */
+function casterCombatant(dc, effectCtx) {
+  const t = effectCtx?.reactorToken ?? effectCtx?.casterToken ?? null;
+  const id = t?.id ?? t?.document?.id ?? null;
+  const uuid = effectCtx?.reactorActor?.uuid ?? effectCtx?.casterActor?.uuid ?? null;
+  return (dc?.combatants ?? []).find((c) => (id && c.tokenDoc?.id === id) || (uuid && c.actorDoc?.uuid === uuid)) ?? null;
+}
+
+/**
+ * Take back every Army turn still unplayed this round (Nidhogg fell before his
+ * fragments acted). Permanent fragments survive his fall, so theirs must be revoked
+ * explicitly. Called by destroyAllFragments (the boss-cycle onDown row). Returns the count.
+ */
+export function revokeArmyGrants(ctx) {
+  const dc = ctx?.dCombat;
+  if (!dc || typeof dc.revokeGrant !== "function") return 0;
+  let n = 0;
+  for (const c of fragmentCombatants(ctx)) {
+    const p = c.turnPriority;
+    if (p && p.round === dc.round && p.value === ARMY_PRIORITY && (Number(c.turnsRemaining) || 0) > 0) {
+      if (dc.revokeGrant(c, { turns: 1 })) n += 1;
+    }
+  }
+  if (n) ctx.log?.(`Army of the Damned: ${n} unplayed fragment turn(s) revoked`);
+  return n;
 }
 
 function ownerUuidOf(c) {
@@ -1110,6 +1164,37 @@ registerConflictEvent({
 
   actions: {
     /**
+     * Army of the Damned (Nidhogg): every standing fragment, permanent ones included,
+     * gets one turn THIS round, ahead of every other enemy (priority is side-wide).
+     * Idempotent within a round (grantedRound = the priority stamp). A fragment spawned
+     * after the cast is not in the plan, so it gets no turn. Quickened/Delayed Nidhogg:
+     * the fragments act in his phase. Returns false when nothing was granted.
+     */
+    async armyOfTheDamned(ctx, request = {}) {
+      const dc = ctx.dCombat;
+      if (!dc || dc.ended) return false;
+      await adoptStrayFragments(ctx);
+      await sweepDestroyed(ctx);
+      const caster = casterCombatant(dc, request.effectCtx);
+      const frags = fragmentCombatants(ctx);
+      const plan = armyGrantPlan(frags.map((c) => ({
+        id: c.id, hp: propNum(c.actorDoc, "current_hp"), turnsRemaining: c.turnsRemaining,
+        grantedRound: c.turnPriority?.round ?? null,   // null = never stamped (a Free Round 0 stamp is a real round)
+      })), dc.round);
+      const phaseTier = caster ? dc.speedTierOf(caster) : null;
+      let granted = 0;
+      for (const id of plan.grant) {
+        const c = frags.find((f) => f.id === id);
+        if (c && dc.grantTurnsThisRound(c, { turns: 1, priority: ARMY_PRIORITY, phaseTier })) granted += 1;
+      }
+      if (!granted) return false;
+      await refreshRoster(ctx);
+      await saveNow(ctx);
+      ctx.log(`Army of the Damned: ${granted} fragment turn(s) granted`);
+      return true;
+    },
+
+    /**
      * The lock, now, on the given creatures: what the round-end beat does to a wounded
      * player, run mid-round (Nidhogg's Call of the Master, a `conflict_event_action`
      * row aimed at the creatures it hit, after the damage lands). Each wounded player
@@ -1185,6 +1270,8 @@ registerConflictEvent({
      * refund is paid and every fragment is off the field (the show is ~2.4 s).
      */
     async destroyAllFragments(ctx) {
+      // His hold breaks: Army turns not yet played are lost, permanent fragments' too.
+      revokeArmyGrants(ctx);
       // A Nox Servant's permanent fragment survives the fall (only conflict end removes it).
       const all = fragmentCombatants(ctx);
       const frags = all.filter((c) => !isPermanentSoulFragment(c.actorDoc));
@@ -1272,7 +1359,7 @@ registerConflictEvent({
         .filter((c) => !only || only.has(c.tokenDoc?.id))
         .map((c) => {
           const st = fragmentState(c.actorDoc);
-          return { c, id: c.tokenDoc?.id, ownerUuid: ownerUuidOf(c), hp: propNum(c.actorDoc, "current_hp"), calledRound: st.calledRound, returned: st.returned || !markAe(c.actorDoc) };
+          return { c, id: c.tokenDoc?.id, ownerUuid: ownerUuidOf(c), hp: propNum(c.actorDoc, "current_hp"), calledRound: st.calledRound, returned: st.returned || !markAe(c.actorDoc), permanent: isPermanentFragmentAe(markAe(c.actorDoc)) };
         });
       const chosen = pickFragmentToEat(list, { pick, ownerUuids });
       if (!chosen) {

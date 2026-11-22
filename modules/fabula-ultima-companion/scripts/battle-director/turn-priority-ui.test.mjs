@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import { orderByTurnPriority, deskDotClass } from "./turn-priority-ui.js";
+const L = [{ id: "a" }, { id: "b" }, { id: "c", priority: 0 }];
+assert.equal(orderByTurnPriority(L), L, "no priority: same array");
+const M = [{ id: "n" }, { id: "x" }, { id: "f1", priority: 10 }, { id: "f2", priority: 10 }, { id: "stale", priority: 0 }];
+assert.deepEqual(orderByTurnPriority(M).map((c) => c.id), ["f1", "f2", "n", "x", "stale"]);
+assert.deepEqual(orderByTurnPriority([{ id: "a", priority: 5 }, { id: "b", priority: 10 }]).map((c) => c.id), ["b", "a"]);
+assert.deepEqual(orderByTurnPriority([{ id: "a", priority: "x" }, { id: "b" }]).map((c) => c.id), ["a", "b"]);
+assert.equal(deskDotClass({ turnsPerRound: 0, turnsRemaining: 0 }, false), "noturn");
+assert.equal(deskDotClass({ turnsPerRound: 0, turnsRemaining: 1 }, false), "");
+assert.equal(deskDotClass({ turnsPerRound: 1, turnsRemaining: 0 }, false), "acted");
+assert.equal(deskDotClass({ turnsPerRound: 1, turnsRemaining: 2 }, false), "");
+assert.equal(deskDotClass({ turnsPerRound: 0, turnsRemaining: 0 }, true), "acting");
+console.log("turn-priority-ui OK");

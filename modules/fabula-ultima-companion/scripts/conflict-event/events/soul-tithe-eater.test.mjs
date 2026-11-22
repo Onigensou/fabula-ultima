@@ -161,10 +161,10 @@ function makeWorld() {
       name: "Soul-Torn", changes: [], flags: { [NS]: { soulTorn: true, soulStolen: stolen, ...(eaten ? { soulEaten: eaten } : {}) } },
     }]);
   };
-  const addFragment = async (player, hp, max, calledRound) => {
+  const addFragment = async (player, hp, max, calledRound, permanent = false) => {
     const actor = makeActor(`${player.actorDoc.name}Frag`, { max, hp, fragment: true });
     await actor.createEmbeddedDocuments("ActiveEffect", [{
-      name: "Soul Fragment", flags: { [NS]: { soulFragmentMark: true, soulSpawnRound: 1, soulCalledRound: calledRound, soulReturned: false } },
+      name: "Soul Fragment", flags: { [NS]: { soulFragmentMark: true, soulSpawnRound: 1, soulCalledRound: calledRound, soulReturned: false, ...(permanent ? { soulPermanent: true } : {}) } },
     }]);
     const c = { side: "enemy", actorDoc: actor, tokenDoc: token(actor, { soulFragmentOwner: player.actorDoc.uuid }) };
     dCombat.combatants.push(c);
@@ -227,6 +227,37 @@ ok("soul-tithe registered with the new actions", typeof ev?.actions?.consumeFrag
   const f = await w2.addFragment(p, 30, 30, 0);   // never Called
   eq("beheading: a fragment that never Called stays", await ev.actions.consumeFragment(w2.ctx, { tokens: [p.tokenDoc], row: {}, effectCtx: { payload: {} } }), false);
   ok("beheading: still on the field", onField(w2, f));
+}
+
+// Permanent fragments (Nox Servant) are never eaten
+ok("pure: a permanent fragment is not food", !fragmentMayBeEaten({ hp: 30, calledRound: 2, returned: false, permanent: true }));
+{
+  const w = makeWorld();
+  const hina = w.addPlayer("Hina", 120, 60);
+  await w.addTorn(hina, 60);
+  const fP = await w.addFragment(hina, 50, 60, 3, true);
+  const e = { payload: {} };
+  eq("permanent-only (largest): nothing eaten", await ev.actions.consumeFragment(w.ctx, { tokens: [], row: { conflict_pick: "largest" }, effectCtx: e }), false);
+  ok("permanent-only: still on the field, VAR 0", onField(w, fP) && e.payload._chainVars.consumed_fragment_hp === 0);
+  eq("permanent on trigger_subject_owner: nothing eaten", await ev.actions.consumeFragment(w.ctx, { tokens: [hina.tokenDoc], row: { conflict_pick: "trigger_subject_owner" }, effectCtx: { payload: {} } }), false);
+  eq("permanent, blank pick + its token: nothing eaten", await ev.actions.consumeFragment(w.ctx, { tokens: [fP.tokenDoc], row: {}, effectCtx: { payload: {} } }), false);
+  ok("permanent: untouched after all attempts", onField(w, fP) && mark(fP).soulReturned === false && !mark(fP).soulEatenAt);
+}
+{
+  const w = makeWorld();
+  const hina = w.addPlayer("Hina", 120, 60), zarg = w.addPlayer("Zarg", 100, 10);
+  await w.addTorn(hina, 60); await w.addTorn(zarg, 20);
+  const fP = await w.addFragment(hina, 90, 90, 3, true);   // larger, permanent
+  const fO = await w.addFragment(zarg, 20, 20, 2);
+  eq("permanent + ordinary: ordinary eaten", await ev.actions.consumeFragment(w.ctx, { tokens: [], row: { conflict_pick: "largest" }, effectCtx: { payload: {} } }), true);
+  ok("permanent + ordinary: permanent survives, ordinary gone", onField(w, fP) && !onField(w, fO));
+}
+{
+  const w = makeWorld();
+  const hina = w.addPlayer("Hina", 120, 60); await w.addTorn(hina, 60);
+  const fO = await w.addFragment(hina, 40, 60, 2);
+  eq("control: ordinary-only eaten", await ev.actions.consumeFragment(w.ctx, { tokens: [], row: { conflict_pick: "largest" }, effectCtx: { payload: {} } }), true);
+  ok("control: gone", !onField(w, fO));
 }
 
 // titheWound (B3) on a player with a fragment

@@ -72,6 +72,10 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
+      "equipSlots": {
+        "main": "FvwyxiLeMPmQQHZM",
+        "off": "IiFFnzYiX41NYwrP"
+      },
       "layoutRef": "b8806c4bff9074bb"
     }
   },
@@ -3948,7 +3952,8 @@
       "level": "20",
       "magic_defense_mod": "0",
       "main_attrib_1": "DEX",
-      "main_attrib_2": "INS",
+      "main_attrib_2": "MIG",
+      "main_details": "<p>No Quality.</p>",
       "main_hand": "Wakizashi",
       "memories_list": {},
       "mig_base": "8",
@@ -4045,9 +4050,10 @@
       },
       "notes_text": "",
       "off_attrib_1": "DEX",
-      "off_attrib_2": "INS",
+      "off_attrib_2": "MIG",
       "off_base_mod_1": "1",
-      "off_base_mod_2": "0",
+      "off_base_mod_2": "6",
+      "off_details": "<p>No Quality.</p>",
       "off_hand": "Wakizashi",
       "offensive_spell_list": {
         "35rXj9y8mLKB2MKD": {

@@ -31,12 +31,15 @@ import { setTurnGlow } from "./turn-glow.js";
 import { turnCueWillRun, isTurnCueEnabled, CUE_LANDED_HOOK } from "./turn-start-cue.js";
 import { playRoundPlateLocal, SEAL_AT_MS } from "./round-plate.js";
 import { speedTierOf } from "./speed-phase.js";
+import { orderByTurnPriority } from "./turn-priority-ui.js";
+import { setTurnActionsCache, clearTurnActionsCache, getTurnActionsCache, turnActionsCacheGen, shouldRenderPulled } from "./turn-actions-cache.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_ROUND_PLAY";
 const ACTION_HIDE = "FU_DIRECTOR_ROUND_HIDE";
 const ACTION_BATTLE_START = "FU_DIRECTOR_BATTLE_START_PLAY";
 const ACTION_TURNACTIONS = "FU_DIRECTOR_TURNACTIONS";
+const ACTION_TURNACTIONS_GET = "FU_DIRECTOR_TURNACTIONS_GET";
 const STYLE_ID = "fu-dir-round-style";
 const LAYER_ID = "fu-dir-round-layer";
 const ROUND_SFX_URL =
@@ -154,8 +157,14 @@ export function initDirectorRoundBanner() {
     _socket.register(ACTION_HIDE, () => { forgetDisplayRound(); exitRoundBannerLocal({ animate: true }); clearTurnActionsLocal(); });
     _socket.register(ACTION_BATTLE_START, playBattleStartBannerLocal);
     // Payload is { list, animate } (tolerate a bare array from older senders).
-    _socket.register(ACTION_TURNACTIONS, (p) =>
-      renderTurnActionsLocal(Array.isArray(p) ? p : p?.list, { animate: !!p?.animate }));
+    _socket.register(ACTION_TURNACTIONS, (p) => {
+      const list = Array.isArray(p) ? p : p?.list;
+      setTurnActionsCache(list);
+      renderTurnActionsLocal(list, { animate: !!p?.animate });
+    });
+    // Pull-on-join: any client (not only the host) answers with its cached list.
+    _socket.register(ACTION_TURNACTIONS_GET, () => getTurnActionsCache());
+    pullTurnActionsOnJoin();
     log("director-round-banner: socket registered");
   } catch (e) {
     warn("director-round-banner: init failed", e);
@@ -197,6 +206,23 @@ export function initDirectorRoundBanner() {
     Hooks.on("updateActor", (_a, changes) => { if (hpChanged(changes)) scheduleLiveRefresh(); });
     Hooks.on("updateActorDelta", (_d, changes) => { if (hpChanged(changes)) scheduleLiveRefresh(); });
   } catch (e) { warn("director-round-banner: crisis HP hook registration failed", e); }
+}
+
+// Non-GM, once after ready: ask the active GM for the current tracker so a
+// mid-battle join/reload is not empty until the next broadcast. No GM online,
+// or any failure: stay empty (the next broadcast fills it).
+function pullTurnActionsOnJoin() {
+  try {
+    if (game.user?.isGM || !_socket || !game.users?.activeGM) return;
+    const gen = turnActionsCacheGen();
+    Promise.resolve(_socket.executeAsGM(ACTION_TURNACTIONS_GET))
+      .then((list) => {
+        if (!shouldRenderPulled(list, gen)) return;
+        setTurnActionsCache(list);
+        renderTurnActionsLocal(list);
+      })
+      .catch(() => { /* no GM / handler missing: stay empty */ });
+  } catch (_e) { /* stay empty */ }
 }
 
 // Trailing-debounced live refresh. Re-reads _lastDCombat at fire time so it
@@ -1234,7 +1260,8 @@ function renderTurnActionsLocal(combatants = [], opts = {}) {
     // icons. Fully-spent creatures contribute none. `_act` makes each icon's id
     // unique (id#i) for the diff key + per-icon DOM lookup.
     const sideList = [];
-    for (const c of list) {
+    // Granted-turn priority (Army of the Damned): holders lead the lineup. No-op without priority.
+    for (const c of orderByTurnPriority(list)) {
       const n = Math.max(0, (Number(c.turnsRemaining) || 0) - (c.active ? 1 : 0));
       for (let i = 0; i < n; i++) sideList.push({ ...c, _act: i });
     }
@@ -1314,6 +1341,7 @@ function renderTurnActionsLocal(combatants = [], opts = {}) {
 }
 
 function clearTurnActionsLocal() {
+  clearTurnActionsCache(); // a player joining after the battle must not get a ghost tracker
   try { deskUnits(null); } catch { /* */ }
   try { setTurnGlow(null); } catch { /* */ }
   _iconsRevealed = false;
@@ -1476,6 +1504,8 @@ function buildTurnActionSnapshot(dCombat) {
       tokenId: td?.id ?? c.tokenId ?? null,
       actorId: td?.actorId ?? c.actorId ?? null,
       turnsPerRound: Number(c.turnsPerRound ?? 1),
+      // Live granted-turn priority (0 when unset or stale); drives lineup order.
+      priority: (() => { try { return Number(dCombat?.turnPriorityOf?.(c)) || 0; } catch { return 0; } })(),
       // Speed phase this round: +1 Quicken, -1 Delay, 0 Normal (lock-aware).
       speed: (() => { try { return dCombat?.speedTierOf?.(c) ?? 0; } catch { return 0; } })(),
       focus: normalizeIconFocus(baseActor?.getFlag?.(MODULE_ID, "iconFocus")),
@@ -1496,6 +1526,7 @@ export function refreshTurnActions(dCombat, { animate = false } = {}) {
     if (_spotHold) { _spotHold.dCombat = dCombat ?? _spotHold.dCombat; return; }
     _shownActiveId = dCombat?.currentCombatantId ?? null;
     const snap = buildTurnActionSnapshot(dCombat);
+    setTurnActionsCache(snap);
     renderTurnActionsLocal(snap, { animate });
     try { _socket?.executeForOthers?.(ACTION_TURNACTIONS, { list: snap, animate }); }
     catch (e) { warn("refreshTurnActions broadcast failed", e); }

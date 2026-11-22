@@ -22,6 +22,7 @@
 import { getMaxActionTargets, skillTargetIsMulti, skillTargetIsUpTo } from "../battle-director/snapshot.js";
 import { ActionReaderCore as AR, FU_MODULE_ID } from "./actionReader-core.js";
 import { ActionReaderDebug as ARD } from "./actionReader-debug.js";
+import { pickFallbackPool } from "./feasibility-fallback.js";
 
 export const ACTION_READER_MATCH_AND_PICK_ACTION_VERSION = "1.0.0";
 
@@ -260,6 +261,7 @@ function isCandidateHpCeilinged(candidate, currentHpPct) {
 function assessCandidateFeasibility(candidate, context) {
   const props = getCandidateProps(candidate);
   const reasons = [];
+  candidate.costShort = false;
 
   // Resource cost. For "x T" (per-target) costs, require at least one target's worth.
   const cost = AR.parseActionCost(props?.[AR.keys.cost]);
@@ -270,6 +272,7 @@ function assessCandidateFeasibility(candidate, context) {
     const current = AR.toNumber(pool?.current, 0);
     if (current < cost.amount) {
       reasons.push(`Needs ${cost.amount} ${cost.resource.toUpperCase()}, has ${current}.`);
+      candidate.costShort = true;
     }
   }
 
@@ -393,15 +396,54 @@ function safeSurvey(context, candidate, performerActor, performerTokenDoc) {
 /* Anti-repeat memory (#4): per-combatant last-used / cooldown tracking       */
 /* -------------------------------------------------------------------------- */
 
+// WHERE the memory lives. The Battle Director runs with NO Foundry Combat
+// document (director-init.js ~:1488 "No Foundry Combat doc is created"; every
+// live start passes a payload), so a Foundry combatant flag was never there in
+// play: every cooldown and the anti-repeat read empty and wrote nowhere. The
+// director's own combatant record (dCombat, GM-local on the BD host, saved with
+// the director state) is the host; the caller attaches it with
+// attachDirectorActionMemory. A Foundry combatant flag stays the fallback for a
+// run with no director (the standalone world macro, a legacy Foundry combat).
+const DIRECTOR_MEMORY_KEY = "actionMemory";
+
+/**
+ * Point this ActionReader run's anti-repeat memory at the director's combatant
+ * record and round. `combatant` = the DirectorCombatant (`dCombat.findByTokenId`);
+ * `round` = `dCombat.round`. Without a combatant this is a no-op and the Foundry
+ * path below applies.
+ */
+export function attachDirectorActionMemory(context, { combatant = null, round = null } = {}) {
+  if (!context || !combatant || typeof combatant !== "object") return context;
+  context.directorMemory = { combatant, round: AR.toInteger(round, 0) };
+  return context;
+}
+
+function getDirectorMemoryHost(context) {
+  const host = context?.directorMemory;
+  return host?.combatant && typeof host.combatant === "object" ? host : null;
+}
+
 function getMemoryCombatant(context) {
   return context?.performer?.combatant ?? context?.actorData?.combat?.combatant ?? null;
 }
 
 function getCurrentRound(context) {
+  const host = getDirectorMemoryHost(context);
+  if (host) return host.round;
   return AR.toInteger(context?.combat?.round ?? context?.actorData?.combat?.round, 0);
 }
 
+function normalizeMemory(mem) {
+  return {
+    lastActionName: AR.normalizeText(mem?.lastActionName ?? ""),
+    usedRounds: (mem && typeof mem.usedRounds === "object" && mem.usedRounds) ? mem.usedRounds : {}
+  };
+}
+
 function readActionMemory(context) {
+  const host = getDirectorMemoryHost(context);
+  if (host) return normalizeMemory(host.combatant[DIRECTOR_MEMORY_KEY]);
+
   const combatant = getMemoryCombatant(context);
   if (!combatant) return { lastActionName: "", usedRounds: {} };
 
@@ -413,73 +455,84 @@ function readActionMemory(context) {
   }
   mem = mem ?? combatant?.flags?.[FU_MODULE_ID]?.[ACTION_MEMORY_FLAG];
 
-  return {
-    lastActionName: AR.normalizeText(mem?.lastActionName ?? ""),
-    usedRounds: (mem && typeof mem.usedRounds === "object") ? mem.usedRounds : {}
-  };
+  return normalizeMemory(mem);
+}
+
+/** The row's `action_pattern_cooldown` (rounds; 0 = none). A PATTERN-ROW column,
+ *  not an item prop: reading the ITEM's system.props (as this once did) resolved
+ *  0 for every monster. Raw column = fallback for a candidate built before
+ *  normalisation. */
+function getCandidateCooldown(candidate) {
+  return AR.toInteger(
+    candidate?.row?.cooldown ?? candidate?.row?.raw?.[AR.keys.actionPatternCooldownKey],
+    0,
+  );
+}
+
+/**
+ * Cooldown (#4, hard): is this candidate still on its authored cooldown?
+ * Used in round U with cooldown N => blocked while (round - U) < N, so
+ * cooldown 2 used in round 3 is out for rounds 3 and 4 and back in round 5.
+ * A HARD gate beside #5/#6/#7: applied to the available pool BEFORE
+ * feasibility, the graceful fallback and the priority window, so (a) a
+ * lower-priority row takes the slot (the same rule as the HP gates) and
+ * (b) nothing -- not the feasibility fallback, not a no-reach retry that
+ * excluded every other row -- can resurrect a blocked action. Nothing left =
+ * no pick = the caller's existing Do Nothing / GM hand-off path.
+ */
+function isCandidateOnCooldown(candidate, memory, currentRound) {
+  const cooldown = getCandidateCooldown(candidate);
+  if (!(cooldown > 0)) return false;
+  const lastUsedRound = AR.toInteger(memory?.usedRounds?.[candidate?.actionNameNormalized], NaN);
+  return Number.isFinite(lastUsedRound) && (currentRound - lastUsedRound) < cooldown;
 }
 
 /*
- * Apply cooldown/anti-repeat to retained candidates.
- *   - explicit action_pattern_cooldown column (turns) => hard-block while on CD
- *   - otherwise the action used last turn is softly de-weighted (x0.3)
- * If everything ends up blocked, fall back to the unadjusted weights so the
- * actor still acts.
+ * Anti-repeat (#4, soft): the action used last turn is de-weighted (x0.3).
+ * Cooldown blocking already ran as a hard gate (isCandidateOnCooldown), so no
+ * candidate here is zero-weighted and there is no "all blocked" case left.
+ * The old fallback that restored full weights to cooldown-blocked candidates
+ * "rather than freeze" was the hole that let a blocked action back in.
  */
-function applyAntiRepeat(retained, context) {
-  const memory = readActionMemory(context);
-  const currentRound = getCurrentRound(context);
-
-  const adjusted = retained.map(candidate => {
-    const nameNorm = candidate.actionNameNormalized;
-    // The cooldown is a PATTERN-ROW column, not an item prop. This used to read
-    // `getCandidateProps(candidate)` — the ITEM's system.props — where
-    // `action_pattern_cooldown` never exists, so it resolved to 0 and the
-    // hard-block below was dead for every monster in the world (29 authored rows
-    // across 14 actors, none of them ever firing). Read it off the row, with the
-    // raw column as a fallback for a candidate built before normalisation.
-    const cooldown = AR.toInteger(
-      candidate?.row?.cooldown ?? candidate?.row?.raw?.[AR.keys.actionPatternCooldownKey],
-      0,
-    );
-    const lastUsedRound = AR.toInteger(memory.usedRounds?.[nameNorm], NaN);
-
+function applyAntiRepeat(retained, context, memory = readActionMemory(context), currentRound = getCurrentRound(context)) {
+  const pool = retained.map(candidate => {
     let weight = candidate.selectionWeight;
-    let blocked = false;
-
-    if (cooldown > 0 && Number.isFinite(lastUsedRound) && (currentRound - lastUsedRound) < cooldown) {
-      weight = 0;
-      blocked = true;
-    } else if (memory.lastActionName && memory.lastActionName === nameNorm) {
+    if (memory.lastActionName && memory.lastActionName === candidate.actionNameNormalized) {
       weight *= 0.3;
     }
-
-    return { ...candidate, cooldownWeight: weight, cooldownBlocked: blocked };
+    return { ...candidate, cooldownWeight: weight, cooldownBlocked: false };
   });
-
-  const live = adjusted.filter(candidate => candidate.cooldownWeight > 0);
-  if (live.length) return { pool: live, memory, currentRound, fallback: false };
-
-  // All blocked — ignore cooldown this turn rather than freeze.
-  const fallbackPool = retained.map(candidate => ({ ...candidate, cooldownWeight: candidate.selectionWeight }));
-  return { pool: fallbackPool, memory, currentRound, fallback: true };
+  return { pool, memory, currentRound, fallback: false };
 }
 
 async function recordActionMemory(context, chosenCandidate, memory, currentRound) {
-  const combatant = getMemoryCombatant(context);
-  if (!combatant?.setFlag || !chosenCandidate) return;
-
+  if (!chosenCandidate) return;
   const nameNorm = chosenCandidate.actionNameNormalized;
   const usedRounds = { ...(memory?.usedRounds ?? {}), [nameNorm]: currentRound };
+  const next = { lastActionName: nameNorm, usedRounds };
 
+  // Director record: plain in-memory data on the BD host's dCombat combatant;
+  // the next director save (TURN_END etc.) persists it with the combatant.
+  const host = getDirectorMemoryHost(context);
+  if (host) {
+    host.combatant[DIRECTOR_MEMORY_KEY] = next;
+    return;
+  }
+
+  const combatant = getMemoryCombatant(context);
+  if (!combatant?.setFlag) return;
   try {
-    await combatant.setFlag(FU_MODULE_ID, ACTION_MEMORY_FLAG, {
-      lastActionName: nameNorm,
-      usedRounds
-    });
+    await combatant.setFlag(FU_MODULE_ID, ACTION_MEMORY_FLAG, next);
   } catch (_e) {
     /* non-fatal */
   }
+}
+
+/** Write the stamp parked by a `deferMemory` pick (no-op when none). */
+export async function commitPendingActionMemory(context) {
+  const p = context?.pendingActionMemory;
+  context.pendingActionMemory = null;
+  if (p) await recordActionMemory(context, p.candidate, p.memory, p.round);
 }
 
 function makeMatchResult({
@@ -845,7 +898,12 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
     // available, the same fail-open the picker uses.
     const availableCandidates = [];
     let unavailableCount = 0;
+    // Retry exclusion (autopilot): actions already picked this turn whose target
+    // pool came back empty. Dropped here, AFTER the gates above, so a retry can
+    // only ever move to another action that already passed them.
+    const excludeKeys = new Set((options?.excludeActions ?? []).map((n) => AR.normalizeText(n)));
     for (const candidate of affordableCandidates) {
+      if (excludeKeys.size && excludeKeys.has(AR.normalizeText(candidate.itemName ?? candidate.actionName ?? ""))) continue;
       const availability = safeAvailability(candidate, context?.performer?.actor ?? context?.actorData?.actor ?? null);
       if (availability && availability.available === false) {
         candidate.unavailable = true;
@@ -864,9 +922,37 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
       });
     }
 
+    // --- Cooldown hard filter (#4) -------------------------------------- //
+    // An action still on its authored action_pattern_cooldown is GONE for this
+    // pick, like the gates above: dropped before feasibility, the graceful
+    // fallback and the priority window, so neither the fallback nor a no-reach
+    // retry (which excluded every other row) can bring it back. Memory lives on
+    // the director combatant when one is attached (see readActionMemory).
+    const actionMemory = readActionMemory(context);
+    const memoryRound = getCurrentRound(context);
+    const offCooldownCandidates = [];
+    let cooldownBlockedCount = 0;
+    for (const candidate of availableCandidates) {
+      if (isCandidateOnCooldown(candidate, actionMemory, memoryRound)) {
+        candidate.cooldownBlocked = true;
+        cooldownBlockedCount++;
+        continue;
+      }
+      candidate.cooldownBlocked = false;
+      offCooldownCandidates.push(candidate);
+    }
+    if (cooldownBlockedCount) {
+      ARD.addWarning(context, stage, "Some matched actions were withheld — still on their pattern cooldown.", {
+        round: memoryRound,
+        cooldownBlockedCandidates: cooldownBlockedCount,
+        blocked: availableCandidates.filter((c) => c.cooldownBlocked).map((c) => `${c.itemName ?? c.actionName} (cd ${getCandidateCooldown(c)}, used round ${actionMemory.usedRounds?.[c.actionNameNormalized]})`),
+        offCooldownCandidates: offCooldownCandidates.length
+      });
+    }
+
     // --- Feasibility filter (#1) ---------------------------------------- //
     const feasibility = new Map();
-    const feasibleCandidates = availableCandidates.filter(candidate => {
+    const feasibleCandidates = offCooldownCandidates.filter(candidate => {
       const result = assessCandidateFeasibility(candidate, context);
       feasibility.set(candidate, result);
       candidate.feasible = result.feasible;
@@ -877,29 +963,42 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
     let workingCandidates = feasibleCandidates;
     let feasibilityFallbackUsed = false;
 
-    if (!workingCandidates.length && availableCandidates.length) {
+    if (!workingCandidates.length && offCooldownCandidates.length) {
       // Graceful fallback: prefer no-cost actions so the actor still does
       // *something* (e.g. a basic attack) instead of erroring out. NOTE: draws
-      // from availableCandidates ONLY — never resurrect a debuff-blocked (#5),
-      // HP-reserved (#6) or availability-gated (#7) action.
-      const freeCandidates = availableCandidates.filter(isCandidateFree);
-      workingCandidates = freeCandidates.length ? freeCandidates : availableCandidates;
+      // from offCooldownCandidates ONLY — never resurrect a debuff-blocked (#5),
+      // HP-reserved (#6), availability-gated (#7) or cooldown-blocked (#4) action.
+      // Among the free ones, prefer one whose own target survey found someone to
+      // reach: a free action that reaches nobody (Claw vs a Flying party) would
+      // only waste the turn as "Do Nothing" while another free action could act.
+      // No reachable free action -> the pool is exactly what it was before.
+      const fb = pickFallbackPool(offCooldownCandidates, isCandidateFree);
+      workingCandidates = fb.pool;
       feasibilityFallbackUsed = true;
 
       ARD.addWarning(context, stage, "No fully-feasible action; using graceful fallback.", {
-        affordableCandidates: availableCandidates.length,
-        freeFallbackCount: freeCandidates.length
+        affordableCandidates: offCooldownCandidates.length,
+        freeFallbackCount: fb.freeCount,
+        unreachableFreeSkipped: fb.skippedUnreachable
       });
     }
 
     const { topPriority, retained } = applyPriorityWindow(workingCandidates);
 
-    // --- Anti-repeat / cooldown (#4) ------------------------------------ //
-    const antiRepeat = applyAntiRepeat(retained, context);
+    // --- Anti-repeat (#4, soft; the cooldown gate ran above) ------------ //
+    const antiRepeat = applyAntiRepeat(retained, context, actionMemory, memoryRound);
     const chosenCandidate = AR.weightedPick(antiRepeat.pool, candidate => candidate.cooldownWeight);
 
+    // deferMemory (autopilot): park the stamp until the caller knows the pick
+    // reached someone (commitPendingActionMemory); a pick that reaches nobody is
+    // never performed and must not start its cooldown.
+    context.pendingActionMemory = null;
     if (chosenCandidate && options?.recordMemory !== false) {
-      await recordActionMemory(context, chosenCandidate, antiRepeat.memory, antiRepeat.currentRound);
+      if (options?.deferMemory) {
+        context.pendingActionMemory = { candidate: chosenCandidate, memory: antiRepeat.memory, round: antiRepeat.currentRound };
+      } else {
+        await recordActionMemory(context, chosenCandidate, antiRepeat.memory, antiRepeat.currentRound);
+      }
     }
 
     context.actionCandidatesAll = matchedCandidates;
@@ -941,6 +1040,9 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
     context.actionMatchMeta.feasibilityFallbackUsed = feasibilityFallbackUsed;
     context.actionMatchMeta.antiRepeatLastAction = antiRepeat.memory.lastActionName || null;
     context.actionMatchMeta.antiRepeatFallbackUsed = antiRepeat.fallback;
+    context.actionMatchMeta.cooldownBlockedCandidates = cooldownBlockedCount;
+    context.actionMatchMeta.memoryHost = getDirectorMemoryHost(context) ? "director" : (getMemoryCombatant(context) ? "foundry" : "none");
+    context.actionMatchMeta.memoryRound = memoryRound;
 
     ARD.recordStage(context, stage, context.actionMatchMeta);
 

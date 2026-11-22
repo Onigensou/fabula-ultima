@@ -19,6 +19,9 @@
       "world": "legend-dragonslayer"
     },
     "fabula-ultima-companion": {
+      "equipSlots": {
+        "main": "YHCGvnkjThr5rw1v"
+      },
       "layoutRef": "b8806c4bff9074bb"
     },
     "theatre": {

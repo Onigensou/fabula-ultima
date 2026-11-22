@@ -2347,6 +2347,37 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // set by target_filter where the resolver actor is the candidate), else
         // payload.sourceActorUuid. Magitech Override: "release the construct YOU
         // control" without touching another Tinkerer's.
+        // Dynamic ENEMY_COUNT_LACKING_<A>[__<B>...] — how many of the performer's
+        // opponents a status-giving spell would still CHANGE something on. The
+        // roster is the Battle Director's dCombat (the same one the AI target
+        // survey walks, snapshotEligibleTargetsFromDCombat): living (HP > 0, not
+        // defeated), visible (token not hidden), targetable (guests and Nox
+        // Servants dropped), opposite side. A creature counts when it lacks at
+        // least one named status AND is not immune (condition_<slug> = "IM", via
+        // the shared conditionAffinity resolver apply_ae uses) to that status.
+        // Names split on `__`, each `_` -> space, matched like ANY_TARGET_HAS_
+        // (status id substring or exact AE name, via actorHasNamedStatus).
+        // ENEMY_COUNT_LACKING_POISONED__ENVENOMED >= 2 = "two enemies could still
+        // be Poisoned or Envenomed". A name with no affinity mapping is treated
+        // as not immune. No active director -> 0 (fails CLOSED for this family:
+        // a count gate must not pass on a guess). An UNKNOWN status name matches
+        // nothing, so every enemy lacks it and counts: the formula audit
+        // (tools/skill-regression/lib/formula-audit.js) validates this suffix.
+        if (name.startsWith("ENEMY_COUNT_LACKING_")) {
+          const needles = name
+            .slice("ENEMY_COUNT_LACKING_".length)
+            .split("__")
+            .map((s) => s.replace(/_/g, " ").toLowerCase().trim())
+            .filter(Boolean);
+          if (!needles.length) return 0;
+          const affinity = globalThis.FUCompanion?.api?.conditionAffinity?.getConditionAffinity;
+          return directorOpponentsOf(actor).filter((a) => needles.some((n) => {
+            if (actorHasNamedStatus(a, n)) return false;
+            let aff = null;
+            try { aff = affinity?.(a, { name: n }) ?? null; } catch { aff = null; }
+            return aff !== "IM";
+          })).length;
+        }
         if (name.startsWith("MY_AE_COUNT_")) {
           const needle = name.slice("MY_AE_COUNT_".length).replace(/_/g, " ").toLowerCase().trim();
           const me = String(payload?.filterReactorActorUuid ?? payload?.sourceActorUuid ?? "").trim();
@@ -2532,6 +2563,25 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
           const subject = subjectUuid ? _resolveActorByUuidSync(subjectUuid) : null;
           return isConflictObjectOf(subject, name.slice("TARGET_IS_CONFLICT_OBJECT_".length)) ? 1 : 0;
+        }
+        // Dynamic SOUL_FRAGMENT_OWNER_IS_<NAME> — 1 when the RESOLVER ACTOR (in a
+        // pattern row: the performer, i.e. the fragment itself) is a soul fragment
+        // whose owner (token flag soulFragmentOwner -> actor uuid) has a name that
+        // normalises (lowercase, non-alphanumerics -> `_`) to <NAME>, or an actor id
+        // equal to <NAME>. Anything else is 0 and fails CLOSED: non-fragment, no
+        // owner, unresolvable owner, unknown name. Army of the Damned fragments.
+        if (name.startsWith("SOUL_FRAGMENT_OWNER_IS_")) {
+          const norm = (s) => String(s ?? "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+          const want = norm(name.slice("SOUL_FRAGMENT_OWNER_IS_".length));
+          if (!want || !isConflictObjectOf(actor, "soul-fragment")) return 0;
+          const ownerUuid = String((actor?.token ?? actor?.parent)?.flags?.["fabula-ultima-companion"]?.soulFragmentOwner ?? "").trim();
+          if (!ownerUuid) return 0;
+          const owner = _resolveActorByUuidSync(ownerUuid);
+          if (!owner) return 0;
+          // Sim/runner PC clones are named "Hina [SIM]" (sim-run.js ~:207/:289/:348) — strip the
+          // suffix so the owner gate works in sims too (Army S6a, 2026-11-22). Live names are unaffected.
+          const ownerName = String(owner.name ?? "").replace(/\s*\[SIM\]\s*$/i, "");
+          return (norm(ownerName) === want || norm(owner.id) === want) ? 1 : 0;
         }
         // Dynamic ATTACKER_SPECIES_IS_<X> / ATTACKER_RANK_IS_<X> — the same two
         // questions as TARGET_SPECIES_IS_ / RANK_IS_ below, asked about the
@@ -3469,6 +3519,35 @@ function _noxOpponentBlockedFor(target, performer, opts = {}) {
   return natural === "unknown" && eff === "unknown";
 }
 // <<nox-opponent-mirror:end>>
+
+// Living, visible, targetable opponents of `actor` on the active Battle
+// Director's dCombat roster ([] when no director: callers fail closed). Mirrors
+// the filters of snapshotEligibleTargetsFromDCombat (snapshot.js; imported
+// there, so not importable here without a cycle): HP > 0, token not hidden,
+// no unconditional target block (_isUntargetable), Nox Servant opponent block.
+function directorOpponentsOf(actor) {
+  if (!actor) return [];
+  let list = [];
+  try {
+    const dc = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.dCombat;
+    list = dc?.combatants ? (Array.isArray(dc.combatants) ? dc.combatants : Object.values(dc.combatants)) : [];
+  } catch { return []; }
+  const myDisp = _combatDisposition(actor);
+  if (myDisp == null) return [];
+  const out = [];
+  for (const c of list) {
+    const a = c?.actorDoc ?? c?.actor ?? null;
+    if (!a || a === actor || (actor.uuid && a.uuid === actor.uuid)) continue;
+    if (c.defeated === true || c.tokenDoc?.hidden === true) continue;
+    if (!(Number(a.system?.props?.current_hp ?? a.system?.props?.hp ?? 0) > 0)) continue;
+    if (_isUntargetable(a)) continue;
+    const disp = Number(c.disposition ?? c.tokenDoc?.disposition ?? a.prototypeToken?.disposition);
+    if (!Number.isFinite(disp) || disp * myDisp >= 0) continue;
+    if (_noxOpponentBlockedFor(a, actor, { performerDisp: myDisp, targetDisp: disp })) continue;
+    out.push(a);
+  }
+  return out;
+}
 
 // Enemy actors relative to `actor` (opposite disposition sign). Prefers the
 // Foundry combat roster, but FALLS BACK to canvas tokens — the Battle Director

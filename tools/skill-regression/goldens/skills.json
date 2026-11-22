@@ -11,6 +11,7 @@
       "⭐️ Love",
       "⭐️ Rauben",
       "⭐️ Wandering Flame",
+      "🌟 Nidhogg, Dragon King",
       "Ace of Cards",
       "Arcanist",
       "Arcanist (Variant)",
@@ -75,8 +76,8 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 494,
-    "engineVersion": "1.0.565",
+    "count": 500,
+    "engineVersion": "1.0.660",
     "override": {
       "SL": 5,
       "CHAR_LEVEL": 50,
@@ -2421,7 +2422,7 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Hako / Blink": {
+    "Hako / Renzokuken": {
       "caster": "Hako",
       "element": "",
       "hasDamage": false,
@@ -2430,29 +2431,33 @@
       "ok": true,
       "perTarget": [],
       "roll": null,
-      "skill": "Blink",
-      "skillType": "Spell",
+      "skill": "Renzokuken",
+      "skillType": "Active",
       "targets": 1
     },
-    "Hako / Heal": {
+    "Hako / Wit's End": {
       "caster": "Hako",
-      "element": "hp",
-      "hasDamage": false,
-      "hasHealing": true,
+      "element": "dark",
+      "hasDamage": true,
+      "hasHealing": false,
       "offensive": true,
       "ok": true,
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 0,
-          "grant": 60,
-          "grantRes": "hp",
+          "damage": 6,
+          "grant": null,
+          "grantRes": null,
           "hit": true,
-          "resource": null
+          "resource": "hp"
         }
       ],
-      "roll": null,
-      "skill": "Heal",
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Wit's End",
       "skillType": "Spell",
       "targets": 1
     },
@@ -4110,6 +4115,19 @@
         "hr": 6
       },
       "skill": "Soul Steal",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Keren / Spellblade Rhapsody": {
+      "caster": "Keren",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Spellblade Rhapsody",
       "skillType": "Active",
       "targets": 1
     },
@@ -6665,6 +6683,19 @@
       "skill": "Angel Dance",
       "skillType": "Active"
     },
+    "Zarg / Bane Oils": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Bane Oils",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Zarg / Barrage": {
       "caster": "Zarg",
       "element": "",
@@ -6718,7 +6749,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 26,
+          "damage": 31,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -6780,19 +6811,6 @@
       "skillType": "Active",
       "targets": 1
     },
-    "Zarg / Siren Trap": {
-      "caster": "Zarg",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Siren Trap",
-      "skillType": "Active",
-      "targets": 1
-    },
     "Zarg / Soul Steal": {
       "caster": "Zarg",
       "element": "",
@@ -6816,19 +6834,6 @@
         "hr": 6
       },
       "skill": "Soul Steal",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Zarg / Tripwire Trap": {
-      "caster": "Zarg",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Tripwire Trap",
       "skillType": "Active",
       "targets": 1
     },
@@ -7697,6 +7702,119 @@
       "roll": null,
       "skill": "Zero Power: Meteor Impact",
       "skillType": "Active",
+      "targets": 1
+    },
+    "🌟 Nidhogg, Dragon King / Army of the Damned": {
+      "caster": "🌟 Nidhogg, Dragon King",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Army of the Damned",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "🌟 Nidhogg, Dragon King / Call of the Master": {
+      "caster": "🌟 Nidhogg, Dragon King",
+      "element": "poison",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 26,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Call of the Master",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "🌟 Nidhogg, Dragon King / Requiem of Soul": {
+      "caster": "🌟 Nidhogg, Dragon King",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Requiem of Soul",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "🌟 Nidhogg, Dragon King / Soul Devour": {
+      "caster": "🌟 Nidhogg, Dragon King",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Soul Devour",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "🌟 Nidhogg, Dragon King / Soulflare": {
+      "caster": "🌟 Nidhogg, Dragon King",
+      "element": "poison",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 66,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Soulflare",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "🌟 Nidhogg, Dragon King / Wailing Breath": {
+      "caster": "🌟 Nidhogg, Dragon King",
+      "element": "poison",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 300,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": null,
+      "skill": "Wailing Breath",
+      "skillType": "Spell",
       "targets": 1
     }
   }

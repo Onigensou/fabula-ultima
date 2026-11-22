@@ -459,7 +459,10 @@ Hooks.once("ready", async () => {
     const adopted = [];
     const skipped = [];
     for (const id of ids) {
-      const tpl = game.items.get(id);
+      // Item templates (skill) live in game.items; ACTOR templates (the NPC template
+      // yegF6R8aaymhrvCg, type "_template") live in game.actors. Looking only in items
+      // skipped it as "no such template" (headless H2, 2026-11-22).
+      const tpl = game.items.get(id) ?? game.actors.get(id);
       // NAMED, not silently skipped. A template id that resolves to nothing is
       // the difference between "all props are declared" and "we never looked",
       // and this world already contains 53 documents naming a skill template
@@ -468,7 +471,7 @@ Hooks.once("ready", async () => {
       if (tpl.system?.template) { skipped.push(`${id} (not a true template)`); continue; }
 
       const sys = foundry.utils.deepClone(tpl.toObject(false).system ?? {});
-      const res = reg.ensureManagedProps(sys.body);
+      const res = reg.ensureManagedProps(sys.body, reg.propsForTemplate(id));
       if (res.adopted?.length) adopted.push(...res.adopted.map((k) => `${tpl.name}:${k}`));
       if (res.reason) { skipped.push(`${tpl.name} (${res.reason})`); continue; }
       if (!res.changed) continue;

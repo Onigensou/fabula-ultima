@@ -31,6 +31,10 @@
         "onDown": {
           "conflictEventAction": "destroyAllFragments"
         },
+        "permanentExpose": {
+          "coreGainFraction": 0.5,
+          "whenEveryPcHas": "noxServant"
+        },
         "returnHp": "full",
         "returnMp": "full",
         "roundLabel": "Crystal Round",
@@ -491,6 +495,98 @@
       "type": "equippableItem"
     },
     {
+      "_id": "GxNIC7NmcVANDVPo",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795357777015,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Soulflare",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "spell",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "availability_formula": "",
+          "check_bonus": "7",
+          "class": "NPC",
+          "cost": "50 x T MP",
+          "damage_bonus": "60",
+          "defense_target_type": "mdef",
+          "description": "<p>Nidhogg hurls shards of burning soul-poison that seep in through the skin. Deal <strong>【HR + 60】</strong> <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Poison</strong></a>&nbsp;damage to <strong>up to three</strong> enemies. Each creature <strong>hit</strong> suffers <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Burn</strong></a>.</p><p>This spell costs <strong>50 MP</strong> per target.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "add_charges",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "sf_burn",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Soulflare",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_effect_ref": "sf_burn",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Soulflare",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to three enemies",
+          "skill_type": "Spell",
+          "type_damage": "Poison",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "jySNvluZNVA4v9ee",
       "_stats": {
         "compendiumSource": null,
@@ -652,6 +748,206 @@
       "type": "equippableItem"
     },
     {
+      "_id": "mOlYcPqhqKyttB7w",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795357743887,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Zero Trigger: Nox Servant",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "availability_formula": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When a <strong>player character</strong> is reduced to <strong>0 HP</strong> and is <strong>not saved</strong> by an effect that revives them at once, Nidhogg gains <strong>1 Zero Power</strong>. That player is revived at <strong>full HP</strong> as a <strong>Nox Servant</strong> for the rest of the battle. Once per player.</p><p>A Nox Servant cannot be targeted by opponents, cannot take part in a Massive action, and cannot drop below 1 HP. Their <strong>Soul Fragment</strong> stays on the battlefield for good.</p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "conflict_action": "noxServant",
+              "conflict_amount": "",
+              "effect_kind": "conflict_event_action",
+              "effect_label": "nox_servant",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Generic NPC Skill Template",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "SUBJECT_IS_NPC == 0",
+              "reaction_effect_ref": "nox_servant",
+              "reaction_max_per_round": "1",
+              "reaction_max_scope": "target",
+              "reaction_passive_mode": "force",
+              "reaction_source": "enemy",
+              "reaction_source_skill": "",
+              "reaction_trigger": "creature_stays_down"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Q2CFaR5lMkpmDLYz",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795357808429,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Requiem of Soul",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "spell",
+          "action_intent": "harmful",
+          "action_keywords": "overflow",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "availability_formula": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "100 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "mdef",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a></p></li></ul><p>Nidhogg sings a requiem for the living, and soul-poison seeps through the whole battlefield. <strong>All enemies</strong> must each make a <strong>DL 16</strong> <strong>【MIG + WLP】</strong> Check. Each creature that <strong>fails</strong> is left <a class=\"content-link\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Poisoned</strong></a> <strong>and</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Envenomed</strong></a>.</p><p>This spell costs <strong>100 MP</strong> and makes no accuracy check.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "rq_save,rq_poison,rq_envenom",
+              "effect_kind": "chain",
+              "effect_label": "rq_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "effect_kind": "save_check",
+              "effect_label": "rq_save",
+              "save_attr1": "mig",
+              "save_attr2": "wlp",
+              "save_dl": "16",
+              "save_mode": "interactive",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Poisoned",
+              "effect_kind": "apply_ae",
+              "effect_label": "rq_poison",
+              "target_ref": "save_failed_targets"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Envenomed",
+              "effect_kind": "apply_ae",
+              "effect_label": "rq_envenom",
+              "target_ref": "save_failed_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Requiem of Soul",
+          "on_activate_effect_ref": "rq_chain",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "All Enemies",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "whVYUQsml3QWatCY",
       "_stats": {
         "compendiumSource": null,
@@ -715,6 +1011,95 @@
           "skill_target": "One Enemy",
           "skill_type": "Spell",
           "type_damage": "Poison",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "yP9hB7ylwkXr0nwM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795357841242,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Army of the Damned",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "availability_formula": "CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT >= 3",
+          "availability_reason": "Needs 3 Soul Fragments on the field",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "mdef",
+          "description": "<p>Nidhogg calls the dead to arms. Every <strong>Soul Fragment</strong> on the field (permanent ones too) takes <strong>one extra turn this round</strong>, and acts before the rest of Nidhogg's turns. Needs 3 or more Soul Fragments.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "conflict_action": "armyOfTheDamned",
+              "conflict_amount": "",
+              "consume_self": false,
+              "count": "",
+              "effect_kind": "conflict_event_action",
+              "effect_label": "aotd_army",
+              "on_condition_fail": "",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Army of the Damned",
+          "on_activate_effect_ref": "aotd_army",
+          "optional_params": {},
+          "post_damage_effect_ref": "",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "target_eligibility": "",
+          "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
@@ -1071,7 +1456,49 @@
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Wailing Breath",
           "action_pattern_priority": "10",
-          "action_pattern_string": "CUR_MP >= 300",
+          "action_pattern_string": "CUR_MP >= 300 && BOSS_STAGE >= 2",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "5": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Soulflare",
+          "action_pattern_priority": "1",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "6": {
+          "$deleted": false,
+          "action_pattern_condition": "formula",
+          "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Requiem of Soul",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "ENEMY_COUNT_LACKING_POISONED__ENVENOMED >= 2",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "7": {
+          "$deleted": false,
+          "action_pattern_condition": "formula",
+          "action_pattern_cooldown": "2",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Army of the Damned",
+          "action_pattern_priority": "20",
+          "action_pattern_string": "ACTIVATION_NO == 1 && CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT >= 3",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "",
           "action_pattern_value_2": ""
@@ -1331,7 +1758,11 @@
       "wlp_current": 12,
       "zenit_reward_max": "6000",
       "zenit_reward_min": "6000",
-      "zero_power_value": "0"
+      "zero_power_description": "<p><em>The heroes succumb to the power of the dragon king. Now their soul is bound to their servitude, for eternity.</em></p><p>The players immediately lose the battle.</p>",
+      "zero_power_name": "Dragon King's Ascension",
+      "zero_power_value": "0",
+      "zero_trigger_description": "<p><strong>Nox Servant.</strong> When a player character is reduced to 0 HP and is not saved by an effect that revives them at once, Nidhogg gains 1 Zero Power. That player is revived at full HP as a Nox Servant: opponents cannot target them, they cannot take part in a Massive action, and they cannot drop below 1 HP. Their Soul Fragment stays on the battlefield for the rest of the battle.</p><p><strong>Oath of Servitude.</strong> At the moment every player character is a Nox Servant, the battle enters the Crystal Round until the end of the battle. The Crystal gains half of the dragon's remaining HP. At the end of each round Nidhogg gains 1 Zero Power.</p>",
+      "zero_trigger_label": "⚔️ Zero Triggers"
     },
     "statusEffects": {},
     "template": "yegF6R8aaymhrvCg",

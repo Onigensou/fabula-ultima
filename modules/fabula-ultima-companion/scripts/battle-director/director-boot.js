@@ -23,6 +23,7 @@ import { installGrappleHold, releaseAllGrapples } from "./grapple-hold.js";
 import { installGrappleGripFx } from "./grapple-grip-fx.js";
 import { installConditionAdoptionWatcher } from "./condition-adoption.js";
 import { STATES } from "./states.js";
+import { forceSkipRefusal } from "./force-skip-guard.js";
 import { INTENTS } from "./intents.js";
 import { showBattleEndPrompt } from "./battle-end/battle-end-prompt.js";
 import {
@@ -157,12 +158,12 @@ import "./_test-harness-director.js";
 import "./director-player-hud.js";
 import { destroyDirectorHud } from "./director-player-hud.js";
 import { hotUrl } from "./hot-reload.js";
+import { inferOutcomeFromCombatants } from "./battle-end/outcome-inference.js";
 // Reaction hand — the "Card" Reaction UI (Party Menu › Config). Side-effect
 // import: watches the action card mirror on player clients.
 import "./reaction-hand.js";
 
 // Module-level singleton — at most one director runs per client.
-const TURN_START_BUSY = "A side is choosing who acts. Pick a unit first, then skip.";
 let _instance = null;
 
 // Pre-flight cleanup: handle leftover state from a prior aborted/wedged run
@@ -1571,7 +1572,8 @@ Hooks.once("ready", () => {
       if (!game.user?.isGM) return { ok: false, error: "GM only" };
       const d = _instance;
       if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
-      if (d.state === STATES.TURN_START) return { ok: false, error: TURN_START_BUSY };
+      const busy = forceSkipRefusal(d.state);
+      if (busy) return { ok: false, error: busy };
       try { await d.transitionTo(STATES.TURN_END); return { ok: true, round: d.dCombat.round }; }
       catch (e) { warn("forceNextTurn threw", e); return { ok: false, error: String(e?.message ?? e) }; }
     },
@@ -1582,7 +1584,8 @@ Hooks.once("ready", () => {
       if (!game.user?.isGM) return { ok: false, error: "GM only" };
       const d = _instance;
       if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
-      if (d.state === STATES.TURN_START) return { ok: false, error: TURN_START_BUSY };
+      const busy = forceSkipRefusal(d.state);
+      if (busy) return { ok: false, error: busy };
       for (const c of d.dCombat.combatants) c.turnsRemaining = 0;
       try { await d.transitionTo(STATES.TURN_END); return { ok: true, round: d.dCombat.round }; }
       catch (e) { warn("forceNextRound threw", e); return { ok: false, error: String(e?.message ?? e) }; }
@@ -1662,10 +1665,7 @@ Hooks.once("ready", () => {
       const combatants = dc?.combatants ?? [];
       const enemies = combatants.filter(c => c.side === "enemy");
       const party  = combatants.filter(c => c.side === "party");
-      const detectedOutcome = (
-        party.length > 0 && party.every(c => c.isDefeatedLive?.()) &&
-        !(enemies.length > 0 && enemies.every(c => c.isDefeatedLive?.()))
-      ) ? "defeat" : "victory";
+      const detectedOutcome = inferOutcomeFromCombatants(combatants);
 
       const _bdSnap = (() => {
         try { return game.settings.get("fabula-ultima-companion", "bdRewardSnapshot") ?? {}; }

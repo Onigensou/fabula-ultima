@@ -537,6 +537,12 @@
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "entranceStyle": "mirror",
+      "equipSlots": {
+        "acc1": "gMHVtSecAgiriC6S",
+        "acc2": "7S9f0RR7IfYa0lIv",
+        "main": "71EiuLWyxuHyQozU",
+        "off": "9GquE1k7ZaVvMLfS"
+      },
       "fishCaught": [
         "Blade Angler",
         "Tempest Manta",
@@ -4543,7 +4549,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -6532,7 +6538,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -6711,7 +6717,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -10221,7 +10227,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -10514,7 +10520,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -10892,7 +10898,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -19627,9 +19633,9 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "accessory2_details": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a><strong>&nbsp;</strong>damage</p></li></ul>",
+      "accessory2_details": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage</p></li></ul>",
       "accessory2_name": "Icarus Wing",
-      "accessory_details": "<ul><li>You <strong>Absorb</strong> fire damage but have <strong>Vulnerability</strong> to ice damage.</li></ul>",
+      "accessory_details": "<ul><li>You <strong>Absorb</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage but have <strong>Vulnerability</strong> to <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a> damage.</li></ul>",
       "accessory_name": "Ring of Magma",
       "activation": 1,
       "affinity_1": "NA",
@@ -22765,7 +22771,7 @@
       "turbulence_status": 0,
       "uuid": "Actor.dafTLBUscCDNgq8H",
       "weak_status": 0,
-      "weapon1_base_damage": "9",
+      "weapon1_base_damage": 13,
       "weapon1_base_mod": "0",
       "weapon1_damage": 9,
       "weapon1_damagetype": "Air",

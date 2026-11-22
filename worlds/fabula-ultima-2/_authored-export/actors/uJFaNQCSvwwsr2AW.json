@@ -214,6 +214,12 @@
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "entranceStyle": "fiftyFifty",
+      "equipSlots": {
+        "acc1": "JT5pvl5buIjL9JHX",
+        "acc2": "XrwiCo9dqjD1UGJi",
+        "main": "oM6Bo3Hc4wV9ICa9",
+        "off": "gIpWy4EMVRNOayB2"
+      },
       "faPity": {
         "kirin": 1
       },
@@ -876,7 +882,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -1850,7 +1856,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -3769,7 +3775,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -9301,7 +9307,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": null,
+        "templateSystemUniqueVersion": 3202566307,
         "unique": false
       },
       "type": "equippableItem"
@@ -12198,9 +12204,9 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "accessory2_details": "<ul><li><p style=\"\">You have Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>damage.</p></li></ul>",
+      "accessory2_details": "<ul><li><p style=\"\">You have Resistance to <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p></li></ul>",
       "accessory2_name": "Ruby Pendant",
-      "accessory_details": "<ul><li><p><strong>【Provoke】SL+1</strong></p></li><li><p>+1 <strong>DEF </strong>this bonus <strong>doubles </strong>if you are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span></p></li></ul>",
+      "accessory_details": "<ul><li><p><strong>【Provoke】SL+1</strong></p></li><li><p>+1 <strong>DEF </strong>this bonus <strong>doubles </strong>if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li></ul>",
       "accessory_name": "Matador Cape",
       "activation": 1,
       "affinity_1": "RS",
@@ -12992,7 +12998,7 @@
       "magic_defense_mod": "13",
       "main_attrib_1": "SHI",
       "main_attrib_2": "SHI",
-      "main_details": "<ul><li><p>Your equipped weapon gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weighted</span></strong></a></span></p></li></ul>",
+      "main_details": "<ul><li><p>Your equipped weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li></ul>",
       "main_hand": "+4 Titanic Shield",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
