@@ -319,12 +319,21 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
       if (form.type_damage) damageType = String(form.type_damage);
       const ft = String(form.weapon_type ?? "").trim();
       if (ft) weaponType = ft;
-      const baseDmg = Number(wp.damage_bonus ?? 0) || 0;
-      const baseAcc = Number(wp.check_bonus ?? 0) || 0;
-      const fDmg = Number(form.damage_bonus);
-      const fAcc = Number(form.check_bonus);
-      if (Number.isFinite(fDmg)) damageBonus += (fDmg - baseDmg);
-      if (Number.isFinite(fAcc)) checkBonus  += (fAcc - baseAcc);
+      // The form's damage/accuracy are measured against FORM 0 (the base form as
+      // authored), not the item's live value: the table is written once, while a
+      // refine keeps raising the item's damage_bonus. Measured against the live
+      // value, Zarg's +7 bow in Light form (table: 21 / 21, authored at +5) attacked
+      // with 21 — every refine since erased (2026-11-22). Unrefined weapons
+      // (Lionheart, Gunblade: form 0 == item) come out exactly as before. A form 0
+      // with no number falls back to the item's value (the old reference).
+      const n = (v) => (v === undefined || v === null || String(v).trim() === "") ? NaN : Number(v);
+      const f0 = forms[0] ?? {};
+      const refDmg = Number.isFinite(n(f0.damage_bonus)) ? n(f0.damage_bonus) : (Number(wp.damage_bonus ?? 0) || 0);
+      const refAcc = Number.isFinite(n(f0.check_bonus)) ? n(f0.check_bonus) : (Number(wp.check_bonus ?? 0) || 0);
+      const fDmg = n(form.damage_bonus);
+      const fAcc = n(form.check_bonus);
+      if (Number.isFinite(fDmg)) damageBonus += (fDmg - refDmg);
+      if (Number.isFinite(fAcc)) checkBonus  += (fAcc - refAcc);
       // Transforming weapons (Lionheart, 2026-11-21): a form may also swap the
       // accuracy attribute pair and the range. Absolute overrides; blank keeps.
       const fa1 = String(form.rolled_atr1 ?? "").trim().toUpperCase();

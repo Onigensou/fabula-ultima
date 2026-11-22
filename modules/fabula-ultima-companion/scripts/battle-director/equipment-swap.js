@@ -290,13 +290,23 @@ function weaponFormsOf(item) {
     ? Object.values(raw)
     : (Array.isArray(item?.flags?.[FLAG_NS]?.weaponForms) ? item.flags[FLAG_NS].weaponForms : null);
   if (!Array.isArray(arr) || arr.length < 2) return null;
+  // Shown values are what the attack will use: the item's LIVE damage/accuracy
+  // plus the form's offset from form 0 (same rule as snapshot.resolveAttackerWeapon),
+  // so a refined weapon's forms show the refine too.
+  const n = (v) => (v === undefined || v === null || String(v).trim() === "") ? NaN : Number(v);
+  const ip = item?.system?.props ?? {};
+  const liveDmg = Number(ip.damage_bonus ?? 0) || 0;
+  const liveAcc = Number(ip.check_bonus ?? 0) || 0;
+  const refDmg = Number.isFinite(n(arr[0]?.damage_bonus)) ? n(arr[0].damage_bonus) : liveDmg;
+  const refAcc = Number.isFinite(n(arr[0]?.check_bonus)) ? n(arr[0].check_bonus) : liveAcc;
+  const eff = (v, live, ref) => Number.isFinite(n(v)) ? live + (n(v) - ref) : live;
   return arr.map((f, i) => ({
     idx: i,
     label: String(f?.label ?? f?.type_damage ?? `Form ${i + 1}`),
     element: String(f?.type_damage ?? ""),
     weaponType: String(f?.weapon_type ?? ""),
-    damageBonus: Number(f?.damage_bonus ?? 0) || 0,
-    checkBonus: Number(f?.check_bonus ?? 0) || 0,
+    damageBonus: eff(f?.damage_bonus, liveDmg, refDmg),
+    checkBonus: eff(f?.check_bonus, liveAcc, refAcc),
     // Transforming weapons (Lionheart): optional per-form accuracy pair + range.
     attackStat: (f?.rolled_atr1 && f?.rolled_atr2) ? `${String(f.rolled_atr1).toUpperCase()}+${String(f.rolled_atr2).toUpperCase()}` : null,
     range: f?.weapon_range ? String(f.weapon_range) : null,
