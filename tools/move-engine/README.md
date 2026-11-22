@@ -101,6 +101,29 @@ picks for a game outcome; `tools/snapshot-runner/checks/gunblade-move-engine.js`
 Sword / Firearm by form, odd / even / crit / fumble, both transform directions); side-by-sides:
 `node test/mockup-shots.js --gpu` + `node test/game-play.js --shots` (runner) + `node test/side-by-side.js`.
 
+## Results (Phase 2, engine 1.1.0)
+
+`shared/results.js` gives every move ONE shape for what happened, whoever decided it:
+
+```
+RESULT = { kind, hit, crit, fumble, total, amount, element, affinity, perfect, a, b }   (+ tot / fum aliases)
+const r = moveCheck(target, () => pageSliderResult, bonus);    // one Accuracy Check
+const list = moveChain(target, n, (n) => pageSliderResults);   // a Chain's strikes (+ the game's Perfect strike, perfect: true)
+```
+
+Order: (1) the game: BD's `payload.outcomes` (hit, crit, total, fumble, planned amount / element / affinity) or its Chain
+plan (`payload.strikes`, per target); (2) a page's result picker (`mountResultPicker(el)`, `mockup/result-picker.js`:
+Hit · odd, Hit · even, Critical, Miss, Fumble / All land, 3 of 4, Half, 1 of 4, None); (3) the move's own sliders. Each call
+traces a `result` event, so the port check compares which result each side used. The dice rule (`rollCheck`, `accOdds`,
+`CHECK_PRESETS`, `forcedChain`) lives here too.
+
+"Planned" amount = what the action result holds when the animation starts: reactions folded in before it are included
+(Gunblade's +10 Fire shows as 23 fire), anything RESOLVE still changes is not.
+
+Checks: `node test/picker-check.js --gpu` (picker overrides sliders), `node test/game-dry.js sonicblow --strikes
+hit,miss,…,perfect` (a BD-shaped Chain plan), the battle check (amount / element / affinity per outcome).
+Sonic Blow + the plain attack now live in `moves/sonic-katar/sonic.js` (comparison; v1.0.652 ships Sonic Blow's hand port).
+
 ## Known limits (Phase 1)
 
 - Scripts carry the whole shared library (~97 KB each); unused helpers are not stripped yet.
