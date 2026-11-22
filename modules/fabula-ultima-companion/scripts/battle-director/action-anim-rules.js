@@ -357,9 +357,13 @@ export function composeBeats(props = {}, { aeTagOf = null, intent = "neutral" } 
 }
 
 // A move whose effect rows play an animation of their own (Phoenix Feather's
-// chain plays "FX: Revive") gets no default on top of it.
+// chain plays "FX: Revive") gets no default on top of it. A timed_strikes row
+// (Renzokuken) is its own cinematic too: timed-strike-cinematic.js plays the
+// intro, every strike and the finisher on the gauge's cues, so a default beat
+// before RESOLVE would only play a stray debuff flash on the target.
+const OWN_ANIMATION_KINDS = new Set(["play_animation", "timed_strikes"]);
 export function hasOwnAnimationRow(props = {}) {
-  return rowsOf(props).some((r) => lc(r.effect_kind) === "play_animation");
+  return rowsOf(props).some((r) => OWN_ANIMATION_KINDS.has(lc(r.effect_kind)));
 }
 
 // Beats → what plays, given the outcome. A miss swings the damage beat (no

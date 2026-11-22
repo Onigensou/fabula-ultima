@@ -97,7 +97,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley Entrance\",\"id\":\"kuqgG7QW9bkZtZ7P\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"},{\"name\":\"Thunder Pillar\",\"id\":\"Ag5RWjwHM1MtYEdY\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley Entrance\",\"id\":\"kuqgG7QW9bkZtZ7P\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"},{\"name\":\"Thunder Pillar\",\"id\":\"Ag5RWjwHM1MtYEdY\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -676,7 +676,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359004160,
-      "modifiedTime": 1794076257691,
+      "modifiedTime": 1795270751758,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

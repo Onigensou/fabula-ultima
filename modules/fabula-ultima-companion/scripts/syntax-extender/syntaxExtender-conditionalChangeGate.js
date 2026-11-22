@@ -337,6 +337,43 @@
     return isAnd ? results.every(Boolean) : results.some(Boolean);
   }
 
+  // Weapon CATEGORY tokens (2026-11-22, Blade Adept): "dagger" = an equipped weapon of that category, "melee_dagger" /
+  // "ranged_bow" = of that range + category. A weapon also counts as every category a live `weapon_category_alias`
+  // AE change gives it ("melee_dagger: brawling, sword, thrown"). Same rule as battle-director/weapon-alias.js — this
+  // classic script cannot import it, so the parse below is a copy: keep the two in step.
+  function weaponAliasCategories(actor, fam, range) {
+    const extra = [];
+    for (const ae of (actor?.appliedEffects ?? actor?.effects?.contents ?? [])) {
+      if (!ae || ae.disabled) continue;
+      const item = ae.parent?.documentName === "Item" ? ae.parent : null;
+      const itype = String(item?.system?.props?.item_type ?? "").toLowerCase();
+      if (["accessory", "armor", "weapon", "shield"].includes(itype) && item?.system?.props?.isEquipped !== true) continue;
+      for (const ch of (ae.changes ?? [])) {
+        if (ch?.key !== "weapon_category_alias") continue;
+        for (const part of String(ch.value ?? "").split(";")) {
+          const i = part.indexOf(":"); if (i < 0) continue;
+          const src = part.slice(0, i).trim().toLowerCase().replace(/\s+/g, "_");
+          if (src !== fam && src !== range + "_" + fam) continue;
+          extra.push(...part.slice(i + 1).split(/[\s,]+/).map(s => s.trim().toLowerCase()).filter(Boolean));
+        }
+      }
+    }
+    return extra;
+  }
+  function weaponMatchesToken(actor, item, tok) {
+    const p = item?.system?.props ?? {};
+    const forms = item?.flags?.[MODULE_ID]?.weaponForms, fi = Number(item?.flags?.[MODULE_ID]?.activeForm ?? 0) || 0;
+    const form = Array.isArray(forms) && fi > 0 ? (forms[fi] ?? {}) : {};
+    const override = String(item?.flags?.[MODULE_ID]?.weaponTypeOverride ?? "").trim().toLowerCase();
+    const fam = override || String(form.weapon_type || p.category || p.weapon_type || "").trim().toLowerCase();
+    const range = String(form.weapon_range || p.weapon_range || "").trim().toLowerCase();
+    if (!fam) return false;
+    const cats = [fam, ...weaponAliasCategories(actor, fam, range)];
+    const us = tok.indexOf("_");
+    if (us > 0 && (tok.startsWith("melee_") || tok.startsWith("ranged_"))) return tok.slice(0, us) === range && cats.includes(tok.slice(us + 1));
+    return cats.includes(tok);
+  }
+
   function hasAnyItemTypeEquipped(actor, typeListStr) {
     if (!actor?.items?.contents) return false;
     const wanted = String(typeListStr ?? "")
@@ -356,6 +393,7 @@
         if (tok === "armor"  && itemType === "armor")  return true;
         if (tok === "weapon" && itemType === "weapon") return true;
         if (tok === "martial_armor" && itemType === "armor" && isMartial) return true;
+        if (itemType === "weapon" && !["shield", "armor", "weapon", "martial_armor"].includes(tok) && weaponMatchesToken(actor, it, tok)) return true;
       }
     }
     return false;

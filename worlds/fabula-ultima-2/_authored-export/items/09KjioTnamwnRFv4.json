@@ -257,7 +257,9 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "hakoCh4": true,
+      "wardenHawk": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -328,11 +330,12 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You may begins the <strong>conflict </strong>with the <strong>companion <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a></strong></p></li><li><p>You may use the skill <a class=\"content-link\" data-uuid=\"Item.b6o08227mQqMU33t\" data-id=\"b6o08227mQqMU33t\" data-type=\"Item\">Summon Spirit Hawk</a></p></li></ul>",
+      "description": "<ul><li><p>You may begin the <strong>conflict</strong> with the <strong>companion</strong> <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>. <em>(A character can have only one companion: if you already have one, the Spirit Hawk does not join.)</em></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.HkWdMantleSumm01]{Summon Spirit Hawk}</strong>】</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
+      "flavor_text": "<p><em>Woven by forest wardens from moss, bark and the down of a spirit hawk. Wear it, and the hawk comes when called.</em></p>",
       "flora_ef": "100",
       "fungus_ef": "100",
       "golem_ef": "100",
@@ -369,7 +372,7 @@
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
-      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong>apply <strong>Hunter's Mark </strong>to the target</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>Attacks </strong>gain +3 Accuracy</p><hr contenteditable=\"false\"></li></ul><p>&nbsp;<strong>4 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong>gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a> <strong>2</strong>&nbsp;<em>(Both attack must target the same creature)</em></p></li></ul>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong> apply <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/30px-GrandArcherSkill1.png\" style=\"width: 18px; height: 18px; vertical-align: middle; margin-right: 4px; border: none;\"> <a class=\"content-link\" data-uuid=\"Item.D6IehPsp6h7srIJH\" data-id=\"D6IehPsp6h7srIJH\" data-type=\"Item\">Hunter's Mark</a> to the target</p><hr></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>Attacks</strong> gain +3 Accuracy</p><hr></li></ul><p><strong>4 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong> gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a> <strong>2</strong> <em>(Both attacks must target the same creature)</em></p></li></ul>",
       "set_name": "Warden of the Wilds",
       "soldier_ef": "100",
       "spirit_ef": "100",

@@ -54,6 +54,7 @@ import { classifyEffect, isStatusTier } from "./status-classifier.js";
 import { hotUrl } from "./hot-reload.js";
 import { isMassiveJoinRowKey } from "./massive-keyword.js";
 import { actorHpFloor, floorHp } from "../shared/hp-floor.js";
+import { resolveWornSlots } from "../shared/equipped-gear.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -3213,6 +3214,16 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
         weaponUuid: ar.weapon?.uuid ?? null,
         sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
         defenseResolved,
+        // The roll, as the CONFIRM scan carries it (state-handlers actionBase):
+        // without these a roll-gated row (ATTACK_CHECK_RESULT, ATTACK_IS_CRIT,
+        // HIT_MARGIN: the Gunblade's odd total, a Snipe / Conquer rider) matched
+        // at CONFIRM and then lost every subject here, so it never landed.
+        isCrit: !!ar.roll?.isCrit,
+        isFumble: !!ar.roll?.isFumble,
+        checkTotal: Number(ar.roll?.total ?? 0) || 0,
+        hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(r.defense ?? 0) || 0),
+        hr: ar.roll?.hr ?? 0,
+        ...(ar.round != null ? { round: ar.round } : {}),
       };
       let cands;
       try {
@@ -4994,6 +5005,43 @@ function previewTimedStrikes(row, pctx = {}) {
   };
 }
 
+// ── transform_weapon ─────────────────────────────────────────────────────
+//
+// Transform the weapon that carries this row (its CSB container; else the
+// reactor's main hand) to another form — the same write the Equipment card's
+// form chips make (equipment-swap.applyWeaponForm: activeForm flag +
+// creature_transforms_weapon) — and spend that weapon's free transform for the
+// round (transformFreeUsedRound), so a transform before the action and one after
+// it share ONE allowance. Gunblade's "before OR after an action" (the Transform
+// keyword) uses it from a turn_end ask row (2026-11-21).
+// Row fields: weapon_form ("next" = cycle, default; or a form index),
+//   spend_free_transform (default true).
+async function applyTransformWeaponEffect(row, ctx) {
+  if (ctx?.captureMode || ctx?.mode === "preview") return { ok: true, kind: "transform_weapon", skipped: true };
+  const actor = ctx.reactorActor ?? null;
+  if (!actor) return { ok: false, kind: "transform_weapon", reason: "no-actor" };
+  const { applyWeaponForm, weaponSlotOfItem, weaponFormCount } = await import("./equipment-swap.js");
+  const cid = String(ctx.skill?.system?.container ?? "").trim();
+  const carrier = cid ? (actor.items?.get?.(cid) ?? null) : null;
+  const slot = carrier ? weaponSlotOfItem(actor, carrier) : "main";
+  if (!slot) return { ok: false, kind: "transform_weapon", reason: "weapon-not-in-hand" };
+  const item = carrier ?? null;
+  const n = weaponFormCount(actor, slot);
+  if (n < 2) return { ok: false, kind: "transform_weapon", reason: "no-forms" };
+  const cur = Number(item?.flags?.["fabula-ultima-companion"]?.activeForm ?? 0) || 0;
+  const raw = String(row.weapon_form ?? "next").trim().toLowerCase();
+  const to = raw === "next" || raw === "" ? (cur + 1) % n : Math.max(0, Math.min(n - 1, Number(raw) | 0));
+  const r = await applyWeaponForm(actor, slot, to);
+  const spend = !(row.spend_free_transform === false || String(row.spend_free_transform ?? "").trim().toLowerCase() === "false");
+  const round = Number(ctx.dCombat?.round ?? ctx.director?.dCombat?.round ?? 0) || 0;
+  if (r.changed && spend) {
+    const it = actor.items?.find?.((i) => i.name === r.weaponName && !i.system?.container) ?? item;
+    try { await it?.setFlag?.("fabula-ultima-companion", "transformFreeUsedRound", round); } catch (e) { warn("skill-effects.transform_weapon: free-use stamp failed", e); }
+  }
+  log(`skill-effects.transform_weapon: ${actor.name}'s ${r.weaponName ?? "weapon"} → ${r.formLabel ?? to} (${r.changed ? "changed" : "unchanged"})`);
+  return { ok: true, kind: "transform_weapon", changed: !!r.changed, formIdx: to, formLabel: r.formLabel ?? null, weaponName: r.weaponName ?? null };
+}
+
 // ── timed_strikes ────────────────────────────────────────────────────────
 //
 // N weapon strikes on the target(s), each scaled by a timing gauge the ACTING
@@ -5057,11 +5105,27 @@ async function applyTimedStrikesEffect(row, ctx) {
   const owner = ownerUserId ? game.users?.get(ownerUserId) : null;
   const presentation = sim ? SimMode.config?.pace === "watch" : (typeof document !== "undefined");
   const { runTimedStrikeGauge } = await import("./timed-strike-gauge.js");
+  // who stands where, for the cinematic every client plays (timed-strike-cinematic.js)
+  const tokId = (t) => t?.id ?? t?.document?.id ?? null;
+  let casterTokenId = tokId(ctx.reactorToken) ?? tokId(ctx.casterToken);
+  if (!casterTokenId) { try { casterTokenId = tokId((await resolveTargetRef("self", ctx))?.tokens?.[0]); } catch (_) { casterTokenId = null; } }
+  // the game's combo counter ("N HIT / X DAMAGE", as the approved mockup shows it) over the strikes:
+  // a timed_strikes skill has no damage formula, so the action itself never opens its window
+  let hc = null;
+  if (presentation) {
+    try {
+      hc = await import("./hit-counter.js");
+      const disp = Number(caster.getActiveTokens?.()?.[0]?.document?.disposition ?? 1);
+      hc.beginHitCounter({ id: `tsg-${casterTokenId ?? caster.id}`, side: disp === -1 ? "enemy" : "party" });
+    } catch (e) { hc = null; warn("skill-effects.timed_strikes: hit counter begin threw", e); }
+  }
   const run = await runTimedStrikeGauge({
     ownerUserId: (owner && !owner.isGM) ? ownerUserId : null,
     presentation,
     spec: { title: cfg.title || ctx.skill?.name || "Timed strikes", icon: ctx.skill?.img ?? null, actorName: caster.name,
-      count: cfg.count, sweepMs: cfg.sweepMs, zone: cfg.zone, gapMs: cfg.gapMs, autoRate: cfg.autoRate },
+      count: cfg.count, sweepMs: cfg.sweepMs, zone: cfg.zone, gapMs: cfg.gapMs, autoRate: cfg.autoRate,
+      casterTokenId, targetTokenIds: targetResult.tokens.map(tokId).filter(Boolean), sceneId: canvas?.scene?.id ?? null,
+      finisher: cfg.finisherMult > 0, finisherLabel: cfg.finisherLabel || null },
     onStrike: async (i, hit) => {
       await deal(R.strikeDamage(swing, hit, cfg), `${row.effect_label ?? "timed"}_s${i + 1}`, { i, hit });
     },
@@ -5071,11 +5135,14 @@ async function applyTimedStrikesEffect(row, ctx) {
   const hits = run.hits.filter(Boolean).length;
   let finisher = null;
   if (hits >= cfg.count && cfg.finisherMult > 0) {
+    // the finisher's wind-up plays on every client; its damage lands on the hit
+    try { await ctl?.finisher?.({ label: cfg.finisherLabel || null }); } catch (e) { warn("skill-effects.timed_strikes: finisher cue threw", e); }
     await deal(R.finisherDamage(swing, cfg), `${row.effect_label ?? "timed"}_finisher`, { i: cfg.count, hit: true, finisher: cfg.finisherLabel || "Finisher" });
     finisher = strikes[strikes.length - 1];
   }
   const tier = R.tierOf(hits, cfg.count);
-  try { ctl?.finish?.({ tier, total }); } catch (e) { warn("skill-effects.timed_strikes: finish threw", e); }
+  try { hc?.endHitCounter?.({ id: `tsg-${casterTokenId ?? caster.id}` }); } catch (_) {}
+  try { await ctl?.finish?.({ tier, total }); } catch (e) { warn("skill-effects.timed_strikes: finish threw", e); }
   log(`skill-effects.timed_strikes: ${caster.name} ${ctx.skill?.name ?? ""} — ${tier} ${hits}/${cfg.count} (${run.judgedBy}) swing ${swing}: `
     + strikes.map((s) => `${s.finisher ? s.finisher : `#${s.i + 1}`}${s.hit ? "T" : "-"}=${s.amount}>${s.dealt}${s.affinity ? `[${s.affinity}]` : ""}`).join(" ")
     + ` total ${total}`);
@@ -5573,6 +5640,7 @@ const EFFECT_KIND_DISPATCH = {
   encyclopedia_record: applyEncyclopediaRecordEffect,
   notify:              applyNotifyEffect,
   timed_strikes:       applyTimedStrikesEffect,
+  transform_weapon:    applyTransformWeaponEffect,
   adjust_damage:       (row) => ({ ok: true, kind: "adjust_damage", applied: [], reason: "data-only" }),
   // check_buff: a PASSIVE marker, not an executed effect. It declares "+N to a
   // named action's Check" (check_buff_action = csv of action_commands, e.g.
@@ -5732,6 +5800,7 @@ export const EFFECT_KIND_LABELS = {
   encyclopedia_record: "Encyclopedia Record",
   notify:              "Notify (show a message — stub / info)",
   timed_strikes:       "Timed Strikes (N weapon strikes, each scaled by a player timing gauge — Renzokuken)",
+  transform_weapon:    "Transform Weapon (switch this weapon to another form, spending its free transform — Gunblade)",
   adjust_damage:       "Adjust Damage",
   check_buff:          "Check Buff (passive +N to a named action's Check — read at COMPUTE, e.g. +2 Study)",
   change_damage_element: "Change Damage Element (override in-flight element)",
@@ -9435,10 +9504,16 @@ export async function restoreHiddenItems(actor) {
   );
   if (!hidden.length) return 0;
 
-  const p = actor.system?.props ?? {};
-  const names = new Set(hidden.map((i) => String(i.system?.props?.name ?? i.name ?? "")));
+  // Which slots still point at a hidden item — resolved by slot item id
+  // (shared/equipped-gear.js), hidden items included in the pools on purpose.
+  const hiddenIds = new Set(hidden.map((i) => i.id));
+  const worn = resolveWornSlots(actor, { includeHidden: true });
+  const inSlot = (slot) => !!worn[slot] && hiddenIds.has(worn[slot].id);
   const actorUpd = {};
-  if (names.has(String(p.main_hand ?? ""))) {
+  for (const slot of ["main", "off", "acc1", "acc2"]) {
+    if (inSlot(slot)) actorUpd[`flags.${NS}.equipSlots.${slot}`] = null;
+  }
+  if (inSlot("main")) {
     Object.assign(actorUpd, {
       "system.props.main_hand": "", "system.props.main_attrib_1": "DEX",
       "system.props.main_attrib_2": "DEX", "system.props.weapon1_base_mod": 0,
@@ -9446,7 +9521,7 @@ export async function restoreHiddenItems(actor) {
       "system.props.main_details": "",
     });
   }
-  if (names.has(String(p.off_hand ?? ""))) {
+  if (inSlot("off")) {
     Object.assign(actorUpd, {
       "system.props.off_hand": "", "system.props.off_attrib_1": "DEX",
       "system.props.off_attrib_2": "DEX", "system.props.off_base_mod_1": 0,
@@ -9454,10 +9529,10 @@ export async function restoreHiddenItems(actor) {
       "system.props.off_details": "",
     });
   }
-  if (names.has(String(p.accessory_name ?? ""))) {
+  if (inSlot("acc1")) {
     Object.assign(actorUpd, { "system.props.accessory_name": "", "system.props.accessory_details": "" });
   }
-  if (names.has(String(p.accessory2_name ?? ""))) {
+  if (inSlot("acc2")) {
     Object.assign(actorUpd, { "system.props.accessory2_name": "", "system.props.accessory2_details": "" });
   }
 

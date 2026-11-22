@@ -33,6 +33,7 @@ import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp, describeGrant,
   getConditionAffinityFor } from "./skill-effects.js";
 import { MASSIVE_KEYWORD, massiveShare, massiveDefenseBonus } from "./massive-keyword.js";
+import { carrierDamageMults } from "./carrier-attack.js";
 
 // Resolve an open_action_menu (+ nested chains) down to the concrete leaf rows for
 // the player's CHOSEN option(s), matched by display label. Mirrors card-mutations'
@@ -579,8 +580,13 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
   // matching flag, no engine change. Attributed to the setting AE in the breakdown.
   const _fns = liveAttacker?.flags?.["fabula-ultima-companion"] ?? {};
   const _dealtKey = `damage_dealt_mult_${String(kind).toLowerCase()}`;
-  const atkDmgMult = (Number(_fns.damage_dealt_mult_all) || 1) * (Number(_fns[_dealtKey]) || 1);
+  // A carrier attack's own "deals ×M damage" (carrier-attack.js, Sonic Blow ×2):
+  // on a Volley Chain the attack's damage is shared over its shots, so each
+  // shot's HR + weapon bonus is ×M/N (the shared flats are ×M in volleyPrimary).
+  const _carrier = kind === "Attack" ? carrierDamageMults(weapon, primary.volley) : { shotMult: 1 };
+  const atkDmgMult = (Number(_fns.damage_dealt_mult_all) || 1) * (Number(_fns[_dealtKey]) || 1) * _carrier.shotMult;
   const atkMultSource = () => {
+    if (_carrier.shotMult !== 1) return `${weapon?.name ?? "Attack"} ×${weapon?.damageMult}${primary.volley ? ` ÷ ${primary.volley.shots} shots` : ""}`;
     const aes = liveAttacker?.appliedEffects ?? liveAttacker?.effects?.contents ?? [];
     for (const ae of aes) {
       if (ae?.disabled) continue;
@@ -746,6 +752,15 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
           const cd = applyCritDamage({ raw: rawDamage, actor: liveAttacker });
           rawDamage = cd.value;
           damageModParts.push(...cd.parts);
+          // The attack's own critical multiplier (carrier-attack.js: Sonic Blow's
+          // "a Critical Success hit deals 50% more"). Per hit, so every strike of a
+          // Chain that crits gets it on its own damage.
+          const cm = kind === "Attack" ? Number(weapon?.critDamageMult) : NaN;
+          if (Number.isFinite(cm) && cm > 0 && cm !== 1) {
+            const before = rawDamage;
+            rawDamage = Math.floor(rawDamage * cm);
+            damageModParts.push({ source: `${weapon?.name ?? "Attack"}: Critical ×${cm}`, amount: rawDamage - before });
+          }
         }
       }
 
@@ -1151,9 +1166,17 @@ function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars
 // this shot gets its share (splitVolleyFlat: floor, remainder to the earliest
 // shots). The share is not multiplied again. Per-target flat reaction ops are
 // shared in buildPerTarget. Mutates `primary` (adds `primary.volley`).
-function applyVolleyToPrimary(primary, volley) {
+function applyVolleyToPrimary(primary, volley, weapon = null) {
   if (!volley || primary?.mode !== "damage") return;
-  primary.volley = volleyPrimary(primary, volley);
+  // A carrier attack's ×M also scales the shared flat bonuses (counted once, ×M,
+  // then shared) — carrier-attack.js carrierDamageMults.
+  const { flatMult } = carrierDamageMults(weapon, volley);
+  const p = flatMult !== 1
+    ? { ...primary, outgoingTotal: (Number(primary.outgoingTotal) || 0) * flatMult,
+        grantDamageBonus: (Number(primary.grantDamageBonus) || 0) * flatMult,
+        damageBonus: (Number(primary.damageBonus) || 0) + (Number(primary.grantDamageBonus) || 0) * (flatMult - 1) }
+    : primary;
+  primary.volley = volleyPrimary(p, volley);
 }
 function volleyShareLabel(v) {
   return `Volley: bonuses shared (shot ${(v?.shot ?? 0) + 1}/${v?.shots ?? 1})`;
@@ -1246,7 +1269,7 @@ export async function computeActionProfile(input) {
   // damage reduction and weapon efficiency are all computed against what the GM
   // chose rather than being relabelled afterwards.
   applyGmPrimaryOverrides(primary, gmDamage);
-  applyVolleyToPrimary(primary, ctx.volley);
+  applyVolleyToPrimary(primary, ctx.volley, kind === "Attack" ? weapon : null);
   // Attack damage tooltip breakdown (per-AE/weapon/grant source list) — the
   // Skill path's baseParts are just the outgoing-mod parts; Attack appends the
   // buildDamageBonusParts breakdown ahead of them (mirrors COMPUTE Attack).

@@ -46,6 +46,7 @@ import { ListPicker } from "./list-picker.js";
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { getInvokeCapability } from "./invoke/invoke-core.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
+import { isCarrierAttackSkill, buildCarrierAttackWeapon, rewriteCarrierAttackBundle } from "./carrier-attack.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTargetCount, mpCapTargetCount, computeEffectiveCost, mergeCostOverrides, formatCostMap } from "./skill-cost.js";
 // COMPUTE-side damage/accuracy helpers (resolveAccuracyParts, resolveOutgoingDamageParts,
 // isCriticalHit, applyCritDamage, resolveIncomingReduction, buildDamageBonusParts,
@@ -1952,6 +1953,7 @@ function chainLogOf(plan, ct) {
   if (plan?.single) return { single: true, strikes: plan.count ?? 0, breakdown: ct?.breakdown ?? "" };
   const totals = [];
   for (const s of plan?.strikes ?? []) {
+    if (s.perfect) continue;   // the Perfect bonus hit rolls nothing (chain-strikes perfect())
     const o = (s.outcomes ?? []).find((x) => x.tokenUuid === ct?.tokenUuid);
     if (!o || o.kind === "lost" || o.kind === "skip") continue;
     totals.push(s.roll?.total ?? "—");
@@ -3111,6 +3113,9 @@ function buildActingRemotePrompt(director, actor) {
 // both stage the action identically. TARGET's per-command branches read these
 // ctx fields and skip their own pickers when pre-populated.
 function applyComposedBundleAndAdvance(director, winnerBundle) {
+  // A carrier-attack skill (Sonic Blow: "perform an attack with this weapon")
+  // resolves as ONE weapon Attack card — carrier-attack.js.
+  winnerBundle = rewriteCarrierAttackBundle(winnerBundle, (u) => fromUuidSync(u));
   if (!winnerBundle._commandOnly) {
     // Generic marker any branch can read for "did the player pre-compose this?"
     director.ctx._composedBundle = winnerBundle;
@@ -4817,7 +4822,15 @@ const Target = {
           director.enqueue({ type: INTENTS.TARGET_BACK });
           return;
         }
-        const pseudo = buildPseudoWeaponFromNpcAttack(item);
+        // A carrier-attack skill borrows its weapon (form included) — carrier-attack.js.
+        const isCarrier = isCarrierAttackSkill(item);
+        const pseudo = isCarrier ? buildCarrierAttackWeapon(item, attacker) : buildPseudoWeaponFromNpcAttack(item);
+        if (isCarrier && !pseudo) {
+          ui.notifications?.warn(`${attacker.name}: ${item.name} needs its weapon in hand.`);
+          warn("TARGET Attack (carrier): carrier weapon not equipped", item.name);
+          director.enqueue({ type: INTENTS.TARGET_BACK });
+          return;
+        }
         if (!pseudo) {
           ui.notifications?.warn(`${attacker.name}'s Attack is missing attribute or damage data.`);
           warn("TARGET Attack (NPC): buildPseudoWeapon returned null", item.name);

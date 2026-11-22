@@ -45,6 +45,7 @@
 import { log, warn } from "./logger.js";
 import { hasIgnoreActionGating } from "./domination.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
+import { renderLiveText } from "./live-text.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
 import { activeConflictEvent } from "../conflict-event/conflict-event-runtime.js";
 
@@ -290,7 +291,8 @@ export function collectObjectives({ actor, director = null } = {}) {
       uuid: item.uuid,
       name,
       img: item.img || DEFAULT_OBJECTIVE_ICON,
-      desc: String(item.system?.props?.description ?? "").trim(),
+      // Live numbers (Break Free's DL = whoever holds this creature) — live-text.js.
+      desc: renderLiveText(String(item.system?.props?.description ?? "").trim(), { actor, skill: item }),
       cost: cost.label,
       disabledReason: gate ?? cost.reason ?? null,
     });

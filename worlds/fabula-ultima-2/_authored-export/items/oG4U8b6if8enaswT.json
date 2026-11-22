@@ -14,6 +14,10 @@
     },
     "fabula-ultima-companion": {
       "cookingConfig": {
+        "cookbook": [
+          "dark:sweet",
+          "recipe:Manta Sashimi"
+        ],
         "darkDishIds": {
           "bitter": "CkV2DarkBitter00",
           "salty": "CkV2DarkSalty000",
@@ -21,7 +25,13 @@
           "sweet": "CkV2DarkSweet000",
           "umami": "CkV2DarkUmami000"
         },
+        "discovered": [
+          "Manta Sashimi"
+        ],
         "goopDishId": "Vp2ssK4jo3hm2gp0",
+        "hints": [
+          "Herbal Tea"
+        ],
         "ingredientKinds": {
           "Animal Fang": "meat",
           "Ash": "monster",
@@ -334,6 +344,15 @@
           "sweet": "CkV2SpoilSweet00",
           "umami": "CkV2SpoilUmami00"
         },
+        "tasted": [
+          "Tempest Manta",
+          "Magnificent Mahi-mahi",
+          "Lucky Loach",
+          "Honey",
+          "Flame Salmon",
+          "Shadow Sturgeon",
+          "Rock Salt"
+        ],
         "yaminabe": {
           "bonus": 2,
           "darkAt": 15

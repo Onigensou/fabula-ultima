@@ -1,0 +1,81 @@
+{
+  "_id": "rrtMjWJ0MlrYHQhD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795278174957,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Save the Queen (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "zKJP8tR2S8Gg1rRZ",
+    "props": {
+      "description": "<p>Attacks with this weapon deal <strong>5 extra damage</strong> to Dark-Attribute creatures.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "stq_dark"
+        }
+      },
+      "id": "rrtMjWJ0MlrYHQhD",
+      "isReaction": true,
+      "max_level": "1",
+      "name": "Save the Queen (Passive)",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "TARGET_ATTRIBUTE_IS_DARK == 1 && DAMAGE_IS_HP == 1",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "stq_dark",
+          "reaction_max_per_round": "",
+          "reaction_max_scope": "",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "",
+          "reaction_requires_weapon_used": true,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_will_deal_damage",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_description": "<p>Attacks with this weapon deal <strong>5 extra damage</strong> to Dark-Attribute creatures.</p>",
+      "skill_type": "Passive",
+      "uuid": "Item.rrtMjWJ0MlrYHQhD"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "rrtMjWJ0MlrYHQhD"
+  },
+  "type": "equippableItem"
+}

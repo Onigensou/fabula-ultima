@@ -1,0 +1,201 @@
+<title>Nox Legion Actions</title>
+<meta charset="utf-8">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600;700&family=Cinzel:wght@600;700&display=swap">
+<style>
+/* Layout: cinematic stage + skill panel side by side; beat sheet + tuning under the stage; automation audit and build plan below. Same parchment family as the earlier Battle Director mockups. */
+:root {
+  --page: #efe5cf; --surface: #f8f1e1; --ink: #33251a; --muted: #6e5a45;
+  --gold: #a87622; --gold-soft: #e7cf96; --wood: #4a2f1c; --line: #d3bf98;
+  --bug: #b4432a; --risk: #b07a12; --ok: #3f7a3a; --info: #2f6f8f;
+  --font-body: "Signika", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Cinzel", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --page: #1b1510; --surface: #261d15; --ink: #eee2c9; --muted: #b29f84;
+  --gold: #d7a64b; --gold-soft: #5a4422; --wood: #120c08; --line: #4a3a28;
+  --bug: #e0765c; --risk: #e3b553; --ok: #8cc47f; --info: #6fb6d6; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --page: #1b1510; --surface: #261d15; --ink: #eee2c9; --muted: #b29f84;
+  --gold: #d7a64b; --gold-soft: #5a4422; --wood: #120c08; --line: #4a3a28;
+  --bug: #e0765c; --risk: #e3b553; --ok: #8cc47f; --info: #6fb6d6; color-scheme: dark }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--page); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1340px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 26px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+h1 { font-family: var(--font-display); font-size: clamp(26px, 3.4vw, 36px); margin: 0; text-wrap: balance; letter-spacing: .02em; }
+h2 { font-family: var(--font-display); font-size: 20px; margin: 0 0 12px; letter-spacing: .03em; text-wrap: balance; }
+header p { margin: 0; max-width: 78ch; color: var(--muted); }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+@media (max-width: 1020px) { .main { grid-template-columns: minmax(0, 1fr); } }
+.stagecol { display: grid; gap: 14px; min-width: 0; }
+.frame { background: var(--wood); padding: 6px; border-radius: 6px; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+.stage { position: relative; aspect-ratio: 1682 / 788; max-width: 100%; overflow: hidden; border-radius: 3px; background: #000; }
+#view { position: absolute; left: 0; top: 0; width: 1682px; height: 788px; transform-origin: 0 0; overflow: hidden; }
+#shake { position: absolute; inset: 0; }
+.layer { position: absolute; left: 0; top: 0; width: 1682px; height: 788px; transform-origin: 0 0; }
+.layer > .bgimg { position: absolute; left: 0; top: 0; width: 1682px; height: 788px; }
+.layer .sub { position: absolute; inset: 0; pointer-events: none; }
+.layer .sub > * { position: absolute; }
+.fdim { position: absolute; left: -1682px; top: -788px; width: 5046px; height: 2364px; background: #07040c; opacity: 0; }
+canvas.gl { position: absolute; left: 0; top: 0; }
+#sparts { z-index: 28; }
+canvas.parts { position: absolute; left: 0; top: 0; width: 1682px; height: 788px; pointer-events: none; }
+#screen { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
+#screen > * { position: absolute; }
+.bar { left: 0; width: 100%; height: 0; background: #000; }
+.bar.top { top: 0; } .bar.bot { bottom: 0; }
+#flash, #black { inset: 0; opacity: 0; }
+#flash { background: #fff; z-index: 30; } #black { background: #000; z-index: 29; }
+#vig { inset: 0; opacity: 0; background: radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,.85) 100%); }
+#iris { inset: 0; display: none; background: #000; }
+.spr { position: absolute; transform-origin: 50% 100%; }
+.spr > .m { display: block; width: 100%; height: 100%; }
+.actor { position: absolute; transform: translate(-50%, -100%); }
+.actor .body { transform-origin: 50% 100%; }
+.actor .media { display: block; filter: drop-shadow(0 4px 3px rgba(0,0,0,.35)); }
+.shadow { position: absolute; left: 50%; bottom: -8px; width: 70%; height: 16px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(rgba(0,0,0,.4), rgba(0,0,0,0) 70%); z-index: -1; }
+.num { transform: translate(-50%, -50%); font: 700 44px/1 var(--font-body); color: #fff; -webkit-text-stroke: 2px #2a1a0e; paint-order: stroke fill; text-shadow: 0 3px 0 #2a1a0e; white-space: nowrap; }
+.num.heal { color: #8ef08a; }
+.stage .tag { position: absolute; left: 10px; top: 8px; z-index: 40; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #f3e4c0; background: rgba(20,12,6,.6); padding: 2px 8px; border-radius: 3px; }
+.stage .gate { position: absolute; right: 10px; top: 8px; z-index: 40; font-size: 12px; font-weight: 700; color: #fff; background: #b4432a; padding: 2px 9px; border-radius: 3px; opacity: 0; transition: opacity .2s; }
+.reticle { border: 0; }
+.reticle i { position: absolute; width: 22px; height: 22px; border: 3px solid #cbb6ff; filter: drop-shadow(0 0 6px #8a5cff); }
+.reticle i:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.reticle i:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; }
+.reticle i:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; }
+.reticle i:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+.cutband { left: -10%; width: 120%; overflow: hidden; transform-origin: 50% 50%; }
+.cutband .stripe { position: absolute; inset: 0; background-size: 46px 100%; }
+.cutband img { position: absolute; bottom: -4%; height: 112%; filter: drop-shadow(0 0 0 #fff) drop-shadow(6px 6px 0 rgba(0,0,0,.35)); }
+
+/* Panel */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; min-width: 0; }
+.card h3 { margin: 0 0 8px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px; display: grid; gap: 12px; box-shadow: inset 0 0 0 3px var(--surface), inset 0 0 0 4px var(--gold-soft); min-width: 0; }
+.skills { display: grid; gap: 6px; }
+.skill { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; align-items: center; text-align: left; width: 100%; border: 1px solid var(--line); background: var(--page); color: var(--ink); border-radius: 5px; padding: 6px 8px; cursor: pointer; font: 14px var(--font-body); }
+.skills .grp { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-top: 10px; }
+.skill img { width: 44px; height: 44px; border-radius: 4px; object-fit: cover; object-position: top; background: var(--wood); }
+.skill b { display: block; font-size: 15px; } .skill small { color: var(--muted); font-size: 12px; }
+.skill[aria-current="true"] { background: var(--gold-soft); border-color: var(--gold); }
+.play { border: 0; border-radius: 5px; padding: 12px; font: 700 16px var(--font-body); letter-spacing: .04em; background: var(--wood); color: #f3e4c0; cursor: pointer; box-shadow: inset 0 0 0 1px #c79a45; }
+.play:hover { filter: brightness(1.15); }
+.row2 { display: flex; gap: 10px 14px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.row2 label { display: inline-flex; gap: 6px; align-items: center; }
+select { font: 14px var(--font-body); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line); background: var(--page); color: var(--ink); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.opts { display: grid; gap: 8px; font-size: 14px; }
+.opts .lbl { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.checks { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.checks label { display: inline-flex; gap: 6px; align-items: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--page); color: var(--ink); padding: 3px 10px; border-radius: 999px; font: 13px var(--font-body); cursor: pointer; }
+.chip:hover { border-color: var(--gold); }
+.chip[aria-pressed="true"] { border-color: var(--gold); background: var(--gold-soft); font-weight: 600; }
+
+/* Beat sheet */
+.sheet { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 760px) { .sheet { grid-template-columns: minmax(0, 1fr); } }
+.sheet .title b { font-family: var(--font-display); font-size: 19px; }
+.sheet p { margin: 6px 0 0; }
+.muted { color: var(--muted); font-size: 14px; }
+ol.beats { margin: 4px 0 0; padding-left: 0; list-style: none; display: grid; gap: 2px; font-size: 14px; counter-reset: b; }
+ol.beats li { counter-increment: b; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: baseline; padding: 4px 6px; border-radius: 4px; }
+ol.beats li::before { content: counter(b); font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
+ol.beats li.now { background: var(--gold-soft); }
+ol.beats li .go { border: 1px solid var(--line); background: var(--page); color: var(--ink); border-radius: 3px; font: 12px var(--font-body); padding: 1px 7px; cursor: pointer; }
+ol.beats li em { font-style: normal; color: var(--muted); }
+ol.beats li.gatebeat b::after { content: " ◆ damage / effect lands"; color: var(--bug); font-size: 12px; font-weight: 700; }
+.tune { display: grid; gap: 10px; margin-top: 4px; }
+.tune label { display: grid; grid-template-columns: minmax(0, 1fr) 54px; gap: 4px 10px; font-size: 13px; align-items: center; }
+.tune input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--gold); }
+.tune output { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.tlmeta { font-size: 12px; color: var(--muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+
+/* Lower */
+.lower { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 1020px) { .lower { grid-template-columns: minmax(0, 1fr); } }
+.find { display: grid; gap: 14px; }
+.find h4 { margin: 0 0 4px; font-size: 15px; }
+.find ul { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; }
+.find li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; align-items: baseline; }
+.sev { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 0 6px; border-radius: 3px; border: 1px solid currentColor; text-align: center; }
+.s-bug { color: var(--bug); } .s-risk { color: var(--risk); } .s-tidy { color: var(--muted); } .s-ok { color: var(--ok); }
+ol.plan { margin: 0; padding-left: 20px; display: grid; gap: 10px; font-size: 14px; }
+ol.plan li b { display: block; font-size: 15px; }
+ol.plan li span { color: var(--muted); }
+code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: .88em; overflow-wrap: anywhere; }
+footer { font-size: 13px; color: var(--muted); max-width: 90ch; }
+@media (prefers-reduced-motion: reduce) { .chip, .play { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Battle Director · Sealed Cavern · mockup v8 · all approved</div>
+    <h1>Nox Legion Actions</h1>
+    <p>Every active move and the visible passives of the six Nox monsters, on the Sealed Cavern battlemap with in-game battler sizes. Review each move right here: approve it, write a note, pause anywhere to comment on that exact moment (with a pin on the stage), drag any slider, then press Send feedback.</p>
+  </header>
+
+  <div class="main">
+    <div class="stagecol">
+      <div class="frame">
+        <div class="stage" id="stage">
+          <div id="view">
+            <div id="shake">
+              <div class="layer" id="field">
+                <canvas class="gl" id="fieldgl"></canvas>
+                <div class="fdim" id="fdim"></div>
+                <div class="sub" id="fground"></div>
+                <div class="sub" id="factors"></div>
+                <canvas class="parts" id="fparts" width="1682" height="788"></canvas>
+                <div class="sub" id="ffx"></div>
+              </div>
+              <div class="layer" id="dim2" hidden>
+                <div class="layer" id="dimcam">
+                  <canvas class="gl" id="dimgl" hidden></canvas>
+                  <img class="bgimg" id="dimbg" alt="">
+                  <div class="sub" id="dtint"></div>
+                  <div class="sub" id="dground"></div>
+                  <div class="sub" id="dactors"></div>
+                  <canvas class="parts" id="dparts" width="1682" height="788"></canvas>
+                  <div class="sub" id="dfx"></div>
+                </div>
+              </div>
+              <div id="screen">
+                <div id="vig"></div>
+                <canvas class="parts" id="sparts" width="1682" height="788"></canvas>
+                <div id="iris"></div>
+                <div id="black"></div>
+                <div id="flash"></div>
+              </div>
+            </div>
+          </div>
+          <div class="tag" id="stagetag">Valley_Battlemap004 · 3D stage</div>
+          <div class="gate" id="gate">◆ Damage / effect lands here</div>
+        </div>
+      </div>
+
+      <div class="card sheet" id="sheet"></div>
+    </div>
+
+    <aside class="panel" aria-label="Skills">
+      <div class="skills" id="skills"></div>
+      <button class="play" id="play">▶ Play from the start</button>
+      <div class="row2">
+        <label for="speed">Speed <select id="speed"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select></label>
+        <label for="sound"><input type="checkbox" id="sound" checked> Sound</label>
+        <label for="sway"><input type="checkbox" id="sway" checked> 3D idle sway</label>
+      </div>
+      <div class="opts" id="opts"></div>
+      <p class="muted" style="margin:0">Damage, heal and MP numbers are the game's own look. The real scripts won't draw text.</p>
+    </aside>
+  </div>

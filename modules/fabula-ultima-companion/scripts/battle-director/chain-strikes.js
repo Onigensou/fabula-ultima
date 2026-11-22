@@ -369,6 +369,42 @@ export function createStrikeWalker(states = new Map()) {
     outStrikes.push({ index: strike.index, roll, outcomes });
   }
 
+  // Perfect (carrier-attack.js `perfectMult`, Sonic Blow ×1.5): when EVERY strike
+  // of the sequence landed on every creature it was aimed at, the attack deals
+  // `mult` × its damage — each target takes round(its strikes' total × (mult − 1))
+  // more, shown as one extra gold hit after the last strike (approved mockup:
+  // "the ×1.5 as one gold hit"). Not a strike: it rolls nothing, counts as no
+  // hit and no crit, and only touches HP / shield. Returns the added strike or null.
+  function perfect(mult) {
+    const m = Number(mult);
+    if (!(m > 1) || !outStrikes.length) return null;
+    const all = outStrikes.flatMap((s) => s.outcomes ?? []).filter((o) => o.kind !== "skip");
+    if (!all.length || !all.every((o) => o.kind === "hit")) return null;
+    const outcomes = [];
+    for (const [uuid, tally] of perTarget) {
+      const state = states.get(uuid);
+      if (!state || (!state.noKo && state.hp <= 0)) continue;
+      const amount = Math.round(Math.max(0, tally.damage) * (m - 1));
+      if (!(amount > 0)) continue;
+      const applied = applyStrikeToState(state, { kind: "hit", amount });
+      tally.damage += amount;
+      tally.hpLoss += applied.hpLoss;
+      tally.shieldLoss += applied.shieldLoss;
+      tally.perfectBonus = amount;
+      const downedNow = !state.noKo && state.hp <= 0 && !tally.defeated;
+      if (downedNow) { tally.defeated = true; tally.defeatedOnStrike = outStrikes.length + 1; }
+      const last = [...outStrikes].reverse().map((s) => (s.outcomes ?? []).find((o) => o.tokenUuid === uuid)).find(Boolean) ?? {};
+      outcomes.push({
+        tokenUuid: uuid, kind: "hit", amount, affinity: last.affinity ?? "NE", element: last.element ?? "",
+        isCrit: true, critBanner: false, perfect: true, pierce: false, defense: null, ...applied, killing: downedNow,
+      });
+    }
+    if (!outcomes.length) return null;
+    const strike = { index: outStrikes.length + 1, roll: null, perfect: true, mult: m, outcomes };
+    outStrikes.push(strike);
+    return strike;
+  }
+
   function finish() {
     return {
       strikes: outStrikes,
@@ -382,7 +418,7 @@ export function createStrikeWalker(states = new Map()) {
     };
   }
 
-  return { step, finish, standing, states };
+  return { step, perfect, finish, standing, states };
 }
 
 export function planStrikes({ strikes = [], states = new Map(), evaluate } = {}) {

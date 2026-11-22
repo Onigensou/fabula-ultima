@@ -1,0 +1,235 @@
+{
+  "_id": "HkC4MuramasaPsv1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239813690,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "HkC4MuraDoomAE01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Inflicts <strong>KO </strong>on countdown</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "8ZULwuHoGlBsToW0",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.8ZULwuHoGlBsToW0"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-doomed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "doom",
+          "charges": 3,
+          "directorPermanent": true,
+          "equipLock": "Muramasa",
+          "hakoLeftovers": true,
+          "lifetimeMode": "on_activation",
+          "muramasaDoom": true,
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "effect_kind": "notify",
+                "effect_label": "doom_tick",
+                "notify_abort": false,
+                "notify_message": "Doom draws near…",
+                "notify_type": "card",
+                "target_ref": "self"
+              },
+              "1": {
+                "chain_steps": "doom_card, doom_kill",
+                "effect_kind": "chain",
+                "effect_label": "doom_fall"
+              },
+              "2": {
+                "effect_kind": "notify",
+                "effect_label": "doom_card",
+                "notify_abort": false,
+                "notify_message": "Doom!",
+                "notify_type": "card",
+                "target_ref": "self"
+              },
+              "3": {
+                "damage_amount": "CUR_HP + CUR_SHIELD + 50",
+                "damage_element": "physical",
+                "damage_ignore_affinity": true,
+                "damage_verbosity": "full",
+                "effect_kind": "deal_damage",
+                "effect_label": "doom_kill",
+                "emit_status": "Doomed",
+                "emit_trigger": "creature_status_triggered",
+                "target_ref": "self"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "AE_CHARGES_DOOMED > 1",
+                "reaction_effect_ref": "doom_tick",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              },
+              "1": {
+                "condition_formula": "AE_CHARGES_DOOMED <= 1",
+                "reaction_effect_ref": "doom_fall",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          },
+          "uncleansable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/level_5_death.png",
+      "name": "Doomed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "7VDl6ac5Rzr2Rpya"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Muramasa (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "HkC4Muramasa0001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Attacks with this weapon hit harder the lower the target's HP is.</p></li><li><p>When you equip this weapon, or have it equipped at the start of a conflict, you suffer <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>. When you reduce a creature to 0 HP, set your <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a> duration to <strong>3</strong>.</p></li><li><p>While this weapon is equipped, nothing can cleanse or prevent your <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>. Unequipping this weapon does not remove it.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "1 + (1 - TARGET_CURRENT_HP / max(1, TARGET_MAX_HP)) * (0.5 - 0.25 * TARGET_IS_CHAMPION)",
+          "damage_operation": "multiply",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "mura_bite"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Item.HkC4MuramasaPsv1.ActiveEffect.HkC4MuraDoomAE01",
+          "effect_kind": "apply_ae",
+          "effect_label": "mura_doom",
+          "ignore_condition_immunity": true,
+          "target_ref": "self"
+        },
+        "2": {
+          "charge_ae_name": "Doomed",
+          "charge_amount": "3",
+          "charge_operation": "set",
+          "effect_kind": "adjust_charges",
+          "effect_label": "mura_reset",
+          "target_ref": "self"
+        }
+      },
+      "id": "HkC4MuramasaPsv1",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Muramasa (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "mura_bite",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "1": {
+          "reaction_effect_ref": "mura_doom",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "2": {
+          "reaction_effect_ref": "mura_doom",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_equips_item"
+        },
+        "3": {
+          "condition_formula": "CAUSE_IS_SELF == 1",
+          "reaction_effect_ref": "mura_reset",
+          "reaction_passive_mode": "force",
+          "reaction_source": "all",
+          "reaction_trigger": "creature_defeated"
+        }
+      },
+      "skill_description": "<ul><li><p>Attacks with this weapon hit harder the lower the target's HP is.</p></li><li><p>When you equip this weapon, or have it equipped at the start of a conflict, you suffer <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>. When you reduce a creature to 0 HP, set your <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a> duration to <strong>3</strong>.</p></li><li><p>While this weapon is equipped, nothing can cleanse or prevent your <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>. Unequipping this weapon does not remove it.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkC4MuramasaPsv1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkC4MuramasaPsv1"
+  },
+  "type": "equippableItem"
+}

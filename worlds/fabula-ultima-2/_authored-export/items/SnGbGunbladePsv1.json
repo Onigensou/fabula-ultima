@@ -1,0 +1,79 @@
+{
+  "_id": "SnGbGunbladePsv1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795342395311,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "sonicGunblade": "created"
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Gunblade (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "mODVDmjIfozcfERi",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When you hit a creature with this weapon, if the Accuracy Check total is an <strong>odd</strong> number or you score a <strong>Critical Success</strong>, deal <strong>10</strong> bonus damage and its damage becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "gb_fire_plus, gb_fire_el",
+          "effect_kind": "chain",
+          "effect_label": "gb_fire"
+        },
+        "1": {
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "gb_fire_plus"
+        },
+        "2": {
+          "change_element": "fire",
+          "effect_kind": "change_damage_element",
+          "effect_label": "gb_fire_el"
+        }
+      },
+      "id": "SnGbGunbladePsv1",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Gunblade (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "WEAPON_FORM == 0 && DAMAGE_IS_HP == 1 && (ATTACK_CHECK_RESULT % 2 == 1 || ATTACK_IS_CRIT == 1)",
+          "reaction_effect_ref": "gb_fire",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>When you hit a creature with this weapon, if the Accuracy Check total is an <strong>odd</strong> number or you score a <strong>Critical Success</strong>, deal <strong>10</strong> bonus damage and its damage becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.SnGbGunbladePsv1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "SnGbGunbladePsv1"
+  },
+  "type": "equippableItem"
+}

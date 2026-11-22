@@ -257,7 +257,8 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "hakoCh4": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -328,7 +329,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</li><li>Your <strong>offensive </strong>【<strong>spell】 </strong>that deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>damage deals <strong>5 extra damage</strong>.</li><li><p>When you perform an offensive 【<strong>spell】 </strong>that deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>damage, you may spend <strong>15 Mind Points</strong> to ignore target <strong>dark resistance and immunity</strong>.</p></li></ul>",
+      "description": "<ul><li><p>Your offensive spells that deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> or <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage deal <strong>5 bonus damage</strong> for each status effect on the target (up to <strong>15</strong>).</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -357,7 +358,7 @@
       "item_def_bonus": "0",
       "item_mdef_bonus": "+2",
       "item_quantity": "1",
-      "item_rarity": "Common",
+      "item_rarity": "Rare",
       "item_type": "armor",
       "mimic_ef": "100",
       "monster_ef": "100",

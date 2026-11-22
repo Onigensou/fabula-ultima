@@ -1,10 +1,136 @@
 {
   "sceneId": "or2XPkXT448qmdrh",
   "name": "Valley_Map022",
-  "tokens": [],
-  "tokensFull": [],
+  "tokens": [
+    {
+      "name": "Altar Circle",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "Altar Circle",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/NPC%20Sprite/4_M_RUSMAN2.gif",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": true,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 0,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftAltar": "claude-2026-11-19-altar",
+          "draftName": "Altar Circle",
+          "depthExempt": true
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": true,
+      "_id": "EyjqBtCbhaCOJyR7",
+      "x": 638,
+      "y": 490,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    }
+  ],
   "notes": [],
-  "tileCount": 1,
+  "tileCount": 2,
   "full": {
     "name": "Valley_Map022",
     "navName": "Sacrificial Altar",
@@ -96,7 +222,9 @@
             "wellspring_bolt": true,
             "wellspring_ice": false,
             "wellspring_dark": false,
-            "wellspring_light": false
+            "wellspring_light": false,
+            "parallaxEnabled": false,
+            "parallaxMist": false
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Summit Trail\",\"id\":\"EtlYqCkE1aTvbwKo\"}]"
         },
@@ -122,48 +250,267 @@
             "material": "RollTable.QailcoOmaoZW0v6b",
             "fish": "RollTable.pEHm2gU70pTHQM6v"
           }
-        }
-      },
-      "fxmaster": {
-        "effects": {
-          "core_clouds": {
-            "type": "clouds",
-            "options": {
-              "belowTokens": false,
-              "tint": {
-                "apply": false,
-                "value": "#FFFFFF"
+        },
+        "ambience": {
+          "clouds": {
+            "pivot": [
+              666,
+              1371.6
+            ],
+            "density": 1,
+            "flash": 0.7,
+            "layers": [
+              {
+                "s": 5.2,
+                "spin": 0.01,
+                "dx": 12,
+                "dy": -4,
+                "a": 0.55
               },
-              "scale": 0.6,
-              "direction": 305,
-              "speed": 2.2,
-              "lifetime": 1.3,
-              "density": 0.032,
-              "alpha": 0.4,
-              "dropShadow": false,
-              "shadowOnly": false,
-              "shadowRotation": 315,
-              "shadowDistance": 70,
-              "shadowBlur": 2,
-              "shadowOpacity": 1
-            }
+              {
+                "s": 3.4,
+                "spin": -0.016,
+                "dx": -18,
+                "dy": 2,
+                "a": 0.45
+              },
+              {
+                "s": 2.1,
+                "spin": 0.022,
+                "dx": 28,
+                "dy": -8,
+                "a": 0.32
+              }
+            ]
+          },
+          "glows": [
+            [
+              650,
+              455,
+              160
+            ]
+          ],
+          "storm": {
+            "mode": "above",
+            "every": [
+              6,
+              14
+            ],
+            "zones": [
+              {
+                "x": [
+                  20,
+                  250
+                ],
+                "y": [
+                  380,
+                  640
+                ],
+                "far": 0.9
+              },
+              {
+                "x": [
+                  1080,
+                  1310
+                ],
+                "y": [
+                  420,
+                  700
+                ],
+                "far": 0.9
+              },
+              {
+                "x": [
+                  330,
+                  460
+                ],
+                "y": [
+                  60,
+                  160
+                ],
+                "far": 1.2
+              },
+              {
+                "x": [
+                  860,
+                  1060
+                ],
+                "y": [
+                  70,
+                  170
+                ],
+                "far": 1.2
+              },
+              {
+                "x": [
+                  20,
+                  200
+                ],
+                "y": [
+                  1050,
+                  1400
+                ],
+                "far": 0.7,
+                "sheet": true
+              },
+              {
+                "x": [
+                  1180,
+                  1320
+                ],
+                "y": [
+                  950,
+                  1350
+                ],
+                "far": 0.7,
+                "sheet": true
+              }
+            ],
+            "solid": [
+              [
+                300,
+                200
+              ],
+              [
+                470,
+                120
+              ],
+              [
+                480,
+                40
+              ],
+              [
+                560,
+                20
+              ],
+              [
+                620,
+                0
+              ],
+              [
+                720,
+                0
+              ],
+              [
+                790,
+                30
+              ],
+              [
+                820,
+                120
+              ],
+              [
+                850,
+                190
+              ],
+              [
+                1000,
+                185
+              ],
+              [
+                1090,
+                240
+              ],
+              [
+                1130,
+                310
+              ],
+              [
+                1200,
+                320
+              ],
+              [
+                1225,
+                420
+              ],
+              [
+                1270,
+                500
+              ],
+              [
+                1300,
+                600
+              ],
+              [
+                1290,
+                720
+              ],
+              [
+                1250,
+                820
+              ],
+              [
+                1180,
+                900
+              ],
+              [
+                1130,
+                1000
+              ],
+              [
+                1130,
+                1120
+              ],
+              [
+                1150,
+                1260
+              ],
+              [
+                1150,
+                1400
+              ],
+              [
+                1160,
+                1524
+              ],
+              [
+                220,
+                1524
+              ],
+              [
+                230,
+                1300
+              ],
+              [
+                150,
+                1150
+              ],
+              [
+                60,
+                1000
+              ],
+              [
+                40,
+                800
+              ],
+              [
+                60,
+                650
+              ],
+              [
+                90,
+                520
+              ],
+              [
+                120,
+                400
+              ],
+              [
+                200,
+                300
+              ]
+            ],
+            "flash": 0.16,
+            "mist": 0.9,
+            "volume": 0.45
           }
         },
-        "filters": {
-          "core_lightning": {
-            "type": "lightning",
-            "options": {
-              "belowTokens": false,
-              "frequency": 2500,
-              "spark_duration": 1310,
-              "brightness": 1.3
-            }
-          }
-        }
-      }
+        "draftAltar": "claude-2026-11-19-altar"
+      },
+      "fxmaster": {}
     },
-    "playlist": "RQCAKkv2ZbCCuyzP",
-    "playlistSound": "Izs2ykIrWPWJZ1e1",
+    "playlist": null,
+    "playlistSound": null,
     "_id": "or2XPkXT448qmdrh",
     "active": false,
     "navOrder": 0,
@@ -227,7 +574,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359066298,
-      "modifiedTime": 1791827697717,
+      "modifiedTime": 1795087334980,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

@@ -12,6 +12,32 @@
     "custom-system-builder": {
       "version": "3.2.4"
     },
+    "fabula-ultima-companion": {
+      "activeForm": 0,
+      "lionheart": true,
+      "weaponForms": [
+        {
+          "check_bonus": 0,
+          "damage_bonus": 10,
+          "label": "Sword",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "WLP",
+          "type_damage": "Physical",
+          "weapon_range": "Melee",
+          "weapon_type": "Sword"
+        },
+        {
+          "check_bonus": 1,
+          "damage_bonus": 5,
+          "label": "Gun",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "type_damage": "Physical",
+          "weapon_range": "Ranged",
+          "weapon_type": "Firearm"
+        }
+      ]
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "weapon",
@@ -50,12 +76,12 @@
       "damage_bonus": "10",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<p><strong>Form I</strong></p><p><strong>Sword </strong><em><strong>• Two-handed • Melee • Martial</strong></em></p><p><em><strong>Accuracy: 【DEX】+【MIG】•　Damage: 【HR + 10】Physical</strong></em></p><blockquote><ul><li><em>When you attack with this weapon, If the attack Accuracy check is an <strong>Odd</strong> number or you roll a <strong>Critical Success</strong>, the enemy is treated as <strong>vulnerable </strong>to this damage, and the damage is coverted to <strong>Fire.</strong></em> (This effect cannot overrides Immunity or Absorption)</li></ul></blockquote><hr contenteditable=\"false\"><p><strong>Form II</strong></p><p><strong>Firearm </strong><em><strong>• Two-handed • Ranged • Martial</strong></em></p><p><em><strong>Accuracy: 【DEX】+【DEX】+ 1 •　Damage: 【HR + 5】Physical</strong></em></p><blockquote><ul><li><em>You gain +1 DEF and MDEF</em></li><li><em>When you&nbsp;<strong>Equip</strong> this weapon, Gain 10 <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a></em></li></ul></blockquote>",
+      "description": "<p><strong>Form I · Sword</strong></p><p><em><strong>Two-handed • Melee • Martial</strong></em></p><p><em><strong>Accuracy: 【MIG】+【WLP】 • Damage: 【HR + 10】<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a></strong></em></p><ul><li><p>You may use the skill 【⚔<strong>@UUID[Item.LhRzRenzokuken01]{Renzokuken}</strong>】.</p></li></ul><hr contenteditable=\"false\"><p><strong>Form II · Gun</strong></p><p><em><strong>Two-handed • Ranged • Martial</strong></em></p><p><em><strong>Accuracy: 【DEX】+【INS】+ 1 • Damage: 【HR + 5】<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a></strong></em></p><ul><li><p>When this weapon transforms into Gun form, gain <strong>1 Cartridge</strong> (max <strong>1</strong>) and <strong>15</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>.</p></li></ul><hr contenteditable=\"false\"><ul><li><p>Once per turn, before your action, you may transform this weapon for free.</p></li><li><p>You begin each conflict with <strong>1 Cartridge</strong> if this weapon is in Gun form, or with <strong>0</strong> otherwise. Your Cartridges are lost when the conflict ends.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
-      "flavor_text": "<blockquote>\n<p>This rare gunblade gives your the strength and conviction of a lion.</p>\n</blockquote>",
+      "flavor_text": "<blockquote>\n<p>This rare gunblade gives you the strength and conviction of a lion.</p>\n</blockquote>",
       "flora_ef": "100",
       "fungus_ef": "100",
       "golem_ef": "100",
@@ -69,7 +95,7 @@
       "ip_cost": "",
       "isEquipped": false,
       "isKey": false,
-      "isMartial": false,
+      "isMartial": true,
       "isModule": false,
       "isRelatedItem": false,
       "isSet": false,
@@ -80,7 +106,7 @@
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Common",
+      "item_rarity": "Legendary",
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -88,8 +114,8 @@
       "optional_params": {},
       "plant_ef": "100",
       "reptilian_ef": "100",
-      "rolled_atr1": "DEX",
-      "rolled_atr2": "DEX",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
       "set_name": "",
       "skill_target": "One Enemy",
       "soldier_ef": "100",

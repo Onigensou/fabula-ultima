@@ -63,63 +63,6 @@
       "tint": "#ffffff",
       "transfer": true,
       "type": "base"
-    },
-    {
-      "_id": "MRNqlSDgr9sHwLUh",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1792699077290,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "MRNqlSDgr9sHwLUh",
-          "originalParentId": "3ZV5drjroWrvXqkw",
-          "originalUuid": "Item.3ZV5drjroWrvXqkw.ActiveEffect.MRNqlSDgr9sHwLUh"
-        },
-        "fabula-ultima-companion": {
-          "draftAutomation": "claude-2026-10-23",
-          "multiAttackGrant": {
-            "attacks": 5,
-            "condition_formula": "AE_COUNT_SONIC_BLOW > 0",
-            "keepHighRoll": false,
-            "weaponName": "Sonic Katar"
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1284.gif",
-      "name": "Sonic Blow (Attacks)",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": true,
-      "type": "base"
     }
   ],
   "flags": {
@@ -127,7 +70,8 @@
       "version": "4.6.4"
     },
     "fabula-ultima-companion": {
-      "draftAutomation": "claude-2026-10-23"
+      "draftAutomation": "claude-2026-10-23",
+      "sonicGunblade": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -189,7 +133,7 @@
       "damage_bonus": "5",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\">Double Strike</a></p></li><li><p>You may perform the skill <a class=\"content-link\" data-uuid=\"Item.f3QKcoZ4HwrR607a\" data-id=\"f3QKcoZ4HwrR607a\" data-type=\"Item\">Sonic Blow</a></p></li></ul>",
+      "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Double Strike</span></strong></a></span></span></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.f3QKcoZ4HwrR607a]{Sonic Blow}</strong>】</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -219,7 +163,7 @@
       "item_rarity": "Rare",
       "item_skill_passive": {
         "rSdCKOYJzRyfFcVe": {
-          "skill_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\">Double Strike</a></p></li><li><p>You may perform the skill <a class=\"content-link\" data-uuid=\"Item.f3QKcoZ4HwrR607a\" data-id=\"f3QKcoZ4HwrR607a\" data-type=\"Item\">Sonic Blow</a></p></li></ul>"
+          "skill_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Double Strike</span></strong></a></span></span></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.f3QKcoZ4HwrR607a]{Sonic Blow}</strong>】</p></li></ul>"
         }
       },
       "item_type": "weapon",
@@ -230,7 +174,7 @@
       "plant_ef": "100",
       "related_item_list": {
         "rSdCKOYJzRyfFcVe": {
-          "related_item_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\">Double Strike</a></p></li><li><p>You may perform the skill <a class=\"content-link\" data-uuid=\"Item.f3QKcoZ4HwrR607a\" data-id=\"f3QKcoZ4HwrR607a\" data-type=\"Item\">Sonic Blow</a></p></li></ul>"
+          "related_item_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Double Strike</span></strong></a></span></span></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.f3QKcoZ4HwrR607a]{Sonic Blow}</strong>】</p></li></ul>"
         }
       },
       "reptilian_ef": "100",

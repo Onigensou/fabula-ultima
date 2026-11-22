@@ -219,7 +219,7 @@ async function updateActorCopies(out) {
       await copy.update(lionheartPatch());
       // Drop any stale contained items, then copy the two new children in.
       const stale = a.items.filter((i) => i.system?.container === copy.id && !children.some((c) => c.name === i.name));
-      for (const s of stale) if (a.items.get(s.id)) await s.delete();
+      for (const s of stale) await safeDeleteItem(a, s.id);
       for (const c of children) {
         if (a.items.some((i) => i.system?.container === copy.id && i.name === c.name)) continue;
         const cd = c.toObject(); delete cd._id;
@@ -232,6 +232,20 @@ async function updateActorCopies(out) {
     }
   }
   if (!n) out.push("= no actor Lionheart copies to update");
+}
+
+
+// Embedded deletes tolerant of the V12 orphaned-embed quirk: the client can list
+// an embedded Item the server has no record of, and deleting it throws
+// "does not exist" (real server only — the snapshot runner tolerates it). Skip
+// such ids instead of failing the migration (save-system safeDeleteEmbeds idea).
+async function safeDeleteItem(actor, id) {
+  if (!actor.items.get(id)) return false;
+  const orig = ui?.notifications?.error?.bind(ui.notifications);
+  if (ui?.notifications) ui.notifications.error = (msg, ...rest) => { if (typeof msg === "string" && msg.includes("does not exist")) return; return orig?.(msg, ...rest); };
+  try { await actor.deleteEmbeddedDocuments("Item", [id]); return true; }
+  catch (e) { if (!/does not exist/i.test(String(e?.message ?? e))) throw e; return false; }
+  finally { if (ui?.notifications) ui.notifications.error = orig; }
 }
 
 export async function migrate(game, log = () => {}) {

@@ -3189,6 +3189,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "hakoCh4": "companion"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -3203,6 +3206,8 @@
         "container": "F9UxHr2T2gt1ij4v",
         "props": {
           "action_command": "item",
+          "availability_formula": "HAS_COMPANION == 0",
+          "availability_reason": "Already has a companion",
           "cost": "-",
           "description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
           "effect_table": {
@@ -3212,7 +3217,8 @@
               "effect_label": "decoy_summon",
               "summon_act_this_round": false,
               "summon_actor": "Actor.DMHfh4ChYzXNkMGe",
-              "summon_count": "1"
+              "summon_count": "1",
+              "summon_kind": "companion"
             }
           },
           "isCheck": false,

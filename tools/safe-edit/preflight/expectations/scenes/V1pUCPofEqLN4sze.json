@@ -1,8 +1,129 @@
 {
   "sceneId": "V1pUCPofEqLN4sze",
   "name": "Valley_Map013",
-  "tokens": [],
-  "tokensFull": [],
+  "tokens": [
+    {
+      "name": "Hina",
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "actorLink": true
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "Hina",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.14,
+        "scaleY": 1.14,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.15,
+        "angle": 360,
+        "bright": 0,
+        "color": "#eea149",
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": "flame",
+          "speed": 2,
+          "intensity": 4,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 5,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        }
+      },
+      "actorId": "t6E3CQ0pGxwLgXrn",
+      "x": 1353,
+      "y": 802,
+      "_id": "JNSBaPHRftupGKPg",
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "hidden": false,
+      "_regions": []
+    }
+  ],
   "notes": [],
   "tileCount": 17,
   "full": {
@@ -47,8 +168,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -89,7 +209,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Valley of the Dragon - Crossroads",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": false,
             "wellspring_fire": false,
@@ -98,7 +218,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"},{\"name\":\"Valley of the Dragon - West Ridge\",\"id\":\"QfybShj4gr9Bd2rn\"},{\"name\":\"Valley of the Dragon - East Ridge\",\"id\":\"g8segD1wSQEHY4Jp\"},{\"name\":\"Valley of the Dragon - Summit Trail\",\"id\":\"EtlYqCkE1aTvbwKo\"},{\"name\":\"The Kneeling Colossus\",\"id\":\"JFwf5x809fiLmRF6\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"},{\"name\":\"Valley of the Dragon - West Ridge\",\"id\":\"QfybShj4gr9Bd2rn\"},{\"name\":\"Valley of the Dragon - East Ridge\",\"id\":\"g8segD1wSQEHY4Jp\"},{\"name\":\"Valley of the Dragon - Summit Trail\",\"id\":\"EtlYqCkE1aTvbwKo\"},{\"name\":\"The Kneeling Colossus\",\"id\":\"JFwf5x809fiLmRF6\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -305,7 +425,7 @@
             },
             "8zKyz9kttKSspwfx": {
               "initialType": "consumable",
-              "currentType": "consumable",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Consumeable_Tile.png"
             },
             "rnBji2JDB9sK1kUm": {
@@ -315,7 +435,7 @@
             },
             "Y3ZuBj3tys5wAlst": {
               "initialType": "item",
-              "currentType": "item",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Item_Tile.png"
             },
             "lesOqJdhn7cTeApj": {
@@ -325,7 +445,7 @@
             },
             "QU8DrKj5ShHnJxpf": {
               "initialType": "consumable",
-              "currentType": "consumable",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Consumeable_Tile.png"
             },
             "Pgdl6g8vRiQy4QRR": {
@@ -334,9 +454,10 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
             },
             "6MGzjbSDLPq0Zfra": {
-              "initialType": "event",
-              "currentType": "event",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Event_Tile.png"
+              "initialType": "story",
+              "currentType": "story",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png",
+              "expired": true
             },
             "mOP1zRce5yvOjgHd": {
               "initialType": "blank",
@@ -378,6 +499,26 @@
               "currentType": "door",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
             }
+          },
+          "visitedTiles": {
+            "979tUDwZ3grTqyer": true,
+            "82UocGkjId6BnH61": true,
+            "8zKyz9kttKSspwfx": true,
+            "rnBji2JDB9sK1kUm": true,
+            "Y3ZuBj3tys5wAlst": true,
+            "lesOqJdhn7cTeApj": true,
+            "QU8DrKj5ShHnJxpf": true,
+            "Pgdl6g8vRiQy4QRR": true,
+            "6MGzjbSDLPq0Zfra": true,
+            "heGp5zYw7zxQdaLq": true,
+            "cmdK9p7vAFKCKqUb": true,
+            "6me9hbQJY8MEMAaH": true,
+            "E2sFI9K2SVbNalbQ": true,
+            "NFEVgXQzp0WDwHEO": true
+          },
+          "fogRevealed": {
+            "8zKyz9kttKSspwfx": true,
+            "QU8DrKj5ShHnJxpf": true
           }
         }
       },
@@ -484,7 +625,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359033081,
-      "modifiedTime": 1795053435404,
+      "modifiedTime": 1795284233634,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

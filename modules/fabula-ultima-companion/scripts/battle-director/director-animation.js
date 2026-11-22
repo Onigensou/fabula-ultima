@@ -91,7 +91,9 @@ export async function resolveAnimationSpec(ar, { allowDefault = false } = {}) {
   }
 
   // 2. Skill / Spell / Item action — fetch the backing item by UUID.
-  const skillUuid = ar.skillUuid ?? null;
+  // A carrier attack (carrier-attack.js: Sonic Blow) is an Attack whose own
+  // cinematic lives on the skill, not on the weapon it borrows.
+  const skillUuid = ar.skillUuid ?? ar.weapon?.animationItemUuid ?? null;
   if (skillUuid) {
     try {
       const item = await fromUuid(skillUuid);
@@ -505,7 +507,7 @@ async function executeAnimationScript({
     animationScriptRaw: script,
     animation_damage_timing_options: timingMode,
     animation_damage_timing_offset:  timingOffset,
-    // Per-target accuracy outcome, [{ tokenUuid, hit, crit }], when the caller
+    // Per-target accuracy outcome, [{ tokenUuid, hit, crit, total, fumble, amount, element, affinity }] (total / fumble = the card's one Accuracy Check; amount / element / affinity = the planned damage), when the caller
     // knows it. The accuracy roll is settled before ANIMATION runs, so the FSM
     // fills this from the action result; the Anim Studio bench fills it from its
     // Outcome selector, which is how a miss cinematic gets rehearsed outside
@@ -674,10 +676,24 @@ function outcomesFromDirector(director) {
     // A separate Chain hits a target when ANY of its strikes landed — not just
     // strike 1. A one-roll Chain's verdict is the card's own.
     const chain = ar?.chainPlan && !ar.chainPlan.single ? (ar.chainPlan.perTarget ?? null) : null;
+    // The card's Accuracy Check (one roll per action): a script whose look depends on
+    // the roll itself (Gunblade's odd-total fire) reads total / fumble instead of
+    // guessing. total is null when the action had no roll.
+    const total = Number.isFinite(Number(ar?.roll?.total)) && ar?.roll?.total != null ? Number(ar.roll.total) : null;
+    const fumble = !!ar?.roll?.isFumble;
     return rows.map((r) => {
       const t = chain ? chain[r?.tokenUuid] : null;
       return {
         tokenUuid: r?.tokenUuid ?? null,
+        total,
+        fumble,
+        // The PLANNED damage as the action result holds it when ANIMATION starts: amount,
+        // its element, the target's affinity code (VU / RS / IM / AB / NE). Reactions folded
+        // in before ANIMATION are included (Gunblade's +10 Fire: 23 fire); anything RESOLVE
+        // still changes is not. move-engine's RESULT shape reads these.
+        amount: typeof r?.damage === "number" ? r.damage : null,
+        element: String(r?.element ?? ar?.damageType ?? ar?.damage?.element ?? ar?.weapon?.damageType ?? "").toLowerCase() || null,
+        affinity: r?.affinity ?? null,
         hit: t ? t.landed > 0 : !!r?.hit,
         crit: t ? t.crits > 0 : !!r?.crit,
       };

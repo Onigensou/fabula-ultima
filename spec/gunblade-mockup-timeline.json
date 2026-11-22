@@ -1,0 +1,3765 @@
+{
+ "summary": {
+  "gb_sword-odd": {
+   "totalMs": 2831,
+   "gateMs": 1254,
+   "beats": [
+    {
+     "i": 0,
+     "name": "Namecard + dash",
+     "startMs": 0,
+     "endMs": 827.9
+    },
+    {
+     "i": 1,
+     "name": "Roll",
+     "startMs": 828.1,
+     "endMs": 1253.9
+    },
+    {
+     "i": 2,
+     "name": "Cut",
+     "startMs": 1254.1,
+     "endMs": 1885.6
+    },
+    {
+     "i": 3,
+     "name": "Back",
+     "startMs": 1885.9,
+     "endMs": 2830.4
+    }
+   ],
+   "sfx": [
+    "301.6 move1 @0.45 (via stepIn)",
+    "829.3 gunshot @0.45",
+    "830 fire1 @0.35 (via igniteBlade)",
+    "1327.8 sword2 @0.38",
+    "1428.6 hitfire @0.45",
+    "1886 jump1 @0.35 (via backHome)"
+   ],
+   "numbers": [
+    {
+     "atMs": 1429.2,
+     "showsMs": 1429.2,
+     "value": 28,
+     "kind": "loss",
+     "crit": false,
+     "critBannerShown": false,
+     "element": "fire",
+     "weak": false,
+     "isHit": true
+    }
+   ],
+   "clips": [
+    {
+     "atMs": 828.4,
+     "key": "gg_burst_anim02",
+     "scaleRelTarget": 0.44,
+     "scaleRelWielder": 0.44,
+     "anchor": "wielderHand",
+     "rate": 1,
+     "filter": "sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.3)",
+     "blend": "screen",
+     "z": 4000,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 829,
+     "key": "gg_spark_anim01",
+     "scaleRelTarget": 0.56,
+     "scaleRelWielder": 0.56,
+     "anchor": "wielderHand",
+     "rate": 1,
+     "filter": "sepia(1) saturate(5) hue-rotate(-5deg) brightness(1.4)",
+     "blend": "screen",
+     "z": 4001,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 829.5,
+     "key": "gg_fireanim02",
+     "scaleRelTarget": 0.5,
+     "scaleRelWielder": 0.5,
+     "anchor": "wielderHand",
+     "rate": 1,
+     "z": 4000,
+     "via": "igniteBlade"
+    },
+    {
+     "atMs": 1428.1,
+     "key": "008_slash_fire",
+     "scaleRelTarget": 1.1,
+     "scaleRelWielder": 1.1,
+     "anchor": "targetCenter",
+     "rate": 1,
+     "z": 4000
+    },
+    {
+     "atMs": 1428.7,
+     "key": "003_hit_fire",
+     "scaleRelTarget": 0.8,
+     "scaleRelWielder": 0.8,
+     "anchor": "targetCenter",
+     "rate": 1,
+     "z": 4002
+    }
+   ],
+   "hopHome": {
+    "startMs": 1886,
+    "endMs": 2427.2,
+    "durMs": 541.2,
+    "moveMs": 520,
+    "hopPx": 14,
+    "quiet": false,
+    "sfxDuring": [
+     "1886 jump1 @0.35"
+    ]
+   }
+  },
+  "gb_sword-even": {
+   "totalMs": 2604,
+   "gateMs": 1020,
+   "beats": [
+    {
+     "i": 0,
+     "name": "Namecard + dash",
+     "startMs": 0.1,
+     "endMs": 837.4
+    },
+    {
+     "i": 1,
+     "name": "Roll",
+     "startMs": 837.8,
+     "endMs": 1019.9
+    },
+    {
+     "i": 2,
+     "name": "Cut",
+     "startMs": 1020.1,
+     "endMs": 1660.2
+    },
+    {
+     "i": 3,
+     "name": "Back",
+     "startMs": 1660.4,
+     "endMs": 2603.3
+    }
+   ],
+   "sfx": [
+    "303.3 move1 @0.45 (via stepIn)",
+    "1104 sword2 @0.38",
+    "1203.9 slashL @0.4",
+    "1660.4 jump1 @0.35 (via backHome)"
+   ],
+   "numbers": [
+    {
+     "atMs": 1204.1,
+     "showsMs": 1204.1,
+     "value": 18,
+     "kind": "loss",
+     "crit": false,
+     "critBannerShown": false,
+     "element": "physical",
+     "weak": false,
+     "isHit": true
+    }
+   ],
+   "clips": [
+    {
+     "atMs": 1203.1,
+     "key": "006_slash_physical",
+     "scaleRelTarget": 1.1,
+     "scaleRelWielder": 1.1,
+     "anchor": "targetCenter",
+     "rate": 1,
+     "z": 4000
+    }
+   ],
+   "hopHome": {
+    "startMs": 1660.4,
+    "endMs": 2203.3,
+    "durMs": 542.9,
+    "moveMs": 520,
+    "hopPx": 14,
+    "quiet": false,
+    "sfxDuring": [
+     "1660.4 jump1 @0.35"
+    ]
+   }
+  },
+  "gb_sword-crit": {
+   "totalMs": 5104,
+   "gateMs": 3515,
+   "beats": [
+    {
+     "i": 0,
+     "name": "Namecard + dash",
+     "startMs": 0,
+     "endMs": 832.8
+    },
+    {
+     "i": 1,
+     "name": "Roll",
+     "startMs": 833.1,
+     "endMs": 3514.8
+    },
+    {
+     "i": 2,
+     "name": "Cut",
+     "startMs": 3515.1,
+     "endMs": 4155.3
+    },
+    {
+     "i": 3,
+     "name": "Back",
+     "startMs": 4155.5,
+     "endMs": 5103.5
+    }
+   ],
+   "sfx": [
+    "303 move1 @0.45 (via stepIn)",
+    "833.4 burstmax @1.067 (via critCutin)",
+    "3599.4 sword2 @0.38",
+    "3700.6 slashL @0.4",
+    "4155.5 jump1 @0.35 (via backHome)"
+   ],
+   "numbers": [
+    {
+     "atMs": 3700.7,
+     "showsMs": 3700.7,
+     "value": 18,
+     "kind": "loss",
+     "crit": true,
+     "critBannerShown": true,
+     "element": "physical",
+     "weak": false,
+     "isHit": true
+    }
+   ],
+   "clips": [
+    {
+     "atMs": 3700,
+     "key": "006_slash_physical",
+     "scaleRelTarget": 1.1,
+     "scaleRelWielder": 1.1,
+     "anchor": "targetCenter",
+     "rate": 1,
+     "z": 4000
+    }
+   ],
+   "hopHome": {
+    "startMs": 4155.5,
+    "endMs": 4700,
+    "durMs": 544.5,
+    "moveMs": 520,
+    "hopPx": 14,
+    "quiet": false,
+    "sfxDuring": [
+     "4155.5 jump1 @0.35"
+    ]
+   }
+  },
+  "gb_sword-fumble": {
+   "totalMs": 2539,
+   "gateMs": 1014,
+   "beats": [
+    {
+     "i": 0,
+     "name": "Namecard + dash",
+     "startMs": 0,
+     "endMs": 833
+    },
+    {
+     "i": 1,
+     "name": "Roll",
+     "startMs": 833.2,
+     "endMs": 1013.7
+    },
+    {
+     "i": 2,
+     "name": "Cut",
+     "startMs": 1013.9,
+     "endMs": 1602.4
+    },
+    {
+     "i": 3,
+     "name": "Back",
+     "startMs": 1602.6,
+     "endMs": 2539.2
+    }
+   ],
+   "sfx": [
+    "303.2 move1 @0.45 (via stepIn)",
+    "1099.8 sword2 @0.38",
+    "1602.7 jump1 @0.35 (via backHome)"
+   ],
+   "numbers": [
+    {
+     "atMs": 1199.4,
+     "showsMs": 1199.4,
+     "value": 0,
+     "kind": "miss",
+     "crit": false,
+     "critBannerShown": false,
+     "element": "physical",
+     "weak": false,
+     "isHit": true
+    }
+   ],
+   "clips": [],
+   "hopHome": {
+    "startMs": 1602.7,
+    "endMs": 2132.9,
+    "durMs": 530.2,
+    "moveMs": 520,
+    "hopPx": 14,
+    "quiet": false,
+    "sfxDuring": [
+     "1602.7 jump1 @0.35"
+    ]
+   }
+  },
+  "gb_gun-hit": {
+   "totalMs": 1781,
+   "gateMs": 602,
+   "beats": [
+    {
+     "i": 0,
+     "name": "Namecard + aim",
+     "startMs": 0,
+     "endMs": 601.9
+    },
+    {
+     "i": 1,
+     "name": "Shot",
+     "startMs": 602,
+     "endMs": 1781.2
+    }
+   ],
+   "sfx": [
+    "0.3 key @0.35",
+    "603 gunshot @0.6",
+    "694.1 slashL @0.35"
+   ],
+   "numbers": [
+    {
+     "atMs": 694.1,
+     "showsMs": 694.1,
+     "value": 13,
+     "kind": "loss",
+     "crit": false,
+     "critBannerShown": false,
+     "element": "physical",
+     "weak": false,
+     "isHit": true
+    }
+   ],
+   "clips": [
+    {
+     "atMs": 602.4,
+     "key": "gg_burst_anim02",
+     "scaleRelTarget": 0.63,
+     "scaleRelWielder": 0.605,
+     "anchor": "wielderHand",
+     "rate": 1,
+     "filter": "sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.3)",
+     "blend": "screen",
+     "z": 4000,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 602.8,
+     "key": "gg_spark_anim01",
+     "scaleRelTarget": 0.802,
+     "scaleRelWielder": 0.77,
+     "anchor": "wielderHand",
+     "rate": 1,
+     "filter": "sepia(1) saturate(5) hue-rotate(-5deg) brightness(1.4)",
+     "blend": "screen",
+     "z": 4001,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 693.4,
+     "key": "011_pierce_physical",
+     "scaleRelTarget": 0.8,
+     "scaleRelWielder": 0.768,
+     "anchor": "targetCenter",
+     "rate": 1,
+     "z": 0
+    }
+   ]
+  },
+  "gb_gun-miss": {
+   "totalMs": 1826,
+   "gateMs": 614,
+   "beats": [
+    {
+     "i": 0,
+     "name": "Namecard + aim",
+     "startMs": 0,
+     "endMs": 614.1
+    },
+    {
+     "i": 1,
+     "name": "Shot",
+     "startMs": 614.3,
+     "endMs": 1825.5
+    }
+   ],
+   "sfx": [
+    "0.4 key @0.35",
+    "615.2 gunshot @0.6"
+   ],
+   "numbers": [
+    {
+     "atMs": 706.2,
+     "showsMs": 706.2,
+     "value": 0,
+     "kind": "miss",
+     "crit": false,
+     "critBannerShown": false,
+     "element": "physical",
+     "weak": false,
+     "isHit": true
+    }
+   ],
+   "clips": [
+    {
+     "atMs": 614.5,
+     "key": "gg_burst_anim02",
+     "scaleRelTarget": 0.63,
+     "scaleRelWielder": 0.605,
+     "anchor": "wielderHand",
+     "rate": 1,
+     "filter": "sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.3)",
+     "blend": "screen",
+     "z": 4000,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 615,
+     "key": "gg_spark_anim01",
+     "scaleRelTarget": 0.802,
+     "scaleRelWielder": 0.77,
+     "anchor": "wielderHand",
+     "rate": 1,
+     "filter": "sepia(1) saturate(5) hue-rotate(-5deg) brightness(1.4)",
+     "blend": "screen",
+     "z": 4001,
+     "via": "muzzle"
+    }
+   ]
+  },
+  "gb_tf-dir0": {
+   "totalMs": 1755,
+   "gateMs": 850,
+   "beats": [
+    {
+     "i": 0,
+     "name": "Click",
+     "startMs": 0,
+     "endMs": 516.4
+    },
+    {
+     "i": 1,
+     "name": "Transform",
+     "startMs": 516.7,
+     "endMs": 1755.2
+    }
+   ],
+   "sfx": [
+    "0.4 key @0.45",
+    "146.7 switch1 @0.38",
+    "517.4 powerup @0.467 (via buffBeat)",
+    "517.5 equip @0.45"
+   ],
+   "numbers": [],
+   "clips": [
+    {
+     "atMs": 516.8,
+     "key": "051_powerup_1",
+     "scaleRelTarget": 1.042,
+     "scaleRelWielder": 1,
+     "anchor": "wielderFeet",
+     "rate": 1,
+     "z": 0,
+     "via": "buffBeat"
+    }
+   ]
+  },
+  "gb_tf-dir1": {
+   "totalMs": 1743,
+   "gateMs": 840,
+   "beats": [
+    {
+     "i": 0,
+     "name": "Click",
+     "startMs": 0,
+     "endMs": 506.8
+    },
+    {
+     "i": 1,
+     "name": "Transform",
+     "startMs": 507,
+     "endMs": 1743.2
+    }
+   ],
+   "sfx": [
+    "0.2 key @0.45",
+    "136.7 shing @0.38",
+    "507.5 powerup @0.467 (via buffBeat)",
+    "507.5 equip @0.45"
+   ],
+   "numbers": [],
+   "clips": [
+    {
+     "atMs": 507.1,
+     "key": "051_powerup_1",
+     "scaleRelTarget": 1.042,
+     "scaleRelWielder": 1,
+     "anchor": "wielderFeet",
+     "rate": 1,
+     "z": 0,
+     "via": "buffBeat"
+    }
+   ]
+  }
+ },
+ "meta": {
+  "mockupPath": "E:/Art(New Com)/DND/Fabula Ultima/Resource/Animation/Sonic Katar/sonic-katar-mockup.html",
+  "mockupMtime": "2026-11-21T11:52:12.032Z",
+  "instrumentedCopy": "C:\\Users\\Oni\\AppData\\Local\\Temp\\claude\\401421df76aad63a\\2ba915f9-30f1-43ca-86db-dcab43f118c6\\scratchpad\\spec\\mockup-instrumented.html",
+  "generated": "2026-11-21T12:08:57.515Z",
+  "browser": {
+   "headless": false,
+   "args": [
+    "--autoplay-policy=no-user-gesture-required",
+    "--use-angle=d3d11",
+    "--ignore-gpu-blocklist",
+    "--window-size=1640,1120"
+   ],
+   "webglRenderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1070 Ti (0x00001B82) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+   "viewport": "1600x1000"
+  },
+  "clock": "ms = mockup virtual clock (VT.now(), = performance.now() unless paused) minus T0 set by play(0); speed 1",
+  "env": {
+   "SPEED": 1,
+   "SOUND": true,
+   "WIELD": "keren",
+   "orc": {
+    "s": 0.9810112034144403,
+    "x": 400,
+    "y": 421.2
+   },
+   "wielder": {
+    "s": 1.0223337643604131,
+    "x": 1312,
+    "y": 462.85
+   }
+  },
+  "kitMultipliers": {
+   "sonicblow": {
+    "vfx": 1,
+    "shake": 1,
+    "dim": 1
+   },
+   "gb_sword": {
+    "vfx": 1,
+    "shake": 1,
+    "dim": 1
+   },
+   "gb_gun": {
+    "vfx": 1,
+    "shake": 1,
+    "dim": 1
+   },
+   "gb_tf": {
+    "vfx": 1,
+    "shake": 1,
+    "dim": 1
+   }
+  },
+  "tuneDefaults": {
+   "gb_sword": {
+    "roll": {
+     "v": 1,
+     "opt": "Force odd · fires"
+    },
+    "def": 12,
+    "dmg": 18,
+    "fb": 10,
+    "aff": {
+     "v": 0,
+     "opt": "Neutral"
+    }
+   },
+   "gb_gun": {
+    "roll": {
+     "v": 1,
+     "opt": "Force hit"
+    },
+    "def": 12,
+    "dmg": 13
+   },
+   "gb_tf": {
+    "dir": {
+     "v": 0,
+     "opt": "Sword → Firearm"
+    }
+   }
+  },
+  "notes": [
+   "Every helper call is recorded on entry (sync). 'via' = the helper that called it synchronously (e.g. clip via muzzle). Calls after an await inside an async helper carry no 'via'.",
+   "'.end' events (stepIn.end, backHome.end, moveActor.end, namecard.end, critCutin.end, whiteTo.end, trailMove.end) mark the promise resolving; durMs = end - start.",
+   "Random values are recorded as the actual value: sbStrike jitter (pt offset from target center, range x +-18*t.s, y -26..+18*t.s) is in clip/slashSheet anchor.offPerS; slashSheet angle noise (+-8 deg) = angNoiseDeg; miss sway distance (10..18*t.s) is in the target slide deltaPerS; forced-hit spread is in sbResults. These are marked random:true. Math.random is a seeded mulberry32 (seed per run in config).",
+   "gameNum: the number element appears showsAtDelay ms after the call (per-target 120 ms queue, DN_SLOT2); a +-13 px random x jitter on the number is not recorded.",
+   "sfx vol = call-site volume; effVolume = what the engine sets on the Audio element (vol * .75, capped 1).",
+   "clip scale is the value passed by the move; the review kit multiplies it by kitMultipliers.vfx (1 = default). scaleRelTarget = scale / Dire Orc t.s at call time; scaleRelWielder = scale / wielder a.s.",
+   "anchor.kind: exact reference point (targetCenter / targetFeet / wielderHand / wielderFeet / wielderCenter) or 'jittered:<nearest>' with the offset in px and in units of that battler's s.",
+   "addP is only recorded when called directly by a move (e.g. gb_gun tracer), not from inside sparks/twinkles/muzzle/igniteBlade/ember.",
+   "sonicblow-rolled-crit: tune result=0 (rolled dice), then strikes 2 and 5 (0-based) are forced to {hit:true, crit:true} by wrapping sbResults, to show the crit path; banner only on the first crit.",
+   "Screenshots come from separate re-runs (same config + seed); at the shot moment the virtual clock is paused (VT.pause), the shot taken, then resumed, so the ms are exact on the virtual clock."
+  ],
+  "pageErrors": []
+ },
+ "runs": {
+  "gb_sword-odd": {
+   "config": {
+    "move": "gb_sword",
+    "set": {
+     "roll": 1
+    },
+    "seed": 21
+   },
+   "totalMs": 2831,
+   "gateMs": 1254,
+   "events": [
+    {
+     "atMs": 0,
+     "type": "beat",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + dash",
+     "gate": false
+    },
+    {
+     "atMs": 0.1,
+     "type": "hudForm",
+     "beat": 0,
+     "form": 1,
+     "quiet": true
+    },
+    {
+     "atMs": 0.4,
+     "type": "namecard",
+     "beat": 0,
+     "title": "Gunblade",
+     "icon": "⚔️"
+    },
+    {
+     "atMs": 301.5,
+     "type": "stepIn",
+     "beat": 0,
+     "actor": "keren",
+     "target": "orc",
+     "ms": 520,
+     "style": "move1",
+     "gapPerS": 92,
+     "frontPt": {
+      "x": 490.253,
+      "y": 421.2
+     }
+    },
+    {
+     "atMs": 301.6,
+     "type": "sfx",
+     "beat": 0,
+     "key": "move1",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 301.7,
+     "type": "dustBurst",
+     "beat": 0,
+     "pt": {
+      "x": 1312,
+      "y": 458.85
+     },
+     "n": 8,
+     "s": 0.818,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 301.8,
+     "type": "trailMove",
+     "beat": 0,
+     "actor": "keren",
+     "to": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "ms": 520,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 301.8,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260,
+     "via": "trailMove"
+    },
+    {
+     "atMs": 302.3,
+     "type": "moveActor",
+     "beat": 0,
+     "actor": "keren",
+     "to": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "from": {
+      "x": 1312,
+      "y": 462.85
+     },
+     "ms": 520,
+     "hop": 8,
+     "home": false,
+     "via": "trailMove"
+    },
+    {
+     "atMs": 357.3,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 361.2,
+     "type": "namecard.end",
+     "beat": 0,
+     "durMs": 360.8
+    },
+    {
+     "atMs": 413.3,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 469.5,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 525.7,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 581.6,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 638,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 694.8,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 753.3,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 809.2,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 827.8,
+     "type": "moveActor.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 525.5
+    },
+    {
+     "atMs": 827.9,
+     "type": "trailMove.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 526.1
+    },
+    {
+     "atMs": 827.9,
+     "type": "stepIn.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 526.4
+    },
+    {
+     "atMs": 827.9,
+     "type": "beat.end",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + dash"
+    },
+    {
+     "atMs": 828.1,
+     "type": "beat",
+     "beat": 1,
+     "i": 1,
+     "name": "Roll",
+     "gate": false
+    },
+    {
+     "atMs": 828.3,
+     "type": "gbRoll",
+     "beat": 1,
+     "attrB": "mig",
+     "a": 3,
+     "b": 4,
+     "tot": 7,
+     "hit": true,
+     "crit": false
+    },
+    {
+     "atMs": 828.4,
+     "type": "muzzle",
+     "beat": 1,
+     "actor": "keren",
+     "scale": 0.8,
+     "hand": {
+      "x": 448.498,
+      "y": 338.713
+     }
+    },
+    {
+     "atMs": 828.4,
+     "type": "clip",
+     "beat": 1,
+     "key": "gg_burst_anim02",
+     "pt": {
+      "x": 448.498,
+      "y": 338.713
+     },
+     "anchor": {
+      "kind": "wielderHand",
+      "ref": {
+       "x": 448.498,
+       "y": 338.713
+      }
+     },
+     "scale": 0.432,
+     "scaleRelTarget": 0.44,
+     "scaleRelWielder": 0.44,
+     "rate": 1,
+     "filter": "sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.3)",
+     "blend": "screen",
+     "z": 4000,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 0.981,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 829,
+     "type": "clip",
+     "beat": 1,
+     "key": "gg_spark_anim01",
+     "pt": {
+      "x": 448.498,
+      "y": 338.713
+     },
+     "anchor": {
+      "kind": "wielderHand",
+      "ref": {
+       "x": 448.498,
+       "y": 338.713
+      }
+     },
+     "scale": 0.549,
+     "scaleRelTarget": 0.56,
+     "scaleRelWielder": 0.56,
+     "rate": 1,
+     "filter": "sepia(1) saturate(5) hue-rotate(-5deg) brightness(1.4)",
+     "blend": "screen",
+     "z": 4001,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 0.981,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 829.3,
+     "type": "sfx",
+     "beat": 1,
+     "key": "gunshot",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1
+    },
+    {
+     "atMs": 829.5,
+     "type": "igniteBlade",
+     "beat": 1,
+     "actor": "keren",
+     "hand": {
+      "x": 448.498,
+      "y": 338.713
+     }
+    },
+    {
+     "atMs": 829.5,
+     "type": "clip",
+     "beat": 1,
+     "key": "gg_fireanim02",
+     "pt": {
+      "x": 448.498,
+      "y": 338.713
+     },
+     "anchor": {
+      "kind": "wielderHand",
+      "ref": {
+       "x": 448.498,
+       "y": 338.713
+      }
+     },
+     "scale": 0.491,
+     "scaleRelTarget": 0.5,
+     "scaleRelWielder": 0.5,
+     "rate": 1,
+     "filter": "",
+     "blend": "",
+     "z": 4000,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 0.981,
+     "via": "igniteBlade"
+    },
+    {
+     "atMs": 830,
+     "type": "sfx",
+     "beat": 1,
+     "key": "fire1",
+     "vol": 0.35,
+     "effVolume": 0.262,
+     "rate": 1,
+     "via": "igniteBlade"
+    },
+    {
+     "atMs": 1253.9,
+     "type": "beat.end",
+     "beat": 1,
+     "i": 1,
+     "name": "Roll"
+    },
+    {
+     "atMs": 1254.1,
+     "type": "beat",
+     "beat": 2,
+     "i": 2,
+     "name": "Cut",
+     "gate": true
+    },
+    {
+     "atMs": 1254.4,
+     "type": "markGate",
+     "beat": 2
+    },
+    {
+     "atMs": 1254.5,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": -8,
+     "ms": 70,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 1327.8,
+     "type": "sfx",
+     "beat": 2,
+     "key": "sword2",
+     "vol": 0.38,
+     "effVolume": 0.285,
+     "rate": 1
+    },
+    {
+     "atMs": 1328,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": 16,
+     "ms": 80,
+     "fromDeg": -8
+    },
+    {
+     "atMs": 1428.1,
+     "type": "slashSheet",
+     "beat": 2,
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "angDeg": -24.064,
+     "L": 198.557,
+     "LrelTargetH": 1,
+     "w": 29.43,
+     "wRelTargetS": 30,
+     "rgb": "255,140,50",
+     "ms": 300,
+     "core": 0.3
+    },
+    {
+     "atMs": 1428.1,
+     "type": "clip",
+     "beat": 2,
+     "key": "008_slash_fire",
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "scale": 1.079,
+     "scaleRelTarget": 1.1,
+     "scaleRelWielder": 1.1,
+     "rate": 1,
+     "filter": "",
+     "blend": "",
+     "z": 4000,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 0.981
+    },
+    {
+     "atMs": 1428.6,
+     "type": "sfx",
+     "beat": 2,
+     "key": "hitfire",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1
+    },
+    {
+     "atMs": 1428.7,
+     "type": "clip",
+     "beat": 2,
+     "key": "003_hit_fire",
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "scale": 0.785,
+     "scaleRelTarget": 0.8,
+     "scaleRelWielder": 0.8,
+     "rate": 1,
+     "filter": "",
+     "blend": "",
+     "z": 4002,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 0.981
+    },
+    {
+     "atMs": 1429.1,
+     "type": "bloom",
+     "beat": 2,
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "r": 178.701,
+     "rRelTargetH": 0.9,
+     "rgb": "255,70,30",
+     "ms": 380
+    },
+    {
+     "atMs": 1429.2,
+     "type": "gameNum",
+     "beat": 2,
+     "target": "orc",
+     "value": 28,
+     "kind": "loss",
+     "resource": "hp",
+     "element": "fire",
+     "weak": false,
+     "crit": false,
+     "critBannerArg": true,
+     "critBannerShown": false,
+     "isHit": true,
+     "showsAtDelay": 0
+    },
+    {
+     "atMs": 1429.2,
+     "type": "hitReact",
+     "beat": 2,
+     "target": "orc",
+     "tier": "strong"
+    },
+    {
+     "atMs": 1429.3,
+     "type": "npcBar",
+     "beat": 2,
+     "target": "orc",
+     "from": 240,
+     "to": 212,
+     "max": 240
+    },
+    {
+     "atMs": 1429.4,
+     "type": "shake",
+     "beat": 2,
+     "px": 6,
+     "ms": 160
+    },
+    {
+     "atMs": 1430.2,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 120,
+     "fromDeg": 16
+    },
+    {
+     "atMs": 1885.6,
+     "type": "beat.end",
+     "beat": 2,
+     "i": 2,
+     "name": "Cut"
+    },
+    {
+     "atMs": 1885.9,
+     "type": "beat",
+     "beat": 3,
+     "i": 3,
+     "name": "Back",
+     "gate": false
+    },
+    {
+     "atMs": 1886,
+     "type": "backHome",
+     "beat": 3,
+     "actor": "keren",
+     "quiet": false,
+     "fromDx": -821.747,
+     "fromDy": -41.65
+    },
+    {
+     "atMs": 1886,
+     "type": "sfx",
+     "beat": 3,
+     "key": "jump1",
+     "vol": 0.35,
+     "effVolume": 0.262,
+     "rate": 1,
+     "via": "backHome"
+    },
+    {
+     "atMs": 1886.1,
+     "type": "moveActor",
+     "beat": 3,
+     "actor": "keren",
+     "to": {
+      "x": 1312,
+      "y": 462.85
+     },
+     "from": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "ms": 520,
+     "hop": 14,
+     "home": true,
+     "via": "backHome"
+    },
+    {
+     "atMs": 2427.1,
+     "type": "moveActor.end",
+     "beat": 3,
+     "actor": "keren",
+     "durMs": 541
+    },
+    {
+     "atMs": 2427.2,
+     "type": "lean",
+     "beat": 3,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 120,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 2427.2,
+     "type": "backHome.end",
+     "beat": 3,
+     "actor": "keren",
+     "durMs": 541.2
+    },
+    {
+     "atMs": 2830.4,
+     "type": "beat.end",
+     "beat": 3,
+     "i": 3,
+     "name": "Back"
+    }
+   ],
+   "screenshots": [
+    {
+     "name": "gb-sword-odd-fire",
+     "file": "mockup-shots/gb-sword-odd-fire.png",
+     "ms": 1528,
+     "triggerMs": 1428
+    }
+   ]
+  },
+  "gb_sword-even": {
+   "config": {
+    "move": "gb_sword",
+    "set": {
+     "roll": 2
+    },
+    "seed": 22
+   },
+   "totalMs": 2604,
+   "gateMs": 1020,
+   "events": [
+    {
+     "atMs": 0,
+     "type": "hudCost",
+     "beat": -1,
+     "mp": 0
+    },
+    {
+     "atMs": 0.1,
+     "type": "beat",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + dash",
+     "gate": false
+    },
+    {
+     "atMs": 0.1,
+     "type": "hudForm",
+     "beat": 0,
+     "form": 1,
+     "quiet": true
+    },
+    {
+     "atMs": 0.4,
+     "type": "namecard",
+     "beat": 0,
+     "title": "Gunblade",
+     "icon": "⚔️"
+    },
+    {
+     "atMs": 303.3,
+     "type": "stepIn",
+     "beat": 0,
+     "actor": "keren",
+     "target": "orc",
+     "ms": 520,
+     "style": "move1",
+     "gapPerS": 92,
+     "frontPt": {
+      "x": 490.253,
+      "y": 421.2
+     }
+    },
+    {
+     "atMs": 303.3,
+     "type": "sfx",
+     "beat": 0,
+     "key": "move1",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 303.4,
+     "type": "dustBurst",
+     "beat": 0,
+     "pt": {
+      "x": 1312,
+      "y": 458.85
+     },
+     "n": 8,
+     "s": 0.818,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 303.5,
+     "type": "trailMove",
+     "beat": 0,
+     "actor": "keren",
+     "to": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "ms": 520,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 303.5,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260,
+     "via": "trailMove"
+    },
+    {
+     "atMs": 304.3,
+     "type": "moveActor",
+     "beat": 0,
+     "actor": "keren",
+     "to": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "from": {
+      "x": 1312,
+      "y": 462.85
+     },
+     "ms": 520,
+     "hop": 8,
+     "home": false,
+     "via": "trailMove"
+    },
+    {
+     "atMs": 359.6,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 370.3,
+     "type": "namecard.end",
+     "beat": 0,
+     "durMs": 369.9
+    },
+    {
+     "atMs": 415.5,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 475.7,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 531.5,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 588.3,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 647.2,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 703.8,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 760.3,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 816.5,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 837.3,
+     "type": "moveActor.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 533
+    },
+    {
+     "atMs": 837.4,
+     "type": "trailMove.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 533.9
+    },
+    {
+     "atMs": 837.4,
+     "type": "stepIn.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 534.1
+    },
+    {
+     "atMs": 837.4,
+     "type": "beat.end",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + dash"
+    },
+    {
+     "atMs": 837.8,
+     "type": "beat",
+     "beat": 1,
+     "i": 1,
+     "name": "Roll",
+     "gate": false
+    },
+    {
+     "atMs": 837.8,
+     "type": "gbRoll",
+     "beat": 1,
+     "attrB": "mig",
+     "a": 4,
+     "b": 4,
+     "tot": 8,
+     "hit": true,
+     "crit": false
+    },
+    {
+     "atMs": 1019.9,
+     "type": "beat.end",
+     "beat": 1,
+     "i": 1,
+     "name": "Roll"
+    },
+    {
+     "atMs": 1020.1,
+     "type": "beat",
+     "beat": 2,
+     "i": 2,
+     "name": "Cut",
+     "gate": true
+    },
+    {
+     "atMs": 1020.1,
+     "type": "markGate",
+     "beat": 2
+    },
+    {
+     "atMs": 1020.1,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": -8,
+     "ms": 70,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 1104,
+     "type": "sfx",
+     "beat": 2,
+     "key": "sword2",
+     "vol": 0.38,
+     "effVolume": 0.285,
+     "rate": 1
+    },
+    {
+     "atMs": 1104.2,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": 16,
+     "ms": 80,
+     "fromDeg": -8
+    },
+    {
+     "atMs": 1203,
+     "type": "slashSheet",
+     "beat": 2,
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "angDeg": -24.064,
+     "L": 198.557,
+     "LrelTargetH": 1,
+     "w": 29.43,
+     "wRelTargetS": 30,
+     "rgb": "170,210,255",
+     "ms": 300,
+     "core": 0.3
+    },
+    {
+     "atMs": 1203.1,
+     "type": "clip",
+     "beat": 2,
+     "key": "006_slash_physical",
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "scale": 1.079,
+     "scaleRelTarget": 1.1,
+     "scaleRelWielder": 1.1,
+     "rate": 1,
+     "filter": "",
+     "blend": "",
+     "z": 4000,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 0.981
+    },
+    {
+     "atMs": 1203.9,
+     "type": "sfx",
+     "beat": 2,
+     "key": "slashL",
+     "vol": 0.4,
+     "effVolume": 0.3,
+     "rate": 1
+    },
+    {
+     "atMs": 1204.1,
+     "type": "gameNum",
+     "beat": 2,
+     "target": "orc",
+     "value": 18,
+     "kind": "loss",
+     "resource": "hp",
+     "element": "physical",
+     "weak": false,
+     "crit": false,
+     "critBannerArg": true,
+     "critBannerShown": false,
+     "isHit": true,
+     "showsAtDelay": 0
+    },
+    {
+     "atMs": 1204.1,
+     "type": "hitReact",
+     "beat": 2,
+     "target": "orc",
+     "tier": "normal"
+    },
+    {
+     "atMs": 1204.1,
+     "type": "npcBar",
+     "beat": 2,
+     "target": "orc",
+     "from": 240,
+     "to": 222,
+     "max": 240
+    },
+    {
+     "atMs": 1204.4,
+     "type": "shake",
+     "beat": 2,
+     "px": 3,
+     "ms": 160
+    },
+    {
+     "atMs": 1205.7,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 120,
+     "fromDeg": 16
+    },
+    {
+     "atMs": 1660.2,
+     "type": "beat.end",
+     "beat": 2,
+     "i": 2,
+     "name": "Cut"
+    },
+    {
+     "atMs": 1660.4,
+     "type": "beat",
+     "beat": 3,
+     "i": 3,
+     "name": "Back",
+     "gate": false
+    },
+    {
+     "atMs": 1660.4,
+     "type": "backHome",
+     "beat": 3,
+     "actor": "keren",
+     "quiet": false,
+     "fromDx": -821.747,
+     "fromDy": -41.65
+    },
+    {
+     "atMs": 1660.4,
+     "type": "sfx",
+     "beat": 3,
+     "key": "jump1",
+     "vol": 0.35,
+     "effVolume": 0.262,
+     "rate": 1,
+     "via": "backHome"
+    },
+    {
+     "atMs": 1660.6,
+     "type": "moveActor",
+     "beat": 3,
+     "actor": "keren",
+     "to": {
+      "x": 1312,
+      "y": 462.85
+     },
+     "from": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "ms": 520,
+     "hop": 14,
+     "home": true,
+     "via": "backHome"
+    },
+    {
+     "atMs": 2203.2,
+     "type": "moveActor.end",
+     "beat": 3,
+     "actor": "keren",
+     "durMs": 542.6
+    },
+    {
+     "atMs": 2203.2,
+     "type": "lean",
+     "beat": 3,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 120,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 2203.3,
+     "type": "backHome.end",
+     "beat": 3,
+     "actor": "keren",
+     "durMs": 542.9
+    },
+    {
+     "atMs": 2603.3,
+     "type": "beat.end",
+     "beat": 3,
+     "i": 3,
+     "name": "Back"
+    }
+   ]
+  },
+  "gb_sword-crit": {
+   "config": {
+    "move": "gb_sword",
+    "set": {
+     "roll": 3
+    },
+    "seed": 23
+   },
+   "totalMs": 5104,
+   "gateMs": 3515,
+   "events": [
+    {
+     "atMs": 0,
+     "type": "beat",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + dash",
+     "gate": false
+    },
+    {
+     "atMs": 0,
+     "type": "hudForm",
+     "beat": 0,
+     "form": 1,
+     "quiet": true
+    },
+    {
+     "atMs": 0.2,
+     "type": "namecard",
+     "beat": 0,
+     "title": "Gunblade",
+     "icon": "⚔️"
+    },
+    {
+     "atMs": 303,
+     "type": "stepIn",
+     "beat": 0,
+     "actor": "keren",
+     "target": "orc",
+     "ms": 520,
+     "style": "move1",
+     "gapPerS": 92,
+     "frontPt": {
+      "x": 490.253,
+      "y": 421.2
+     }
+    },
+    {
+     "atMs": 303,
+     "type": "sfx",
+     "beat": 0,
+     "key": "move1",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 303.1,
+     "type": "dustBurst",
+     "beat": 0,
+     "pt": {
+      "x": 1312,
+      "y": 458.85
+     },
+     "n": 8,
+     "s": 0.818,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 303.1,
+     "type": "trailMove",
+     "beat": 0,
+     "actor": "keren",
+     "to": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "ms": 520,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 303.1,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260,
+     "via": "trailMove"
+    },
+    {
+     "atMs": 303.7,
+     "type": "moveActor",
+     "beat": 0,
+     "actor": "keren",
+     "to": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "from": {
+      "x": 1312,
+      "y": 462.85
+     },
+     "ms": 520,
+     "hop": 8,
+     "home": false,
+     "via": "trailMove"
+    },
+    {
+     "atMs": 359.7,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 366.1,
+     "type": "namecard.end",
+     "beat": 0,
+     "durMs": 365.9
+    },
+    {
+     "atMs": 418.4,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 474.5,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 530.5,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 586.6,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 644.3,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 700.3,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 758.6,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 814.6,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 832.8,
+     "type": "moveActor.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 529.1
+    },
+    {
+     "atMs": 832.8,
+     "type": "trailMove.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 529.7
+    },
+    {
+     "atMs": 832.8,
+     "type": "stepIn.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 529.8
+    },
+    {
+     "atMs": 832.8,
+     "type": "beat.end",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + dash"
+    },
+    {
+     "atMs": 833.1,
+     "type": "beat",
+     "beat": 1,
+     "i": 1,
+     "name": "Roll",
+     "gate": false
+    },
+    {
+     "atMs": 833.1,
+     "type": "gbRoll",
+     "beat": 1,
+     "attrB": "mig",
+     "a": 6,
+     "b": 6,
+     "tot": 12,
+     "hit": true,
+     "crit": true
+    },
+    {
+     "atMs": 833.1,
+     "type": "critCutin",
+     "beat": 1,
+     "id": "keren"
+    },
+    {
+     "atMs": 833.4,
+     "type": "sfx",
+     "beat": 1,
+     "key": "burstmax",
+     "vol": 1.067,
+     "effVolume": 0.8,
+     "rate": 1,
+     "via": "critCutin"
+    },
+    {
+     "atMs": 3332.9,
+     "type": "critCutin.end",
+     "beat": 1,
+     "durMs": 2499.8
+    },
+    {
+     "atMs": 3514.8,
+     "type": "beat.end",
+     "beat": 1,
+     "i": 1,
+     "name": "Roll"
+    },
+    {
+     "atMs": 3515.1,
+     "type": "beat",
+     "beat": 2,
+     "i": 2,
+     "name": "Cut",
+     "gate": true
+    },
+    {
+     "atMs": 3515.1,
+     "type": "markGate",
+     "beat": 2
+    },
+    {
+     "atMs": 3515.2,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": -8,
+     "ms": 70,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 3599.4,
+     "type": "sfx",
+     "beat": 2,
+     "key": "sword2",
+     "vol": 0.38,
+     "effVolume": 0.285,
+     "rate": 1
+    },
+    {
+     "atMs": 3599.5,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": 16,
+     "ms": 80,
+     "fromDeg": -8
+    },
+    {
+     "atMs": 3699.8,
+     "type": "slashSheet",
+     "beat": 2,
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "angDeg": -24.064,
+     "L": 198.557,
+     "LrelTargetH": 1,
+     "w": 29.43,
+     "wRelTargetS": 30,
+     "rgb": "170,210,255",
+     "ms": 300,
+     "core": 0.3
+    },
+    {
+     "atMs": 3700,
+     "type": "clip",
+     "beat": 2,
+     "key": "006_slash_physical",
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "scale": 1.079,
+     "scaleRelTarget": 1.1,
+     "scaleRelWielder": 1.1,
+     "rate": 1,
+     "filter": "",
+     "blend": "",
+     "z": 4000,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 0.981
+    },
+    {
+     "atMs": 3700.6,
+     "type": "sfx",
+     "beat": 2,
+     "key": "slashL",
+     "vol": 0.4,
+     "effVolume": 0.3,
+     "rate": 1
+    },
+    {
+     "atMs": 3700.7,
+     "type": "gameNum",
+     "beat": 2,
+     "target": "orc",
+     "value": 18,
+     "kind": "loss",
+     "resource": "hp",
+     "element": "physical",
+     "weak": false,
+     "crit": true,
+     "critBannerArg": true,
+     "critBannerShown": true,
+     "isHit": true,
+     "showsAtDelay": 0
+    },
+    {
+     "atMs": 3700.7,
+     "type": "hitReact",
+     "beat": 2,
+     "target": "orc",
+     "tier": "normal"
+    },
+    {
+     "atMs": 3700.7,
+     "type": "npcBar",
+     "beat": 2,
+     "target": "orc",
+     "from": 240,
+     "to": 222,
+     "max": 240
+    },
+    {
+     "atMs": 3701,
+     "type": "shake",
+     "beat": 2,
+     "px": 3,
+     "ms": 160
+    },
+    {
+     "atMs": 3702.4,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 120,
+     "fromDeg": 16
+    },
+    {
+     "atMs": 4155.3,
+     "type": "beat.end",
+     "beat": 2,
+     "i": 2,
+     "name": "Cut"
+    },
+    {
+     "atMs": 4155.5,
+     "type": "beat",
+     "beat": 3,
+     "i": 3,
+     "name": "Back",
+     "gate": false
+    },
+    {
+     "atMs": 4155.5,
+     "type": "backHome",
+     "beat": 3,
+     "actor": "keren",
+     "quiet": false,
+     "fromDx": -821.747,
+     "fromDy": -41.65
+    },
+    {
+     "atMs": 4155.5,
+     "type": "sfx",
+     "beat": 3,
+     "key": "jump1",
+     "vol": 0.35,
+     "effVolume": 0.262,
+     "rate": 1,
+     "via": "backHome"
+    },
+    {
+     "atMs": 4155.6,
+     "type": "moveActor",
+     "beat": 3,
+     "actor": "keren",
+     "to": {
+      "x": 1312,
+      "y": 462.85
+     },
+     "from": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "ms": 520,
+     "hop": 14,
+     "home": true,
+     "via": "backHome"
+    },
+    {
+     "atMs": 4699.9,
+     "type": "moveActor.end",
+     "beat": 3,
+     "actor": "keren",
+     "durMs": 544.3
+    },
+    {
+     "atMs": 4699.9,
+     "type": "lean",
+     "beat": 3,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 120,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 4700,
+     "type": "backHome.end",
+     "beat": 3,
+     "actor": "keren",
+     "durMs": 544.5
+    },
+    {
+     "atMs": 5103.5,
+     "type": "beat.end",
+     "beat": 3,
+     "i": 3,
+     "name": "Back"
+    }
+   ]
+  },
+  "gb_sword-fumble": {
+   "config": {
+    "move": "gb_sword",
+    "set": {
+     "roll": 4
+    },
+    "seed": 24
+   },
+   "totalMs": 2539,
+   "gateMs": 1014,
+   "events": [
+    {
+     "atMs": 0,
+     "type": "beat",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + dash",
+     "gate": false
+    },
+    {
+     "atMs": 0,
+     "type": "hudForm",
+     "beat": 0,
+     "form": 1,
+     "quiet": true
+    },
+    {
+     "atMs": 0.3,
+     "type": "namecard",
+     "beat": 0,
+     "title": "Gunblade",
+     "icon": "⚔️"
+    },
+    {
+     "atMs": 303.2,
+     "type": "stepIn",
+     "beat": 0,
+     "actor": "keren",
+     "target": "orc",
+     "ms": 520,
+     "style": "move1",
+     "gapPerS": 92,
+     "frontPt": {
+      "x": 490.253,
+      "y": 421.2
+     }
+    },
+    {
+     "atMs": 303.2,
+     "type": "sfx",
+     "beat": 0,
+     "key": "move1",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 303.3,
+     "type": "dustBurst",
+     "beat": 0,
+     "pt": {
+      "x": 1312,
+      "y": 458.85
+     },
+     "n": 8,
+     "s": 0.818,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 303.4,
+     "type": "trailMove",
+     "beat": 0,
+     "actor": "keren",
+     "to": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "ms": 520,
+     "via": "stepIn"
+    },
+    {
+     "atMs": 303.4,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260,
+     "via": "trailMove"
+    },
+    {
+     "atMs": 303.9,
+     "type": "moveActor",
+     "beat": 0,
+     "actor": "keren",
+     "to": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "from": {
+      "x": 1312,
+      "y": 462.85
+     },
+     "ms": 520,
+     "hop": 8,
+     "home": false,
+     "via": "trailMove"
+    },
+    {
+     "atMs": 361.4,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 366.1,
+     "type": "namecard.end",
+     "beat": 0,
+     "durMs": 365.8
+    },
+    {
+     "atMs": 417.6,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 473.6,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 529.1,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 585.8,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 641.9,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 699.6,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 757.9,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 814,
+     "type": "afterimage",
+     "beat": 0,
+     "actor": "keren",
+     "opacity": 0.35,
+     "ms": 260
+    },
+    {
+     "atMs": 833,
+     "type": "moveActor.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 529.1
+    },
+    {
+     "atMs": 833,
+     "type": "trailMove.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 529.6
+    },
+    {
+     "atMs": 833,
+     "type": "stepIn.end",
+     "beat": 0,
+     "actor": "keren",
+     "durMs": 529.8
+    },
+    {
+     "atMs": 833,
+     "type": "beat.end",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + dash"
+    },
+    {
+     "atMs": 833.2,
+     "type": "beat",
+     "beat": 1,
+     "i": 1,
+     "name": "Roll",
+     "gate": false
+    },
+    {
+     "atMs": 833.3,
+     "type": "gbRoll",
+     "beat": 1,
+     "attrB": "mig",
+     "a": 1,
+     "b": 1,
+     "tot": 2,
+     "hit": false,
+     "crit": false,
+     "fum": true
+    },
+    {
+     "atMs": 1013.7,
+     "type": "beat.end",
+     "beat": 1,
+     "i": 1,
+     "name": "Roll"
+    },
+    {
+     "atMs": 1013.9,
+     "type": "beat",
+     "beat": 2,
+     "i": 2,
+     "name": "Cut",
+     "gate": true
+    },
+    {
+     "atMs": 1013.9,
+     "type": "markGate",
+     "beat": 2
+    },
+    {
+     "atMs": 1014.1,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": -8,
+     "ms": 70,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 1099.8,
+     "type": "sfx",
+     "beat": 2,
+     "key": "sword2",
+     "vol": 0.38,
+     "effVolume": 0.285,
+     "rate": 1
+    },
+    {
+     "atMs": 1099.9,
+     "type": "lean",
+     "beat": 2,
+     "actor": "keren",
+     "deg": 16,
+     "ms": 80,
+     "fromDeg": -8
+    },
+    {
+     "atMs": 1199.3,
+     "type": "slashSheet",
+     "beat": 2,
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "angDeg": -24.064,
+     "L": 198.557,
+     "LrelTargetH": 1,
+     "w": 29.43,
+     "wRelTargetS": 30,
+     "rgb": "170,210,255",
+     "ms": 300,
+     "core": 0.3
+    },
+    {
+     "atMs": 1199.4,
+     "type": "gameNum",
+     "beat": 2,
+     "target": "orc",
+     "value": 0,
+     "kind": "miss",
+     "resource": "hp",
+     "element": "physical",
+     "weak": false,
+     "crit": false,
+     "critBannerArg": true,
+     "critBannerShown": false,
+     "isHit": true,
+     "showsAtDelay": 0
+    },
+    {
+     "atMs": 1199.4,
+     "type": "slide",
+     "beat": 2,
+     "actor": "orc",
+     "toDx": -15.696,
+     "toDy": 0,
+     "ms": 80,
+     "fromDx": 0,
+     "deltaPx": -15.696,
+     "toDxPerS": -16,
+     "deltaPerS": -16,
+     "s": 0.981
+    },
+    {
+     "atMs": 1300,
+     "type": "slide",
+     "beat": 2,
+     "actor": "orc",
+     "toDx": 0,
+     "toDy": 0,
+     "ms": 160,
+     "fromDx": -15.696,
+     "deltaPx": 15.696,
+     "toDxPerS": 0,
+     "deltaPerS": 16,
+     "s": 0.981
+    },
+    {
+     "atMs": 1602.4,
+     "type": "beat.end",
+     "beat": 2,
+     "i": 2,
+     "name": "Cut"
+    },
+    {
+     "atMs": 1602.6,
+     "type": "beat",
+     "beat": 3,
+     "i": 3,
+     "name": "Back",
+     "gate": false
+    },
+    {
+     "atMs": 1602.7,
+     "type": "backHome",
+     "beat": 3,
+     "actor": "keren",
+     "quiet": false,
+     "fromDx": -821.747,
+     "fromDy": -41.65
+    },
+    {
+     "atMs": 1602.7,
+     "type": "sfx",
+     "beat": 3,
+     "key": "jump1",
+     "vol": 0.35,
+     "effVolume": 0.262,
+     "rate": 1,
+     "via": "backHome"
+    },
+    {
+     "atMs": 1602.7,
+     "type": "moveActor",
+     "beat": 3,
+     "actor": "keren",
+     "to": {
+      "x": 1312,
+      "y": 462.85
+     },
+     "from": {
+      "x": 490.253,
+      "y": 421.2
+     },
+     "ms": 520,
+     "hop": 14,
+     "home": true,
+     "via": "backHome"
+    },
+    {
+     "atMs": 2132.9,
+     "type": "moveActor.end",
+     "beat": 3,
+     "actor": "keren",
+     "durMs": 530.2
+    },
+    {
+     "atMs": 2132.9,
+     "type": "lean",
+     "beat": 3,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 120,
+     "fromDeg": 16
+    },
+    {
+     "atMs": 2132.9,
+     "type": "backHome.end",
+     "beat": 3,
+     "actor": "keren",
+     "durMs": 530.2
+    },
+    {
+     "atMs": 2539.2,
+     "type": "beat.end",
+     "beat": 3,
+     "i": 3,
+     "name": "Back"
+    }
+   ]
+  },
+  "gb_gun-hit": {
+   "config": {
+    "move": "gb_gun",
+    "set": {
+     "roll": 1
+    },
+    "seed": 31
+   },
+   "totalMs": 1781,
+   "gateMs": 602,
+   "events": [
+    {
+     "atMs": 0,
+     "type": "hudCost",
+     "beat": -1,
+     "mp": 0
+    },
+    {
+     "atMs": 0,
+     "type": "beat",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + aim",
+     "gate": false
+    },
+    {
+     "atMs": 0.1,
+     "type": "hudForm",
+     "beat": 0,
+     "form": 2,
+     "quiet": true
+    },
+    {
+     "atMs": 0.3,
+     "type": "namecard",
+     "beat": 0,
+     "title": "Gunblade",
+     "icon": "⚔️"
+    },
+    {
+     "atMs": 0.3,
+     "type": "sfx",
+     "beat": 0,
+     "key": "key",
+     "vol": 0.35,
+     "effVolume": 0.262,
+     "rate": 1
+    },
+    {
+     "atMs": 0.4,
+     "type": "lean",
+     "beat": 0,
+     "actor": "keren",
+     "deg": -5,
+     "ms": 260,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 378.3,
+     "type": "namecard.end",
+     "beat": 0,
+     "durMs": 378
+    },
+    {
+     "atMs": 601.9,
+     "type": "beat.end",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + aim"
+    },
+    {
+     "atMs": 602,
+     "type": "beat",
+     "beat": 1,
+     "i": 1,
+     "name": "Shot",
+     "gate": true
+    },
+    {
+     "atMs": 602.2,
+     "type": "gbRoll",
+     "beat": 1,
+     "attrB": "ins",
+     "a": 3,
+     "b": 4,
+     "tot": 7,
+     "hit": true,
+     "crit": false
+    },
+    {
+     "atMs": 602.2,
+     "type": "markGate",
+     "beat": 1
+    },
+    {
+     "atMs": 602.3,
+     "type": "muzzle",
+     "beat": 1,
+     "actor": "keren",
+     "scale": 1.1,
+     "hand": {
+      "x": 1268.486,
+      "y": 376.888
+     }
+    },
+    {
+     "atMs": 602.4,
+     "type": "clip",
+     "beat": 1,
+     "key": "gg_burst_anim02",
+     "pt": {
+      "x": 1268.486,
+      "y": 376.888
+     },
+     "anchor": {
+      "kind": "wielderHand",
+      "ref": {
+       "x": 1268.486,
+       "y": 376.888
+      }
+     },
+     "scale": 0.619,
+     "scaleRelTarget": 0.63,
+     "scaleRelWielder": 0.605,
+     "rate": 1,
+     "filter": "sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.3)",
+     "blend": "screen",
+     "z": 4000,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 1.022,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 602.8,
+     "type": "clip",
+     "beat": 1,
+     "key": "gg_spark_anim01",
+     "pt": {
+      "x": 1268.486,
+      "y": 376.888
+     },
+     "anchor": {
+      "kind": "wielderHand",
+      "ref": {
+       "x": 1268.486,
+       "y": 376.888
+      }
+     },
+     "scale": 0.787,
+     "scaleRelTarget": 0.802,
+     "scaleRelWielder": 0.77,
+     "rate": 1,
+     "filter": "sepia(1) saturate(5) hue-rotate(-5deg) brightness(1.4)",
+     "blend": "screen",
+     "z": 4001,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 1.022,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 603,
+     "type": "sfx",
+     "beat": 1,
+     "key": "gunshot",
+     "vol": 0.6,
+     "effVolume": 0.45,
+     "rate": 1
+    },
+    {
+     "atMs": 603.2,
+     "type": "addP",
+     "beat": 1,
+     "layer": "hit",
+     "life": 140
+    },
+    {
+     "atMs": 603.2,
+     "type": "slide",
+     "beat": 1,
+     "actor": "keren",
+     "toDx": 12,
+     "toDy": 0,
+     "ms": 90,
+     "fromDx": 0,
+     "deltaPx": 12,
+     "toDxPerS": 11.738,
+     "deltaPerS": 11.738,
+     "s": 1.022
+    },
+    {
+     "atMs": 693.4,
+     "type": "clip",
+     "beat": 1,
+     "key": "011_pierce_physical",
+     "pt": {
+      "x": 400,
+      "y": 321.922
+     },
+     "anchor": {
+      "kind": "targetCenter",
+      "ref": {
+       "x": 400,
+       "y": 321.922
+      }
+     },
+     "scale": 0.785,
+     "scaleRelTarget": 0.8,
+     "scaleRelWielder": 0.768,
+     "rate": 1,
+     "filter": "",
+     "blend": "",
+     "z": 0,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 1.022
+    },
+    {
+     "atMs": 694.1,
+     "type": "sfx",
+     "beat": 1,
+     "key": "slashL",
+     "vol": 0.35,
+     "effVolume": 0.262,
+     "rate": 1
+    },
+    {
+     "atMs": 694.1,
+     "type": "gameNum",
+     "beat": 1,
+     "target": "orc",
+     "value": 13,
+     "kind": "loss",
+     "resource": "hp",
+     "element": "physical",
+     "weak": false,
+     "crit": false,
+     "critBannerArg": true,
+     "critBannerShown": false,
+     "isHit": true,
+     "showsAtDelay": 0
+    },
+    {
+     "atMs": 694.1,
+     "type": "hitReact",
+     "beat": 1,
+     "target": "orc",
+     "tier": "normal"
+    },
+    {
+     "atMs": 694.2,
+     "type": "npcBar",
+     "beat": 1,
+     "target": "orc",
+     "from": 240,
+     "to": 227,
+     "max": 240
+    },
+    {
+     "atMs": 694.3,
+     "type": "slide",
+     "beat": 1,
+     "actor": "keren",
+     "toDx": 0,
+     "toDy": 0,
+     "ms": 260,
+     "fromDx": 11.428,
+     "deltaPx": -11.428,
+     "toDxPerS": 0,
+     "deltaPerS": -11.178,
+     "s": 1.022
+    },
+    {
+     "atMs": 979.1,
+     "type": "lean",
+     "beat": 1,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 200,
+     "fromDeg": -5
+    },
+    {
+     "atMs": 1781.2,
+     "type": "beat.end",
+     "beat": 1,
+     "i": 1,
+     "name": "Shot"
+    }
+   ],
+   "screenshots": [
+    {
+     "name": "gb-gun-shot",
+     "file": "mockup-shots/gb-gun-shot.png",
+     "ms": 643,
+     "triggerMs": 600
+    }
+   ]
+  },
+  "gb_gun-miss": {
+   "config": {
+    "move": "gb_gun",
+    "set": {
+     "roll": 4
+    },
+    "seed": 32
+   },
+   "totalMs": 1826,
+   "gateMs": 614,
+   "events": [
+    {
+     "atMs": 0,
+     "type": "hudCost",
+     "beat": -1,
+     "mp": 0
+    },
+    {
+     "atMs": 0,
+     "type": "beat",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + aim",
+     "gate": false
+    },
+    {
+     "atMs": 0,
+     "type": "hudForm",
+     "beat": 0,
+     "form": 2,
+     "quiet": true
+    },
+    {
+     "atMs": 0.3,
+     "type": "namecard",
+     "beat": 0,
+     "title": "Gunblade",
+     "icon": "⚔️"
+    },
+    {
+     "atMs": 0.4,
+     "type": "sfx",
+     "beat": 0,
+     "key": "key",
+     "vol": 0.35,
+     "effVolume": 0.262,
+     "rate": 1
+    },
+    {
+     "atMs": 0.4,
+     "type": "lean",
+     "beat": 0,
+     "actor": "keren",
+     "deg": -5,
+     "ms": 260,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 358.9,
+     "type": "namecard.end",
+     "beat": 0,
+     "durMs": 358.6
+    },
+    {
+     "atMs": 614.1,
+     "type": "beat.end",
+     "beat": 0,
+     "i": 0,
+     "name": "Namecard + aim"
+    },
+    {
+     "atMs": 614.3,
+     "type": "beat",
+     "beat": 1,
+     "i": 1,
+     "name": "Shot",
+     "gate": true
+    },
+    {
+     "atMs": 614.4,
+     "type": "gbRoll",
+     "beat": 1,
+     "attrB": "ins",
+     "a": 1,
+     "b": 1,
+     "tot": 2,
+     "hit": false,
+     "crit": false,
+     "fum": true
+    },
+    {
+     "atMs": 614.4,
+     "type": "markGate",
+     "beat": 1
+    },
+    {
+     "atMs": 614.4,
+     "type": "muzzle",
+     "beat": 1,
+     "actor": "keren",
+     "scale": 1.1,
+     "hand": {
+      "x": 1268.486,
+      "y": 376.888
+     }
+    },
+    {
+     "atMs": 614.5,
+     "type": "clip",
+     "beat": 1,
+     "key": "gg_burst_anim02",
+     "pt": {
+      "x": 1268.486,
+      "y": 376.888
+     },
+     "anchor": {
+      "kind": "wielderHand",
+      "ref": {
+       "x": 1268.486,
+       "y": 376.888
+      }
+     },
+     "scale": 0.619,
+     "scaleRelTarget": 0.63,
+     "scaleRelWielder": 0.605,
+     "rate": 1,
+     "filter": "sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.3)",
+     "blend": "screen",
+     "z": 4000,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 1.022,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 615,
+     "type": "clip",
+     "beat": 1,
+     "key": "gg_spark_anim01",
+     "pt": {
+      "x": 1268.486,
+      "y": 376.888
+     },
+     "anchor": {
+      "kind": "wielderHand",
+      "ref": {
+       "x": 1268.486,
+       "y": 376.888
+      }
+     },
+     "scale": 0.787,
+     "scaleRelTarget": 0.802,
+     "scaleRelWielder": 0.77,
+     "rate": 1,
+     "filter": "sepia(1) saturate(5) hue-rotate(-5deg) brightness(1.4)",
+     "blend": "screen",
+     "z": 4001,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 1.022,
+     "via": "muzzle"
+    },
+    {
+     "atMs": 615.2,
+     "type": "sfx",
+     "beat": 1,
+     "key": "gunshot",
+     "vol": 0.6,
+     "effVolume": 0.45,
+     "rate": 1
+    },
+    {
+     "atMs": 615.3,
+     "type": "addP",
+     "beat": 1,
+     "layer": "hit",
+     "life": 140
+    },
+    {
+     "atMs": 615.3,
+     "type": "slide",
+     "beat": 1,
+     "actor": "keren",
+     "toDx": 12,
+     "toDy": 0,
+     "ms": 90,
+     "fromDx": 0,
+     "deltaPx": 12,
+     "toDxPerS": 11.738,
+     "deltaPerS": 11.738,
+     "s": 1.022
+    },
+    {
+     "atMs": 706.2,
+     "type": "gameNum",
+     "beat": 1,
+     "target": "orc",
+     "value": 0,
+     "kind": "miss",
+     "resource": "hp",
+     "element": "physical",
+     "weak": false,
+     "crit": false,
+     "critBannerArg": true,
+     "critBannerShown": false,
+     "isHit": true,
+     "showsAtDelay": 0
+    },
+    {
+     "atMs": 706.2,
+     "type": "slide",
+     "beat": 1,
+     "actor": "orc",
+     "toDx": -13.734,
+     "toDy": 0,
+     "ms": 80,
+     "fromDx": 0,
+     "deltaPx": -13.734,
+     "toDxPerS": -14,
+     "deltaPerS": -14,
+     "s": 0.981
+    },
+    {
+     "atMs": 706.2,
+     "type": "slide",
+     "beat": 1,
+     "actor": "keren",
+     "toDx": 0,
+     "toDy": 0,
+     "ms": 260,
+     "fromDx": 11.58,
+     "deltaPx": -11.58,
+     "toDxPerS": 0,
+     "deltaPerS": -11.327,
+     "s": 1.022
+    },
+    {
+     "atMs": 793.1,
+     "type": "slide",
+     "beat": 1,
+     "actor": "orc",
+     "toDx": 0,
+     "toDy": 0,
+     "ms": 160,
+     "fromDx": -13.734,
+     "deltaPx": 13.734,
+     "toDxPerS": 0,
+     "deltaPerS": 14,
+     "s": 0.981
+    },
+    {
+     "atMs": 992.1,
+     "type": "lean",
+     "beat": 1,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 200,
+     "fromDeg": -5
+    },
+    {
+     "atMs": 1825.5,
+     "type": "beat.end",
+     "beat": 1,
+     "i": 1,
+     "name": "Shot"
+    }
+   ]
+  },
+  "gb_tf-dir0": {
+   "config": {
+    "move": "gb_tf",
+    "set": {
+     "dir": 0
+    },
+    "seed": 41
+   },
+   "totalMs": 1755,
+   "gateMs": 850,
+   "events": [
+    {
+     "atMs": 0,
+     "type": "hudCost",
+     "beat": -1,
+     "mp": 0
+    },
+    {
+     "atMs": 0,
+     "type": "beat",
+     "beat": 0,
+     "i": 0,
+     "name": "Click",
+     "gate": false
+    },
+    {
+     "atMs": 0.2,
+     "type": "hudForm",
+     "beat": 0,
+     "form": 1,
+     "quiet": true
+    },
+    {
+     "atMs": 0.4,
+     "type": "sfx",
+     "beat": 0,
+     "key": "key",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1
+    },
+    {
+     "atMs": 0.4,
+     "type": "lean",
+     "beat": 0,
+     "actor": "keren",
+     "deg": -6,
+     "ms": 120,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 146.7,
+     "type": "sfx",
+     "beat": 0,
+     "key": "switch1",
+     "vol": 0.38,
+     "effVolume": 0.285,
+     "rate": 1
+    },
+    {
+     "atMs": 147,
+     "type": "twinkles",
+     "beat": 0,
+     "pt": {
+      "x": 1268.486,
+      "y": 376.888
+     },
+     "anchor": {
+      "kind": "wielderHand",
+      "ref": {
+       "x": 1268.486,
+       "y": 376.888
+      }
+     },
+     "n": 4,
+     "r": 10,
+     "rgb": "170,210,255"
+    },
+    {
+     "atMs": 147.2,
+     "type": "flashActor",
+     "beat": 0,
+     "actor": "keren",
+     "color": "#bfe3ff",
+     "ms": 300
+    },
+    {
+     "atMs": 147.3,
+     "type": "lean",
+     "beat": 0,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 160,
+     "fromDeg": -6
+    },
+    {
+     "atMs": 516.4,
+     "type": "beat.end",
+     "beat": 0,
+     "i": 0,
+     "name": "Click"
+    },
+    {
+     "atMs": 516.7,
+     "type": "beat",
+     "beat": 1,
+     "i": 1,
+     "name": "Transform",
+     "gate": true
+    },
+    {
+     "atMs": 516.8,
+     "type": "buffBeat",
+     "beat": 1,
+     "actor": "keren",
+     "clip": "051_powerup_1",
+     "sfx": "powerup"
+    },
+    {
+     "atMs": 516.8,
+     "type": "clip",
+     "beat": 1,
+     "key": "051_powerup_1",
+     "pt": {
+      "x": 1312,
+      "y": 458.85
+     },
+     "anchor": {
+      "kind": "wielderFeet",
+      "ref": {
+       "x": 1312,
+       "y": 458.85
+      }
+     },
+     "scale": 1.022,
+     "scaleRelTarget": 1.042,
+     "scaleRelWielder": 1,
+     "rate": 1,
+     "filter": "",
+     "blend": "",
+     "z": 0,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 1.022,
+     "via": "buffBeat"
+    },
+    {
+     "atMs": 517.4,
+     "type": "sfx",
+     "beat": 1,
+     "key": "powerup",
+     "vol": 0.467,
+     "effVolume": 0.35,
+     "rate": 1,
+     "via": "buffBeat"
+    },
+    {
+     "atMs": 517.5,
+     "type": "sfx",
+     "beat": 1,
+     "key": "equip",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1
+    },
+    {
+     "atMs": 849.8,
+     "type": "markGate",
+     "beat": 1
+    },
+    {
+     "atMs": 849.9,
+     "type": "hudForm",
+     "beat": 1,
+     "form": 2,
+     "quiet": false
+    },
+    {
+     "atMs": 1755.2,
+     "type": "beat.end",
+     "beat": 1,
+     "i": 1,
+     "name": "Transform"
+    }
+   ],
+   "screenshots": [
+    {
+     "name": "gb-tf-badge",
+     "file": "mockup-shots/gb-tf-badge.png",
+     "ms": 1003,
+     "triggerMs": 852
+    }
+   ]
+  },
+  "gb_tf-dir1": {
+   "config": {
+    "move": "gb_tf",
+    "set": {
+     "dir": 1
+    },
+    "seed": 42
+   },
+   "totalMs": 1743,
+   "gateMs": 840,
+   "events": [
+    {
+     "atMs": 0,
+     "type": "beat",
+     "beat": 0,
+     "i": 0,
+     "name": "Click",
+     "gate": false
+    },
+    {
+     "atMs": 0,
+     "type": "hudForm",
+     "beat": 0,
+     "form": 2,
+     "quiet": true
+    },
+    {
+     "atMs": 0.2,
+     "type": "sfx",
+     "beat": 0,
+     "key": "key",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1
+    },
+    {
+     "atMs": 0.2,
+     "type": "lean",
+     "beat": 0,
+     "actor": "keren",
+     "deg": -6,
+     "ms": 120,
+     "fromDeg": 0
+    },
+    {
+     "atMs": 136.7,
+     "type": "sfx",
+     "beat": 0,
+     "key": "shing",
+     "vol": 0.38,
+     "effVolume": 0.285,
+     "rate": 1
+    },
+    {
+     "atMs": 136.9,
+     "type": "twinkles",
+     "beat": 0,
+     "pt": {
+      "x": 1268.486,
+      "y": 376.888
+     },
+     "anchor": {
+      "kind": "wielderHand",
+      "ref": {
+       "x": 1268.486,
+       "y": 376.888
+      }
+     },
+     "n": 4,
+     "r": 10,
+     "rgb": "255,214,120"
+    },
+    {
+     "atMs": 137,
+     "type": "flashActor",
+     "beat": 0,
+     "actor": "keren",
+     "color": "#ffe1a8",
+     "ms": 300
+    },
+    {
+     "atMs": 137,
+     "type": "lean",
+     "beat": 0,
+     "actor": "keren",
+     "deg": 0,
+     "ms": 160,
+     "fromDeg": -6
+    },
+    {
+     "atMs": 506.8,
+     "type": "beat.end",
+     "beat": 0,
+     "i": 0,
+     "name": "Click"
+    },
+    {
+     "atMs": 507,
+     "type": "beat",
+     "beat": 1,
+     "i": 1,
+     "name": "Transform",
+     "gate": true
+    },
+    {
+     "atMs": 507.1,
+     "type": "buffBeat",
+     "beat": 1,
+     "actor": "keren",
+     "clip": "051_powerup_1",
+     "sfx": "powerup"
+    },
+    {
+     "atMs": 507.1,
+     "type": "clip",
+     "beat": 1,
+     "key": "051_powerup_1",
+     "pt": {
+      "x": 1312,
+      "y": 458.85
+     },
+     "anchor": {
+      "kind": "wielderFeet",
+      "ref": {
+       "x": 1312,
+       "y": 458.85
+      }
+     },
+     "scale": 1.022,
+     "scaleRelTarget": 1.042,
+     "scaleRelWielder": 1,
+     "rate": 1,
+     "filter": "",
+     "blend": "",
+     "z": 0,
+     "layer": "ffx",
+     "loop": false,
+     "targetS": 0.981,
+     "targetH": 198.557,
+     "targetCenter": {
+      "x": 400,
+      "y": 321.922
+     },
+     "targetFeet": {
+      "x": 400,
+      "y": 417.2
+     },
+     "wielderS": 1.022,
+     "via": "buffBeat"
+    },
+    {
+     "atMs": 507.5,
+     "type": "sfx",
+     "beat": 1,
+     "key": "powerup",
+     "vol": 0.467,
+     "effVolume": 0.35,
+     "rate": 1,
+     "via": "buffBeat"
+    },
+    {
+     "atMs": 507.5,
+     "type": "sfx",
+     "beat": 1,
+     "key": "equip",
+     "vol": 0.45,
+     "effVolume": 0.338,
+     "rate": 1
+    },
+    {
+     "atMs": 840,
+     "type": "markGate",
+     "beat": 1
+    },
+    {
+     "atMs": 840.1,
+     "type": "hudForm",
+     "beat": 1,
+     "form": 1,
+     "quiet": false
+    },
+    {
+     "atMs": 1743.2,
+     "type": "beat.end",
+     "beat": 1,
+     "i": 1,
+     "name": "Transform"
+    }
+   ]
+  }
+ }
+}

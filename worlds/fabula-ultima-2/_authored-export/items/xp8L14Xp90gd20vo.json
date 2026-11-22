@@ -8,9 +8,72 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "HkC4TommySprayAE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795239821703,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.damage_dealt_mult_attack",
+          "mode": 1,
+          "priority": 20,
+          "value": "0.25"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HkC4TommySprayAE",
+          "originalParentId": "xp8L14Xp90gd20vo",
+          "originalUuid": "Item.xp8L14Xp90gd20vo.ActiveEffect.HkC4TommySprayAE"
+        },
+        "fabula-ultima-companion": {
+          "hakoCh4": "tommy-spray"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Tommy Gun: spray",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -37,6 +100,7 @@
   "system": {
     "container": null,
     "props": {
+      "action_keywords": "chain 5 volley",
       "active_effect_config_table": {},
       "aquatic_ef": "100",
       "automaton_ef": "100",
@@ -46,10 +110,10 @@
       "celestial_ef": "100",
       "check_bonus": "0",
       "construct_ef": "100",
-      "damage_bonus": "2",
+      "damage_bonus": "4",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.1TyH5hsRlBx4xYDs\" data-id=\"1TyH5hsRlBx4xYDs\" data-type=\"JournalEntry\">Roulette</a>&nbsp;Enemy</p></li><li><p>During your turn this weapon gain, <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\">&nbsp;5</span></strong></p></li></ul>",
+      "description": "<ul><li><p>Attacks with this weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\">Chain</a> <strong>5</strong> Volley: five shots, each against a random creature among your targets.</p></li><li><p>Each shot rolls its own accuracy and deals <strong>a quarter</strong> of the damage; damage bonuses are shared across the shots.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -77,7 +141,7 @@
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Rare",
+      "item_rarity": "Uncommon",
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -88,7 +152,7 @@
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
       "set_name": "",
-      "skill_target": "One Enemy",
+      "skill_target": "Up to 5 creatures",
       "soldier_ef": "100",
       "spirit_ef": "100",
       "type_damage": "Physical",

@@ -1,0 +1,74 @@
+{
+  "_id": "HkWdMantlePsv001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239834844,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "wardenHawk": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Hunter's Mantle (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "09KjioTnamwnRFv4",
+    "props": {
+      "active_effect_config_table": {},
+      "cost": "",
+      "description": "<ul><li><p>You may begin the <strong>conflict</strong> with the <strong>companion</strong> <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>. <em>(A character can have only one companion: if you already have one, the Spirit Hawk does not join.)</em></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.HkWdMantleSumm01]{Summon Spirit Hawk}</strong>】</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "summon",
+          "effect_label": "wm_call",
+          "summon_act_this_round": "false",
+          "summon_actor": "Actor.GnEmdc02BDDTmeaU",
+          "summon_count": "1",
+          "summon_kind": "companion",
+          "summon_max": "1",
+          "summon_overrides": "{\"max_hp\":\"5 + CHAR_LEVEL\",\"current_hp\":\"5 + CHAR_LEVEL\"}",
+          "summon_turns_per_round": "0"
+        }
+      },
+      "id": "HkWdMantlePsv001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Hunter's Mantle (Passive)",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "wm_call",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_description": "<ul><li><p>You may begin the <strong>conflict</strong> with the <strong>companion</strong> <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>. <em>(A character can have only one companion: if you already have one, the Spirit Hawk does not join.)</em></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.HkWdMantleSumm01]{Summon Spirit Hawk}</strong>】</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkWdMantlePsv001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkWdMantlePsv001"
+  },
+  "type": "equippableItem"
+}

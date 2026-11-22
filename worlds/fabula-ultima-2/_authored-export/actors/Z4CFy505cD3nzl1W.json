@@ -10,88 +10,17 @@
   },
   "effects": [
     {
-      "_id": "7JPgQMgIMq3SXeam",
+      "_id": "3yFLB15Ngxs0dWWC",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1794078173764,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "max_hp",
-          "mode": 2,
-          "priority": null,
-          "value": "30"
-        }
-      ],
-      "description": "<p>A massive pot of deep-simmered bone broth, shared from a single ladle passed hand to hand. Everyone who eats gains <strong>+30 Maximum HP</strong> until the next rest.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "7JPgQMgIMq3SXeam",
-          "originalParentId": "Z4CFy505cD3nzl1W",
-          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.7JPgQMgIMq3SXeam"
-        },
-        "fabula-ultima-companion": {
-          "campRestCharges": 0,
-          "cookingDish": {
-            "dishId": "H45kwofTyj8J4OVf",
-            "family": "umami",
-            "instant": {},
-            "tier": 3
-          },
-          "foodBuff": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/consumables/food/bowl-stew-brown.webp",
-      "name": "Giant's Bone Broth",
-      "origin": "Item.H45kwofTyj8J4OVf",
-      "sort": 0,
-      "statuses": [
-        "permanent"
-      ],
-      "system": {
-        "tags": [
-          "food"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "B4Xsh2A4LrvZUD26",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1794078243049,
+        "createdTime": 1795279563092,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "Once before the next rest, when you perform an attack you may grant that attack multi (3) or increase its multi property to 3.",
+      "description": "Once before the next rest, if you are about to suffer one or more status effects from the same source, you may instead choose not to suffer any of them.",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -105,14 +34,14 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "B4Xsh2A4LrvZUD26",
+          "originalId": "3yFLB15Ngxs0dWWC",
           "originalParentId": "Z4CFy505cD3nzl1W",
-          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.B4Xsh2A4LrvZUD26"
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.3yFLB15Ngxs0dWWC"
         },
         "fabula-ultima-companion": {
           "campRestCharges": 0,
-          "martialPracticeActive": true,
-          "martialPracticeMulti": 3
+          "trainingCharges": 1,
+          "trainingShieldActive": true
         },
         "statuscounter": {
           "config": {
@@ -123,14 +52,77 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Elesis/PatronaPassive3.png",
-      "name": "Martial Practice",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/LordKnightPassive3.png",
+      "name": "Training",
       "origin": "Actor.Z4CFy505cD3nzl1W",
       "sort": 0,
       "statuses": [
         "permanent"
       ],
       "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "bUQAhwjxILvpYaNd",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795283020751,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "bvcEIFX8gLRDL1aq",
+          "originalParentId": "8lF3aCEt5wsYxleL",
+          "originalUuid": "Item.8lF3aCEt5wsYxleL.ActiveEffect.bvcEIFX8gLRDL1aq"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "directorAppliedBy": {
+            "appliedAtRound": 2,
+            "effectLabel": "dance_apply",
+            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
+            "reactorTokenUuid": "Scene.XHe8LfutYAkPuR5B.Token.eSw3n6gvd51Pkc02",
+            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5"
+          },
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Dance",
+      "origin": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "dance-token"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -173,7 +165,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.XHe8LfutYAkPuR5B.Token.SrYHkA3DDabH8fSi",
+            "reactorTokenUuid": "Scene.XHe8LfutYAkPuR5B.Token.eSw3n6gvd51Pkc02",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM"
           },
           "directorPermanent": true
@@ -204,44 +196,50 @@
       "type": "base"
     },
     {
-      "_id": "xmwO3qr0nAHi4AEP",
+      "_id": "Y6Vl0lhFMMmcx8MF",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1794072307473,
+        "createdTime": 1795285457189,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
-      "description": "",
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 0,
+          "priority": 1,
+          "value": "RS"
+        }
+      ],
+      "description": "<p><em>Tempest manta sliced thin and salted. It still crackles faintly on the tongue.</em></p><p>Grants <strong>Resistance to Bolt damage</strong> until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": null,
+        "startTime": 298800,
         "startTurn": null,
         "turns": null
       },
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "bvcEIFX8gLRDL1aq",
-          "originalParentId": "8lF3aCEt5wsYxleL",
-          "originalUuid": "Item.8lF3aCEt5wsYxleL.ActiveEffect.bvcEIFX8gLRDL1aq"
+          "originalId": "Y6Vl0lhFMMmcx8MF",
+          "originalParentId": "Z4CFy505cD3nzl1W",
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.Y6Vl0lhFMMmcx8MF"
         },
         "fabula-ultima-companion": {
-          "category": "Other",
-          "directorAppliedBy": {
-            "appliedAtRound": 1,
-            "effectLabel": "dance_apply",
-            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.XHe8LfutYAkPuR5B.Token.SrYHkA3DDabH8fSi",
-            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5"
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "Un1qD1shMantaSas",
+            "family": "recipe",
+            "instant": {},
+            "tier": 0
           },
-          "directorPermanent": true
+          "foodBuff": true
         },
         "statuscounter": {
           "config": {
@@ -252,14 +250,16 @@
           "visible": false
         }
       },
-      "img": "icons/svg/upgrade.svg",
-      "name": "Dance",
-      "origin": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
+      "img": "icons/consumables/food/plate-fish-bowl-bones-brown.webp",
+      "name": "Manta Sashimi",
+      "origin": "Item.Un1qD1shMantaSas",
       "sort": 0,
-      "statuses": [],
+      "statuses": [
+        "permanent"
+      ],
       "system": {
         "tags": [
-          "dance-token"
+          "food"
         ]
       },
       "tint": "#ffffff",
@@ -281,6 +281,8 @@
         "seededAt": "2026-07-22T05:33:00.573Z",
         "seededLevel": 41
       },
+      "bane_oil_beast": 1,
+      "bane_oil_monster": 1,
       "check_mod_dex": 0,
       "check_mod_ins": 0,
       "check_mod_mig": 0,
@@ -300,6 +302,9 @@
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "entranceStyle": "warningShot",
+      "faPity": {
+        "kirin": 1
+      },
       "iconFocus": {
         "x": 60,
         "y": 8,
@@ -307,6 +312,279 @@
       },
       "layoutRef": "6bb548d77fabe22c",
       "levelupStash": {
+        "lockdown": {
+          "_id": "3yhTiccdnMjRtRfT",
+          "_stats": {
+            "compendiumSource": "Item.9Jia1mhze8Nop6f8",
+            "coreVersion": "12.343",
+            "createdTime": 1794504825474,
+            "duplicateSource": "Item.473VXhCLo6zThIqf",
+            "lastModifiedBy": "JQGNzKpDPHJmcUIW",
+            "modifiedTime": 1795276013590,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "effects": [
+            {
+              "_id": "wQ97HXA4gcIJT8ut",
+              "_stats": {
+                "compendiumSource": null,
+                "coreVersion": "12.343",
+                "createdTime": null,
+                "duplicateSource": null,
+                "lastModifiedBy": null,
+                "modifiedTime": null,
+                "systemId": "custom-system-builder",
+                "systemVersion": "4.8.5"
+              },
+              "changes": [],
+              "description": "<p>One of this creature's attacks or spells has been locked down: it deals <strong>SL × 2</strong> less damage with that action until the start of the Slayer's next turn.</p>",
+              "disabled": false,
+              "duration": {
+                "combat": null,
+                "rounds": null,
+                "seconds": null,
+                "startRound": null,
+                "startTime": null,
+                "startTurn": null,
+                "turns": null
+              },
+              "flags": {
+                "custom-system-builder": {
+                  "isFromTemplate": false,
+                  "originalId": "wQ97HXA4gcIJT8ut",
+                  "originalParentId": "LiSn88DPui1LNevT",
+                  "originalUuid": "Actor.RQLxwTwMhxZ6zLvR.Item.LiSn88DPui1LNevT.ActiveEffect.wQ97HXA4gcIJT8ut"
+                },
+                "fabula-ultima-companion": {
+                  "aeCue": {
+                    "kind": "chainRing"
+                  },
+                  "category": "debuff",
+                  "reactionConfig": {
+                    "effect_table": {
+                      "0": {
+                        "$deleted": false,
+                        "damage_amount": "SL * 2",
+                        "damage_operation": "subtract",
+                        "damage_stage": "outgoing",
+                        "effect_kind": "adjust_damage",
+                        "effect_label": "ld_cut"
+                      }
+                    },
+                    "name": "Lockdown",
+                    "reaction_config_table": {
+                      "0": {
+                        "$deleted": false,
+                        "condition_formula": "AE_FLAG('Lockdown','rememberedAction') != '' && PERFORMED_SKILL == AE_FLAG('Lockdown','rememberedAction')",
+                        "reaction_effect_ref": "ld_cut",
+                        "reaction_passive_mode": "force",
+                        "reaction_source": "self",
+                        "reaction_trigger": "creature_will_deal_damage"
+                      }
+                    }
+                  },
+                  "riderCosmetic": {
+                    "variant": "cut"
+                  }
+                },
+                "statuscounter": {
+                  "config": {
+                    "multiplyEffect": true,
+                    "type": "default"
+                  },
+                  "value": 1,
+                  "visible": false
+                }
+              },
+              "img": "icons/magic/control/debuff-chains-shackle-movement-red.webp",
+              "name": "Lockdown",
+              "origin": null,
+              "sort": 0,
+              "statuses": [
+                "fud-lockdown"
+              ],
+              "system": {
+                "tags": [
+                  "debuff"
+                ]
+              },
+              "tint": "#ffffff",
+              "transfer": false,
+              "type": "base"
+            }
+          ],
+          "flags": {
+            "custom-system-builder": {
+              "version": "4.6.4"
+            }
+          },
+          "folder": "ft3358qUh5ZDldYQ",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/PhysicalRangedRollAction/arm_graze.png",
+          "items": [],
+          "name": "Lockdown",
+          "ownership": {
+            "JQGNzKpDPHJmcUIW": 3,
+            "default": 0
+          },
+          "sort": 0,
+          "system": {
+            "body": {
+              "align": "",
+              "colSpan": 1,
+              "collapsible": false,
+              "contents": [],
+              "cssClass": null,
+              "defaultCollapsed": true,
+              "editRole": 0,
+              "flow": "vertical",
+              "key": "custom_body",
+              "permission": 0,
+              "role": 0,
+              "rowSpan": 1,
+              "title": "",
+              "titleStyle": "default",
+              "tooltip": null,
+              "type": "panel",
+              "visibilityFormula": ""
+            },
+            "container": null,
+            "display": {
+              "fix_size": false,
+              "height": "600",
+              "pp_height": "64",
+              "pp_width": "64",
+              "width": "600"
+            },
+            "header": {
+              "align": "",
+              "colSpan": 1,
+              "collapsible": false,
+              "contents": [],
+              "cssClass": null,
+              "defaultCollapsed": true,
+              "editRole": 0,
+              "flow": "vertical",
+              "key": "custom_header",
+              "permission": 0,
+              "role": 0,
+              "rowSpan": 1,
+              "title": "",
+              "titleStyle": "default",
+              "tooltip": null,
+              "type": "panel",
+              "visibilityFormula": ""
+            },
+            "hidden": [],
+            "modifiers": [],
+            "props": {
+              "animation_damage_timing_offset": "0",
+              "animation_damage_timing_options": "resolve",
+              "animation_script": "<p>// Lockdown — generated by tools/anim-studio/lib/dungeon-templates.js</p><p>// Re-run tools/safe-edit/bin/_build-dungeon-animations.js to regenerate.</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"totalTimeoutMs\":8000};</p><p>const ASSETS = {};</p><p>const ANIM_KEY = \"oni.dungeon.slayer-lockdown\";</p><p>const TAG = \"[ONI][Anim][Lockdown]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>const readyHook = doneHook + '.ready';</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>// Slayer · Lockdown (inner script, every client). Approved mockup v3: claude.ai/artifact/H7kodjsPFBHdSeufy2CqNM.</p><p>//   default take (Lockdown's own chain, after the MP is paid): MP motes from Zarg, chains snap shut on the target,</p><p>//     the shackle sigil, the chains sink to a ring at its feet (the lingering ring is an aeCue on the debuff)</p><p>//   \"cut\" (rider-cosmetic.js, the locked creature uses the locked action): the chains flare and climb its body</p><p>// No backticks and no dollar-brace in this file.</p><p>const fx = globalThis.FUCompanion &amp;&amp; globalThis.FUCompanion.api &amp;&amp; globalThis.FUCompanion.api.slayerFx;</p><p>const variant = String((ctx.params &amp;&amp; ctx.params.variant) || \"\");</p><p>const caster = ctx.casterToken;</p><p>const target = ctx.targetTokens &amp;&amp; ctx.targetTokens[0];</p><p>try {</p><p>  if (!fx) { /* nothing to draw */ }</p><p>  else if (variant === \"cut\") { if (caster) await fx.lockdownFlare({ oni: oni, target: caster }); }</p><p>  else if (target) await fx.lockdownBind({ oni: oni, caster: caster, target: target });</p><p>} catch (e) { console.warn(\"[Lockdown anim]\", e); }</p><p>oni.fireDone();</p><p></p><p>`;</p><p></p><p>try {</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null, sourceTokenId: sourceToken?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 8000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, readyHook, cfg: CFG, assets: ASSETS, strikes: Array.isArray(P?.strikes) ? P.strikes : [], variant: P?.variant ?? null, amount: P?.amount ?? null },</p><p>    meta: { source: \"Lockdown\" },</p><p>  });</p><p>  // (animationStart emitted above)</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now(), sourceTokenId: sourceToken?.id ?? null });</p><p>}</p><p></p><p>})();</p>",
+              "check_bonus": "0",
+              "class": "Slayer",
+              "cost": "10 MP",
+              "damage_bonus": "0",
+              "description": "<p>When you hit a creature with an attack you may spend 10 Mind Points and choose one of the target’s <em>basic attacks</em> or <em>spells</em>. Until the start of your next turn, the target deals <strong>[SL × 2]</strong> less damage with the chosen action.</p>\n",
+              "duration": "",
+              "effect_table": {
+                "0": {
+                  "$deleted": false,
+                  "chain_steps": "ld_pick, ld_pay, ld_anim",
+                  "effect_kind": "chain",
+                  "effect_label": "ld_root",
+                  "menu_description": "Spend 10 MP: choose one of the target's basic attacks or spells. Until the start of your next turn it deals SL × 2 less damage with it.",
+                  "menu_label": "Lockdown"
+                },
+                "1": {
+                  "$deleted": false,
+                  "effect_kind": "open_action_menu",
+                  "effect_label": "ld_pick",
+                  "menu_dynamic_source": "subject_actions",
+                  "menu_option_refs": "ld_ae",
+                  "menu_subtitle": "Choose one of the target's basic attacks or spells.",
+                  "menu_title": "Lockdown"
+                },
+                "2": {
+                  "$deleted": false,
+                  "ae_duplicate_mode": "replace",
+                  "ae_duration_rounds": "1",
+                  "ae_remember_action": true,
+                  "ae_template_ref": "Lockdown",
+                  "effect_kind": "apply_ae",
+                  "effect_label": "ld_ae",
+                  "target_ref": "trigger_subject"
+                },
+                "3": {
+                  "$deleted": false,
+                  "consume_amount": "10",
+                  "consume_resource": "mp",
+                  "effect_kind": "consume_resource",
+                  "effect_label": "ld_pay",
+                  "on_empty": "abort",
+                  "target_ref": "self"
+                },
+                "4": {
+                  "$deleted": false,
+                  "action_ref": "Lockdown",
+                  "effect_kind": "play_animation",
+                  "effect_label": "ld_anim",
+                  "target_ref": "trigger_subject"
+                }
+              },
+              "heroic_requirement": "",
+              "isCheck": false,
+              "isFacet": false,
+              "isHeroic": false,
+              "isOffensiveSpell": false,
+              "isReaction": true,
+              "level": 1,
+              "max_level": "4",
+              "name": "Lockdown",
+              "optional_params": {},
+              "reaction_config_table": {
+                "0": {
+                  "$deleted": false,
+                  "condition_formula": "ACTION_IS_ATTACK == 1 && CUR_MP >= 10 && TARGET_CURRENT_HP > 0",
+                  "reaction_action_intent": "",
+                  "reaction_action_kind": "",
+                  "reaction_action_target": "",
+                  "reaction_cause_filter": "",
+                  "reaction_damage_source": "",
+                  "reaction_effect_ref": "ld_root",
+                  "reaction_max_per_round": "",
+                  "reaction_origin_filter": "",
+                  "reaction_ownership": "",
+                  "reaction_passive_mode": "ask",
+                  "reaction_passive_target": "",
+                  "reaction_requires_weapon_used": false,
+                  "reaction_resource_filter": "",
+                  "reaction_responder": "",
+                  "reaction_source": "self",
+                  "reaction_source_skill": "",
+                  "reaction_status_filter": "",
+                  "reaction_subject_kind": "",
+                  "reaction_trigger": "creature_deals_damage",
+                  "requires_skill": ""
+                }
+              },
+              "rolled_atr1": "-",
+              "rolled_atr2": "-",
+              "skill_animation_mode": "custom",
+              "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Less Damage Dealt</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>4</p></td><td><p>8</p></td></tr></tbody></table>",
+              "skill_range": "",
+              "skill_target": "",
+              "skill_type": "Passive",
+              "type_damage": "",
+              "use_optional_params": false
+            },
+            "template": "j0F5Msw5RZ8aIB3j",
+            "templateSystemUniqueVersion": 2125250754,
+            "unique": false,
+            "uniqueId": "9Jia1mhze8Nop6f8"
+          },
+          "type": "equippableItem"
+        },
         "settrap": {
           "_id": "BIhtvvOe8tu627BB",
           "_stats": {
@@ -2099,171 +2377,50 @@
       "type": "equippableItem"
     },
     {
-      "_id": "3yhTiccdnMjRtRfT",
+      "_id": "3X6De5GSo1CxqFZY",
       "_stats": {
-        "compendiumSource": "Item.9Jia1mhze8Nop6f8",
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1794504825474,
-        "duplicateSource": "Item.473VXhCLo6zThIqf",
+        "createdTime": 1795281792757,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "wQ97HXA4gcIJT8ut",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "<p>One of this creature's attacks or spells has been locked down: it deals <strong>SL × 2</strong> less damage with that action until the start of the Slayer's next turn.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "wQ97HXA4gcIJT8ut",
-              "originalParentId": "LiSn88DPui1LNevT",
-              "originalUuid": "Actor.RQLxwTwMhxZ6zLvR.Item.LiSn88DPui1LNevT.ActiveEffect.wQ97HXA4gcIJT8ut"
-            },
-            "fabula-ultima-companion": {
-              "aeCue": {
-                "kind": "chainRing"
-              },
-              "category": "debuff",
-              "reactionConfig": {
-                "effect_table": {
-                  "0": {
-                    "$deleted": false,
-                    "damage_amount": "SL * 2",
-                    "damage_operation": "subtract",
-                    "damage_stage": "outgoing",
-                    "effect_kind": "adjust_damage",
-                    "effect_label": "ld_cut"
-                  }
-                },
-                "name": "Lockdown",
-                "reaction_config_table": {
-                  "0": {
-                    "$deleted": false,
-                    "condition_formula": "AE_FLAG('Lockdown','rememberedAction') != '' && PERFORMED_SKILL == AE_FLAG('Lockdown','rememberedAction')",
-                    "reaction_effect_ref": "ld_cut",
-                    "reaction_passive_mode": "force",
-                    "reaction_source": "self",
-                    "reaction_trigger": "creature_will_deal_damage"
-                  }
-                }
-              },
-              "riderCosmetic": {
-                "variant": "cut"
-              }
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/magic/control/debuff-chains-shackle-movement-red.webp",
-          "name": "Lockdown",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "fud-lockdown"
-          ],
-          "system": {
-            "tags": [
-              "debuff"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.4"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/PhysicalRangedRollAction/arm_graze.png",
-      "name": "Lockdown",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "name": "Mega-Remedy",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 0
       },
-      "sort": 0,
+      "sort": 100000,
       "system": {
-        "container": null,
+        "container": "Q5JqVTC38zs2GpY6",
         "props": {
+          "action_command": "item",
+          "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "resolve",
-          "animation_script": "<p>// Lockdown — generated by tools/anim-studio/lib/dungeon-templates.js</p><p>// Re-run tools/safe-edit/bin/_build-dungeon-animations.js to regenerate.</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"totalTimeoutMs\":8000};</p><p>const ASSETS = {};</p><p>const ANIM_KEY = \"oni.dungeon.slayer-lockdown\";</p><p>const TAG = \"[ONI][Anim][Lockdown]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>const readyHook = doneHook + '.ready';</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>// Slayer · Lockdown (inner script, every client). Approved mockup v3: claude.ai/artifact/H7kodjsPFBHdSeufy2CqNM.</p><p>//   default take (Lockdown's own chain, after the MP is paid): MP motes from Zarg, chains snap shut on the target,</p><p>//     the shackle sigil, the chains sink to a ring at its feet (the lingering ring is an aeCue on the debuff)</p><p>//   \"cut\" (rider-cosmetic.js, the locked creature uses the locked action): the chains flare and climb its body</p><p>// No backticks and no dollar-brace in this file.</p><p>const fx = globalThis.FUCompanion &amp;&amp; globalThis.FUCompanion.api &amp;&amp; globalThis.FUCompanion.api.slayerFx;</p><p>const variant = String((ctx.params &amp;&amp; ctx.params.variant) || \"\");</p><p>const caster = ctx.casterToken;</p><p>const target = ctx.targetTokens &amp;&amp; ctx.targetTokens[0];</p><p>try {</p><p>  if (!fx) { /* nothing to draw */ }</p><p>  else if (variant === \"cut\") { if (caster) await fx.lockdownFlare({ oni: oni, target: caster }); }</p><p>  else if (target) await fx.lockdownBind({ oni: oni, caster: caster, target: target });</p><p>} catch (e) { console.warn(\"[Lockdown anim]\", e); }</p><p>oni.fireDone();</p><p></p><p>`;</p><p></p><p>try {</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null, sourceTokenId: sourceToken?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 8000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, readyHook, cfg: CFG, assets: ASSETS, strikes: Array.isArray(P?.strikes) ? P.strikes : [], variant: P?.variant ?? null, amount: P?.amount ?? null },</p><p>    meta: { source: \"Lockdown\" },</p><p>  });</p><p>  // (animationStart emitted above)</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now(), sourceTokenId: sourceToken?.id ?? null });</p><p>}</p><p></p><p>})();</p>",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
           "check_bonus": "0",
-          "class": "Slayer",
-          "cost": "10 MP",
-          "damage_bonus": "0",
-          "description": "<p>When you hit a creature with an attack you may spend 10 Mind Points and choose one of the target’s <em>basic attacks</em> or <em>spells</em>. Until the start of your next turn, the target deals <strong>[SL × 2]</strong> less damage with the chosen action.</p>\n",
-          "duration": "",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "100",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "$deleted": false,
-              "chain_steps": "ld_pick, ld_pay, ld_anim",
-              "effect_kind": "chain",
-              "effect_label": "ld_root",
-              "menu_description": "Spend 10 MP: choose one of the target's basic attacks or spells. Until the start of your next turn it deals SL × 2 less damage with it.",
-              "menu_label": "Lockdown"
-            },
-            "1": {
-              "$deleted": false,
-              "effect_kind": "open_action_menu",
-              "effect_label": "ld_pick",
-              "menu_dynamic_source": "subject_actions",
-              "menu_option_refs": "ld_ae",
-              "menu_subtitle": "Choose one of the target's basic attacks or spells.",
-              "menu_title": "Lockdown"
-            },
-            "2": {
-              "$deleted": false,
-              "ae_duplicate_mode": "replace",
-              "ae_duration_rounds": "1",
-              "ae_remember_action": true,
-              "ae_template_ref": "Lockdown",
-              "effect_kind": "apply_ae",
-              "effect_label": "ld_ae",
-              "target_ref": "trigger_subject"
-            },
-            "3": {
-              "$deleted": false,
-              "consume_amount": "10",
-              "consume_resource": "mp",
-              "effect_kind": "consume_resource",
-              "effect_label": "ld_pay",
-              "on_empty": "abort",
-              "target_ref": "self"
-            },
-            "4": {
-              "$deleted": false,
-              "action_ref": "Lockdown",
-              "effect_kind": "play_animation",
-              "effect_label": "ld_anim",
-              "target_ref": "trigger_subject"
+              "effect_kind": "grant",
+              "effect_label": "megaremedy_heal",
+              "grant_amount": "100",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
             }
           },
           "heroic_requirement": "",
@@ -2271,51 +2428,30 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": true,
-          "level": 2,
-          "max_level": "4",
-          "name": "Lockdown",
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mega-Remedy",
+          "on_activate_effect_ref": "megaremedy_heal",
           "optional_params": {},
-          "reaction_config_table": {
-            "0": {
-              "$deleted": false,
-              "condition_formula": "ACTION_IS_ATTACK == 1 && CUR_MP >= 10 && TARGET_CURRENT_HP > 0",
-              "reaction_action_intent": "",
-              "reaction_action_kind": "",
-              "reaction_action_target": "",
-              "reaction_cause_filter": "",
-              "reaction_damage_source": "",
-              "reaction_effect_ref": "ld_root",
-              "reaction_max_per_round": "",
-              "reaction_origin_filter": "",
-              "reaction_ownership": "",
-              "reaction_passive_mode": "ask",
-              "reaction_passive_target": "",
-              "reaction_requires_weapon_used": false,
-              "reaction_resource_filter": "",
-              "reaction_responder": "",
-              "reaction_source": "self",
-              "reaction_source_skill": "",
-              "reaction_status_filter": "",
-              "reaction_subject_kind": "",
-              "reaction_trigger": "creature_deals_damage",
-              "requires_skill": ""
-            }
-          },
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_animation_mode": "custom",
-          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Less Damage Dealt</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>4</p></td><td><p>8</p></td></tr></tbody></table>",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_tags": "potion",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "Heal",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
-        "uniqueId": "9Jia1mhze8Nop6f8"
+        "uniqueId": "0gi0e6XOfjVr2S0d"
       },
       "type": "equippableItem"
     },
@@ -5160,7 +5296,7 @@
             }
           ],
           "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -6652,7 +6788,7 @@
             }
           ],
           "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -7250,7 +7386,7 @@
             }
           ],
           "description": "<p>Chosen Species for Bane Oils. Enable one of these per Skill Level taken.</p>",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -7600,7 +7736,7 @@
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
-          "level": 2,
+          "level": 5,
           "max_level": "5",
           "name": "Bane Oils",
           "on_activate_effect_ref": "bo_menu",
@@ -7688,7 +7824,7 @@
           "item_cost": "50",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": 7,
+          "item_quantity": 10,
           "item_rarity": "Common",
           "item_type": "consumable",
           "mimic_ef": "100",
@@ -10306,6 +10442,139 @@
       "type": "equippableItem"
     },
     {
+      "_id": "DPqhoRzEyzbmezPy",
+      "_stats": {
+        "compendiumSource": "Item.uQtyl33m5hL8JxJ3",
+        "coreVersion": "12.343",
+        "createdTime": 1795273806957,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "uQtyl33m5hL8JxJ3",
+            "itemName": "Omamori",
+            "pickedOldProps": {
+              "cost": "1500",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": "1"
+            },
+            "ts": 1769647436138
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/oval-charm.png",
+      "name": "Omamori",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 2800000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>You are <strong>immune </strong>to <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>&nbsp;and <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>A traditional Tasogare charm, it is said to be able to ward off evil and protects its user from harm</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Omamori",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "uQtyl33m5hL8JxJ3"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "DurrKO46Vi8BcNVm",
       "_stats": {
         "compendiumSource": null,
@@ -10434,6 +10703,64 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "hMJnRXDNfdXiaMlX"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ecfkrZxB2wMOnecX",
+      "_stats": {
+        "compendiumSource": "Item.SqaW8fCWW1tdQWng",
+        "coreVersion": "12.343",
+        "createdTime": 1795284271663,
+        "duplicateSource": "Item.9Jia1mhze8Nop6f8",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/rouse.png",
+      "name": "Wildlife Expert",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you rest in the wilderness, you may ask the Game Master up to <strong>[SL]</strong> questions about creatures in the area; the Game Master will answer truthfully.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "implementation_note": "Resolved at the table. When the party rests in the wilderness, ask the GM up to SL questions about creatures in the area; the GM answers truthfully.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": 1,
+          "max_level": "3",
+          "name": "Wildlife Expert",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Questions You May Ask</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "SqaW8fCWW1tdQWng"
       },
       "type": "equippableItem"
     },
@@ -13161,6 +13488,102 @@
       "type": "equippableItem"
     },
     {
+      "_id": "i0uD32GUnWytIEjB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273395325,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "hellhound"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Hellhound_Standard.png",
+      "name": "Hellhound Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Hellhound</strong> · Dark · ★ · Hunter</p><p>ATK 4 · HP 8 · DEF 0 · SPD 3</p><p><strong>On the Hunt:</strong> +1 ATK against a monster at half its max HP or less.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Hellhound_Standard.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Hellhound Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "jiM9FZ5IomG2Tife",
       "_stats": {
         "compendiumSource": null,
@@ -13264,6 +13687,221 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "xWSJekUpNxlS8Fld"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "JJr5CirXCQOK0ShU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795271056015,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "kRTxvw5Y0Arugt5r",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "kRTxvw5Y0Arugt5r",
+              "originalParentId": "ozQ4YJCvDSGB1EBU",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.kRTxvw5Y0Arugt5r"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "persistent_counter"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Icarus Grounded",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "icarus-flying-spent"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "UPlyslcARePzFe6k",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "UPlyslcARePzFe6k",
+              "originalParentId": "ozQ4YJCvDSGB1EBU",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.UPlyslcARePzFe6k"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Flying",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
+          "system": {
+            "tags": [
+              "icarus-flying"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+      "name": "Icarus Wing (gear skill)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "xW1zICA3EOc0fHit",
+        "props": {
+          "description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p>",
+          "details_roller": "Show",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.UPlyslcARePzFe6k",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_grant",
+              "target_ref": "self"
+            },
+            "1": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "gs_drop",
+              "filter_tag": "icarus-flying",
+              "target_ref": "self"
+            },
+            "2": {
+              "chain_steps": "gs_drop,gs_mark",
+              "effect_kind": "chain",
+              "effect_label": "gs_spend"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.kRTxvw5Y0Arugt5r",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_mark",
+              "target_ref": "self"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "isReaction": true,
+          "name": "Icarus Wing (gear skill)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "HAS_STATUS_ICARUS_GROUNDED == 0",
+              "reaction_effect_ref": "gs_grant",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            },
+            "1": {
+              "condition_formula": "HAS_STATUS_ICARUS_GROUNDED == 0",
+              "reaction_effect_ref": "gs_grant",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "creature_equips_item"
+            },
+            "2": {
+              "reaction_effect_ref": "gs_drop",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "creature_unequips_item"
+            },
+            "3": {
+              "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
+              "reaction_cause_filter": "damage",
+              "reaction_effect_ref": "gs_spend",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_lose_resource"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false
       },
       "type": "equippableItem"
     },
@@ -15281,6 +15919,102 @@
       "type": "equippableItem"
     },
     {
+      "_id": "NmKTPCnnx630dwkj",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273395608,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "cryo"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Cryo%20Eater.png",
+      "name": "Cryo Gorger Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Cryo Gorger</strong> · Ice · ★ · Punisher</p><p>ATK 3 · HP 9 · DEF 0 · SPD 2</p><p><strong>Cryo Explosion:</strong> When an attack KOs it, it bursts: 2 damage to the attacker.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Cryo%20Eater.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Cryo Gorger Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "NwH4UInAFxCn958U",
       "_stats": {
         "compendiumSource": "Item.NPmGcRRbc5IBeprB",
@@ -15574,7 +16308,7 @@
               "key": "system.props.max_hp",
               "mode": 2,
               "priority": 20,
-              "value": "20"
+              "value": "25"
             }
           ],
           "description": "Increase Max HP",
@@ -15974,7 +16708,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
-      "name": "+4 Apothecary Robes",
+      "name": "+5 Apothecary Robes",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -16057,8 +16791,8 @@
           "optional_params": {},
           "plant_ef": "100",
           "reaction_config_table": {},
-          "refine_count": 4,
-          "refine_level": 4,
+          "refine_count": 8,
+          "refine_level": 5,
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -16738,6 +17472,150 @@
       "type": "equippableItem"
     },
     {
+      "_id": "Q5JqVTC38zs2GpY6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795281792523,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+      "name": "Mega-Remedy",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+          "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "megaremedy_heal",
+              "grant_amount": "100",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "9vM7Xu5q3cj7EFQt",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+          "insect_ef": "100",
+          "ip_cost": "6",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "600",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "0gi0e6XOfjVr2S0d": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Mega-Remedy",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "0gi0e6XOfjVr2S0d": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "related_item_description": "<ul><li><p><em>Target creature recovers <strong>100 Hit Points</strong>.</em></p></li></ul>",
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.9vM7Xu5q3cj7EFQt",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "9vM7Xu5q3cj7EFQt"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Q8Cd45zCsSKj52pW",
       "_stats": {
         "compendiumSource": null,
@@ -17094,6 +17972,102 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "tGgGFGEavGVjJVAz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "QzqA5Wz50s274WZN",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273838059,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "zarg"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Zarg.png",
+      "name": "Zarg Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Zarg</strong> · Physical · ★★★ · Hunter</p><p>ATK 3 · HP 9 · DEF 0 · SPD 4</p><p><strong>Barrage:</strong> Whenever he attacks, he also deals 2 damage to the benched enemy with the lowest HP (ignores DEF, items and elements).</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Zarg.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Zarg Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
       },
       "type": "equippableItem"
     },
@@ -19588,6 +20562,102 @@
       "type": "equippableItem"
     },
     {
+      "_id": "xdZWr471Hm0qSBl5",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273395884,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "salamander"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Salamander_Standard.png",
+      "name": "Salamander Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Salamander</strong> · Fire · ★ · Guardian</p><p>ATK 3 · HP 10 · DEF 1 · SPD 2</p><p><strong>Pyrophagy:</strong> The first Fire attack that would damage it deals 2 less. Once per match.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Salamander_Standard.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Salamander Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "xEHcsYyJhPaTCGcJ",
       "_stats": {
         "compendiumSource": "Item.GYrsWYBQ6Hu7DnuA",
@@ -19718,7 +20788,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
-      "name": "+5 Zarg's Bow",
+      "name": "+6 Zarg's Bow",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 0
@@ -19738,7 +20808,7 @@
           "construct_ef": "100",
           "custom_logic_action": "",
           "custom_logic_resolution": "",
-          "damage_bonus": 21,
+          "damage_bonus": 22,
           "demiHuman_ef": "100",
           "demon_ef": "100",
           "description": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\">Transform</a>&nbsp;<a class=\"content-link\" data-uuid=\"Item.2mX266qZdTJYJXCy\" data-id=\"2mX266qZdTJYJXCy\" data-type=\"Item\">Zarg's Bow - Light</a></p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
@@ -19782,8 +20852,8 @@
           "reaction_config_table": {},
           "recipe_dish_uuid": "",
           "recipe_kind": "",
-          "refine_count": 7,
-          "refine_level": 5,
+          "refine_count": 14,
+          "refine_level": 6,
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
@@ -19801,6 +20871,272 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "GYrsWYBQ6Hu7DnuA"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "xW1zICA3EOc0fHit",
+      "_stats": {
+        "compendiumSource": "Item.KtD7PgidI510dvHa",
+        "coreVersion": "12.343",
+        "createdTime": 1795271055865,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "nfyTB7h842rjR4BU",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "nfyTB7h842rjR4BU",
+              "originalParentId": "2rMxW49Y5ZoD5jiY",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.nfyTB7h842rjR4BU"
+            },
+            "fabula-ultima-companion": {
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Flying",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "CVxHWmDb0gQsob1q"
+          ],
+          "system": {
+            "tags": [
+              "icarus-flying"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "Z4n4fsHHfLGvldLf",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Z4n4fsHHfLGvldLf",
+              "originalParentId": "2rMxW49Y5ZoD5jiY",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.Z4n4fsHHfLGvldLf"
+            },
+            "fabula-ultima-companion": {},
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "name": "Icarus Wing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "KtD7PgidI510dvHa",
+            "itemName": "Icarus Wing",
+            "pickedOldProps": {
+              "cost": "900",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435805
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+      "name": "Icarus Wing",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 7500000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "KtD7PgidI510dvHa",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "900",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "ozQ4YJCvDSGB1EBU": {
+              "id": "${item.id}",
+              "name": "Icarus Wing (gear skill)",
+              "skill_cost": "",
+              "skill_description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU"
+            }
+          },
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Icarus Wing",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "ozQ4YJCvDSGB1EBU": {
+              "id": "${item.id}",
+              "name": "Icarus Wing (gear skill)",
+              "related_item_description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.KtD7PgidI510dvHa",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "KtD7PgidI510dvHa"
       },
       "type": "equippableItem"
     },
@@ -19985,110 +21321,6 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "zkemDJpm1IKNrQDn"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "YyJYpam0xBp6Id3J",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1794074020222,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "36rowiHAcXnIPsKK",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7121.gif",
-      "name": "Honey",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "Honey cultivated from silk-bee hives nested in arcane blossoms. Supernaturally sweet.",
-          "dragon_ef": "100",
-          "effect_table": {},
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "ugn10gyqh2bFbrot",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7121.gif",
-          "ingredient_taste": "sweet",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "0",
-          "isEquipped": false,
-          "isIngredient": true,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "0",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Uncommon",
-          "item_type": "material",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Honey",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reaction_config_table": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.ugn10gyqh2bFbrot",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "ugn10gyqh2bFbrot"
       },
       "type": "equippableItem"
     },
@@ -20466,7 +21698,7 @@
           "$deleted": false,
           "benefit": "ip",
           "class_name": "Slayer",
-          "level": 5
+          "level": "7"
         }
       },
       "clock_adoration": "0",
@@ -20568,6 +21800,14 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7HiiYUgDP7QkANdf"
         },
+        "8Ic27O1AXzjMC1Vc": {
+          "consume_description": "<ul><li><p>Reduce a Skill level by one and <strong>Recovers 1 Skill Point </strong><em>(You may still only have 3 unmastered class at a time)</em></p></li></ul>",
+          "id": "${item.id}",
+          "name": "Forget me Nut",
+          "quantity": 10,
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.8Ic27O1AXzjMC1Vc"
+        },
         "8wPV7YHkxgJ6Sl5J": {
           "consume_description": "<ul><li><p>Revive one <strong>KO </strong>allies and restore their HP to their <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>&nbsp;score.</p></li></ul>",
           "id": "${item.id}",
@@ -20623,6 +21863,14 @@
           "quantity": 3,
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.N7V1XkfZqFo7gCtM"
+        },
+        "Q5JqVTC38zs2GpY6": {
+          "consume_description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Mega-Remedy",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.Q5JqVTC38zs2GpY6"
         },
         "Q8Cd45zCsSKj52pW": {
           "consume_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
@@ -20732,9 +21980,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "145",
-      "current_ip": "8",
-      "current_mp": "85",
+      "current_hp": "122",
+      "current_ip": "6",
+      "current_mp": "87",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",
@@ -20800,8 +22048,8 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "9.23",
-      "experience": "9.23",
+      "exp_meter": "3.81",
+      "experience": "3.81",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
@@ -20827,7 +22075,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "6",
+      "fabula_point": "10",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -20902,7 +22150,7 @@
           "armor_description": "<p><ul>\n<li>When you use the <strong>Potion Rain</strong> Skill, the restoring effect is not halved.</li>\n</ul></p>",
           "armor_martial": "",
           "id": "${item.id}",
-          "name": "+4 Apothecary Robes",
+          "name": "+5 Apothecary Robes",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.p2ZYcT97cqBChzJS"
         },
@@ -20950,6 +22198,13 @@
           "name": "Apple o' Archer",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.6ef3fWjmWMYTG9Kz"
+        },
+        "DPqhoRzEyzbmezPy": {
+          "acess_description": "<ul><li><p>You are <strong>immune </strong>to <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>&nbsp;and <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a></p></li></ul>",
+          "id": "${item.id}",
+          "name": "Omamori",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.DPqhoRzEyzbmezPy"
         },
         "DnkD0FJseiBxJPbI": {
           "acess_description": "<ul><li><p>You may target <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Flying</strong></a><strong>&nbsp;</strong>creatures as though they do not have <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Flying</strong></a></p></li></ul>",
@@ -21133,6 +22388,13 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.tImoyJ8c71GeEmSi"
         },
+        "xW1zICA3EOc0fHit": {
+          "acess_description": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Icarus Wing",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.xW1zICA3EOc0fHit"
+        },
         "y8RTnXVs4sBr69J9": {
           "acess_description": "<ul><li>When you apply or re-apply a <strong>Status Conditions</strong> to a creature, it takes&nbsp;<strong>5&nbsp;Dark&nbsp;</strong>damage.</li></ul>",
           "id": "${item.id}",
@@ -21150,7 +22412,7 @@
       },
       "item_restore_mod": 20,
       "key_list": {},
-      "level": "45",
+      "level": "47",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 10,
@@ -21158,7 +22420,7 @@
       "main_attrib_1": "DEX",
       "main_attrib_2": "INS",
       "main_details": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\">Transform</a>&nbsp;<a class=\"content-link\" data-uuid=\"Item.2mX266qZdTJYJXCy\" data-id=\"2mX266qZdTJYJXCy\" data-type=\"Item\">Zarg's Bow - Light</a></p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
-      "main_hand": "+5 Zarg's Bow",
+      "main_hand": "+6 Zarg's Bow",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
@@ -21176,6 +22438,13 @@
           "name": "Animal Fang",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.4HAJia1ADJ8RijE8"
+        },
+        "4XFdVN3smQkq6sG9": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Coarse pink crystals chipped from a seam. The oldest seasoning there is.</em></p>",
+          "name": "Rock Salt",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.4XFdVN3smQkq6sG9"
         },
         "5EENOHfrftUEVX4f": {
           "id": "${item.id}",
@@ -21318,9 +22587,9 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.ynvsqZxmSc2Eqsld"
         }
       },
-      "max_hp": 145,
+      "max_hp": 122,
       "max_ip": 12,
-      "max_mp": 85,
+      "max_mp": 87,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -21528,6 +22797,18 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.35hOVeijHtjAupb2"
         },
+        "3yhTiccdnMjRtRfT": {
+          "active_class": "Slayer",
+          "active_cost": "10 MP",
+          "active_description": "<p>When you hit a creature with an attack you may spend 10 Mind Points and choose one of the target’s <em>basic attacks</em> or <em>spells</em>. Until the start of your next turn, the target deals <strong>[SL × 2]</strong> less damage with the chosen action.</p>\n",
+          "active_duration": "",
+          "active_level": 2,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Lockdown",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.3yhTiccdnMjRtRfT"
+        },
         "4MzWlAWjsjd60WCl": {
           "active_class": "Tinkerer",
           "active_cost": "2 IP",
@@ -21543,7 +22824,7 @@
         "563HNr1ZBCnztbKj": {
           "active_class": "Dancer",
           "active_cost": "",
-          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\">Light</a> damage.</li><li>All damage dealt by your attacks and spells becomes <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\">Light</a>.</li></ul>",
+          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a> damage.</li><li>All damage dealt by your attacks and spells becomes <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>.</li></ul>",
           "active_duration": "Until the start of your next turn",
           "active_level": 1,
           "active_target": "Self",
@@ -21564,6 +22845,18 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.62wNY7bslntnoL7o"
         },
+        "7M8gnAI2ITODlmfi": {
+          "active_class": "Slayer",
+          "active_cost": "2 IP",
+          "active_description": "<p>Each time you take this Skill, choose a <strong>creature Species</strong>. You may use an action and spend 2 Inventory Points to apply a <strong>bane oil</strong> for one of your chosen Species to a weapon equipped by you or a willing creature. If you have the weapon equipped, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n\n<p>Until the end of the scene or a different bane oil is applied to the weapon, when a creature of the same Species as the bane oil is hit by the weapon, the attacker picks one of the following:</p>\n<ul>\n  <li>the creature becomes \n    \n      <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>\n    \n  </li>\n  <li>the creature becomes \n    \n      <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a>\n    \n  </li>\n  <li>the creature loses one of its damage Resistances until the end of the scene</li>\n</ul>\n<p>The attacker may choose the damage type; otherwise, the GM chooses one at random.</p>\n",
+          "active_duration": "Scene",
+          "active_level": 5,
+          "active_target": "One Weapon",
+          "id": "${item.id}",
+          "name": "Bane Oils",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7M8gnAI2ITODlmfi"
+        },
         "7v93rEUiFC81g0sk": {
           "active_class": "Sharpshooter",
           "active_cost": "",
@@ -21579,7 +22872,7 @@
         "AzCQXiZHS2rACuFN": {
           "active_class": "Dancer",
           "active_cost": "",
-          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></li></ul>",
+          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a></li><li>All damage dealt by your attacks and spells becomes <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a></li></ul>",
           "active_duration": "Until the start of your next turn",
           "active_level": 1,
           "active_target": "Self",
@@ -21711,7 +23004,7 @@
         "KL2yI8x7voinAVzf": {
           "active_class": "Dancer",
           "active_cost": "",
-          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li></ul>",
+          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\">Earth</a></li><li>All damage dealt by your attacks and spells becomes <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\">Earth</a></li></ul>",
           "active_duration": "Until the start of your next turn",
           "active_level": 1,
           "active_target": "Self",
@@ -21746,7 +23039,7 @@
         },
         "NwH4UInAFxCn958U": {
           "active_class": "NPC",
-          "active_cost": "",
+          "active_cost": "6 Zero Power",
           "active_description": "<p>Choose a damage type among <strong>air, bolt, dark, earth, fire, ice, light, or poison</strong>, and <strong>two status effects</strong> among <strong>dazed, shaken, slow, and weak</strong>.</p><p>Each enemy you can see suffers damage of the chosen type equal to <strong>30 + half your level</strong> and the two chosen status effects.</p>",
           "active_duration": "Instantaneous",
           "active_level": 1,
@@ -21795,7 +23088,7 @@
         "Q1cdHygweV51GezS": {
           "active_class": "Dancer",
           "active_cost": "",
-          "active_description": "<p><strong>Choose one option:</strong></p>\n<ul>\n    <li>You gain Resistance to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n    <li>All damage dealt by your attacks and spells becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n</ul>",
+          "active_description": "<p><strong>Choose one option:</strong></p>\n<ul>\n    <li>You gain Resistance to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a></li>\n    <li>All damage dealt by your attacks and spells becomes <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a></li>\n</ul>",
           "active_duration": "Until the start of your next turn",
           "active_level": 1,
           "active_target": "Self",
@@ -21960,6 +23253,18 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.c3zfGAqVWxIggKi1"
         },
+        "ecfkrZxB2wMOnecX": {
+          "active_class": "Slayer",
+          "active_cost": "",
+          "active_description": "<p>When you rest in the wilderness, you may ask the Game Master up to <strong>[SL]</strong> questions about creatures in the area; the Game Master will answer truthfully.</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Wildlife Expert",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.ecfkrZxB2wMOnecX"
+        },
         "fETOu8eiSC6ob1dZ": {
           "active_class": "Dancer",
           "active_cost": "",
@@ -22107,7 +23412,7 @@
         "qSBSB4t6ozxwoTmR": {
           "active_class": "Tinkerer",
           "active_cost": "",
-          "active_description": "<p>Once per <strong>rest</strong>, you may choose one option: add a <strong>Quality</strong> to a single weapon, armor, or shield that doesn't have one; <strong>or</strong> replace the current <strong>Quality</strong> of a single weapon, armor, or shield with a different <strong>Quality</strong>.</p>\n<p>When you use this Skill, you must select a Quality from the default list for that item type as long as the cost modifier associated with that ability is <strong>+1000 zenit or lower.</strong> Then, you must spend an amount of zenit equal to twice the cost modifier of the chosen ability. The modified item will be ready at the end of the rest; you may only modify <strong>one item per rest.</strong></p>\n<details class=\"potion-foldout\">\n  <summary>Quality List (Defensive • Offensive • Enhancement)</summary>\n  <table class=\"book-table\">\n    <caption>QUALITIES</caption>\n    <thead>\n      <tr>\n        <th style=\"width:190px;\">QUALITY</th>\n        <th style=\"width:100px;\">COST</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <!-- Defensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Defensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Antistatus</th>\n        <td>+500 z</td>\n        <td>You are immune to a single status effect.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Resistance</th>\n        <td>+700 z</td>\n        <td>You have Resistance to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Amulet</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Bulwark</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Resistance</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to two damage types (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Swordbreaker</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to <strong>physical</strong> damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Immunity</th>\n        <td>+1500 z</td>\n        <td>You have Immunity to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Omnishield</th>\n        <td>+2000 z</td>\n        <td>You gain a +1 bonus to Defense and Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Perfect Health</th>\n        <td>+2000 z</td>\n        <td>You are immune to all status effects.</td>\n      </tr>\n\n      <!-- Offensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Offensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Magical</th>\n        <td>+100 z</td>\n        <td>The weapon targets <strong>Magic Defense</strong> instead of <strong>Defense</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Hunter</th>\n        <td>+300 z</td>\n        <td>The weapon deals 5 extra damage to creatures of a particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Piercing</th>\n        <td>+400 z</td>\n        <td>Damage dealt by the weapon ignores <strong>Resistances</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Hunter</th>\n        <td>+500 z</td>\n        <td>The weapon deals 5 extra damage to creatures belonging to one of two particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Multi</th>\n        <td>+1000 z</td>\n        <td>Attacks with the weapon have <strong>multi (2)</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status</th>\n        <td>+1500 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>dazed, shaken, slow, weak</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status Plus</th>\n        <td>+2000 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>enraged, poisoned</strong>.</td>\n      </tr>\n\n      <!-- Enhancement -->\n      <tr class=\"section-row\"><th colspan=\"3\">Enhancement Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Initiative Up</th>\n        <td>+500 z</td>\n        <td>You gain a +4 bonus to your Initiative modifier.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Accuracy Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Accuracy Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Magic Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Magic Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Vitality Up</th>\n        <td>+1000 z</td>\n        <td>When you recover HP, you recover 5 extra HP.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Healing Up</th>\n        <td>+1500 z</td>\n        <td>Spells you cast whose effects restore Hit Points restore 5 extra Hit Points.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Spell Up</th>\n        <td>+2000 z</td>\n        <td>Spells you cast deal 5 extra damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Weapon Up</th>\n        <td>+2000 z</td>\n        <td>Your attacks with (choose one: <strong>melee</strong>, <strong>ranged</strong>) weapons deal 5 extra damage.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n",
+          "active_description": "<p>Once per <strong>rest</strong>, you may choose one option: add a <strong>Quality</strong> to a single weapon, armor, or shield that doesn't have one; <strong>or</strong> replace the current <strong>Quality</strong> of a single weapon, armor, or shield with a different <strong>Quality</strong>.</p>\n<p>When you use this Skill, you must select a Quality from the default list for that item type as long as the cost modifier associated with that ability is <strong>+1000 zenit or lower.</strong> Then, you must spend an amount of zenit equal to twice the cost modifier of the chosen ability. The modified item will be ready at the end of the rest; you may only modify <strong>one item per rest.</strong></p>\n<details class=\"potion-foldout\">\n  <summary>Quality List (Defensive • Offensive • Enhancement)</summary>\n  <table class=\"book-table\">\n    <caption>QUALITIES</caption>\n    <thead>\n      <tr>\n        <th style=\"width:190px;\">QUALITY</th>\n        <th style=\"width:100px;\">COST</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <!-- Defensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Defensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Antistatus</th>\n        <td>+500 z</td>\n        <td>You are immune to a single status effect.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Resistance</th>\n        <td>+700 z</td>\n        <td>You have Resistance to a single damage type (not <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Amulet</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Bulwark</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Resistance</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to two damage types (not <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Swordbreaker</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Immunity</th>\n        <td>+1500 z</td>\n        <td>You have Immunity to a single damage type (not <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Omnishield</th>\n        <td>+2000 z</td>\n        <td>You gain a +1 bonus to Defense and Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Perfect Health</th>\n        <td>+2000 z</td>\n        <td>You are immune to all status effects.</td>\n      </tr>\n\n      <!-- Offensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Offensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Magical</th>\n        <td>+100 z</td>\n        <td>The weapon targets <strong>Magic Defense</strong> instead of <strong>Defense</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Hunter</th>\n        <td>+300 z</td>\n        <td>The weapon deals 5 extra damage to creatures of a particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Piercing</th>\n        <td>+400 z</td>\n        <td>Damage dealt by the weapon ignores <strong>Resistances</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Hunter</th>\n        <td>+500 z</td>\n        <td>The weapon deals 5 extra damage to creatures belonging to one of two particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Multi</th>\n        <td>+1000 z</td>\n        <td>Attacks with the weapon have <strong>multi (2)</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status</th>\n        <td>+1500 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>dazed, shaken, slow, weak</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status Plus</th>\n        <td>+2000 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>enraged, poisoned</strong>.</td>\n      </tr>\n\n      <!-- Enhancement -->\n      <tr class=\"section-row\"><th colspan=\"3\">Enhancement Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Initiative Up</th>\n        <td>+500 z</td>\n        <td>You gain a +4 bonus to your Initiative modifier.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Accuracy Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Accuracy Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Magic Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Magic Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Vitality Up</th>\n        <td>+1000 z</td>\n        <td>When you recover HP, you recover 5 extra HP.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Healing Up</th>\n        <td>+1500 z</td>\n        <td>Spells you cast whose effects restore Hit Points restore 5 extra Hit Points.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Spell Up</th>\n        <td>+2000 z</td>\n        <td>Spells you cast deal 5 extra damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Weapon Up</th>\n        <td>+2000 z</td>\n        <td>Your attacks with (choose one: <strong>melee</strong>, <strong>ranged</strong>) weapons deal 5 extra damage.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n",
           "active_duration": "",
           "active_level": 1,
           "active_target": "",
@@ -22176,10 +23481,22 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.vRzD9CwKnocvftnv"
         },
+        "vvoZh0LfIu51mdgp": {
+          "active_class": "Slayer",
+          "active_cost": "",
+          "active_description": "<p>When you hit a <em>non-soldier</em> creature with an attack that deals damage, you deal extra damage equal to <strong>[2 × the number of soldiers the creature replaces]</strong>.</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Giant Killer",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.vvoZh0LfIu51mdgp"
+        },
         "w8lI13Gc2aisTVes": {
           "active_class": "Dancer",
           "active_cost": "",
-          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li><li>All damage dealt by your attacks and spells becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></li></ul>",
+          "active_description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a></li><li>All damage dealt by your attacks and spells becomes <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a></li></ul>",
           "active_duration": "Until the start of your next turn",
           "active_level": 1,
           "active_target": "Self",
@@ -22237,9 +23554,9 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.zu0GeHNBzF1M0xQr"
         }
       },
-      "skill_class_filter": "Hunter",
+      "skill_class_filter": "Slayer",
       "skill_hideEffect": false,
-      "skill_point": 0,
+      "skill_point": "0",
       "skill_point_bonus": "0",
       "skill_type_filter": "All",
       "slow_status": 0,
@@ -22610,7 +23927,7 @@
         },
         "xEHcsYyJhPaTCGcJ": {
           "id": "${item.id}",
-          "name": "+5 Zarg's Bow",
+          "name": "+6 Zarg's Bow",
           "quantity": "",
           "roll": "",
           "type": "Bow",
@@ -22638,7 +23955,7 @@
       "wlp_base": "8",
       "wlp_current": 8,
       "your_class_name": "Tactical Hunter",
-      "zenit": 1305,
+      "zenit": "1863",
       "zero_label": "Zero Power",
       "zero_power_description": "<p><strong>Zero Scourge</strong></p><p>Special rule: when you select this effect for your Zero Power, choose a damage type</p><p>among air, bolt, dark, earth, fire, ice, light, and poison; then, choose two status effects</p><p>among dazed, shaken, slow, and weak.</p><p>Choose any number of creatures you can see: each of them suffers damage of then</p><p>chosen type equal to【30 + half your level】and suffers the chosen status effects.</p>",
       "zero_power_macro": "",

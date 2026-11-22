@@ -653,7 +653,8 @@
         },
         "fabula-ultima-companion": {
           "draftDeva": "claude-2026-11-19-deva",
-          "draftName": "Deva"
+          "draftName": "Deva",
+          "facingDir": "up"
         }
       },
       "height": 1,
@@ -730,12 +731,14 @@
       "actorId": "amxILxU7mqQ0jKhZ",
       "hidden": true,
       "_id": "rsZfXrypmm4VJjvg",
-      "x": 1375,
-      "y": 431,
+      "x": 634,
+      "y": 1846,
       "elevation": 0,
       "sort": 0,
       "locked": false,
-      "_regions": []
+      "_regions": [
+        "P8VNXm52vwbckUUA"
+      ]
     }
   ],
   "notes": [],
@@ -826,8 +829,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -929,7 +931,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "The Kneeling Colossus",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": false,
             "wellspring_fire": false,
@@ -963,7 +965,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1795053435076,
-      "modifiedTime": 1795136091566,
+      "modifiedTime": 1795284197605,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

@@ -1,0 +1,98 @@
+{
+  "_id": "HkC4IvoryStatPsv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239822538,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Cursed Ivory Statue (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "T5sBr6Ge33ZRihfW",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>You are always inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a></p></li><li><p>Whenever you are <strong>hit </strong>by an action, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a>&nbsp;to the attacking creature</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Cursed",
+          "effect_kind": "apply_ae",
+          "effect_label": "cis_self",
+          "target_ref": "self"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Cursed",
+          "effect_kind": "apply_ae",
+          "effect_label": "cis_curse",
+          "target_ref": "cause_actor"
+        }
+      },
+      "id": "HkC4IvoryStatPsv",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Cursed Ivory Statue (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "cis_self",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "reaction_effect_ref": "cis_self",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_equips_item"
+        },
+        "2": {
+          "condition_formula": "AE_COUNT_CURSED == 0",
+          "reaction_effect_ref": "cis_self",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_end"
+        },
+        "3": {
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "cis_curse",
+          "reaction_passive_mode": "force",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        }
+      },
+      "skill_description": "<ul><li><p>You are always inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a></p></li><li><p>Whenever you are <strong>hit </strong>by an action, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a>&nbsp;to the attacking creature</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkC4IvoryStatPsv"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkC4IvoryStatPsv"
+  },
+  "type": "equippableItem"
+}

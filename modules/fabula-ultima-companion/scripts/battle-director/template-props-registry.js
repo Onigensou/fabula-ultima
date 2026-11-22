@@ -148,6 +148,10 @@ export const MANAGED_PROPS = Object.freeze([
   checkProp("menu_hidden", "Hidden From Menu", "Do not offer this in the action menu."),
   checkProp("has_pierce", "Has Pierce", ""),
   checkProp("has_roulette", "Has Roulette", ""),
+  // carrier-attack.js: the skill is performed as an Attack with the equipped weapon (Sonic Blow, v1.0.652). Undeclared it
+  // was one template reload away from deletion (validator PROP_UNDECLARED, 2026-11-22).
+  checkProp("attack_with_carrier", "Attack With Carrier",
+    "Performed as an attack with the equipped weapon (carrier-attack.js)."),
 ]);
 
 /**

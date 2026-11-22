@@ -1,0 +1,128 @@
+{
+  "_id": "HkC4WitsEndSpel1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239814327,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": "created"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "category": "skill",
+        "detectedType": "action_v1",
+        "fromTemplate": "FZmpKcQRP7hZQqbV",
+        "itemId": "g74cJxJ4guXSyVlJ",
+        "itemName": "Glacies Finis",
+        "pickedOldProps": {
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "30 x T MP",
+          "damage_bonus": "30",
+          "description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 30】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></p>",
+          "discipline": "elementalism",
+          "duration": "Instantaneous",
+          "id": "g74cJxJ4guXSyVlJ",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
+          "name": "Glacies Finis",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "Up to three creatures",
+          "type_damage": "ice",
+          "uuid": "Item.g74cJxJ4guXSyVlJ"
+        },
+        "ts": 1770020388745
+      }
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213219.279.png",
+  "name": "Wit's End",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "HkC4StaffStupid1",
+    "props": {
+      "action_command": "spell",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "1 Fabula Point",
+      "damage_bonus": "0",
+      "defense_target_type": "mdef",
+      "description": "Deals <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage equal to <strong>【HR + the difference between your MP percentage and the target's MP percentage】</strong>.",
+      "details_roller": "Show",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "damage_amount": "round(abs(CUR_MP / max(1, MAX_MP) - TARGET_CURRENT_MP / max(1, TARGET_MAX_MP)) * 100)",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "wits_gap"
+        }
+      },
+      "gadget_alchemy_tier": "",
+      "gadget_infusion_tier": "",
+      "gadget_magitech_tier": "",
+      "heroic_requirement": "",
+      "id": "HkC4WitsEndSpel1",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213219.279.png",
+      "isCheck": true,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Wit's End",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "pre_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "wits_gap",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_source_skill": "Wit's End",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "INS",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_tags": "",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "target_eligibility": "",
+      "type_damage": "dark",
+      "use_optional_params": false,
+      "uuid": "Item.HkC4WitsEndSpel1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkC4WitsEndSpel1"
+  },
+  "type": "equippableItem"
+}

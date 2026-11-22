@@ -489,11 +489,11 @@ export function createTimeline(spec = {}, env = {}) {
 
   // ── realtime clip (a staged copy; plays from its track start, no seeking) ──
   class Clip {
-    constructor(def) { this.def = def; this.copy = null; this.started = false; this.cache = null; this.cctx = null; this.done = false; this.taking = false; }
+    constructor(def, rate = 1) { this.def = def; this.rate = rate > 0 ? rate : 1; this.copy = null; this.started = false; this.cache = null; this.cctx = null; this.done = false; this.taking = false; }
     async take() { if (this.copy || this.done) return; this.taking = true; try { const c = await takeVideo(this.def.url); if (this.done) { if (c) releaseVideo(c); } else this.copy = c; } catch (e) { console.warn(TAG, "clip take failed", this.def.url, e); } }
     frame(loop) {
       const c = this.copy; if (!c) return false; const v = c.video;
-      if (!this.started) { this.started = true; try { v.loop = !!loop; v.currentTime = 0; v.play?.().catch(() => {}); } catch {} }
+      if (!this.started) { this.started = true; try { v.loop = !!loop; v.currentTime = 0; v.playbackRate = this.rate; v.play?.().catch(() => {}); } catch {} }
       if (v.readyState >= 2 && !v.seeking) {
         if (loop) { if (!this.cache) { this.cache = document.createElement("canvas"); this.cache.width = v.videoWidth || 2; this.cache.height = v.videoHeight || 2; this.cctx = this.cache.getContext("2d"); } this.cctx.clearRect(0, 0, this.cache.width, this.cache.height); this.cctx.drawImage(v, 0, 0); }
         return v;
@@ -508,10 +508,10 @@ export function createTimeline(spec = {}, env = {}) {
     const m = {
       tw(t0, dur, fn) { T.push({ t0, t1: t0 + dur, fn: (tl, S) => fn(clamp01(tl / dur), S, tl) }); },
       hold(t0, t1, fn) { T.push({ t0, t1, fn }); },
-      // o: x,y scene px (or screen:{x,y} viewport fractions) | w scene px (or wh = fraction of viewport height) | rot | flip | loop | hold | z | alpha(fn) | over (above whiteout) | tint | add | blur | filter (CSS filter string) | pivot | persp | sx/sy | live(tl,S,g)
+      // o: x,y scene px (or screen:{x,y} viewport fractions) | w scene px (or wh = fraction of viewport height) | rot | flip | loop | hold | z | alpha(fn) | over (above whiteout) | tint | add | blur | filter (CSS filter string) | pivot | persp | sx/sy | live(tl,S,g) | rate (playback rate; the track lasts dur / rate)
       clip(key, t0, o) {
         const def = LIB[key]; if (!def) { console.warn(TAG, "unknown clip", key); return null; }
-        const c = new Clip(def); const dur = o.hold != null ? o.hold : def.dur;
+        const c = new Clip(def, o.rate); const dur = o.hold != null ? o.hold : def.dur / c.rate;
         T.push({ t0, t1: t0 + dur, clip: c, loop: !!o.loop, fn: (tl, S) => {
           const src = c.frame(!!o.loop); if (!src) return;
           const a = o.alpha ? o.alpha(clamp01(tl / dur)) : 1; if (a <= 0) return;
@@ -717,7 +717,7 @@ export function createTimeline(spec = {}, env = {}) {
       // Under the real tokens: dim, top-dark and the ground layers (z < 5), on their own canvas.
       const low = S.world.filter((l) => l.z < 5).sort((a, b) => a.z - b.z);
       liveUnder(S.dim > 0 || S.topdark > 0 || low.length > 0, wt, (u) => {
-        if (S.dim > 0) { u.fillStyle = "rgba(4,2,10," + S.dim + ")"; u.fillRect(SCENE.x - SCENE.w, SCENE.y - SCENE.h, SCENE.w * 3, SCENE.h * 3); }
+        if (S.dim > 0) { u.fillStyle = "rgba(" + (S.dimRGB || "4,2,10") + "," + S.dim + ")"; u.fillRect(SCENE.x - SCENE.w, SCENE.y - SCENE.h, SCENE.w * 3, SCENE.h * 3); }
         if (S.topdark > 0) { const gr = u.createLinearGradient(0, SCENE.y, 0, SCENE.y + SCENE.h * 0.7); gr.addColorStop(0, "rgba(8,3,20," + S.topdark + ")"); gr.addColorStop(1, "rgba(8,3,20,0)"); u.fillStyle = gr; u.fillRect(SCENE.x - SCENE.w, SCENE.y - SCENE.h, SCENE.w * 3, SCENE.h * 1.7); }
         for (const l of low) l.draw(u);
       });
@@ -742,7 +742,7 @@ export function createTimeline(spec = {}, env = {}) {
     }
     else {
       g.save(); boardXf();
-      if (S.dim > 0) { g.fillStyle = "rgba(4,2,10," + S.dim + ")"; g.fillRect(SCENE.x - SCENE.w, SCENE.y - SCENE.h, SCENE.w * 3, SCENE.h * 3); }
+      if (S.dim > 0) { g.fillStyle = "rgba(" + (S.dimRGB || "4,2,10") + "," + S.dim + ")"; g.fillRect(SCENE.x - SCENE.w, SCENE.y - SCENE.h, SCENE.w * 3, SCENE.h * 3); }
       if (S.topdark > 0) { const gr = g.createLinearGradient(0, SCENE.y, 0, SCENE.y + SCENE.h * 0.7); gr.addColorStop(0, "rgba(8,3,20," + S.topdark + ")"); gr.addColorStop(1, "rgba(8,3,20,0)"); g.fillStyle = gr; g.fillRect(SCENE.x - SCENE.w, SCENE.y - SCENE.h, SCENE.w * 3, SCENE.h * 1.7); }
       const low = S.world.filter((l) => l.z < 5).sort((a, b) => a.z - b.z); for (const l of low) l.draw(g);
       for (const k of order) {
@@ -795,7 +795,8 @@ export function createTimeline(spec = {}, env = {}) {
   }
 
   // ── run ──
-  //   tracks: the track list; total: ms; sfx: [{ at, url, v }]; onEnd: fn
+  //   tracks: the track list (an open-ended shot may push more while it runs); total: ms, or
+  //   (t) => ms read every frame (the shot ends once t reaches it); sfx: [{ at, url, v }]; onEnd: fn
   //   Resolves when the shot is over and everything is torn down. The caller
   //   (the inner script) awaits this so oni.dispose() cannot cut the tail.
   async function run(tracks, { total = 0, sfx = [], onBeat = null, onStart = null, lead = 1800 } = {}) {
@@ -837,12 +838,12 @@ export function createTimeline(spec = {}, env = {}) {
         try {
           const t = performance.now() - t0; diag.frames++;
           keep = S && S._mouth; S = makeState(); S._mouth = keep; S.playing = true; S.rate = 1;
-          for (const tr of clips) { if (!tr.clip.copy && !tr.clip.taking && !tr.clip.done && tr.t0 - t < lead && t < tr.t1) { tr.clip.taking = true; tr.clip.take(); } }
+          for (const tr of tracks) { if (!tr.clip) continue; if (!tr.clip.copy && !tr.clip.taking && !tr.clip.done && tr.t0 - t < lead && t < tr.t1) { tr.clip.taking = true; tr.clip.take(); } }
           for (const tr of tracks) { if (t >= tr.t0 && t < tr.t1) tr.fn(t - tr.t0, S); else if (tr.clip && t >= tr.t1) tr.clip.stop(); }
           for (const c of sfx) { const id = c.at + "|" + (c.url || c.key); if (t >= c.at && t < c.at + 400 && !fired.has(id)) { fired.add(id); try { oni.sfx(c.url || c.key, { volume: c.v ?? 1 }); } catch {} } }
           if (onBeat && S.beat) onBeat(S.beat);
           render(S, t);
-          if (t >= total) finish();
+          if (t >= (typeof total === "function" ? total(t) : total)) finish();
         } catch (e) { console.error(TAG, "frame threw", e); finish(); }
       };
       if (!ticker) { finish(); return; }

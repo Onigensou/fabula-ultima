@@ -257,7 +257,8 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "hakoCh4": true
     },
     "fucompanion": {
       "itemMigratorBackup": {

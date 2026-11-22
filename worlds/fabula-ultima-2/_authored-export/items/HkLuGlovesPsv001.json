@@ -1,0 +1,85 @@
+{
+  "_id": "HkLuGlovesPsv001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239829908,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "luchador": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Luchador Gloves (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "r0dthPszZhHz2SVH",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\">Conquer 5</a>: inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> on the target.</p></li><li><p>You deal <strong>5 bonus damage</strong> when you attack a <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> target.</p></li><li><p>You cannot equip a <strong>Shield</strong>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "skip",
+          "ae_template_ref": "Grappled",
+          "effect_kind": "apply_ae",
+          "effect_label": "lu_grab",
+          "on_empty": "skip",
+          "target_ref": "trigger_subject"
+        },
+        "1": {
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "lu_bonus"
+        }
+      },
+      "id": "HkLuGlovesPsv001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Luchador Gloves (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HIT_MARGIN >= 5 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "lu_grab",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        },
+        "1": {
+          "condition_formula": "TARGET_AE_COUNT_GRAPPLED > 0 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "lu_bonus",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\">Conquer 5</a>: inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> on the target.</p></li><li><p>You deal <strong>5 bonus damage</strong> when you attack a <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> target.</p></li><li><p>You cannot equip a <strong>Shield</strong>.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkLuGlovesPsv001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkLuGlovesPsv001"
+  },
+  "type": "equippableItem"
+}

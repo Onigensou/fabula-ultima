@@ -1,0 +1,69 @@
+{
+  "_id": "HkC4GothicPsv001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239821953,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Gothic Lolita Dress (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "XS2XcpLQhbq9p04p",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Your offensive spells that deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> or <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage deal <strong>5 bonus damage</strong> for each status effect on the target (up to <strong>15</strong>).</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "min(TARGET_STATUS_COUNT * 5, 15)",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "gl_malediction"
+        }
+      },
+      "id": "HkC4GothicPsv001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Gothic Lolita Dress (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && DAMAGE_IS_HP == 1 && TARGET_STATUS_COUNT > 0 && (TRIGGER_DAMAGE_IS_DARK == 1 || TRIGGER_DAMAGE_IS_POISON == 1)",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "gl_malediction",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Your offensive spells that deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> or <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage deal <strong>5 bonus damage</strong> for each status effect on the target (up to <strong>15</strong>).</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkC4GothicPsv001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkC4GothicPsv001"
+  },
+  "type": "equippableItem"
+}

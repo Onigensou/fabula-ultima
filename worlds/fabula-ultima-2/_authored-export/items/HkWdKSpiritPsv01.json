@@ -1,0 +1,91 @@
+{
+  "_id": "HkWdKSpiritPsv01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239835389,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "wardenHawk": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Kindred Spirit (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "aTVhiVRcHZpMinbg",
+    "props": {
+      "active_effect_config_table": {},
+      "cost": "",
+      "description": "<ul>\n    <li>\n        <p><a class=\"content-link\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\">Snipe</a><strong><span style=\"text-decoration: underline;\">20 </span></strong>If an ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a> is in the scene, perform <strong>【🏹 Dive Strike】</strong> as a <strong>Free Action </strong>on the same target of this attack</p></li>\n</ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ks_hawk, ks_dive",
+          "effect_kind": "chain",
+          "effect_label": "ks_follow"
+        },
+        "1": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "category": "ally",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "ks_hawk",
+          "exclude_defeated": true,
+          "exclude_self": true,
+          "iteration_mode": "together",
+          "mode": "all",
+          "skip_when_passive": true,
+          "target_filter": "HAS_SKILL_DIVE_STRIKE == 1"
+        },
+        "2": {
+          "action_ref": "Dive Strike",
+          "effect_kind": "free_action",
+          "effect_label": "ks_dive",
+          "performer_ref": "ks_hawk",
+          "source_label": "Kindred Spirit",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "HkWdKSpiritPsv01",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Kindred Spirit (Passive)",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_CHECK_RESULT >= 20",
+          "reaction_effect_ref": "ks_follow",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul>\n    <li>\n        <p><a class=\"content-link\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\">Snipe</a><strong><span style=\"text-decoration: underline;\">20 </span></strong>If an ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a> is in the scene, perform <strong>【🏹 Dive Strike】</strong> as a <strong>Free Action </strong>on the same target of this attack</p></li>\n</ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkWdKSpiritPsv01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkWdKSpiritPsv01"
+  },
+  "type": "equippableItem"
+}

@@ -47,8 +47,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -89,7 +88,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Valley of the Dragon - Waterfall Trail",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": false,
             "wellspring_fire": false,
@@ -98,7 +97,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Crossroads\",\"id\":\"V1pUCPofEqLN4sze\"},{\"name\":\"Maelstrom Confluence\",\"id\":\"w0Ol6v1IYj2lG39s\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Crossroads\",\"id\":\"V1pUCPofEqLN4sze\"},{\"name\":\"Maelstrom Confluence\",\"id\":\"w0Ol6v1IYj2lG39s\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -420,7 +419,7 @@
             },
             "DoZvFR8QxIZKrYtL": {
               "initialType": "consumable",
-              "currentType": "consumable",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Consumeable_Tile.png"
             },
             "91Enu6O1V6OEQMaV": {
@@ -436,7 +435,8 @@
             "A8FxNTihukxgXCkZ": {
               "initialType": "blank",
               "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png",
+              "expired": true
             },
             "xbiSr7A6UhaEoheC": {
               "initialType": "unknown",
@@ -450,7 +450,7 @@
             },
             "YwGx2mGVNCUSXZnT": {
               "initialType": "skill_check",
-              "currentType": "skill_check",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/SkillCheck_Tile.png"
             },
             "uRf3ZarCdHcwMtqo": {
@@ -470,12 +470,12 @@
             },
             "kBMMoU6OKHmby2Av": {
               "initialType": "gold",
-              "currentType": "gold",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png"
             },
             "EtusfLszOHx4AnrD": {
               "initialType": "gathering",
-              "currentType": "gathering",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gathering_Tile.png"
             },
             "wdiiocs6gObm8flA": {
@@ -495,7 +495,7 @@
             },
             "QyMKnEfcgWZVF6lY": {
               "initialType": "consumable",
-              "currentType": "consumable",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Consumeable_Tile.png"
             },
             "RefJKfo5PxpZupH6": {
@@ -505,7 +505,7 @@
             },
             "MPLf1YcbWgFygHdT": {
               "initialType": "gold",
-              "currentType": "gold",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png"
             },
             "AFHyXApXZ5dFM0rO": {
@@ -515,7 +515,7 @@
             },
             "twcwl1RMxyIiyVqT": {
               "initialType": "gold",
-              "currentType": "gold",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png"
             },
             "0Zqp0fVtAZjtPZTA": {
@@ -530,9 +530,40 @@
             },
             "9je77RlO22gEoxd8": {
               "initialType": "item",
-              "currentType": "item",
+              "currentType": "blank",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Item_Tile.png"
             }
+          },
+          "visitedTiles": {
+            "v3Jlc9vrGvqw9RyD": true,
+            "nJ70PJXb5aHQvmlF": true,
+            "dbjeS4ed7hoAtl0V": true,
+            "DoZvFR8QxIZKrYtL": true,
+            "A8FxNTihukxgXCkZ": true,
+            "0Zqp0fVtAZjtPZTA": true,
+            "RefJKfo5PxpZupH6": true,
+            "MPLf1YcbWgFygHdT": true,
+            "9je77RlO22gEoxd8": true,
+            "RLRu9uTHapN7Y7NO": true,
+            "QyMKnEfcgWZVF6lY": true,
+            "rtUEstwzPgubBjnJ": true,
+            "AFHyXApXZ5dFM0rO": true,
+            "v1wJ9FdLxpvUN0yO": true,
+            "twcwl1RMxyIiyVqT": true,
+            "wdiiocs6gObm8flA": true,
+            "iL0yXKeILpYfzU3y": true,
+            "xbiSr7A6UhaEoheC": true,
+            "eXJritk7H6J1ebAq": true,
+            "LPTOCM4u70BNiYnr": true,
+            "lP2YdM0TbtYAICDN": true,
+            "kBMMoU6OKHmby2Av": true,
+            "EtusfLszOHx4AnrD": true,
+            "YwGx2mGVNCUSXZnT": true,
+            "uRf3ZarCdHcwMtqo": true
+          },
+          "fogRevealed": {
+            "9je77RlO22gEoxd8": true,
+            "QyMKnEfcgWZVF6lY": true
           }
         }
       },
@@ -570,6 +601,18 @@
               "spark_duration": 1310,
               "brightness": 1.3
             }
+          }
+        }
+      },
+      "world": {
+        "battleInit": {
+          "promptMarker": {
+            "status": "cancelled",
+            "at": "2026-11-21T17:26:42.887Z",
+            "runId": "bi_prompt_1795282001613_qpd1tv",
+            "sceneId": "YR0pYJVokhIgKQj0",
+            "sceneName": "Valley_Map007",
+            "via": "close-x"
           }
         }
       }
@@ -639,7 +682,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359011161,
-      "modifiedTime": 1794072861459,
+      "modifiedTime": 1795285644095,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

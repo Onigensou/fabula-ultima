@@ -1,0 +1,52 @@
+{
+  "_id": "HkWdMarkedPrey01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239832695,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "wardenHawk": "created"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherSkill1.png",
+  "name": "Marked Prey",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "HkWdWardenSetDef",
+    "props": {
+      "active_effect_config_table": {},
+      "description": "<p><strong>Warden of the Wilds (2 pieces)</strong> — your <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong> applies <a class=\"content-link\" data-uuid=\"Item.D6IehPsp6h7srIJH\" data-id=\"D6IehPsp6h7srIJH\" data-type=\"Item\">Hunter's Mark</a> to the creature it hits.</p>",
+      "details_roller": "Show",
+      "effect_table": {},
+      "id": "HkWdMarkedPrey01",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherSkill1.png",
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Marked Prey",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive",
+      "uuid": "Item.HkWdMarkedPrey01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkWdMarkedPrey01"
+  },
+  "type": "equippableItem"
+}

@@ -83,6 +83,7 @@
     "scripts/battle-director/director-init.js",
     "scripts/battle-director/director-triggers.js",
     "scripts/battle-director/director-vfx.js",
+    "scripts/battle-director/equip-sync.js",
     "scripts/battle-director/director.js",
     "scripts/battle-director/intent-channel.js",
     "scripts/battle-director/intents.js",

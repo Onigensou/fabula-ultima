@@ -1,0 +1,68 @@
+{
+  "_id": "HkC4CurseCollPsv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239823082,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Curse Collector (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "3QBrbZe41Yx2UAWD",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Your <strong>attack</strong>, <strong>spell</strong> and <strong>skill</strong> deals bonus damage equal to <strong>【3 x the number of negative status effects affecting you】</strong></p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "STATUS_COUNT * 3",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "cc_collect"
+        }
+      },
+      "id": "HkC4CurseCollPsv",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Curse Collector (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "STATUS_COUNT > 0 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "cc_collect",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Your <strong>attack</strong>, <strong>spell</strong> and <strong>skill</strong> deals bonus damage equal to <strong>【3 x the number of negative status effects affecting you】</strong></p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkC4CurseCollPsv"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkC4CurseCollPsv"
+  },
+  "type": "equippableItem"
+}

@@ -209,6 +209,10 @@ worlds/*/sim-logs/
 # session affords exactly one narrative beat.
 !/tools/session-budget/
 !/tools/session-budget/**
+# move-engine (2026-11-22): one move file runs in the mockup page AND the game (tools/move-engine/README.md)
+!/tools/move-engine/
+!/tools/move-engine/**
+/tools/move-engine/out/
 
 # The fast test tools (2026-11-03): the Snapshot Runner (a real engine with no server),
 # the Staging World (a slim real-server copy of the world) and fvtt-playwright, the

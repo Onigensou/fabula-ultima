@@ -8,9 +8,203 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "HkC4DelayedDmgAE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795239821900,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HkC4DelayedDmgAE",
+          "originalParentId": "lpM8id6fJzB7JP0A",
+          "originalUuid": "Item.lpM8id6fJzB7JP0A.ActiveEffect.HkC4DelayedDmgAE"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff",
+          "chargeKey": "delayed_damage",
+          "charges": 0,
+          "conflictScoped": true,
+          "crossScene": false,
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter",
+          "uncleansable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/clockwork.svg",
+      "name": "Delayed Damage",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "HkC4RewinderAE01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795239821900,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HkC4RewinderAE01",
+          "originalParentId": "lpM8id6fJzB7JP0A",
+          "originalUuid": "Item.lpM8id6fJzB7JP0A.ActiveEffect.HkC4RewinderAE01"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "rw_cap, rw_add, rw_new",
+                "effect_kind": "chain",
+                "effect_label": "rw_bank"
+              },
+              "1": {
+                "damage_amount": "0",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "rw_cap"
+              },
+              "2": {
+                "charge_ae_name": "Delayed Damage",
+                "charge_amount": "INCOMING_DAMAGE",
+                "charge_operation": "add",
+                "condition_formula": "AE_COUNT_DELAYED_DAMAGE > 0",
+                "effect_kind": "adjust_charges",
+                "effect_label": "rw_add",
+                "target_ref": "self"
+              },
+              "3": {
+                "ae_duplicate_mode": "replace",
+                "ae_initial_charges": "INCOMING_DAMAGE",
+                "ae_template_ref": "Item.lpM8id6fJzB7JP0A.ActiveEffect.HkC4DelayedDmgAE",
+                "condition_formula": "AE_COUNT_DELAYED_DAMAGE == 0",
+                "effect_kind": "apply_ae",
+                "effect_label": "rw_new",
+                "target_ref": "self"
+              },
+              "4": {
+                "chain_steps": "rw_card, rw_lose, rw_clear",
+                "effect_kind": "chain",
+                "effect_label": "rw_pay"
+              },
+              "5": {
+                "effect_kind": "notify",
+                "effect_label": "rw_card",
+                "notify_abort": false,
+                "notify_message": "Delayed Damage",
+                "notify_type": "card"
+              },
+              "6": {
+                "consume_amount": "AE_CHARGES_DELAYED_DAMAGE",
+                "consume_can_defeat": true,
+                "consume_resource": "hp",
+                "effect_kind": "consume_resource",
+                "effect_label": "rw_lose",
+                "on_empty": "drain",
+                "target_ref": "self"
+              },
+              "7": {
+                "ae_template_ref": "Delayed Damage",
+                "effect_kind": "remove_ae",
+                "effect_label": "rw_clear",
+                "include_persistent": true,
+                "target_ref": "self"
+              }
+            },
+            "name": "Rewinder",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "INCOMING_DAMAGE > 0",
+                "reaction_effect_ref": "rw_bank",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              },
+              "1": {
+                "condition_formula": "AE_COUNT_DELAYED_DAMAGE > 0",
+                "reaction_effect_ref": "rw_pay",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "",
+                "reaction_trigger": "round_end"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Rewinder",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -105,7 +299,7 @@
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Common",
+      "item_rarity": "Uncommon",
       "item_type": "accessory",
       "mimic_ef": "100",
       "monster_ef": "100",

@@ -1,0 +1,114 @@
+{
+  "_id": "HkLuSetDef000001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239828278,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "HkLuRingCtrlAE01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "grapple_max",
+          "mode": 0,
+          "priority": 20,
+          "value": "3"
+        },
+        {
+          "key": "disable_action_while_grappling",
+          "mode": 0,
+          "priority": 20,
+          "value": "2:Objective,Equipment"
+        },
+        {
+          "key": "disable_action_while_grappling",
+          "mode": 0,
+          "priority": 20,
+          "value": "3:Item,Attack"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "luchador": "ring-control"
+        }
+      },
+      "img": "icons/svg/net.svg",
+      "name": "Luchador: Ring Control",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "luchador": "created"
+    }
+  },
+  "folder": "HkLuSetFolder001",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Luchador — Equipment Set",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "id": "HkLuSetDef000001",
+      "isSet": false,
+      "name": "Luchador — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "Luchador: Ring Control",
+          "bonus_label": "Grapple up to 3 (Objective/Equipment locked at 2, Inventory/Attack at 3)",
+          "bonus_skill_ref": "",
+          "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Powerbomb",
+          "bonus_skill_ref": "Powerbomb",
+          "pieces": "3"
+        }
+      },
+      "set_name": "Luchador",
+      "uuid": "Item.HkLuSetDef000001"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "HkLuSetDef000001"
+  },
+  "type": "equippableItem"
+}

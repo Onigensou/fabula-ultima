@@ -8,9 +8,139 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "HkLuMaskDefUp001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795239832092,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (item_def_bonus * 1) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HkLuMaskDefUp001",
+          "originalParentId": "j66zqDzOEsqBntxo",
+          "originalUuid": "Item.j66zqDzOEsqBntxo.ActiveEffect.HkLuMaskDefUp001"
+        },
+        "fabula-ultima-companion": {
+          "luchador": "def-up"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "DEF UP",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "HkLuMaskRules001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795239832092,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "equip_restrict",
+          "mode": 0,
+          "priority": 20,
+          "value": "weapon_category:brawling"
+        },
+        {
+          "key": "ignore_condition_immunity",
+          "mode": 0,
+          "priority": 20,
+          "value": "Grappled"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "HkLuMaskRules001",
+          "originalParentId": "j66zqDzOEsqBntxo",
+          "originalUuid": "Item.j66zqDzOEsqBntxo.ActiveEffect.HkLuMaskRules001"
+        },
+        "fabula-ultima-companion": {
+          "luchador": "rules"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/mystery-man.svg",
+      "name": "Luchador Mask: Brawler's Code",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.4.2"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": true,
+      "luchador": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -32,8 +162,8 @@
       }
     }
   },
-  "folder": "D1OgeGHLjJ9dSkxS",
-  "img": "https://m.media-amazon.com/images/I/91fZwooKjBL._AC_SL1500_.jpg",
+  "folder": "HkLuSetFolder001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Luchador_Mask.webp",
   "name": "Luchador Mask",
   "ownership": {
     "WQGFvLStTZeWGpak": 3,
@@ -43,15 +173,18 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul>\n    <li>\n        <p>You can only use <strong>Brawling</strong> weapon.</p>\n    </li>\n    <li>\n        <p>You ignore target <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> immunity.</p></li>\n</ul>",
+      "description": "<ul><li><p>You can only use <strong>Brawling</strong> weapons.</p></li><li><p>You ignore the target's <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> immunity.</p></li></ul>",
+      "flavor_text": "<p><em>Never take off the mask. Behind it is just some guy; in front of it is a legend.</em></p>",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Luchador_Mask.webp",
       "isSet": true,
       "item_baseDef": "0",
       "item_baseMdef": "0",
       "item_cost": "1800",
-      "item_def_bonus": "+1",
+      "item_def_bonus": "1",
+      "item_rarity": "Rare",
       "item_type": "accessory",
       "name": "Luchador Mask",
-      "set_description": "<p><strong>【Set Bonus】</strong></p>\n<p><strong>2-Piece</strong></p>\n<ul>\n    <li>\n        <p>You can <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> maximum 3 creature</p>\n    </li>\n    <li>\n        <p>You can't use <strong>【Objective】</strong> and <strong>【Equipment】</strong> action if you <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> 2 or more creature.</p>\n    </li>\n    <li>\n        <p>You can't use <strong>【Inventory】</strong> and <strong>【Attack】</strong> action if you <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> 3 creature</p>\n        <hr>\n    </li>\n</ul>\n<p><strong>3-Piece</strong></p>\n<ul>\n    <li>\n        <p>You may perform the skill 【💥<strong>Powerbomb</strong>】</p>\n    </li>\n</ul>\n<hr class=\"\">\n<details>\n    <summary><strong>💥 Powerbomb</strong></summary>\n    <p><strong>Cost:</strong> -</p>\n    <p><strong>Target:</strong> Grappled Creatures</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Remove <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> from all creature Grappled by you, then deal 50 <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage to them</p>\n    <p></p>\n</details>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>You can <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grapple</a> up to <strong>3</strong> creatures.</p></li><li><p>You can't use the <strong>【Objective】</strong> and <strong>【Equipment】</strong> actions while you <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grapple</a> <strong>2</strong> or more creatures.</p></li><li><p>You can't use the <strong>【Inventory】</strong> and <strong>【Attack】</strong> actions while you <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grapple</a> <strong>3</strong> creatures.</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>You may perform the skill 【💥<strong>@UUID[Item.HkLuPowerbomb001]{Powerbomb}</strong>】</p></li></ul>",
       "set_name": "Luchador"
     },
     "template": "ZoiV53VaLzeRsEps",

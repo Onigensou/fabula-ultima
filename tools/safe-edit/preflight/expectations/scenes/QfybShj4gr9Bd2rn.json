@@ -47,8 +47,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -89,7 +88,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Valley of the Dragon - West Ridge",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": false,
             "wellspring_fire": false,
@@ -98,7 +97,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - Crossroads\",\"id\":\"V1pUCPofEqLN4sze\"},{\"name\":\"Valley of the Dragon - Monastery Road\",\"id\":\"67ucunbbGU3GvUUX\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Crossroads\",\"id\":\"V1pUCPofEqLN4sze\"},{\"name\":\"Valley of the Dragon - Monastery Road\",\"id\":\"67ucunbbGU3GvUUX\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -213,6 +212,10 @@
               "currentType": "door",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
             }
+          },
+          "visitedTiles": {
+            "8jnU4FQ8cnvnFQpv": true,
+            "GXRRyXKM5Yh1O1ut": true
           }
         }
       },
@@ -319,7 +322,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359036680,
-      "modifiedTime": 1794060318066,
+      "modifiedTime": 1795284187229,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

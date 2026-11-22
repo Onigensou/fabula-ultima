@@ -1,0 +1,109 @@
+{
+  "_id": "LhRzRenzokuken01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239836762,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    },
+    "fabula-ultima-companion": {
+      "lionheart": "created"
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Lionheart.webp",
+  "name": "Renzokuken",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "GNQXRnV6t7CR9hZ5",
+    "props": {
+      "action_command": "",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "availability_formula": "WEAPON_FORM == 0 && AE_CHARGES_CARTRIDGE >= 1",
+      "availability_reason": "Needs Sword form and a Cartridge",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "30 MP",
+      "damage_bonus": 0,
+      "defense_target_type": "def",
+      "description": "<p><em>Sword form only.</em> This skill makes no Accuracy Check: it always hits. Make <strong>6</strong> strikes against the target. Before each strike a gauge sweeps once; press inside <strong>TRIGGER</strong> to make that strike a Trigger.</p><ul><li><p>Each strike deals <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage equal to <strong>【55%】</strong> of this weapon's damage on a Trigger, or <strong>【20%】</strong> otherwise (this weapon's damage = 【HR + 10】 plus your damage bonuses, where HR is <strong>half your higher die</strong> between MIG and WLP, rounded down).</p></li><li><p>If all <strong>6</strong> strikes are Triggers, finish with <strong>Lion Heart</strong>: one more strike for <strong>【120%】</strong>.</p></li><li><p>Costs <strong>1 Cartridge</strong> as well as MP.</p></li></ul>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "rzk_cart, rzk_strikes",
+          "effect_kind": "chain",
+          "effect_label": "rzk_root"
+        },
+        "1": {
+          "charge_key": "cartridge",
+          "count": "1",
+          "effect_kind": "consume_charge",
+          "effect_label": "rzk_cart",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "auto_rate": "0.7",
+          "effect_kind": "timed_strikes",
+          "effect_label": "rzk_strikes",
+          "finisher_label": "Lion Heart",
+          "finisher_mult": "1.2",
+          "gauge_gap_ms": "70",
+          "gauge_sweep_ms": "460",
+          "gauge_title": "Renzokuken",
+          "gauge_zone": "70-92",
+          "strike_count": "6",
+          "strike_hit_mult": "0.55",
+          "strike_miss_mult": "0.2",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "LhRzRenzokuken01",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Lionheart.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Renzokuken",
+      "on_activate_effect_ref": "rzk_root",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<p><strong>Cost:</strong> 30 MP + 1 Cartridge</p><p><strong>Target:</strong> One Enemy</p><p><strong>Duration:</strong> Instantaneous</p><p><em>Sword form only.</em> This skill makes no Accuracy Check: it always hits. Make <strong>6</strong> strikes against the target. Before each strike a gauge sweeps once; press inside <strong>TRIGGER</strong> to make that strike a Trigger.</p><ul><li><p>Each strike deals <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage equal to <strong>【55%】</strong> of this weapon's damage on a Trigger, or <strong>【20%】</strong> otherwise (this weapon's damage = 【HR + 10】 plus your damage bonuses, where HR is <strong>half your higher die</strong> between MIG and WLP, rounded down).</p></li><li><p>If all <strong>6</strong> strikes are Triggers, finish with <strong>Lion Heart</strong>: one more strike for <strong>【120%】</strong>.</p></li><li><p>Costs <strong>1 Cartridge</strong> as well as MP.</p></li></ul>",
+      "skill_information": "",
+      "skill_range": "Melee",
+      "skill_tags": "",
+      "skill_target": "One Enemy",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.LhRzRenzokuken01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "LhRzRenzokuken01"
+  },
+  "type": "equippableItem"
+}

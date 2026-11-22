@@ -1,0 +1,69 @@
+{
+  "_id": "HkC4FullPhxSkill",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239818856,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Full_Phoenix.webp",
+  "name": "Full Phoenix",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "HkC4FullPhoenix1",
+    "props": {
+      "action_command": "item",
+      "cost": "-",
+      "description": "<p><em>Full Phoenix:</em> revive an ally to full HP.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "phoenix_fx, phoenix_revive",
+          "effect_kind": "chain",
+          "effect_label": "phoenix_use"
+        },
+        "1": {
+          "action_ref": "Item.FxShared0Revive1",
+          "effect_kind": "play_animation",
+          "effect_label": "phoenix_fx",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "effect_kind": "set_resource",
+          "effect_label": "phoenix_revive",
+          "grant_amount": "MAX_HP",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        }
+      },
+      "id": "HkC4FullPhxSkill",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Ch4/Full_Phoenix.webp",
+      "isCheck": false,
+      "name": "Full Phoenix",
+      "on_activate_effect_ref": "phoenix_use",
+      "skill_target": "One KO Ally",
+      "skill_type": "Item",
+      "type_damage": "",
+      "uuid": "Item.HkC4FullPhxSkill"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkC4FullPhxSkill"
+  },
+  "type": "equippableItem"
+}

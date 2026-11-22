@@ -704,6 +704,50 @@
     {
       "key": "2026-11-21-template-options-stays-down",
       "path": "data-migrations/2026-11-21-template-options-stays-down.js"
+    },
+    {
+      "key": "2026-11-21-hako-ch4-leftovers",
+      "path": "data-migrations/2026-11-21-hako-ch4-leftovers.js"
+    },
+    {
+      "key": "2026-11-21-renzokuken-timing",
+      "path": "data-migrations/2026-11-21-renzokuken-timing.js"
+    },
+    {
+      "key": "2026-11-21-sonic-gunblade",
+      "path": "data-migrations/2026-11-21-sonic-gunblade.js"
+    },
+    {
+      "key": "2026-11-22-gunblade-move-engine",
+      "path": "data-migrations/2026-11-22-gunblade-move-engine.js"
+    },
+    {
+      "key": "2026-11-22-gunblade-move-results",
+      "path": "data-migrations/2026-11-22-gunblade-move-results.js"
+    },
+    {
+      "key": "2026-11-22-gunblade-move-engine-1-2",
+      "path": "data-migrations/2026-11-22-gunblade-move-engine-1-2.js"
+    },
+    {
+      "key": "2026-11-22-blade-adept-automation",
+      "path": "data-migrations/2026-11-22-blade-adept-automation.js"
+    },
+    {
+      "key": "2026-11-22-sonic-blow-action-command",
+      "path": "data-migrations/2026-11-22-sonic-blow-action-command.js"
+    },
+    {
+      "key": "2026-11-22-gunblade-move-engine-1-2-1",
+      "path": "data-migrations/2026-11-22-gunblade-move-engine-1-2-1.js"
+    },
+    {
+      "key": "2026-11-22-gunblade-move-engine-1-2-2",
+      "path": "data-migrations/2026-11-22-gunblade-move-engine-1-2-2.js"
+    },
+    {
+      "key": "2026-11-22-equip-slot-ids",
+      "path": "data-migrations/2026-11-22-equip-slot-ids.js"
     }
   ]
 }

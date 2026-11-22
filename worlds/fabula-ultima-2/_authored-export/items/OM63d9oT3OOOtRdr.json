@@ -8,6 +8,81 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "yLP8oJaT25gwyD7I",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795342397644,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "aeEquippedWhen(\"melee_dagger\", \"1\")"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "aeEquippedWhen(\"melee_dagger\", \"1\")"
+        },
+        {
+          "key": "weapon_category_alias",
+          "mode": 0,
+          "priority": 20,
+          "value": "melee_dagger: brawling, sword, thrown"
+        },
+        {
+          "key": "can_target_flying_with",
+          "mode": 5,
+          "priority": 20,
+          "value": "dagger"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "yLP8oJaT25gwyD7I",
+          "originalParentId": "OM63d9oT3OOOtRdr",
+          "originalUuid": "Item.OM63d9oT3OOOtRdr.ActiveEffect.yLP8oJaT25gwyD7I"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Blade Adept",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"

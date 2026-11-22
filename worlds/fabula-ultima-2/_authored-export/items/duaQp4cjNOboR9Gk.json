@@ -12,6 +12,10 @@
     "custom-system-builder": {
       "version": "4.6.4"
     },
+    "fabula-ultima-companion": {
+      "hakoCh4": true,
+      "wardenHawk": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "accessory",
@@ -84,6 +88,7 @@
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
+      "flavor_text": "<p><em>Soft-soled and silent. The wardens who wore them read every trail and crossed every bog unharmed.</em></p>",
       "flora_ef": "100",
       "fungus_ef": "100",
       "golem_ef": "100",
@@ -108,7 +113,7 @@
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Common",
+      "item_rarity": "Rare",
       "item_type": "accessory",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -120,7 +125,7 @@
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
-      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong>apply <strong>Hunter's Mark </strong>to the target</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>Attacks </strong>gain +3 Accuracy</p><hr contenteditable=\"false\"></li></ul><p>&nbsp;<strong>4 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong>gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a> <strong>2</strong>&nbsp;<em>(Both attack must target the same creature)</em></p></li></ul>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong> apply <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/30px-GrandArcherSkill1.png\" style=\"width: 18px; height: 18px; vertical-align: middle; margin-right: 4px; border: none;\"> <a class=\"content-link\" data-uuid=\"Item.D6IehPsp6h7srIJH\" data-id=\"D6IehPsp6h7srIJH\" data-type=\"Item\">Hunter's Mark</a> to the target</p><hr></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>Attacks</strong> gain +3 Accuracy</p><hr></li></ul><p><strong>4 Piece</strong></p><ul><li><p>Ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a>'s <strong>【🏹 Dive Strike】</strong> gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a> <strong>2</strong> <em>(Both attacks must target the same creature)</em></p></li></ul>",
       "set_name": "Warden of the Wilds",
       "soldier_ef": "100",
       "spirit_ef": "100",

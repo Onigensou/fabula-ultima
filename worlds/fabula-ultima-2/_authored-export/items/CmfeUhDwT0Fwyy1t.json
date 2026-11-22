@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.4.2"
     },
+    "fabula-ultima-companion": {
+      "hakoCh4": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "weapon",
@@ -46,10 +49,10 @@
       "celestial_ef": "100",
       "check_bonus": "1",
       "construct_ef": "100",
-      "damage_bonus": "15",
+      "damage_bonus": "13",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Attacks with this weapon deal <strong>40%</strong> more damage if you are not in <strong>Crisis</strong></p></li></ul>",
+      "description": "<ul><li><p>Attacks with this weapon deal <strong>50%</strong> more damage if you are not in <strong>Crisis</strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

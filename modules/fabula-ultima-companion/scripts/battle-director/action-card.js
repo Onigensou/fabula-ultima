@@ -8292,6 +8292,12 @@ export async function postActionCard({ director, kind, payload }) {
           subjectActorUuid: p.subjectActorUuid ?? null,
           subjectTokenUuid: p.subjectTokenUuid ?? null,
           payloadAtFire: p.payloadAtFire ?? null,
+          // Fire cap (reaction_max_per_round + reaction_max_scope). firePreAcceptedCandidate
+          // only bumps the fire counter when the candidate carries maxPerRound, so without
+          // these every capped card reaction (Mirror Shield's once per conflict, etc.)
+          // fired every time it was accepted.
+          maxPerRound: p.maxPerRound ?? 0,
+          maxScope: p.maxScope ?? null,
         });
       }
       return out;

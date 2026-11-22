@@ -31,10 +31,12 @@ export const SKILL_FORMULAS_SCHEMA = 12;
 // No `eval` / `new Function`. Tokenizer + recursive-descent parser.
 
 import { log, warn } from "./logger.js";
+import { aliasCategories } from "./weapon-alias.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { orbmentReduction } from "../orbment/orbment-dr.js";
 import { bossStage } from "./boss-rules/boss-rules.js";
 import { companionOf } from "../shared/companion-rule.js";
+import { wornItem } from "../shared/equipped-gear.js";
 
 // snapshot.getBlockedActionLabels, registered by snapshot.js at load (it already
 // imports this module, so a static import back would be a cycle). Read by the
@@ -1658,6 +1660,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const w = carrierWeaponOf(actor, skill) ?? mainHandWeaponOf(actor);
         return Number(w?.flags?.["fabula-ultima-companion"]?.activeForm ?? 0) || 0;
       }
+      // WEAPON_TRANSFORM_FREE — 1 while that weapon (carrier, else main hand) has
+      // forms and its free transform is not spent this round (the Equipment
+      // action's once-per-round marker, equipment-swap.js transformFreeUsedRound).
+      // Gunblade's after-action transform reads it (2026-11-21).
+      case "WEAPON_TRANSFORM_FREE": {
+        const w = carrierWeaponOf(actor, skill) ?? mainHandWeaponOf(actor);
+        const f = w?.flags?.["fabula-ultima-companion"] ?? {};
+        const raw = w?.system?.props?.weapon_forms;
+        const n = (raw && typeof raw === "object" && Object.keys(raw).length) ? Object.keys(raw).length : (Array.isArray(f.weaponForms) ? f.weaponForms.length : 0);
+        if (n < 2) return 0;
+        const used = Number(f.transformFreeUsedRound);
+        return Number.isFinite(used) && used === (Number(round ?? 0) || 0) ? 0 : 1;
+      }
       case "TRANSFORMED_TO_FORM": {
         if (payload?.transformedItemUuid == null || payload?.formIndex == null) return -1;
         const w = carrierWeaponOf(actor, skill);
@@ -2885,13 +2900,14 @@ function carrierWeaponOf(actor, skill) {
   return String(it?.system?.props?.item_type ?? "").toLowerCase() === "weapon" ? it : null;
 }
 
-// The weapon Item worn in the main hand (slot prop holds its NAME), or null.
+// The weapon Item worn in the main hand (resolved by the slot's item id —
+// shared/equipped-gear.js), or null. Items inside a container are never worn.
 function mainHandWeaponOf(actor) {
-  const name = actor?.system?.props?.main_hand;
-  if (!name) return null;
-  const list = (actor.items?.contents ?? []).filter((i) => i?.name === name
-    && String(i?.system?.props?.item_type ?? "").toLowerCase() === "weapon" && !i?.system?.container);
-  return list.find((i) => i.system?.props?.isEquipped === true) ?? list[0] ?? null;
+  if (!actor?.items) return null;
+  const pool = (actor.items?.contents ?? []).filter((i) => !i?.system?.container
+    && ["weapon", "shield"].includes(String(i?.system?.props?.item_type ?? "").toLowerCase()));
+  const it = wornItem(actor, "main", { handPool: pool });
+  return String(it?.system?.props?.item_type ?? "").toLowerCase() === "weapon" ? it : null;
 }
 
 function hasEquippedWeaponOfType(actor, weaponType) {
@@ -2910,7 +2926,8 @@ function hasEquippedWeaponOfType(actor, weaponType) {
     const cat = weaponFamilyOf(item);
     // A transforming weapon's active form may change its range (Lionheart Gun = Ranged).
     const range = String(activeFormOverride(item, "weapon_range") ?? p.weapon_range ?? "").toLowerCase();
-    if (cat === wanted || range === wanted) return true;
+    // Blade Adept-style alias: a melee dagger that also counts as a sword (weapon-alias.js)
+    if (cat === wanted || range === wanted || aliasCategories(actor, cat, range).includes(wanted)) return true;
   }
   // "You are treated as having an <X> weapon equipped" (Red Tunic): a live
   // `counts_as_weapon_category` AE change whose comma-list names the family.
@@ -2958,7 +2975,7 @@ function usedWeaponIsOfType(payload, weaponType) {
   if (String(p.item_type ?? "").toLowerCase() !== "weapon") return false;
   const cat = weaponFamilyOf(item);
   const range = String(p.weapon_range ?? "").toLowerCase();
-  return cat === wanted || range === wanted;
+  return cat === wanted || range === wanted || aliasCategories(item?.parent ?? null, cat, range).includes(wanted);
 }
 
 // True if the actor has any EQUIPPED item with the given `item_type`
@@ -3099,10 +3116,9 @@ export function buildDamageBonusParts({ actor, weapon, hand = "main", attackGran
   let weaponName = weapon?.name ?? "Weapon";
   let weaponBase = 0;
   if (handName) {
-    const items = actor?.items?.contents ?? (Array.isArray(actor?.items) ? actor.items : []);
-    const item = items.find((i) =>
-      String(i?.system?.props?.name ?? "").trim() === String(handName).trim()
-      && i?.system?.props?.isEquipped);
+    // The worn item by slot id (shared/equipped-gear.js), so a refined/renamed
+    // weapon still shows as "Weapon (+6 Zarg's Bow)" instead of falling to "Other".
+    const item = actor?.items ? wornItem(actor, hand === "off" ? "off" : "main") : null;
     if (item) {
       weaponBase = Number(item.system?.props?.damage_bonus ?? 0) || 0;
       weaponName = item.name;
@@ -4247,7 +4263,11 @@ export function resolveOutgoingDamageParts({ actor = null, props = null, kind = 
   const el = String(elementType ?? "").toLowerCase();
   if (el && !isNullElement(el)) add(`extra_damage_mod_${el}`, `Damage (${_capWord(el)})`);
   const wk = String(weaponKey ?? "").toLowerCase();
-  if (wk && wk !== "none") add(`extra_damage_mod_${wk}`, `Damage (${_capWord(wk)})`);
+  if (wk && wk !== "none") {
+    add(`extra_damage_mod_${wk}`, `Damage (${_capWord(wk)})`);
+    // Blade Adept-style alias: a weapon that also COUNTS AS other categories takes their damage mods too (weapon-alias.js)
+    if (actor) for (const c of aliasCategories(actor, wk, kind ?? "")) if (c !== wk) add(`extra_damage_mod_${c}`, `Damage (${_capWord(c)})`);
+  }
   return parts;
 }
 

@@ -1,0 +1,68 @@
+{
+  "_id": "HkC4StalwartPsv1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795239816482,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "hakoCh4": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Stalwart Shield (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "HkC4StalwartShd1",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>You begin each conflict with <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to <strong>【5 + half your level】</strong>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "set_resource",
+          "effect_label": "stal_guard",
+          "grant_amount": "5 + floor(CHAR_LEVEL / 2)",
+          "grant_resource": "shield",
+          "target_ref": "self"
+        }
+      },
+      "id": "HkC4StalwartPsv1",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Stalwart Shield (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "stal_guard",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_description": "<ul><li><p>You begin each conflict with <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to <strong>【5 + half your level】</strong>.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.HkC4StalwartPsv1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "HkC4StalwartPsv1"
+  },
+  "type": "equippableItem"
+}
