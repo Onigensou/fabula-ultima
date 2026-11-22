@@ -54,7 +54,11 @@ Bugs (fix and sandbox-test, numbers match the list above):
 - [ ] 4. Spectator: dungeon Party Status HUD disappears.
 - [ ] 5. Spectator: missing API/minigame SFX.
 - [ ] 6. Fishing: stuck item tooltip.
-- [ ] 7. Stale party `total_zenit` roll-up.
+- [ ] 7. Stale party `total_zenit` roll-up, plus **party zenit UX** (players complained mid-session):
+  - Players have **no way to move zenit between the central party stash and their own wallets** (in either direction); only the GM could do it tonight.
+  - There's **no clear way to see how much is in the central party stash**.
+  - Players read the **total zenit** shown on the party HUD as the stash amount. It's actually the roll-up (members + stash), and it was stale too: it showed 16,178 against a real 21,043.
+  - To do: a player-facing stash view plus deposit/withdraw (the game already has `oni.ItemTransferCore.transferZenit`), clear labels separating the stash from the party total, and a fixed roll-up.
 - [ ] 8. Unknown tile seen from 2 tiles away (Keren's client).
 - [ ] 9. GM host battle performance: take a CPU profile.
 
