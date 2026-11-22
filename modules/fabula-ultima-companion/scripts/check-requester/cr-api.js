@@ -43,6 +43,7 @@
   const MSG_CONFIRM = "CR_CONFIRM";
   const MSG_REVEAL  = "CR_REVEAL";
   const MSG_CLOSE   = "CR_CLOSE";
+  const MSG_RESOLVED = "CR_RESOLVED";   // a SILENT check's final verdicts (no overlay), for oni:checkResolved
 
   // ── Attribute icons ───────────────────────────────────────────────────────
   const ATTR_ICONS = {
@@ -372,6 +373,16 @@
       });
     }
     if (opts.postChat) await postGroupedChatCard(results, opts.label, dl, opts.hiddenDl ?? false);
+    // oni:checkResolved for a silent check (sim mode forces every check silent; save_mode "silent"): these
+    // rolls ARE the final verdicts. Broadcast first (socket.emit does not echo), then fire locally, so every
+    // client that may be running a cinematic hears it. The returned results are unchanged.
+    try {
+      const sessionId = globalThis.foundry?.utils?.randomID?.() ?? ("silent-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8));
+      const verdicts = _verdictsOf(results.map((r, i) => ({ ...r, slotId: `${r.actorUuid}#${i}` })));
+      try { game.socket?.emit?.(SOCKET_CH, { type: MSG_RESOLVED, payload: { sessionId, label: opts.label ?? "", dl, verdicts } }); }
+      catch (e) { console.warn(TAG, "silent: MSG_RESOLVED emit failed", e); }
+      fireResolvedFromVerdicts(sessionId, opts.label ?? "", dl, verdicts);
+    } catch (e) { console.warn(TAG, "silent: oni:checkResolved failed", e); }
     return results;
   }
 
@@ -1224,7 +1235,7 @@
       });
     }
 
-    _session = { sessionId, panelStates, backdropEl: backdrop, dl, opts };
+    _session = { sessionId, panelStates, backdropEl: backdrop, dl, opts, label: tileLabel ?? "" };
 
     backdrop.addEventListener("click", async ev => {
       const rollBtn    = ev.target.closest(".oni-cr-roll-btn");
@@ -1284,9 +1295,77 @@
   // =========================================================================
   // Close overlay
   // =========================================================================
-  function closeOverlay() {
-    _session?.backdropEl?.remove();
+  // `resolution` is passed ONLY by the three sites that END a check (the GM after its reactions, a
+  // client's hidden-DL reveal tail, a client's MSG_CLOSE). openOverlay's pre-clean passes nothing, so a
+  // superseded session never reports a result.
+  function closeOverlay(resolution = null) {
+    const ses = _session;
+    ses?.backdropEl?.remove();
     _session = null;
+    if (ses && resolution?.resolved) emitCheckResolved(ses, resolution.results ?? null);
+  }
+
+  // ── oni:checkResolved (local hook, on EVERY client, once per check) ──
+  // Fires as a resolved check's overlay closes on this client (the moment the dim lifts there), so a
+  // cinematic can play each roller's real verdict then (Requiem of Soul holds its hands up until it).
+  // Additive: nothing else listens; no behaviour change. Every client reports the GM's FINAL verdicts:
+  // the GM its confirm payloads, the others the copy the GM puts on MSG_REVEAL / MSG_CLOSE (their own
+  // panels' st.result only as a fallback when a message carries none). A silent check (no overlay; every
+  // sim check) fires it too, at once, on the requesting client and via MSG_RESOLVED on the others. A
+  // superseded overlay fires it when that session's MSG_CLOSE (with verdicts) arrives. A slot with no
+  // result reports pass:false ("a save you don't make, you fail", as save_check counts it).
+  // Payload: { sessionId, label, dl, authoritative,
+  //            results: [{ slotId, actorUuid, tokenUuid, actorName, pass, total, isCrit, isFumble }] }
+  const _resolvedSessions = new Set();
+  function _tokenUuidOf(actorUuid) {
+    try {
+      const u = String(actorUuid ?? "");
+      const m = u.match(/^(.*\.Token\.[^.]+)\.Actor\.[^.]+$/);   // synthetic (unlinked) actor
+      if (m) return m[1];
+      const a = game.actors?.get(u.replace(/^Actor\./, ""));
+      return a?.getActiveTokens?.(true, true)?.[0]?.document?.uuid ?? null;
+    } catch (_e) { return null; }
+  }
+  // The GM's FINAL verdicts, as they ride MSG_REVEAL / MSG_CLOSE / MSG_RESOLVED (fix pass 2026-11-23): every
+  // client reports these, not a local re-score (a non-GM client re-scores plain rolls with its own modifier
+  // load, so an observer could otherwise show RESIST where the GM's save_check poisons).
+  function _verdictsOf(list) {
+    return (Array.isArray(list) ? list : []).filter(r => r?.slotId).map(r => ({
+      slotId: r.slotId, actorUuid: r.actorUuid ?? null, actorName: r.actorName ?? "",
+      pass: r.pass === true, total: Number.isFinite(r.total) ? r.total : null,
+      isCrit: r.isCrit === true, isFumble: r.isFumble === true,
+    }));
+  }
+  // The one place the hook is called: once per sessionId on this client, whichever path gets there first.
+  function _fireCheckResolved(sessionId, label, dl, authoritative, results) {
+    if (!sessionId || _resolvedSessions.has(sessionId)) return;
+    _resolvedSessions.add(sessionId);
+    if (_resolvedSessions.size > 64) _resolvedSessions.delete(_resolvedSessions.values().next().value);
+    try {
+      Hooks.callAll("oni:checkResolved", { sessionId, label: label ?? "", dl: dl ?? null, authoritative: !!authoritative, results });
+    } catch (e) { console.warn(TAG, "oni:checkResolved listener threw", e); }
+  }
+  // A session this client has no overlay for (silent mode, a superseded overlay, a client that joined late):
+  // the results are the verdict list itself.
+  function fireResolvedFromVerdicts(sessionId, label, dl, verdicts) {
+    const vs = _verdictsOf(verdicts);
+    if (!vs.length) return;
+    _fireCheckResolved(sessionId, label, dl, true, vs.map(v => ({ ...v, tokenUuid: _tokenUuidOf(v.actorUuid) })));
+  }
+  // An overlay this client shows: one result per panel slot; the GM's verdict for that slot when it has one,
+  // else (an older GM / a message without verdicts) the panel's own st.result.
+  function emitCheckResolved(ses, gmResults) {
+    if (!ses?.sessionId) return;
+    const bySlot = new Map(_verdictsOf(gmResults).map(r => [r.slotId, r]));
+    const results = [...ses.panelStates.entries()].map(([slotId, st]) => {
+      const r = bySlot.get(slotId) ?? st.result ?? null;
+      return {
+        slotId, actorUuid: st.actorUuid ?? null, tokenUuid: _tokenUuidOf(st.actorUuid), actorName: st.actorName ?? "",
+        pass: r?.pass === true, total: Number.isFinite(r?.total) ? r.total : null,
+        isCrit: r?.isCrit === true, isFumble: r?.isFumble === true,
+      };
+    });
+    _fireCheckResolved(ses.sessionId, ses.label, ses.dl, bySlot.size > 0, results);
   }
 
   // =========================================================================
@@ -1817,20 +1896,35 @@
       }
 
       if (msg.type === MSG_REVEAL) {
-        const { sessionId, outcomeKey } = msg.payload ?? {};
+        const { sessionId, outcomeKey, verdicts } = msg.payload ?? {};
         if (_session?.sessionId !== sessionId) return;
         if (!_session?.opts?.hiddenDl) return; // only fires in hidden-DL mode
         // Store GM-authoritative outcome key so showRevealAndWait plays the correct sound.
         if (outcomeKey && _session) _session._outcomeKey = outcomeKey;
+        // ... and the GM's final verdicts, which this client's oni:checkResolved reports.
+        if (Array.isArray(verdicts) && _session) _session._gmVerdicts = verdicts;
         // Non-GM: staggered reveal + auto-proceed; MSG_CLOSE may arrive first.
         showRevealAndWait().then(() => {
-          if (_session?.sessionId === sessionId) closeOverlay();
+          if (_session?.sessionId === sessionId) closeOverlay({ resolved: true, results: _session._gmVerdicts ?? null });
         });
         return;
       }
 
       if (msg.type === MSG_CLOSE) {
-        if (_session?.sessionId === msg.payload?.sessionId) closeOverlay();
+        const { sessionId, verdicts, label, dl } = msg.payload ?? {};
+        if (_session?.sessionId === sessionId) {
+          closeOverlay({ resolved: true, results: Array.isArray(verdicts) ? verdicts : (_session._gmVerdicts ?? null) });
+        } else if (Array.isArray(verdicts)) {
+          // This client no longer (or never) shows that session (a newer check replaced its overlay, or it
+          // joined late): the check still ENDED with these verdicts. Once-per-session guard as ever.
+          fireResolvedFromVerdicts(sessionId, label, dl, verdicts);
+        }
+        return;
+      }
+
+      if (msg.type === MSG_RESOLVED) {
+        const { sessionId, label, dl, verdicts } = msg.payload ?? {};
+        fireResolvedFromVerdicts(sessionId, label, dl, verdicts);
       }
     });
 
@@ -1957,7 +2051,7 @@
     if (opts.hiddenDl) {
       const outcomeKey = _computeOutcomeKey(confirmPayloads);
       if (_session) _session._outcomeKey = outcomeKey;
-      game.socket.emit(SOCKET_CH, { type: MSG_REVEAL, payload: { sessionId, outcomeKey } });
+      game.socket.emit(SOCKET_CH, { type: MSG_REVEAL, payload: { sessionId, outcomeKey, verdicts: _verdictsOf(confirmPayloads) } });
       await showRevealAndWait();
     }
 
@@ -1973,8 +2067,17 @@
     // Emit reaction phase events per actor (GM-only, local)
     for (const cp of confirmPayloads) emitCheckReactions(cp);
 
-    game.socket.emit(SOCKET_CH, { type: MSG_CLOSE, payload: { sessionId } });
-    closeOverlay();
+    // The GM's final verdicts ride MSG_CLOSE (and MSG_REVEAL above): every client's oni:checkResolved
+    // reports THESE, not its own re-score of the rolls.
+    game.socket.emit(SOCKET_CH, { type: MSG_CLOSE, payload: { sessionId, verdicts: _verdictsOf(confirmPayloads), label: label ?? "", dl } });
+    if (_session?.sessionId === sessionId) closeOverlay({ resolved: true, results: confirmPayloads });
+    else {
+      // A newer check replaced this overlay on the GM. Its close is the old plain close (unchanged: it closes
+      // whatever overlay is up, as before the hook existed). The check itself still ENDED here, with these
+      // results (they are what request() returns and save_check applies), so the hook reports them.
+      closeOverlay();
+      fireResolvedFromVerdicts(sessionId, label, dl, confirmPayloads);
+    }
 
     return confirmPayloads.map(cp => ({
       actorUuid:    cp.actorUuid,

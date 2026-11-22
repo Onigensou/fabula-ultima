@@ -55,6 +55,7 @@ import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { isWeightedWeapon, weaponKey, weightedActorKey, weightedBlockReason, weightedModeBlock, modeDropsHighRoll } from "./weighted-rules.js";
 import { isActorDefeated } from "./defeat-reactor.js";
+import { createImpactPresenter, takeImpactOffsets, rememberImpactPresenter, drainImpactPresentation } from "./impact-offsets.js";
 import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
 // skill-effects is routed through the hot-reload registry so edits to it take
 // effect without Ctrl+Shift+R: the harness (per-call) and a live reloadHot()
@@ -863,6 +864,13 @@ async function resolveAction(director, ar, opts = {}) {
   // are deep-frozen (freezeActionResult), so this MUST be a side Map — never a
   // property assigned onto `r`.
   const _subjectSnapshots = new Map();
+  // Per-target impact offsets (impact-offsets.js): the animation reported when
+  // each target's hit lands, so each target's number / MISS / BLOCK / bar is
+  // shown on its own impact. Writes stay here, in order. No offsets (every
+  // script that does not report them) = inactive = present now, as before.
+  // A Chain shows its strikes through the chain presenter instead.
+  const impactPresenter = createImpactPresenter(chainShown ? null : takeImpactOffsets(director, ar));
+  rememberImpactPresenter(director, impactPresenter);
   if (isDamagingAction && hits.length) {
     // Multi-pass label (Attack two-weapon / virtual): "(pass 2/2)".
     const passLabel = (ar.totalPasses ?? 1) > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
@@ -893,7 +901,7 @@ async function resolveAction(director, ar, opts = {}) {
       // in COMPUTE for ANY action carrying Pierce — not just Attack.
       if (!chainPlan && !r.hit && !r.pierceMiss) {
         // A one-roll Chain already showed its MISS on the first hit cue.
-        if (!chainSingle) playMissVfx({ tokenUuid: r.tokenUuid });
+        if (!chainSingle) impactPresenter.present(r.tokenUuid, () => playMissVfx({ tokenUuid: r.tokenUuid }));
         // Whiff → a Miss row (no commit, so logged here, not at the seam).
         battleLogSink.push(buildMissRow({
           attackerName: casterActor.name,
@@ -917,7 +925,7 @@ async function resolveAction(director, ar, opts = {}) {
       // carry no override.)
       if (!chainPlan && r.hit && r.damageOverride
           && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) {
-        if (!chainSingle) playBlockVfx({ tokenUuid: r.tokenUuid, via: r.damageOverride.via ?? null });
+        if (!chainSingle) impactPresenter.present(r.tokenUuid, () => playBlockVfx({ tokenUuid: r.tokenUuid, via: r.damageOverride.via ?? null }));
         continue;
       }
       try {
@@ -961,6 +969,9 @@ async function resolveAction(director, ar, opts = {}) {
           // The action's animation claimed the impact sound (set in
           // Animation.onEnter; false when nothing played). hit-sound-rules.js.
           impactClaimed: !!director.ctx?.animClaimsImpact,
+          // Staggered impacts: this target's presentation waits for its own
+          // impact (null without offsets → shown now).
+          deferPresentation: impactPresenter.forTarget(r.tokenUuid),
           skipIncomingAeNames: ct ? chainSpentBlockers(ar, r.tokenUuid, ct) : null,
           actionHit: {
             causeTokenUuid: ar.attacker?.tokenUuid ?? null,
@@ -998,9 +1009,9 @@ async function resolveAction(director, ar, opts = {}) {
         // (Giant Killer's +2n, Lockdown's cut) plays its carrier's own shot on the
         // struck creature now, at impact. Display only, never awaited.
         if (r.bonusBreakdown?.ops?.length) {
-          import("./rider-cosmetic.js")
+          impactPresenter.present(r.tokenUuid, () => import("./rider-cosmetic.js")
             .then((m) => m.playRiderCosmetics({ attackerActor: casterActor, attackerTokenUuid: ar.attacker?.tokenUuid ?? null, row: r }))
-            .catch((e) => warn("resolveAction: rider cosmetic threw", e));
+            .catch((e) => warn("resolveAction: rider cosmetic threw", e)));
         }
 
         // Roll-up for the per-action creature_completes_action trigger: record
@@ -1155,11 +1166,6 @@ async function resolveAction(director, ar, opts = {}) {
     }
   }
 
-  // The action's own damage is out — close the hit counter's window, so a
-  // counter, a reaction or a free action that follows counts on its own.
-  try { if (isDamagingAction) endHitCounter({ id: ar._instanceId ?? null }); }
-  catch (e) { warn("Skill resolve: hit counter end threw", e); }
-
   // 5b. Miss VFX for can-miss actions with no damage (e.g. Zarg's Soul Steal
   //     Check). These skip the damage loop above (gated on isDamagingAction),
   //     so a failed Check would otherwise show no whiff. Fire the Miss flourish
@@ -1171,9 +1177,30 @@ async function resolveAction(director, ar, opts = {}) {
   //     damage loop's (line ~529) — the double-MISS bug.
   if (!isDamagingAction && ar.canMiss && hits.length) {
     for (const r of hits) {
-      if (!r.hit) playMissVfx({ tokenUuid: r.tokenUuid });
+      if (!r.hit) impactPresenter.present(r.tokenUuid, () => playMissVfx({ tokenUuid: r.tokenUuid }));
     }
   }
+
+  // 5c. Staggered impacts (impact-offsets.js): every target's delayed number /
+  //     MISS / BLOCK / bar is shown before anything that answers the action —
+  //     the card reactions in step 6 (a when-targeted counter for the LAST
+  //     bolt's target), the hit counter's close just below, the post-resolve
+  //     triggers. The writes all happened above. Capped (MAX offset + 1 s).
+  //     Inactive presenter (no offsets) = nothing pending = no wait.
+  if (impactPresenter.active) {
+    try {
+      const _t0 = Date.now();
+      await impactPresenter.drain();
+      const _held = Date.now() - _t0;
+      if (_held > 0) log(`Skill resolve: held ${_held} ms for staggered impact presentation`);
+    } catch (e) { warn("Skill resolve: impact presentation drain threw", e); }
+  }
+
+  // The action's own damage is out (and, staggered, shown — the hit counter
+  // counts numbers as they RENDER) — close the hit counter's window, so a
+  // counter, a reaction or a free action that follows counts on its own.
+  try { if (isDamagingAction) endHitCounter({ id: ar._instanceId ?? null }); }
+  catch (e) { warn("Skill resolve: hit counter end threw", e); }
 
   // 6. Pre-resolve accepted passives — fire any pill-accepted passives
   //    the CONFIRM step stamped on the actionResult (Healing Power /
@@ -8406,8 +8433,18 @@ const Resolve = {
     // (crisis), so attack/effect-damage HP changes fold into the crisis cascade
     // — not just Start-of-Turn ticks. Authored-reaction behavior is unchanged
     // (settleInstance drains each event via the same firePassiveTriggers call).
+    // Staggered impacts (impact-offsets.js): every target's delayed number is
+    // out before the settle runs its defeats and reactions, so no creature falls
+    // before its own hit is shown. No-op (no wait) without offsets. A full
+    // resolveAction already drained its own presenter (step 5c); this catches
+    // one that left early.
+    try {
+      const heldMs = await drainImpactPresentation(director);
+      if (heldMs > 0) log(`RESOLVE: held ${heldMs} ms for staggered impact presentation`);
+    } catch (e) { warn("RESOLVE: impact presentation drain threw", e); }
     // An action that left resolveAction early (negated, aborted chain) still
-    // closes the hit counter's window before its reactions settle.
+    // closes the hit counter's window before its reactions settle — after the
+    // drain, since the counter counts numbers as they render.
     try { endHitCounter({ id: ar._instanceId ?? null }); } catch (e) { warn("RESOLVE: hit counter end threw", e); }
     try {
       const { settleInstance } = await import("./instance-settle.js");
@@ -9399,6 +9436,9 @@ const Animation = {
     // number must not play its own on top (hit-sound-rules.js). Cleared again by
     // playDirectorAnimation if the script never actually runs.
     director.ctx.animClaimsImpact = !!(spec.hasScript && spec.playAt !== "resolve" && spec.claimsImpact);
+    // Per-target impact offsets are reported by THIS action's script run
+    // (playDirectorAnimation); never carry a previous action's into it.
+    director.ctx.animImpactOffsets = null;
 
     // Attack / cast pose on the actor, on every client — also for actions with
     // no animation script, the way a JRPG battler swings even without effects.

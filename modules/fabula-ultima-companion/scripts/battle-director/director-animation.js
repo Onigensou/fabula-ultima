@@ -19,6 +19,8 @@ import { emitBattlerPose } from "./battler-pose.js";
 import { skillPose } from "./battler-pose-rules.js";
 import { stageScript, waitStaged, frameMeter } from "../action-animation/animation-stage.js";
 import { createChainPresenter } from "./chain-presenter.js";
+import { armImpactOffsetsCollector } from "./impact-offsets.js";
+import { beginAnimRun, closeAnimRun, endBelongsToRun, startBelongsToRun } from "./anim-run-scope.js";
 import { CHAIN_MAX, fallbackBeatMs } from "./chain-strikes.js";
 import {
   normalizeCategory, normalizeElement, summarizeOutcome, pickAttack,
@@ -382,7 +384,8 @@ export function extractAnimationUrlsFromActors(actorDocs) {
 // A wall-clock failsafe resolves the promise if neither hook arrives within
 // timeoutMs (matching the 35 s ANIMATION state FSM timeout with some margin).
 
-function waitForDamageMoment(timingMode, timingOffset, { timeoutMs = 35000 } = {}) {
+function waitForDamageMoment(timingMode, timingOffset, { timeoutMs = 35000, runId = null, casterTokenUuid = null } = {}) {
+  const casterId = String(casterTokenUuid ?? "").split(".Token.").pop() || null;
   if (timingMode === "timing_offset") {
     return new Promise((resolve) => {
       let started = false;
@@ -395,8 +398,11 @@ function waitForDamageMoment(timingMode, timingOffset, { timeoutMs = 35000 } = {
         if (failSafe)   clearTimeout(failSafe);
       };
 
-      const onStart = () => {
+      // Scoped to the run (anim-run-scope.js): a start from another run / concurrent cinematic must not
+      // start this action's offset clock.
+      const onStart = (evtPayload) => {
         if (started) return;
+        if (!startBelongsToRun(evtPayload, runId)) return;
         started = true;
         if (timingOffset <= 0) { cleanup(); resolve(); return; }
         offsetTimer = setTimeout(() => { cleanup(); resolve(); }, timingOffset);
@@ -417,8 +423,13 @@ function waitForDamageMoment(timingMode, timingOffset, { timeoutMs = 35000 } = {
       clearTimeout(timer);
     };
 
-    const onEnd = () => {
+    // Scoped to the run that armed it (anim-run-scope.js): a stale end from an
+    // earlier show must not resolve this action's gate.
+    const onEnd = (evtPayload) => {
       if (done) return;
+      const src = evtPayload?.sourceTokenId ?? null;
+      if (casterId && src && src !== casterId) return; // another caster's end — ignore (id-less/legacy stays accepted)
+      if (!endBelongsToRun(evtPayload, runId)) return;
       done = true;
       cleanup();
       resolve();
@@ -472,7 +483,12 @@ async function executeAnimationScript({
   stageJob = undefined,
   strikes = null,
   variant = null,
+  runId = null,
 }) {
+  // Which run this is (anim-run-scope.js). A caller that armed an end-watch passes its id;
+  // a caller with none (Anim Studio preview / bench) is UNSCOPED (null: legacy-accepting) —
+  // never the "current" run, which may already be settled and would reject every id-less end.
+  const animRunId = runId ?? null;
   // Backgrounded window with nobody else connected: don't run the script at
   // all. Sequencer would only queue effects that burst-replay on refocus — the
   // exact symptom this avoids — and the gate would stall on its failsafe
@@ -523,6 +539,9 @@ async function executeAnimationScript({
     // Which take of a multi-take script to play: the `#variant` suffix of a
     // play_animation row's action_ref ("Bane Oils#slow:beast"). null = default take.
     variant: variant ?? null,
+    // The run's id: an emitter that copies it onto oni:animationEnd as `animRunId`
+    // is matched exactly; one that does not is matched while this run is current.
+    animRunId,
   };
 
   const fn = compileScript(script);
@@ -550,7 +569,7 @@ async function executeAnimationScript({
   // the real cost is a few seconds on the one animation that was mid-flight.
   // Every action AFTER it starts hidden and is skipped outright by
   // canFastForwardAnimation() above.
-  const gate = waitForDamageMoment(timingMode, timingOffset, { timeoutMs });
+  const gate = waitForDamageMoment(timingMode, timingOffset, { timeoutMs, runId: animRunId, casterTokenUuid });
   const gatePromise = abortPromise ? Promise.race([gate, abortPromise]) : gate;
 
   // Publish globals for animation scripts that read __PAYLOAD / __TARGETS
@@ -626,7 +645,10 @@ async function executeAnimationScript({
 // No hidden-window collapse: this promise gates the turn / round advance, so
 // cutting it short on a tab-away would advance mid-cinematic. The script's own
 // timers keep running while hidden (clamped), so the emit still arrives.
-function armAnimationEndWatch(casterTokenUuid, { timeoutMs = 35000 } = {}) {
+function armAnimationEndWatch(casterTokenUuid, { timeoutMs = 35000, actionId = null } = {}) {
+  // Per-caster run (anim-run-scope.js): a nested run by ANOTHER caster must not steal this
+  // run's id-less end; the run closes when the watch settles.
+  const runId = beginAnimRun(actionId, casterTokenUuid);
   const casterId = String(casterTokenUuid ?? "").split(".Token.").pop() || null;
   let resolve;
   const promise = new Promise((res) => { resolve = res; });
@@ -636,17 +658,28 @@ function armAnimationEndWatch(casterTokenUuid, { timeoutMs = 35000 } = {}) {
     if (settled) return;
     settled = true;
     Hooks.off("oni:animationEnd", onEnd);
+    Hooks.off("oni:animationStart", onStart);
     if (failsafe) clearTimeout(failsafe);
+    closeAnimRun(runId);
     resolve();
   };
   const onEnd = (evtPayload) => {
     const src = evtPayload?.sourceTokenId ?? null;
     if (casterId && src && src !== casterId) return; // a different animation's end — ignore
+    if (!endBelongsToRun(evtPayload, runId)) return; // an earlier run's late end — ignore
     settle();
   };
+  // Records which run an id-less start belongs to (anim-run-scope.js) even under "default"
+  // timing, where no gate listens to starts: an id-less end only goes to a run that started.
+  const onStart = (evtPayload) => {
+    const src = evtPayload?.sourceTokenId ?? null;
+    if (casterId && src && src !== casterId) return;
+    startBelongsToRun(evtPayload, runId);
+  };
   Hooks.on("oni:animationEnd", onEnd);
+  Hooks.on("oni:animationStart", onStart);
   failsafe = setTimeout(settle, timeoutMs);
-  return { promise, settle, settled: () => settled };
+  return { promise, settle, settled: () => settled, runId };
 }
 
 // ── Main runner ─────────────────────────────────────────────────────────
@@ -737,10 +770,10 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   // True-end watch, armed before the script runs (see armAnimationEndWatch).
   // Skip Animation is the GM saying "get on with it": it collapses the gate
   // AND settles this, so RESOLVE never waits on a cinematic the GM skipped.
-  const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 45000 });
   // Which action this run belongs to — the closing INTERNAL_DONE only advances
   // the ANIMATION of the SAME action.
   const _actionId = director.ctx?.actionResult?._instanceId ?? null;
+  const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 45000, actionId: _actionId });
 
   // Chain N: the strikes are revealed one by one on the script's `oni.hit()`
   // cues, so the presenter listens from before the script starts. A script
@@ -752,6 +785,13 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
     impactClaimed: () => !!director.ctx?.animClaimsImpact,
   }) : null;
   presenter?.arm();
+
+  // Per-target impact offsets (impact-offsets.js): a script whose hits land one
+  // after another reports, before its gate, how long after the gate each
+  // target's impact lands (oni.impactOffsets). Heard from the acting GM's own run
+  // of the script, like the Chain cues; handed to RESOLVE below. A Chain is
+  // presented strike by strike instead, so it does not listen.
+  const offsetCollector = chainPlan ? null : armImpactOffsetsCollector({ casterTokenUuid });
 
   // Abort mechanism: calling abortResolve() collapses the gate Promise.race.
   let abortResolve;
@@ -767,7 +807,7 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
       script, timingMode, timingOffset,
       casterTokenUuid, targetTokenUuids,
       outcomes: outcomesFromDirector(director),
-      abortPromise, timeoutMs: 35000,
+      abortPromise, timeoutMs: 35000, runId: endWatch.runId,
       stageJob: takePrestaged(director, script),
       strikes: chainPlan?.strikes ?? null,
     });
@@ -779,6 +819,15 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
     warn("[BD Anim] playDirectorAnimation threw", e);
   } finally {
     director.ctx.animationController = null;
+    // The gate has resolved: what the script reported by now is this action's
+    // staggered impact plan. Nothing played (fast-forward) or Skip Animation =
+    // present every target at once, as before.
+    const heard = offsetCollector?.stop() ?? null;
+    if (director.ctx) {
+      director.ctx.animImpactOffsets = (heard && ran && !aborted && _actionId != null)
+        ? { actionId: _actionId, offsets: heard } : null;
+      if (director.ctx.animImpactOffsets) log(`[BD Anim] staggered impacts reported: ${JSON.stringify(heard)}`);
+    }
   }
 
   // Chain N: the damage moment has come. Strikes the cues have not revealed yet
@@ -878,6 +927,7 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
     abortPromise: null,
     timeoutMs: 35000,
     variant,
+    runId: endWatch.runId,
   });
   // Fast-forwarded (hidden window, nobody else watching): the script never ran,
   // so no emit is coming — settle now instead of holding round_end on the

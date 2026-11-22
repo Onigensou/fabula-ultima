@@ -421,6 +421,23 @@ export function buildOni(ctx, env) {
     } catch (e) { console.warn("[oni] hit threw", e); }
   }
 
+  // Staggered impacts in a NON-Chain action. A script whose hits land one after
+  // another (a volley of bolts) reports, BEFORE it calls fireDone(), how many ms
+  // after the gate each target's impact lands: `oni.impactOffsets({ [tokenUuid]:
+  // ms })`, 0 for the target the gate is on. BD still writes every target at the
+  // gate, but shows each one's number, MISS, flinch and HP bar at its own offset
+  // (battle-director/impact-offsets.js). Targets left out show at the gate. The
+  // acting GM's own run of the script is the one BD hears; elsewhere it is a no-op.
+  function impactOffsets(map = {}) {
+    try {
+      Hooks.callAll("oni:impactOffsets", {
+        casterTokenUuid: ctx?.casterToken?.document?.uuid ?? null,
+        runId: ctx?.runId ?? null,
+        offsets: map && typeof map === "object" ? { ...map } : {},
+      });
+    } catch (e) { console.warn("[oni] impactOffsets threw", e); }
+  }
+
   // Impact pause: hold the script a beat on a heavy hit so it reads — the
   // classic hitstop. Await it right after a hit(): `oni.hit(); await oni.hitstop(80);`
   function hitstop(ms = 80) {
@@ -1047,7 +1064,7 @@ export function buildOni(ctx, env) {
     // audio
     sfx, sfxUrl,
     // Chain strikes: contact cue, impact pause, the planned strikes
-    hit, hitstop, strikes,
+    hit, hitstop, strikes, impactOffsets,
     // gate + lifecycle
     fireDone, dispose,
   };

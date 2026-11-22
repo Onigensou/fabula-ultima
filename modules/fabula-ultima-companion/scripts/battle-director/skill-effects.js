@@ -55,6 +55,7 @@ import { hotUrl } from "./hot-reload.js";
 import { isMassiveJoinRowKey } from "./massive-keyword.js";
 import { actorHpFloor, floorHp } from "../shared/hp-floor.js";
 import { resolveWornSlots } from "../shared/equipped-gear.js";
+import { deferVfxTable } from "./impact-offsets.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -544,7 +545,7 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
 // the on-hit defeat rides it, so the freeze can never come before the number.
 function fireResourceLossVfx(opts, after = null) {
   try {
-    import("./director-vfx.js")
+    return import("./director-vfx.js")
       .then((m) => m.playResourceLossVfx?.(opts))
       .catch((e) => warn("fireResourceLossVfx import failed", e))
       .finally(() => { try { after?.(); } catch (e) { warn("fireResourceLossVfx: after threw", e); } });
@@ -622,7 +623,7 @@ function fireResourceGainVfx(opts) {
 // Same lazy fire-and-forget contract as fireResourceLossVfx.
 function fireNpcHpBar(opts) {
   try {
-    import("./damage-numbers/director-hp-bar.js")
+    return import("./damage-numbers/director-hp-bar.js")
       .then((m) => m.emitNpcHpBar?.(opts))
       .catch((e) => warn("fireNpcHpBar import failed", e));
   } catch (e) {
@@ -635,7 +636,7 @@ function fireNpcHpBar(opts) {
 // it doesn't masquerade as a plain heal. Same lazy fire-and-forget contract.
 function fireImmuneVfx(opts) {
   try {
-    import("./director-vfx.js")
+    return import("./director-vfx.js")
       .then((m) => m.playImmuneVfx?.(opts))
       .catch((e) => warn("fireImmuneVfx import failed", e));
   } catch (e) {
@@ -644,7 +645,7 @@ function fireImmuneVfx(opts) {
 }
 function fireAbsorbVfx(opts) {
   try {
-    import("./director-vfx.js")
+    return import("./director-vfx.js")
       .then((m) => m.playAbsorbVfx?.(opts))
       .catch((e) => warn("fireAbsorbVfx import failed", e));
   } catch (e) {
@@ -659,7 +660,7 @@ function fireAbsorbVfx(opts) {
 // RESOLVE block (state-handlers). Same lazy fire-and-forget contract.
 function fireBlockVfx(opts) {
   try {
-    import("./director-vfx.js")
+    return import("./director-vfx.js")
       .then((m) => m.playBlockVfx?.(opts))
       .catch((e) => warn("fireBlockVfx import failed", e));
   } catch (e) {
@@ -740,14 +741,28 @@ export async function applyDamageToTarget({
   // animation, or an authored one flagged animOwnsImpact): the number keeps its
   // pop and flinch but drops its impact burst and hit sound. hit-sound-rules.js.
   impactClaimed = false,
+  // (fn) => Promise|void: the action's impact presenter for THIS target
+  // (impact-offsets.js). Each presentation below (number + flinch, HP bar,
+  // block / immune / absorb cue, and an on-hit defeat riding the number) is
+  // handed to it instead of running now, so a staggered animation shows each
+  // target's hit on its own impact. The WRITES are never deferred.
+  // null (default) = present now, as before.
+  deferPresentation = null,
 } = {}) {
   const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
   if (!target) return empty;
   // Every presentation call below goes through these, so `silent` is one switch.
-  const vfx = silent ? null : {
+  const _vfxNow = silent ? null : {
     loss: fireResourceLossVfx, absorb: fireAbsorbVfx, bar: fireNpcHpBar,
     block: fireBlockVfx, immune: fireImmuneVfx,
   };
+  // Every deferred presentation's promise (resolves once it has been shown), so
+  // this target's damage-reaction follow-ups can wait for its own hit below.
+  const _shown = [];
+  const _defer = typeof deferPresentation === "function"
+    ? (fn) => { const p = deferPresentation(fn); if (p && typeof p.then === "function") _shown.push(p); return p; }
+    : null;
+  const vfx = _defer ? deferVfxTable(_vfxNow, _defer) : _vfxNow;
   const prefix = logPrefix ? `${logPrefix} ` : "";
   // Floating-number enrichment: the BD damage-number subsystem colors the
   // numeral by element and raises the gold CRITICAL banner on a crit. Both come
@@ -888,6 +903,15 @@ export async function applyDamageToTarget({
     // The marker is a direct actor AE independent of the gear, so the once-per-
     // conflict gate survives unequip/re-equip.
     if (Array.isArray(followUp) && followUp.length) {
+      // Staggered impacts: this target's number / bar / BLOCK went to the
+      // presenter, so wait until they are shown. The follow-ups (and their
+      // passive fallback) answer a hit the table can already see. The writes
+      // above are done; only this target's own follow-ups wait. Without a
+      // deferral _shown is empty and nothing waits.
+      if (_shown.length) {
+        try { await Promise.all(_shown); }
+        catch (e) { warn("applyDamageToTarget: waiting for the deferred hit failed", e); }
+      }
       const bdf = globalThis.FUCompanion?.api?.experimental?.battleDirector;
       const dirf = bdf?.getActiveDirector?.() ?? null;
       const tokf = target.getActiveTokens?.()?.[0]?.document ?? null;
