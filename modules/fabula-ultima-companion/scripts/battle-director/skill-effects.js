@@ -54,6 +54,7 @@ import { classifyEffect, isStatusTier } from "./status-classifier.js";
 import { hotUrl } from "./hot-reload.js";
 import { isMassiveJoinRowKey } from "./massive-keyword.js";
 import { actorHpFloor, floorHp } from "../shared/hp-floor.js";
+import { resolveWornSlots } from "../shared/equipped-gear.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -9503,10 +9504,16 @@ export async function restoreHiddenItems(actor) {
   );
   if (!hidden.length) return 0;
 
-  const p = actor.system?.props ?? {};
-  const names = new Set(hidden.map((i) => String(i.system?.props?.name ?? i.name ?? "")));
+  // Which slots still point at a hidden item — resolved by slot item id
+  // (shared/equipped-gear.js), hidden items included in the pools on purpose.
+  const hiddenIds = new Set(hidden.map((i) => i.id));
+  const worn = resolveWornSlots(actor, { includeHidden: true });
+  const inSlot = (slot) => !!worn[slot] && hiddenIds.has(worn[slot].id);
   const actorUpd = {};
-  if (names.has(String(p.main_hand ?? ""))) {
+  for (const slot of ["main", "off", "acc1", "acc2"]) {
+    if (inSlot(slot)) actorUpd[`flags.${NS}.equipSlots.${slot}`] = null;
+  }
+  if (inSlot("main")) {
     Object.assign(actorUpd, {
       "system.props.main_hand": "", "system.props.main_attrib_1": "DEX",
       "system.props.main_attrib_2": "DEX", "system.props.weapon1_base_mod": 0,
@@ -9514,7 +9521,7 @@ export async function restoreHiddenItems(actor) {
       "system.props.main_details": "",
     });
   }
-  if (names.has(String(p.off_hand ?? ""))) {
+  if (inSlot("off")) {
     Object.assign(actorUpd, {
       "system.props.off_hand": "", "system.props.off_attrib_1": "DEX",
       "system.props.off_attrib_2": "DEX", "system.props.off_base_mod_1": 0,
@@ -9522,10 +9529,10 @@ export async function restoreHiddenItems(actor) {
       "system.props.off_details": "",
     });
   }
-  if (names.has(String(p.accessory_name ?? ""))) {
+  if (inSlot("acc1")) {
     Object.assign(actorUpd, { "system.props.accessory_name": "", "system.props.accessory_details": "" });
   }
-  if (names.has(String(p.accessory2_name ?? ""))) {
+  if (inSlot("acc2")) {
     Object.assign(actorUpd, { "system.props.accessory2_name": "", "system.props.accessory2_details": "" });
   }
 

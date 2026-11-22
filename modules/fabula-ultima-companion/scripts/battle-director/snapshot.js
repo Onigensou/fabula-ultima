@@ -13,6 +13,7 @@ import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { weightedActorKey } from "./weighted-rules.js";
 import { tokensGrappledBy, grapplerOf } from "./grappled.js";
+import { wornItem, itemAttackBonuses } from "../shared/equipped-gear.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -186,7 +187,9 @@ export function attrDieSize(actor, key) {
 // Resolve the attacker's currently-equipped weapon for Attack actions.
 //
 // Reads the same actor props the legacy `[Macro] Attack - Player.js` macro
-// reads (lines 86-120) so the formulas line up: main_hand name lookup in
+// reads (lines 86-120) so the formulas line up — but the weapon ITEM is resolved by
+// the slot's item id (shared/equipped-gear.js) and its stats win over the cached
+// props when there is one. Legacy shape: main_hand name lookup in
 // weapon_list, main_attrib_1/2, weapon1_mod (accuracy bonus), weapon1_damage
 // (damage bonus), weapon1_damagetype, plus weapon_range / weapon_type from
 // the weapon_list entry.
@@ -233,12 +236,34 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
   const handName = isMain ? props.main_hand : props.off_hand;
   if (!handName) return null;
 
-  const entry = weaponList.find((w) => w?.name === handName) ?? null;
+  // Resolve the live weapon Item FIRST, by the slot's item ID (shared/equipped-gear.js:
+  // id → label → id-with-stale-label). The name props are only a label now: a refine
+  // renames the item ("+5" → "+6") and a by-name lookup used to find nothing, which
+  // dropped Zarg's bow to 1 target and failed Barrage's ranged gate (2026-11-22).
+  // A shield in the hand resolves to null here (the attack needs a weapon).
+  let weaponItem = null;
+  if (actor.items) {
+    const handItem = wornItem(actor, isMain ? "main" : "off");
+    weaponItem = String(handItem?.system?.props?.item_type ?? "").toLowerCase() === "weapon" ? handItem : null;
+  }
+
+  // The CSB weapon_list entry (an item-container row) — matched by the resolved
+  // item's id first, then by the label (NPC-style lists with no embedded item).
+  const entry = (weaponItem
+    ? weaponList.find((w) => String(w?.uuid ?? "").split(".").pop() === weaponItem.id)
+    : null) ?? weaponList.find((w) => w?.name === handName) ?? null;
+  if (!weaponItem && entry?.uuid) {
+    try { weaponItem = actor.items?.get?.(String(entry.uuid).split(".").pop()) ?? null; } catch (_) {}
+  }
+  const wip = weaponItem?.system?.props ?? null;
 
   // Attribute pair. Empty/SHI means no usable weapon in this hand.
   // `let`: a weapon form may re-project the pair (Lionheart: Sword MIG+WLP / Gun DEX+INS).
-  let A1 = String(isMain ? (props.main_attrib_1 ?? "") : (props.off_attrib_1 ?? "")).toUpperCase();
-  let A2 = String(isMain ? (props.main_attrib_2 ?? "") : (props.off_attrib_2 ?? "")).toUpperCase();
+  // A resolved weapon Item is the source of truth; the actor's cached slot props
+  // (written at equip time, re-stamped by the GM equip sync) are the fallback for
+  // actors with no item behind the slot.
+  let A1 = String((wip?.rolled_atr1 || null) ?? (isMain ? (props.main_attrib_1 ?? "") : (props.off_attrib_1 ?? ""))).toUpperCase();
+  let A2 = String((wip?.rolled_atr2 || null) ?? (isMain ? (props.main_attrib_2 ?? "") : (props.off_attrib_2 ?? ""))).toUpperCase();
   if (!A1 || A1 === "SHI" || A1 === "UNDEFINED") return null;
 
   // Accuracy bonus + damage bonus + damage type per hand. The off-hand
@@ -253,41 +278,21 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     isMain ? (props.weapon1_damage ?? 0) : (props.off_mod_2 ?? 0)
   ) || 0;
   let damageType = String(
-    isMain ? (props.weapon1_damagetype ?? "Physical") : (props.weapon2_damagetype ?? "Physical")
+    (wip?.type_damage || null) ?? (isMain ? (props.weapon1_damagetype ?? "Physical") : (props.weapon2_damagetype ?? "Physical"))
   );
-
-  let range = String(entry?.weapon_range ?? "Melee");
-  let weaponType = String(entry?.weapon_type ?? entry?.category ?? entry?.type ?? "");
-
-  // Resolve the live weapon Item. The entry's `uuid` field is canonical (the
-  // `id` field is an unresolved CSB template literal `${item.id}$`). When the
-  // weapon_list entry is absent (most PCs carry main_hand as a bare name with
-  // no container entry), fall back to matching an embedded weapon Item by
-  // name. The resolved Item drives both the sheet image AND — since Option B —
-  // its `uuid` is threaded onto the profile so on-hit reaction rows on the
-  // weapon attribute to THIS weapon (see weaponReactionInPlay in skill-effects).
-  let weaponItem = null;
-  if (entry?.uuid) {
-    try { weaponItem = actor.items?.get?.(String(entry.uuid).split(".").pop()) ?? null; } catch (_) {}
+  // Damage / accuracy from the ITEM plus the actor-level buffs CSB layers on the
+  // cached base — so a refine's extra damage counts the moment it lands, not only
+  // after a re-equip (Zarg's +6 bow had been attacking with the +5's damage).
+  if (wip) {
+    const live = itemAttackBonuses(actor, weaponItem, which);
+    if (live) { checkBonus = live.checkBonus; damageBonus = live.damageBonus; }
   }
-  if (!weaponItem) {
-    // Same distinct-copy rule as equipment-swap's resolveWornItems: the slot props
-    // hold NAMES, so with two copies of one weapon (Kiki's three Wakizashi) prefer
-    // the copy flagged isEquipped, and never give the off hand the copy the main
-    // hand took. Without it a form or on-hit row set on the off-hand copy never
-    // reached the attack.
-    const typeOf = (i) => String(i?.system?.props?.item_type ?? "").toLowerCase();
-    const handMatches = (name) => (name ? (actor.items?.filter?.((i) =>
-      (i?.system?.props?.name ?? i?.name) === name && (typeOf(i) === "weapon" || typeOf(i) === "shield")) ?? []) : []);
-    const pick = (list, taken) => {
-      const free = list.filter((i) => !taken.has(i.id));
-      const pool = free.length ? free : list;
-      return pool.find((i) => i.system?.props?.isEquipped === true) ?? pool[0] ?? null;
-    };
-    const mainItem = pick(handMatches(props.main_hand), new Set());
-    const handItem = isMain ? mainItem : pick(handMatches(props.off_hand), new Set(mainItem ? [mainItem.id] : []));
-    weaponItem = typeOf(handItem) === "weapon" ? handItem : null;
-  }
+
+  // Range / family: the weapon_list row when there is one, else the Item itself
+  // (with no row a bow used to default to Melee).
+  let range = String(entry?.weapon_range ?? wip?.weapon_range ?? "Melee");
+  let weaponType = String(entry?.weapon_type ?? entry?.category ?? entry?.type ?? wip?.category ?? wip?.weapon_type ?? "");
+
   const imageUrl = entry?.img ?? entry?.image ?? weaponItem?.img ?? null;
 
   // ── Weapon-form overlay ────────────────────────────────────────────────

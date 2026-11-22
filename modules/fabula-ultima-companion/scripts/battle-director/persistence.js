@@ -577,6 +577,10 @@ async function snapshotCombatantActors(dCombat) {
       // full toObject in `deletedItemsLog` (captured by the deletion
       // tracker hook), and items still alive at restore time are read
       // from the live actor.
+      // Which item is worn in each slot, by id (shared/equipped-gear.js). The name
+      // props above are only the label; restoring them without the ids could hand a
+      // slot back to the wrong copy of a duplicated item.
+      equipSlots: foundry.utils.deepClone(actor.flags?.[FLAG_NS]?.equipSlots ?? null),
       itemStates: Array.from(actor.items ?? []).map((it) => ({
         id: it.id,
         item_quantity: it.system?.props?.item_quantity ?? null,
@@ -1053,6 +1057,13 @@ export async function restoreActorsFromSnapshot(snapshot, futureSaves = []) {
       // missing fields, and writing `undefined` is a no-op anyway.
       if (v === undefined) continue;
       propsUpdate[`system.props.${k}`] = v;
+    }
+    // Slot ids ride with the labels (snapshots older than the id model carry none:
+    // the labels alone then resolve by name, as before).
+    if (actorSnap.equipSlots && typeof actorSnap.equipSlots === "object") {
+      for (const [slot, id] of Object.entries(actorSnap.equipSlots)) {
+        propsUpdate[`flags.${FLAG_NS}.equipSlots.${slot}`] = id ?? null;
+      }
     }
     if (Object.keys(propsUpdate).length) {
       try { await actor.update(propsUpdate); }

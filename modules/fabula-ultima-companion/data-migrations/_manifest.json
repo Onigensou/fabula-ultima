@@ -744,6 +744,10 @@
     {
       "key": "2026-11-22-gunblade-move-engine-1-2-2",
       "path": "data-migrations/2026-11-22-gunblade-move-engine-1-2-2.js"
+    },
+    {
+      "key": "2026-11-22-equip-slot-ids",
+      "path": "data-migrations/2026-11-22-equip-slot-ids.js"
     }
   ]
 }

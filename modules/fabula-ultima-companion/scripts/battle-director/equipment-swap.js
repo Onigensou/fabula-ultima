@@ -27,6 +27,7 @@ import { log, warn } from "./logger.js";
 import { reconcileSetBonuses, withManagedEquip } from "./set-bonus.js";
 import { getRegistry, resolveClass } from "../levelup-system/class-registry.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
+import { resolveWornSlots, slotStamp } from "../shared/equipped-gear.js";
 
 const UNARM_STRIKE_ITEM_ID = "bwqZvS4NXw7bCrmV";
 const FLAG_NS = "fabula-ultima-companion";
@@ -256,36 +257,19 @@ function partitionInventory(actor) {
   };
 }
 
-// The slot props hold item NAMES, and two items can share one (a pair of
-// identical daggers, a duplicate ring). Resolve each slot to a DISTINCT item:
-// prefer a copy already flagged isEquipped, and never hand the second slot the
-// copy the first slot took while another copy exists. With a single copy named
-// in both slots it still resolves to that one item, as before.
-function pickByName(items, name, taken) {
-  if (!name) return null;
-  const matches = items.filter((it) => it?.system?.props?.name === name);
-  if (!matches.length) return null;
-  const free = matches.filter((it) => !taken.has(it.id));
-  const pool = free.length ? free : matches;
-  return pool.find((it) => it.system?.props?.isEquipped === true) ?? pool[0];
-}
-
-/** The item worn in each slot, resolved from the slot props (see pickByName). */
+/**
+ * The item worn in each slot. Identity is the item ID in the actor's equipSlots
+ * flag; the name props are the label and the fallback (resolution order in
+ * shared/equipped-gear.js — including the distinct-copy rule for two items that
+ * share a name). Pools come from partitionInventory, so hidden items are never worn.
+ */
 function resolveWornItems(actor) {
-  const props = actor?.system?.props ?? {};
   const inv = partitionInventory(actor);
   const handItems = [...inv.weapons, ...inv.shields];
-  const handTaken = new Set();
-  const main = pickByName(handItems, props.main_hand, handTaken);
-  if (main) handTaken.add(main.id);
-  const off = pickByName(handItems, props.off_hand, handTaken);
-  const accTaken = new Set();
-  const acc1 = pickByName(inv.accessories, props.accessory_name, accTaken);
-  if (acc1) accTaken.add(acc1.id);
-  const acc2 = pickByName(inv.accessories, props.accessory2_name, accTaken);
+  const worn = resolveWornSlots(actor, { handPool: handItems, accessoryPool: inv.accessories });
   // Armor has no slot prop — its own isEquipped is the source of truth.
   const armorWorn = inv.armor.find((a) => !!a?.system?.props?.isEquipped) ?? null;
-  return { ...inv, handItems, main, off, acc1, acc2, armorWorn };
+  return { ...inv, handItems, main: worn.main, off: worn.off, acc1: worn.acc1, acc2: worn.acc2, armorWorn };
 }
 
 // ─── Weapon FORMS (Transform) ───────────────────────────────────────────
@@ -872,24 +856,9 @@ export function planEquipmentSwap(actor, selections, opts = {}) {
   const applyHandSlot = ({ slotName, curItem, newItem, isMain }) => {
     if ((curItem?.id ?? null) === (newItem?.id ?? null)) return;
     const isWeapon = newItem?.system?.props?.item_type === ITEM_TYPE_WEAPON;
-    const np = newItem?.system?.props ?? {};
-    if (isMain) {
-      actorUpdates["system.props.main_hand"]            = np.name ?? "";
-      actorUpdates["system.props.main_attrib_1"]        = isWeapon ? (np.rolled_atr1 ?? "DEX") : "SHI";
-      actorUpdates["system.props.main_attrib_2"]        = isWeapon ? (np.rolled_atr2 ?? "DEX") : "SHI";
-      actorUpdates["system.props.weapon1_base_mod"]     = isWeapon ? (np.check_bonus ?? 0)  : (np.item_def_bonus ?? 0);
-      actorUpdates["system.props.weapon1_base_damage"]  = isWeapon ? (np.damage_bonus ?? 0) : (np.item_mdef_bonus ?? 0);
-      actorUpdates["system.props.weapon1_damagetype"]   = isWeapon ? (np.type_damage ?? "Physical") : "-";
-      actorUpdates["system.props.main_details"]         = np.description ?? "";
-    } else {
-      actorUpdates["system.props.off_hand"]             = np.name ?? "";
-      actorUpdates["system.props.off_attrib_1"]         = isWeapon ? (np.rolled_atr1 ?? "DEX") : "SHI";
-      actorUpdates["system.props.off_attrib_2"]         = isWeapon ? (np.rolled_atr2 ?? "DEX") : "SHI";
-      actorUpdates["system.props.off_base_mod_1"]       = isWeapon ? (np.check_bonus ?? 0)  : (np.item_def_bonus ?? 0);
-      actorUpdates["system.props.off_base_mod_2"]       = isWeapon ? (np.damage_bonus ?? 0) : (np.item_mdef_bonus ?? 0);
-      actorUpdates["system.props.weapon2_damagetype"]   = isWeapon ? (np.type_damage ?? "Physical") : "-";
-      actorUpdates["system.props.off_details"]          = np.description ?? "";
-    }
+    // Id flag + label + cached stats, from the one shared mapping
+    // (shared/equipped-gear.js slotStamp — the GM equip sync writes through it too).
+    Object.assign(actorUpdates, slotStamp(isMain ? "main" : "off", newItem));
     changes.push({
       slot: slotName,
       fromName: curItem?.system?.props?.name ?? "Unarmed",
@@ -899,9 +868,7 @@ export function planEquipmentSwap(actor, selections, opts = {}) {
   };
   const applyAccSlot = ({ slotName, curItem, newItem, propBase }) => {
     if ((curItem?.id ?? null) === (newItem?.id ?? null)) return;
-    const np = newItem?.system?.props ?? {};
-    actorUpdates[`system.props.${propBase}_name`]    = np.name ?? "";
-    actorUpdates[`system.props.${propBase}_details`] = np.description ?? "";
+    Object.assign(actorUpdates, slotStamp(propBase === "accessory" ? "acc1" : "acc2", newItem));
     changes.push({
       slot: slotName,
       fromName: curItem?.system?.props?.name ?? "—",

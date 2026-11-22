@@ -36,6 +36,7 @@ import { crisisThreshold } from "./crisis-reactor.js";
 import { orbmentReduction } from "../orbment/orbment-dr.js";
 import { bossStage } from "./boss-rules/boss-rules.js";
 import { companionOf } from "../shared/companion-rule.js";
+import { wornItem } from "../shared/equipped-gear.js";
 
 // snapshot.getBlockedActionLabels, registered by snapshot.js at load (it already
 // imports this module, so a static import back would be a cycle). Read by the
@@ -2849,13 +2850,14 @@ function carrierWeaponOf(actor, skill) {
   return String(it?.system?.props?.item_type ?? "").toLowerCase() === "weapon" ? it : null;
 }
 
-// The weapon Item worn in the main hand (slot prop holds its NAME), or null.
+// The weapon Item worn in the main hand (resolved by the slot's item id —
+// shared/equipped-gear.js), or null. Items inside a container are never worn.
 function mainHandWeaponOf(actor) {
-  const name = actor?.system?.props?.main_hand;
-  if (!name) return null;
-  const list = (actor.items?.contents ?? []).filter((i) => i?.name === name
-    && String(i?.system?.props?.item_type ?? "").toLowerCase() === "weapon" && !i?.system?.container);
-  return list.find((i) => i.system?.props?.isEquipped === true) ?? list[0] ?? null;
+  if (!actor?.items) return null;
+  const pool = (actor.items?.contents ?? []).filter((i) => !i?.system?.container
+    && ["weapon", "shield"].includes(String(i?.system?.props?.item_type ?? "").toLowerCase()));
+  const it = wornItem(actor, "main", { handPool: pool });
+  return String(it?.system?.props?.item_type ?? "").toLowerCase() === "weapon" ? it : null;
 }
 
 function hasEquippedWeaponOfType(actor, weaponType) {
@@ -3064,10 +3066,9 @@ export function buildDamageBonusParts({ actor, weapon, hand = "main", attackGran
   let weaponName = weapon?.name ?? "Weapon";
   let weaponBase = 0;
   if (handName) {
-    const items = actor?.items?.contents ?? (Array.isArray(actor?.items) ? actor.items : []);
-    const item = items.find((i) =>
-      String(i?.system?.props?.name ?? "").trim() === String(handName).trim()
-      && i?.system?.props?.isEquipped);
+    // The worn item by slot id (shared/equipped-gear.js), so a refined/renamed
+    // weapon still shows as "Weapon (+6 Zarg's Bow)" instead of falling to "Other".
+    const item = actor?.items ? wornItem(actor, hand === "off" ? "off" : "main") : null;
     if (item) {
       weaponBase = Number(item.system?.props?.damage_bonus ?? 0) || 0;
       weaponName = item.name;

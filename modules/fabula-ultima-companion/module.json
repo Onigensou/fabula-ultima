@@ -555,6 +555,7 @@
     "scripts/battle-director/unit-inspect/unit-inspect.js",
     "scripts/battle-director/set-bonus-hooks.js",
     "scripts/battle-director/armor-equip-gate.js",
+    "scripts/battle-director/equip-sync.js",
     "scripts/battle-director/equip-lock-release.js",
     "scripts/battle-director/battle-end/battle-end-orchestrator.js",
     "scripts/battle-director/battle-end/battle-end-prompt.js",
