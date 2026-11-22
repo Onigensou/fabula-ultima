@@ -52,6 +52,8 @@
  * GM only (mirrors the legacy test harness gate).
  */
 
+import { expandForceSemantics } from "./_harness-force.js";
+
 // NOTE: deps are dynamically re-imported per-call with a cache-bust so the
 // harness ALWAYS exercises the latest disk state — the whole point of a test
 // tool is to validate edits without forcing the user to hard-refresh. Foundry's
@@ -1472,61 +1474,6 @@ function buildInitialActionResult(skill, attackerSnap, targetSnaps, deps) {
 // (1 - v) inversion. To force face R out of dN, randomUniform must
 // return v where `ceil((1 - v) * N) === R`, i.e.
 // v ∈ [1 - R/N, 1 - (R - 1)/N). Center: v = 1 - (R - 0.5)/N.
-// Expand semantic force shorthands (`hit`, `miss`, `crit`, `fumble`) into
-// concrete dice values that produce the requested outcome. Raw `{rA, rB}`
-// values in `force` are preserved and override semantic flags.
-//
-// Decision rules (in order):
-//   crit:   rA = rB = max die (8 / 10 / 12 etc.) — paired top dice. Author
-//           intent: "show me what happens on crit". Caller may want a
-//           specific paired non-max via raw rA/rB.
-//   fumble: rA = rB = 1 (always satisfies fumbleThreshold ≥ 1)
-//   hit:    pick the SMALLEST (rA, rB) where rA + rB + checkBonus
-//           >= min(target.defense | magic_defense). If even max dice can't
-//           hit, falls back to max + max (caller gets to see the miss).
-//   miss:   pick the LARGEST (rA, rB) where rA + rB + checkBonus < target's
-//           defense. Avoids fumble (both ≤ threshold) and crit (rA === rB
-//           ≥ 6). Falls back to (1, 2) if no valid combo (target is too
-//           weak — caller's request is impossible without fumbling).
-function expandForceSemantics(force, { dA, dB, fumbleThreshold, checkBonus, isSpell, targetSnaps }) {
-  if (!force) return null;
-  const out = { ...force };
-  if (Number.isFinite(out.rA) && Number.isFinite(out.rB)) return out;
-
-  const defs = (targetSnaps ?? []).map((t) => isSpell ? (t.magicDefense ?? 0) : (t.defense ?? 0));
-  const minDef = defs.length ? Math.min(...defs) : 0;
-
-  // A crit is a matching pair, so it must fit on the SMALLER die. (This used to
-  // force dA on both dice; the old uniform override then drew an impossible 10
-  // on a d8. Faces are now forced exactly and clamped to the die.)
-  if (force.crit) { const v = Math.min(dA, dB); out.rA = v; out.rB = v; return out; }
-  if (force.fumble) { out.rA = 1; out.rB = 1; return out; }
-  if (force.hit) {
-    // Greedy: cheapest hit. Iterate (a, b) where a+b+checkBonus >= minDef.
-    for (let a = 1; a <= dA; a++) {
-      for (let b = 1; b <= dB; b++) {
-        if (a === b && a >= 6) continue;  // skip crit
-        if (a <= fumbleThreshold && b <= fumbleThreshold) continue;  // skip fumble
-        if (a + b + checkBonus >= minDef) { out.rA = a; out.rB = b; return out; }
-      }
-    }
-    out.rA = dA; out.rB = dB;  // even max can't hit — caller sees the miss
-    return out;
-  }
-  if (force.miss) {
-    for (let a = dA; a >= 1; a--) {
-      for (let b = dB; b >= 1; b--) {
-        if (a === b && a >= 6) continue;
-        if (a <= fumbleThreshold && b <= fumbleThreshold) continue;
-        if (a + b + checkBonus < minDef) { out.rA = a; out.rB = b; return out; }
-      }
-    }
-    out.rA = 1; out.rB = 2;  // no valid combo — caller sees a fumble-ish result
-    return out;
-  }
-  return out;
-}
-
 function installRollOverride(force, dA, dB) {
   if (!force) return { restore() {} };
   const rA = Number(force.rA ?? force.forceA);
@@ -1733,7 +1680,11 @@ async function runDirectorSkillCompute({
     dA, dB,
     fumbleThreshold: attackerSnap.fumbleThreshold ?? 1,
     checkBonus: ar.checkBonus ?? 0,
-    isSpell: String(ar.skillType ?? "").toLowerCase() === "spell",
+    // DEF vs MDEF from the move's defense_target_type (COMPUTE's own selector),
+    // kind (Spell) only as the fallback when blank.
+    vsMdef: (await import("./snapshot.js")).resolvesVsMagicDefense({
+      defenseTargetType: ar.defenseTargetType,
+      isSpell: String(ar.skillType ?? "").toLowerCase() === "spell" }),
     targetSnaps,
   });
   const rollOverride = installRollOverride(resolvedForce, dA, dB);
@@ -2910,12 +2861,14 @@ async function runDirectorAttackCompute({
   const weapon = queue[0];
   const dA = attackerSnap.attributes?.[weapon.A1] ?? 8;
   const dB = attackerSnap.attributes?.[weapon.A2] ?? 8;
-  // Attack force semantics: gate is target.defense (DEF, not MDEF).
+  // Attack force semantics: DEF vs MDEF from the weapon's defense_target_type
+  // (Soul Echo / Mirror Wraith are Attacks vs MDEF); blank -> DEF.
   const resolvedForce = expandForceSemantics(force, {
     dA, dB,
     fumbleThreshold: attackerSnap.fumbleThreshold ?? 1,
     checkBonus: weapon.checkBonus ?? 0,
-    isSpell: false,
+    vsMdef: (await import("./snapshot.js")).resolvesVsMagicDefense({
+      defenseTargetType: weapon.defenseTargetType, isSpell: false }),
     targetSnaps,
   });
   const rollOverride = installRollOverride(resolvedForce, dA, dB);

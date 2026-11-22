@@ -164,6 +164,18 @@ export class DirectorCombatant {
     // together); a Quicken/Delay landing after that applies next round.
     this.phaseLock = null;
 
+    // ActionReader anti-repeat / action_pattern_cooldown memory:
+    // { lastActionName, usedRounds: { <normalized action name>: <round> } },
+    // written by the AI pick that is actually performed (matchAndPick). Plain
+    // data, saved + restored by persistence.js so cooldowns survive a reload.
+    this.actionMemory = null;
+
+    // Turn priority: { round, value }, stamped by grantTurnsThisRound. While it
+    // matches the live round, eligibleOnSide() narrows the side to the highest
+    // priority group (Army of the Damned: fragments act before the rest of the
+    // enemy side). Stale rounds read as 0. Saved + restored by persistence.js.
+    this.turnPriority = null;
+
     // Free-form flags slot.
     this.flags = Object.create(null);
   }
@@ -539,9 +551,49 @@ export class DirectorCombat {
   eligibleOnSide(side) {
     const phase = this.currentPhaseTier();
     if (phase === null) return [];
-    return this.combatants.filter((c) =>
+    const list = this.combatants.filter((c) =>
       c.side === side && this._hasTurnsLeft(c) && this.speedTierOf(c) === phase
     );
+    // Turn priority only NARROWS a non-empty list to its top group, so every
+    // emptiness test (nextTurn, outnumbered rule, wrap) is unchanged.
+    if (list.length > 1) {
+      let top = 0;
+      for (const c of list) top = Math.max(top, this.turnPriorityOf(c));
+      if (top > 0) return list.filter((c) => this.turnPriorityOf(c) === top);
+    }
+    return list;
+  }
+
+  // Active priority this round (0 when unset or stale).
+  turnPriorityOf(c) {
+    const p = c?.turnPriority;
+    return (p && p.round === this.round) ? (Number(p.value) || 0) : 0;
+  }
+
+  // +n activations THIS round only (the per-round reset re-reads the live
+  // activation), with an optional priority and an optional phase to act in.
+  // Returns false (no change) for a missing or defeated combatant.
+  grantTurnsThisRound(c, { turns = 1, priority = 0, phaseTier = null } = {}) {
+    if (!c || c.isDefeatedLive()) return false;
+    c.turnsRemaining = Math.max(0, Number(c.turnsRemaining) || 0) + Math.max(1, Math.floor(turns));
+    if (priority) c.turnPriority = { round: this.round, value: priority };
+    if (phaseTier !== null && !(c.phaseLock && c.phaseLock.round === this.round)) {
+      c.phaseLock = { round: this.round, tier: phaseTier };
+    }
+    try { this._notifyTurnActions(); } catch (_e) {}
+    return true;
+  }
+
+  // Undo a grant: take `turns` back (floored at 0) and drop this round's
+  // priority stamp. Works on defeated combatants too. Returns true if changed.
+  revokeGrant(c, { turns = 1 } = {}) {
+    if (!c) return false;
+    const before = Math.max(0, Number(c.turnsRemaining) || 0);
+    c.turnsRemaining = Math.max(0, before - Math.max(0, Math.floor(turns)));
+    const hadPriority = !!(c.turnPriority && c.turnPriority.round === this.round);
+    if (hadPriority) c.turnPriority = null;
+    try { this._notifyTurnActions(); } catch (_e) {}
+    return c.turnsRemaining !== before || hadPriority;
   }
 
   _otherSide(side) {

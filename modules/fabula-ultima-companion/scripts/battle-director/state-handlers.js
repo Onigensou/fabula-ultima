@@ -118,6 +118,7 @@ import { classifyActionIntent, resolveActionTags, INVENTORY_ACTION_TAG } from ".
 import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
+import { countsForSideWipe } from "./battle-end/outcome-inference.js";
 import { holdsKnockoutRevive } from "./knockout-revive.js";
 import { holdsStaysDown } from "./stays-down.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
@@ -129,6 +130,7 @@ import { emitBattlerPose } from "./battler-pose.js";
 import { actionPose } from "./battler-pose-rules.js";
 import { witnessNpcAbility, witnessFiredCandidate, witnessAffinityHits } from "./encyclopedia-witness.js";
 import { SimMode } from "./sim/sim-mode.js";
+import { stillInEntry } from "./force-skip-guard.js";
 import { runBossPendingBeat, runBossConflictStart, runBossRoundBoundary, bossRoundEndTrigger, bossSkipsRoundEndSweep, bossHoldsConflictEvent, bossHoldsSideWipe } from "./boss-rules/boss-rules.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
@@ -255,10 +257,7 @@ export function installApplierReaperWatcher(director) {
 // other side: an indestructible Lightning Crystal sits on the ENEMY side, so
 // without this the enemy side could never be wiped and no fight on its map
 // would ever reach victory.
-function countsForSideWipe(c) {
-  const actor = c?.actorDoc ?? null;
-  return !isGuestActor(actor) && !isBattlefieldObject(actor);
-}
+// (Predicate lives in battle-end/outcome-inference.js so detectOutcome shares it.)
 
 function sideIsWiped(dc, side) {
   const all = dc.combatants.filter((c) => c.side === side);
@@ -3159,6 +3158,9 @@ function applyComposedBundleAndAdvance(director, winnerBundle) {
 
 const Declare = {
   async onEnter(director) {
+    // This entry's identity: a GM Next Turn can move the FSM on while the
+    // autopilot decide below is awaited (see force-skip-guard.stillInEntry).
+    const declareEpoch = director._stateEpoch;
     let snap = director.ctx.turnSnapshot;
     if (!snap) {
       warn("DECLARE entered without turnSnapshot");
@@ -3281,6 +3283,10 @@ const Declare = {
     if ((isAutopilotEnabled() && isAiControlledTurn(director)) || isAutomatedSummonTurn(director, snap)) {
       try {
         const autoBundle = await autopilotDecideAction(director, snap);
+        if (!stillInEntry(director, STATES.DECLARE, declareEpoch)) {
+          log(`DECLARE: left (forced skip?) during the autopilot decide for ${snap.name} - not opening compose`);
+          return;
+        }
         if (autoBundle) {
           log(`DECLARE: autopilot → ${autoBundle.command} for ${snap.name}`);
           // Remember that the ACTION was machine-chosen. CONFIRM only auto-confirms
@@ -3293,6 +3299,12 @@ const Declare = {
         }
         log(`DECLARE: autopilot declined for ${snap.name} — manual compose fallback`);
       } catch (e) { warn("DECLARE: autopilot decide threw — manual compose fallback", e); }
+    }
+    // Any late path (a throw above, a slow decide): never arm a compose, and so
+    // never take the dispatch lock, for a DECLARE the FSM has already left.
+    if (!stillInEntry(director, STATES.DECLARE, declareEpoch)) {
+      log(`DECLARE: left before the compose armed for ${snap.name} - not opening compose`);
+      return;
     }
 
     // Resolve the owner IGNORING online status: we broadcast + arm the

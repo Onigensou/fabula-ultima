@@ -51,6 +51,7 @@ import { hostUser } from "./director-host.js";
 import { presenceOf, isGone, listWaits, runWaitAction, awayForMs } from "./player-presence.js";
 import { setGmFocus, focusState, setFocusPart, setFocusAll, FOCUS_PARTS, FOCUS_TOOLS, toolAvailable, openTool } from "./battle-focus.js";
 
+import { deskDotClass } from "./turn-priority-ui.js";
 const MODULE_ID = "fabula-ultima-companion";
 const STYLE_ID = "fud-gm-desk-style";
 const ROOT_ID = "fud-gm-desk";
@@ -1283,7 +1284,7 @@ function paintRow(r) {
     const html = `<span class="gmd-tt${ok ? "" : " off"}" data-take="${ti}" title="${ok ? "Take Turn" : `${esc(D.take.entries[ti].owner?.name ?? "The player")} chooses`}">▶</span>`;
     if (st._h !== html) { st.innerHTML = html; st._h = html; }
   } else {
-    const cls = acting ? "acting" : (Number(u.turnsPerRound) === 0 ? "noturn" : Number(u.turnsRemaining) > 0 ? "" : "acted");
+    const cls = deskDotClass(u, acting);
     const html = `<span class="gmd-dot ${cls}" title="${acting ? "Acting" : cls === "noturn" ? "No turn of its own" : cls === "acted" ? "Acted this round" : "Can act"}"></span>`;
     if (st._h !== html) { st.innerHTML = html; st._h = html; }
   }

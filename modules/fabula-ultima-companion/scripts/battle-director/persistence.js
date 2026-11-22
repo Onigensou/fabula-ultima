@@ -367,6 +367,15 @@ export async function saveDirectorState(director, opts = {}) {
         // reload would re-read a status landed after the creature's first turn
         // and move its remaining activations.
         phaseLock: c.phaseLock ?? null,
+        // Turn priority ({ round, value }): without it a reload mid-round
+        // would drop an Army-of-the-Damned ordering grant.
+        turnPriority: c.turnPriority ?? null,
+        // AI anti-repeat / action_pattern_cooldown memory (plain data). Without
+        // it a reload would clear every running cooldown.
+        actionMemory: (() => {
+          try { return c.actionMemory ? JSON.parse(JSON.stringify(c.actionMemory)) : null; }
+          catch { return null; }
+        })(),
         // Full token document data so the rewind tool can RECREATE a token
         // that was deleted since this save (an Illusionist Phantasm shattered,
         // a `destroy_summon`'d drake, a GM-reaped corpse). For unlinked summon
@@ -954,6 +963,8 @@ export async function reconstructDirectorCombat(state, scene) {
     combatant.turnsRemaining = sc.turnsRemaining ?? combatant.turnsPerRound;
     combatant.defeated = !!sc.defeated;
     combatant.phaseLock = sc.phaseLock ?? null;
+    combatant.turnPriority = (sc.turnPriority && typeof sc.turnPriority === "object") ? sc.turnPriority : null;
+    combatant.actionMemory = (sc.actionMemory && typeof sc.actionMemory === "object") ? sc.actionMemory : null;
     dc.combatants.push(combatant);
   }
 

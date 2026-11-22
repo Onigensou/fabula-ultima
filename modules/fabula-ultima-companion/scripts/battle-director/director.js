@@ -46,6 +46,9 @@ export class BattleDirector {
     this.dCombat = null;
     this.payload = payload ?? null;
     this.state = STATES.IDLE;
+    // Bumped on every state ENTRY: lets a long onEnter tell "still my entry"
+    // from "forced on while I awaited" (force-skip-guard.stillInEntry).
+    this._stateEpoch = 0;
     this.hooks = new HookRegistry();
     this.timers = new TimerRegistry();
     this.intentChannel = null;  // set by entry point if needed
@@ -320,6 +323,7 @@ export class BattleDirector {
     }
 
     this.state = nextState;
+    this._stateEpoch++;
     // Host-local announcement of the new state, for listeners that care which
     // KIND of moment the battle is in (director-player-hud publishes "settled /
     // moving" from it). Never lets a listener throw into the transition.

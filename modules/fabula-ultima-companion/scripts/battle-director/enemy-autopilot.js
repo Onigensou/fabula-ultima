@@ -42,7 +42,8 @@ import { buildActionReaderContext } from "../action-reader/actionReader-buildCon
 import { readActionReaderPatternTable } from "../action-reader/actionReader-readPatternTable.js";
 import { isBrainDrivableSummon, maybeInjectSummonFallbackPattern, synthesizeSummonPatternRows } from "./summon-autopilot.js";
 import { evaluateActionReaderConditions } from "../action-reader/actionReader-evaluateConditions.js";
-import { matchAndPickActionReaderAction } from "../action-reader/actionReader-matchAndPickAction.js";
+import { resolveTargetsWithRetry } from "../action-reader/feasibility-fallback.js";
+import { matchAndPickActionReaderAction, commitPendingActionMemory, attachDirectorActionMemory } from "../action-reader/actionReader-matchAndPickAction.js";
 import { parseActionReaderTargetRule } from "../action-reader/actionReader-parseTargetRule.js";
 import { buildAndPickActionReaderTargets } from "../action-reader/actionReader-buildAndPickTargets.js";
 
@@ -272,6 +273,7 @@ export async function previewEnemyActionOdds({ tokenId, director = null } = {}) 
     const activationIndex = dc && Number.isFinite(dc.turnsPerRound) && Number.isFinite(dc.turnsRemaining)
       ? Math.max(1, dc.turnsPerRound - dc.turnsRemaining + 1) : 1;
     const ctx = ActionReaderCore.createBaseContext();
+    attachDirectorActionMemory(ctx, { combatant: dc, round: director?.dCombat?.round });
     await resolveActionReaderPerformer(ctx, { token, combat, combatant });
     if (!ctx.performer?.actor) return null;
     await buildActionReaderContext(ctx, { overrides: { activationIndex } });
@@ -309,6 +311,12 @@ export async function previewEnemyActionOdds({ tokenId, director = null } = {}) 
 async function runActionReader({ token, combat, combatant, activationIndex, director = null, directorCombatant = null, grant = null }) {
   try {
     let ctx = ActionReaderCore.createBaseContext();
+    // Anti-repeat / action_pattern_cooldown memory lives on the DIRECTOR's
+    // combatant record: the BD makes no Foundry Combat, so the Foundry-combatant
+    // flag path (kept as the fallback) is empty in every director battle. Round =
+    // the director's own round. Only the BD host runs the autopilot, so this
+    // in-memory record is the single authority; persistence saves it with dCombat.
+    attachDirectorActionMemory(ctx, { combatant: directorCombatant, round: director?.dCombat?.round });
 
     await resolveActionReaderPerformer(ctx, { token, combat, combatant });
     if (!ctx.performer?.actor) { log("autopilot: ActionReader resolvePerformer produced no actor"); return null; }
@@ -358,7 +366,7 @@ async function runActionReader({ token, combat, combatant, activationIndex, dire
       });
     }
     await evaluateActionReaderConditions(ctx);
-    await matchAndPickActionReaderAction(ctx, grant ? { recordMemory: false } : undefined);
+    await matchAndPickActionReaderAction(ctx, grant ? { recordMemory: false } : { deferMemory: true });
     if (!ctx.chosenAction) {
       log("autopilot: ActionReader picked no action (no pattern / nothing feasible)");
       // Do Nothing only when NO pattern action can reach anyone. Nothing feasible
@@ -371,8 +379,17 @@ async function runActionReader({ token, combat, combatant, activationIndex, dire
       return null;
     }
 
-    await parseActionReaderTargetRule(ctx);
-    await buildAndPickActionReaderTargets(ctx);
+    // The pick reached nobody (e.g. a melee Claw vs a Flying party the feasibility
+    // survey did not rule out): re-pick without it (behind every gate, bounded; a
+    // grant consult never retries). Anti-repeat memory is stamped only for the
+    // pick that reaches someone (resolveTargetsWithRetry -> commit).
+    await resolveTargetsWithRetry(ctx, {
+      grant: !!grant,
+      log,
+      pick: matchAndPickActionReaderAction,
+      resolveTargets: async (c) => { await parseActionReaderTargetRule(c); await buildAndPickActionReaderTargets(c); },
+      commit: commitPendingActionMemory,
+    });
     if (!Array.isArray(ctx.chosenTargets) || !ctx.chosenTargets.length) {
       log("autopilot: ActionReader resolved no targets");
       return (!grant && authoredRows.length) ? { nothingPossible: "no target in reach" } : null;
@@ -713,7 +730,8 @@ async function decideViaActionReader(director, snap, { grant = null } = {}) {
     const token = canvas?.tokens?.get(snap?.tokenId) ?? null;
     if (!token) { log("autopilot: DECLARE has no canvas token — manual fallback"); return null; }
 
-    // Foundry combatant (for ActionReader anti-repeat memory + disposition).
+    // Foundry combatant (disposition; anti-repeat memory only as a FALLBACK when
+    // there is no director combatant -- director battles have no Foundry Combat).
     const combat = director?.combat ?? game.combat ?? null;
     const combatant = combat?.combatants?.find?.((c) => c.tokenId === snap.tokenId) ?? null;
 

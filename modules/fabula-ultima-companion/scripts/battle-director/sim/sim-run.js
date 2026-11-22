@@ -27,6 +27,7 @@
 import { log, warn } from "../logger.js";
 import { SimMode, forceEndSim } from "./sim-mode.js";
 import { Journal } from "./sim-journal.js";
+import { countsForReporting, classify } from "./outcome-classify.js";
 import { resolveGuestRoster, ensureGuestPassive } from "../../guest-roster/guest-roster-core.js";
 import { GUEST_SLOT_BASE } from "../director-init.js";
 
@@ -388,6 +389,7 @@ function snapshotCombat(director) {
   return {
     round: dc.round ?? 0,
     ended: !!dc.ended,
+    outcomeOverride: dc.outcomeOverride ?? null,
     combatants: (dc.combatants ?? []).map((c) => ({
       name: c.name,
       side: c.side,
@@ -416,21 +418,7 @@ function snapshotCombat(director) {
 // A battlefield object is the same thing on the enemy side: with a crystal
 // still standing, `enemyDead` was unreachable and a clean win reported
 // "inconclusive".
-function countsForReporting(c) {
-  return !c?.isGuest && !c?.isObject;
-}
-
-function classify(snap) {
-  if (!snap) return "unknown";
-  const party = snap.combatants.filter((c) => c.side === "party" && countsForReporting(c));
-  const enemy = snap.combatants.filter((c) => c.side === "enemy" && countsForReporting(c));
-  const partyDead = party.length > 0 && party.every((c) => c.defeated);
-  const enemyDead = enemy.length > 0 && enemy.every((c) => c.defeated);
-  if (partyDead && enemyDead) return "mutual-destruction";
-  if (partyDead) return "defeat";
-  if (enemyDead) return "victory";
-  return "inconclusive";
-}
+// countsForReporting + classify live in ./outcome-classify.js (pure, tested).
 
 // Turn the raw outcome into the sentence the designer actually wants to read.
 // Deliberately opinionated — the whole point of the tool is to stop hedging about
@@ -442,6 +430,8 @@ function verdictFor(outcome, hpLeft, rounds, expectedRounds) {
       return `UNRESOLVED after ${expectedRounds} rounds — neither side can close it out. The fight is not designed well enough: by now the party should have won or lost.`;
     case "stalled":
       return "STALLED — the harness stopped seeing progress. Probably a gate still waiting on a human, not a balance result. Do not read numbers off this run.";
+    case "escaped":
+      return `ESCAPED in ${rounds} round(s).`;
     case "defeat":
       return `DEFEAT in ${rounds} round(s).`;
     case "mutual-destruction":

@@ -174,12 +174,15 @@ function armForcedDice({ force, skill, casterActor, targetActors }) {
   // vs MDEF and everything else vs DEF (mirrors buildInitialActionResult).
   const dtt = String(p.defense_target_type ?? "").toLowerCase();
   const isSpell = String(p.skill_type ?? "").toLowerCase() === "spell";
-  const vsMdef = dtt === "mdef" || dtt === "magic" || (!dtt && isSpell);
+  // Same selector as snapshot.js resolvesVsMagicDefense: explicit mdef/def wins;
+  // blank / "default" / anything else falls back to the action kind.
+  const vsMdef = dtt === "mdef" ? true : dtt === "def" ? false : isSpell;
   const defs = (targetActors ?? []).map((t) =>
     vsMdef ? readPropNum(t, ["magic_defense", "current_mdef", "mdef"]) : readPropNum(t, ["defense", "current_def", "def"]));
   const minDef = defs.length ? Math.min(...defs) : 0;
+  const maxDef = defs.length ? Math.max(...defs) : 0;   // force.hit sizes to the HIGHEST defense (hit every target)
 
-  const faces = expandForce(force, { dA, dB, fumbleThreshold, checkBonus, minDef });
+  const faces = expandForce(force, { dA, dB, fumbleThreshold, checkBonus, minDef, maxDef });
   if (!faces) return;
 
   SimMode.armDice(faces.rA, dA, faces.rB, dB);
@@ -193,7 +196,7 @@ function describeForce(force) {
 
 // Same decision rules as the isolated harness. Raw {rA,rB} wins; then crit, fumble,
 // hit (cheapest passing pair), miss (largest failing pair, avoiding crit/fumble).
-function expandForce(force, { dA, dB, fumbleThreshold, checkBonus, minDef }) {
+function expandForce(force, { dA, dB, fumbleThreshold, checkBonus, minDef, maxDef = minDef }) {
   if (Number.isFinite(force.rA) && Number.isFinite(force.rB)) {
     return { rA: force.rA, rB: force.rB };
   }
@@ -204,7 +207,7 @@ function expandForce(force, { dA, dB, fumbleThreshold, checkBonus, minDef }) {
       for (let b = 1; b <= dB; b++) {
         if (a === b && a >= 6) continue;                        // skip crit
         if (a <= fumbleThreshold && b <= fumbleThreshold) continue;  // skip fumble
-        if (a + b + checkBonus >= minDef) return { rA: a, rB: b };
+        if (a + b + checkBonus >= maxDef) return { rA: a, rB: b };
       }
     }
     return { rA: dA, rB: dB };   // even max can't hit — caller sees the miss
