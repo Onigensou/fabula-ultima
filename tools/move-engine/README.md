@@ -69,15 +69,35 @@ const r = GB.buildScript({ key: "gb_sword", name: "Gunblade · Sword", files: [f
 4. Randomness: `rnd` / `pick` (seeded, same in both hosts). `Math.random` is fine for things that do not move a beat.
 5. Ripped sounds need their Forge path in `sfxUrls` (a mockup's `sfxSrc` for them names the rip source).
 
+## Parity check (Phase 3): is the game playing what the mockup shows?
+
+```
+node tools/move-engine/bin/move-engine.js parity sonic-katar [gb_sword gb_tf …] [--cpu] [--no-game] [--code <gitref>] [--out <dir>]
+```
+
+One command, about 2 minutes for 5 moves (GPU). It:
+1. builds the family's mockup page from the repo (`moves/<family>/page.js`);
+2. plays each move on it twice: a clean run (trace, wall-clock lag) and a run frozen at each moment for a frame;
+3. runs the game runtime's dry run on the mockup's geometry with the GAME's result (`family.json` gameOutcome /
+   gameStrikes) and diffs it event by event, exactly (time, sound, clip, volume, size, position, result);
+4. plays the moves for real in the snapshot runner (`family.json` game: snapshot, scene, caster, target) on the GPU:
+   ran vs planned length, fps, every frame over 40 ms with its move time, each hit cue's on-screen time vs plan, and the
+   board + overlay at the same moments;
+5. writes `out/parity/<family>/<time>/report.html` (+ report.json): PASS / FAIL per move with every reason, differences
+   that are by design named, side-by-side frames, and which engine version built what the game SHIPS for each move.
+
+PASS = every dry-run event matches the mockup, and in playback the move ran within 100 ms of plan, every hit cue within
+50 ms, no frame over 100 ms, no errors. A new family needs `moves/<family>/family.json` + `page.js` (see sonic-katar).
+Its first findings (engine 1.2.0): the transform glint's per-frame blur filter (100-130 ms hitch) and an unregistered blank
+pose (token drawn twice). Runner frames of 40-90 ms appear at random on this machine; only 100+ fails.
+
 ## Tests
 
 ```
-node test/assemble-sonic.js                     # the approved Sonic Katar page rebuilt on the package → out/
-node test/mockup-clock.js --gpu --json out/clock.json   # beat clock: identical timelines run to run; drift; vs the approved page
-node test/game-dry.js gb_sword                  # game runtime dry run vs the mockup trace (time, key, volume, scale, position)
-node test/game-play.js                          # → out/eval-play.js; then, from Data/tools/fvtt-playwright:
-FVTT_GPU=true node ../snapshot-runner/bin/run.mjs --snapshot snap-lionheart --port 30160 --canvas full \
-  --eval <this>/out/eval-play.js --dump <this>/out/play.json   # real playback on Valley_Battlemap001 (3D)
+node test/assemble-sonic.js                     # the Sonic Katar test page (moves/sonic-katar/page.js) → out/
+node test/mockup-clock.js --gpu --json out/clock.json   # beat clock: identical timelines run to run; drift
+node test/game-dry.js gb_sword [--result hit:9 | --strikes hit,miss,…,perfect | --variant sword]   # dry run vs mockup / a game result
+node test/picker-check.js --gpu                 # the page's result picker overrides a move's sliders
 ```
 
 Results 2026-11-22 (Phase 1): all 5 Sonic Katar / Gunblade moves match the mockup event for event in the dry run; in the
