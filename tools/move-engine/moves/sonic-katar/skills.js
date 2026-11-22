@@ -20,7 +20,7 @@ const MOVE_SKILLS = {
     reactions: [],
     flags: { carrierAttack: { damageMult: 2, critDamageMult: 1.5, noCritOpportunity: true, perfectMult: 1.5 } },
     bind: {
-      mp:    { path: "props.cost", to: (v) => v + " MP" },
+      mp:    { path: "props.cost", to: (v) => v + " MP", numbers: false },   // the cost: the game numbers stay valid when it moves
       pen:   { path: "props.check_bonus", to: (v) => String(-v) },
       n:     { path: "props.action_keywords", to: (v) => "chain " + v + " volley" },
       // each landed strike = share × one normal hit, so the whole volley = share × n hits

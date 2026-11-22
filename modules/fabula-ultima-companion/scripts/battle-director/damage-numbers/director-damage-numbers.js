@@ -65,6 +65,9 @@ export function initDamageNumbers() {
 // "local call + executeForOthers" split (executeForEveryone's local echo is
 // unreliable). Fire-and-forget; never throws into the caller's damage write.
 export function emitDamageNumber(payload = {}) {
+  // Every number, as BD decided it, before any drawing (the render below skips without a canvas). Read by
+  // tools/move-engine `pack` to measure a skill's real numbers with the canvas off. No listener in play.
+  try { Hooks.callAll("fuDamageNumberEmitted", payload); } catch (e) { warn("damage-numbers: fuDamageNumberEmitted hook threw", e); }
   try { renderDamageNumberLocal(payload); }
   catch (e) { warn("emitDamageNumber: local render threw", e); }
   try { _socket?.executeForOthers?.(ACTION_PLAY, payload); }

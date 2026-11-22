@@ -1,6 +1,7 @@
 "use strict";
-// move-engine Phase 4: a skill's GAME NUMBERS, measured in real Battle Director sim battles (snapshot runner, canvas on:
-// the damage numbers are what the players see). One battle per run: the block's `pack` setup (who, with which weapon, at
+// move-engine Phase 4: a skill's GAME NUMBERS, measured in real Battle Director sim battles (snapshot runner). Default: canvas off,
+// sim pace "batch", numbers read where BD emits them (hook fuDamageNumberEmitted, ~1 min/battle); --full: canvas on + "fast" pace,
+// numbers read as drawn (fuDamageNumber, ~7 min/battle). One battle per run: the block's `pack` setup (who, with which weapon, at
 // whom), the skill cast once, every damage number on the target recorded per strike (BD's `cascade` index; a miss is null).
 // The block is applied to the runner's world first (the same seed helper as the export), so the pack measures the block as
 // it stands, with the slider values it was resolved at. Writes moves/<family>/packs/<block>.json for the page's skill panel.
@@ -12,7 +13,7 @@ const { resolve } = require("./skill-export.js");
 const ROOT = path.join(__dirname, "..");
 const DATA = process.env.MOVE_ENGINE_DATA || "C:/Users/Oni/AppData/Local/FoundryVTT/Data";
 
-function packEval(block, setup, runs) {
+function packEval(block, setup, runs, fast) {
   return `
 const NS = "fabula-ultima-companion";
 const BLOCK = ${JSON.stringify(block)}, O = ${JSON.stringify({ ...setup, runs })};
@@ -34,11 +35,12 @@ if (O.weapon) { const w = game.items.getName(O.weapon);
   if (!nw.system?.props?.isEquipped) await nw.update({ "system.props.isEquipped": true }); }
 const out = { runs: [] };
 for (let n = 0; n < O.runs; n++) {
-  const nums = []; const h = Hooks.on("fuDamageNumber", (p) => nums.push({ kind: p.kind, token: p.tokenUuid, amount: p.amount ?? null, resource: p.resource ?? null, crit: !!p.isCrit, cascade: p.cascade ?? null, element: p.element ?? null, affinity: p.affinity ?? null }));
+  const HOOK = ${JSON.stringify(fast ? "fuDamageNumberEmitted" : "fuDamageNumber")};
+  const nums = []; const h = Hooks.on(HOOK, (p) => nums.push({ kind: p.kind, token: p.tokenUuid, amount: p.amount ?? null, resource: p.resource ?? null, crit: !!p.isCrit, cascade: p.cascade ?? null, element: p.element ?? null, affinity: p.affinity ?? null }));
   let err = null;
-  try { await sim.run({ enemies: [{ uuid: dummy.uuid, quantity: 1 }], party: [actor.uuid], pace: "fast", maxRounds: 1, expectedRounds: 1, guests: false,
+  try { await sim.run({ enemies: [{ uuid: dummy.uuid, quantity: 1 }], party: [actor.uuid], pace: ${JSON.stringify(fast ? "batch" : "fast")}, maxRounds: 1, expectedRounds: 1, guests: false,
     scripts: [{ caster: actor.uuid, skill: O.skill, targets: "enemy", once: true }] }); } catch (e) { err = String(e?.message ?? e); }
-  Hooks.off("fuDamageNumber", h);
+  Hooks.off(HOOK, h);
   out.runs.push({ err, nums });
 }
 return out;
@@ -64,15 +66,15 @@ function readRun(nums, count) {
     element: first?.element ?? null, affinity: first?.affinity ?? null };
 }
 
-function pack(family, key, { runs = 3, code = null, snapshot = "snap-blade", port = 30170, reread = false } = {}) {
+function pack(family, key, { runs = 3, code = null, snapshot = "snap-blade", port = 30170, reread = false, full = false } = {}) {
   const r = resolve(family, [key])[key]; if (!r) throw new Error("no block " + key);
   const setup = r.block.pack || require(path.join(ROOT, "moves", family, "skills.js"))[key].pack;
   if (!setup) throw new Error(key + ": no `pack` setup on the block ({ actor, weapon, target, skill, strikes })");
   const outDir = path.join(ROOT, "out", "pack", family); fs.mkdirSync(outDir, { recursive: true });
   const evalFile = path.join(outDir, key + "-eval.js"), dump = path.join(outDir, key + ".json");
   const { pack: _p, ...block } = r.block;
-  fs.writeFileSync(evalFile, packEval(block, setup, runs));
-  const args = ["../snapshot-runner/bin/run.mjs", "--snapshot", snapshot, "--port", String(port), "--canvas", "full", "--eval", evalFile, "--dump", dump, ...(code ? ["--code", code] : [])];
+  fs.writeFileSync(evalFile, packEval(block, setup, runs, !full));
+  const args = ["../snapshot-runner/bin/run.mjs", "--snapshot", snapshot, "--port", String(port), "--canvas", full ? "full" : "off", "--eval", evalFile, "--dump", dump, ...(code ? ["--code", code] : [])];
   // --reread: parse the last battles again (the runner dump) without fighting them again
   const res = reread && fs.existsSync(dump) ? {} : spawnSync(process.execPath, args, { cwd: path.join(DATA, "tools", "fvtt-playwright"), encoding: "utf8", timeout: 3600000 });
   if (!fs.existsSync(dump)) throw new Error("the snapshot runner wrote no result:\n" + ((res.stdout || "") + (res.stderr || "")).slice(-2000));
@@ -81,6 +83,7 @@ function pack(family, key, { runs = 3, code = null, snapshot = "snap-blade", por
   const out = {
     block: key, skill: r.block.doc.name, setup, measuredAt: new Date().toISOString().slice(0, 10),
     code: code || (() => { try { return execSync("git rev-parse --short HEAD", { cwd: ROOT, encoding: "utf8" }).trim(); } catch { return "working tree"; } })(),
+    mode: full ? "canvas, fast pace" : "no canvas, batch pace",
     bound: Object.fromEntries(r.bound.map((b) => [b.slider, b.value])),
     runs: x.runs.map((run) => (run.err ? { error: run.err, strikes: [], total: 0 } : readRun(run.nums, count))),
   };

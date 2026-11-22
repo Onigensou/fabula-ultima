@@ -49,7 +49,8 @@ function renderSkillPanel() {
 function mspPack(key, b, now) {
   const P = (typeof MOVE_PACKS !== "undefined" && MOVE_PACKS[key]) || null;
   if (!P) return `<p class="muted" style="margin:8px 0 0;font-size:13px">No game numbers yet: <code>move-engine.js pack</code> measures them in real battles.</p>`;
-  const stale = now.filter((x) => P.bound && x.slider in P.bound && P.bound[x.slider] !== x.value);
+  // only sliders that change the numbers (a binding marked `numbers: false`, e.g. the MP cost, never makes them stale)
+  const stale = now.filter((x) => (b.bind[x.slider] || {}).numbers !== false && P.bound && x.slider in P.bound && P.bound[x.slider] !== x.value);
   const runs = P.runs || [], n = runs.length;
   const avg = (f) => n ? (runs.reduce((s, r) => s + f(r), 0) / n) : 0;
   const rowsHtml = runs.map((r, i) => `<tr><th>Battle ${i + 1}${r.perfect ? " · Perfect" : ""}${r.crit ? " · crit" : ""}${r.element ? `<br><small>${mspEsc(r.element)} vs ${mspEsc(r.affinity)}</small>` : ""}</th><td style="text-align:left;font-weight:400">${(r.strikes || []).map((s) => s == null ? '<span class="muted">miss</span>' : s).join(" · ")}${(r.extra || []).length ? ` <b>+ ${r.extra.join(" + ")}</b>${r.perfect ? " Perfect" : ""}` : ""}</td><td>${r.total}</td></tr>`).join("");

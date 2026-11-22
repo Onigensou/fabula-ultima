@@ -111,12 +111,12 @@ async function exportCmd(rest) {
 
 const [cmd, ...rest] = process.argv.slice(2);
 if (cmd === "export") exportCmd(rest).catch((e) => { console.error(e); process.exit(2); });
-// pack <family> <block> [--runs N] [--code <ref>] [--snapshot <dir> --port <n>]: the block's game numbers from real sim battles
+// pack <family> <block> [--runs N] [--full] [--code <ref>] [--snapshot <dir> --port <n>]: the block's game numbers from real sim battles
 else if (cmd === "pack") {
   const val = (k) => { const i = rest.indexOf(k); return i >= 0 ? rest[i + 1] : null; };
   const [family, key] = rest.filter((a, i) => !a.startsWith("--") && !["--runs", "--code", "--snapshot", "--port"].includes(rest[i - 1]));
-  if (!family || !key) { console.log("usage: move-engine.js pack <family> <block> [--runs 3] [--code <ref>] [--snapshot <dir> --port <n>]"); process.exit(1); }
-  const { file, out } = require("../lib/pack.js").pack(family, key, { runs: Number(val("--runs") || 3), code: val("--code"), reread: rest.includes("--reread"),
+  if (!family || !key) { console.log("usage: move-engine.js pack <family> <block> [--runs 3] [--full] [--code <ref>] [--snapshot <dir> --port <n>]"); process.exit(1); }
+  const { file, out } = require("../lib/pack.js").pack(family, key, { runs: Number(val("--runs") || 3), code: val("--code"), reread: rest.includes("--reread"), full: rest.includes("--full"),
     ...(val("--snapshot") ? { snapshot: val("--snapshot") } : {}), ...(val("--port") ? { port: Number(val("--port")) } : {}) });
   for (const [i, r] of out.runs.entries()) console.log(`battle ${i + 1}: ` + (r.error ? "ERROR " + r.error : r.strikes.map((s) => (s == null ? "miss" : s)).join(" ") + (r.extra?.length ? " + " + r.extra.join(" + ") : "") + ` = ${r.total}${r.perfect ? " Perfect" : ""}${r.crit ? " crit" : ""} (${r.element} ${r.affinity})`));
   console.log("wrote " + file);
