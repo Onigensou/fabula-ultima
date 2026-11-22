@@ -79,8 +79,39 @@ async function parityCmd(rest) {
   process.exit(r.ok ? 0 : 1);
 }
 
+// export <family> [skill…] [--check [--code <ref>]] [--write <migration-key> --desc "<text>"]
+async function exportCmd(rest) {
+  const val = (k) => { const i = rest.indexOf(k); return i >= 0 ? rest[i + 1] : null; };
+  const pos = rest.filter((a, i) => !a.startsWith("--") && !["--code", "--write", "--desc", "--out"].includes(rest[i - 1]));
+  const [family, ...keys] = pos;
+  if (!family) { console.log("usage: move-engine.js export <family> [skill…] [--check [--code <ref>]] [--write <key> --desc <text>]"); process.exit(1); }
+  const SE = require("../lib/skill-export.js");
+  const resolved = SE.resolve(family, keys);
+  for (const [name, r] of Object.entries(resolved)) {
+    console.log("\n" + name + " → " + r.block.doc.name + " (" + r.block.doc.id + ")" + (r.move ? " · sliders of move " + r.move : ""));
+    for (const b of r.bound) console.log("   slider " + b.slider + " = " + b.value + "  →  " + b.path + " = " + JSON.stringify(b.set));
+  }
+  let ok = true;
+  if (rest.includes("--check")) {
+    const outDir = val("--out") || path.join(ROOT, "out", "export", family);
+    console.log("\nchecking against the world (snapshot runner, after its migrations)…");
+    const r = SE.check(family, keys, { code: val("--code"), outDir });
+    for (const res of r.results) {
+      if (!res.found) { console.log("  ✗ " + res.name + ": not in the world"); ok = false; continue; }
+      for (const c of res.copies) { const where = (c.parent ? c.parent + " / " : "") + res.name + " (" + c.id + ")";
+        if (!c.diffs.length) console.log("  = " + where + ": every logic field matches");
+        else { ok = false; console.log("  ~ " + where + ": " + c.diffs.length + " field(s) differ"); for (const d of c.diffs) console.log("      " + d.field + ": game " + JSON.stringify(d.game) + "  block " + JSON.stringify(d.block)); } }
+      const v = r.validation[res.name] || []; console.log("    validator: " + (v.length ? v.join(" | ") : "clean"));
+    }
+  }
+  const key = val("--write");
+  if (key) { const f = SE.writeMigration(family, keys, { key, description: val("--desc") || "move-engine skill export" }); console.log("\nwrote " + f + " (+ _manifest.json)"); }
+  process.exit(ok ? 0 : 1);
+}
+
 const [cmd, ...rest] = process.argv.slice(2);
-if (cmd === "commands") commands(rest.includes("--md"));
+if (cmd === "export") exportCmd(rest).catch((e) => { console.error(e); process.exit(2); });
+else if (cmd === "commands") commands(rest.includes("--md"));
 else if (cmd === "check") check(rest);
 else if (cmd === "parity") parityCmd(rest).catch((e) => { console.error(e); process.exit(2); });
 else { console.log("usage: move-engine.js commands [--md] | check <move files...> | parity <family> [moves…] [--cpu] [--no-game] [--code <ref>] [--out <dir>]"); process.exit(cmd ? 1 : 0); }
