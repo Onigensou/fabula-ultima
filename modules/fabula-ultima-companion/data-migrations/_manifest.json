@@ -736,6 +736,10 @@
     {
       "key": "2026-11-22-sonic-blow-action-command",
       "path": "data-migrations/2026-11-22-sonic-blow-action-command.js"
+    },
+    {
+      "key": "2026-11-22-gunblade-move-engine-1-2-1",
+      "path": "data-migrations/2026-11-22-gunblade-move-engine-1-2-1.js"
     }
   ]
 }

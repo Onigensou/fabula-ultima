@@ -255,26 +255,36 @@ function meBaked(key, filter) { const img = TL.art(key); if (!filter || !img) re
   const w = img.videoWidth || img.naturalWidth || img.width, h = img.videoHeight || img.naturalHeight || img.height; if (!w || !h) return img;
   c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d"); x.filter = filter.replace(/([\d.]+)px/g, (m0, n) => (Number(n) * w / Math.max(1, TL.TOK[key].w / KP)).toFixed(2) + "px"); x.drawImage(img, 0, 0, w, h); ME_BAKE.set(id, c); return c; }
 function meSnap(a) { const o = parseFloat(a.el.style.opacity); return { dx: a.dx, dy: a.dy, air: (a.lift || 0) - (a.bob || 0), rot: a.rot || 0, kx: a.kx == null ? 1 : a.kx, ky: a.ky == null ? 1 : a.ky, alpha: Number.isFinite(o) ? o : 1, filter: a.media.style.filter || "", glowK: a.glowK || 0, glowC: a.glowC || null }; }
-// the glow of an actor's art in one colour, rendered once: a colour silhouette blurred like CSS drop-shadow(0 0 14px) (σ = 7 px)
-const ME_GLOW = new Map();
+// the glow of an actor's art in one colour, rendered once at a few sizes: a colour silhouette blurred like CSS
+// drop-shadow(0 0 R px) (σ = R / 2). flashActor's CSS glow SHRINKS at full strength (R = 14 → 0); each frame draws the two
+// pre-rendered sizes around the current R, blended, behind the art (engine 1.2.1; 1.2.0 faded one 14 px glow = softer).
+const ME_GLOW = new Map(), ME_GLOW_R = [14, 10, 7, 4.5, 2.5, 1];
 function meGlow(key, color) {
   const id = key + "|" + color; if (ME_GLOW.has(id)) return ME_GLOW.get(id);
   const img = TL.art(key), T = TL.TOK[key]; let res = null;
   try { const w = img && (img.videoWidth || img.naturalWidth || img.width), h = img && (img.videoHeight || img.naturalHeight || img.height);
-    if (w && h) { const k = w / Math.max(1, T.w), blur = 7 * KP * k, pad = Math.ceil(blur * 3);
+    if (w && h) { const k = w / Math.max(1, T.w), pad = Math.ceil(ME_GLOW_R[0] / 2 * KP * k * 3);
       const sil = document.createElement("canvas"); sil.width = w + 2 * pad; sil.height = h + 2 * pad; const s = sil.getContext("2d");
       s.drawImage(img, pad, pad, w, h); s.globalCompositeOperation = "source-in"; s.fillStyle = color; s.fillRect(0, 0, sil.width, sil.height);
-      const out = document.createElement("canvas"); out.width = sil.width; out.height = sil.height; const o = out.getContext("2d");
-      o.filter = "blur(" + blur.toFixed(2) + "px)"; o.drawImage(sil, 0, 0); o.drawImage(sil, 0, 0);
-      res = { c: out, padW: pad / k }; } } catch (e) { res = null; }
+      const levels = ME_GLOW_R.map((R) => { const out = document.createElement("canvas"); out.width = sil.width; out.height = sil.height; const o = out.getContext("2d");
+        o.filter = "blur(" + (R / 2 * KP * k).toFixed(2) + "px)"; o.drawImage(sil, 0, 0); return { R, c: out }; });
+      res = { levels, padW: pad / k }; } } catch (e) { res = null; }
   ME_GLOW.set(id, res); return res;
+}
+// the pre-rendered sizes for glow radius R: [[level, weight], …] (between the two nearest; none below the smallest)
+function meGlowMix(levels, R) {
+  if (!(R > 0.05)) return [];
+  const L = levels; if (R >= L[0].R) return [[L[0], 1]];
+  for (let i = 0; i < L.length - 1; i++) if (R <= L[i].R && R >= L[i + 1].R) { const w = (L[i].R - R) / (L[i].R - L[i + 1].R); return [[L[i], 1 - w], [L[i + 1], w]]; }
+  return [[L[L.length - 1], R / L[L.length - 1].R]];
 }
 function mePaintGlow(g, a, st, alpha) {
   const T = TL.TOK[a.key], img = TL.art(a.key); if (!img) return; const f = TL.feet(T), wx = T.x + st.dx * KP, wy = f.y + st.dy * KP;
   const r = (st.dx || st.dy) ? TL.depthRatio(f, { x: f.x + st.dx * KP, y: wy }) : 1, gl = meGlow(a.key, st.glowC), k = st.glowK;
   g.save(); g.translate(wx, wy - st.air * KP); if (st.rot) g.rotate(st.rot * Math.PI / 180); g.scale(T.flip * st.kx * r, st.ky * r);
   const x0 = -T.w / 2, y0 = -T.h * T.foot;
-  if (gl) { g.globalAlpha = alpha * k; g.globalCompositeOperation = "lighter"; g.drawImage(gl.c, x0 - gl.padW, y0 - gl.padW, T.w + 2 * gl.padW, T.h + 2 * gl.padW); }
+  // drop-shadow(0 0 14k px): full-strength colour behind the art, its radius shrinking with k
+  if (gl) { g.globalCompositeOperation = "source-over"; for (const [lv, wgt] of meGlowMix(gl.levels, 14 * k)) { g.globalAlpha = alpha * wgt; g.drawImage(lv.c, x0 - gl.padW, y0 - gl.padW, T.w + 2 * gl.padW, T.h + 2 * gl.padW); } }
   g.globalCompositeOperation = "source-over"; g.globalAlpha = alpha; g.drawImage(img, x0, y0, T.w, T.h);
   // brightness(1 + 1.3 k) ≈ the art added on top 1.3 k times
   let extra = 1.3 * k; g.globalCompositeOperation = "lighter"; while (extra > 0.01) { g.globalAlpha = alpha * Math.min(1, extra); g.drawImage(img, x0, y0, T.w, T.h); extra -= 1; }
