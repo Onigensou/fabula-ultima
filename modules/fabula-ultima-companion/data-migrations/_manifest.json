@@ -732,6 +732,10 @@
     {
       "key": "2026-11-22-blade-adept-automation",
       "path": "data-migrations/2026-11-22-blade-adept-automation.js"
+    },
+    {
+      "key": "2026-11-22-sonic-blow-action-command",
+      "path": "data-migrations/2026-11-22-sonic-blow-action-command.js"
     }
   ]
 }
