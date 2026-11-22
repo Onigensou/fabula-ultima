@@ -65,7 +65,22 @@ function check(files) {
   process.exit(r.errors.length ? 1 : 0);
 }
 
+// parity <family> [moves…] [--cpu] [--no-game] [--code <gitref>] [--out <dir>]
+async function parityCmd(rest) {
+  const flags = new Set(rest.filter((a) => a.startsWith("--")));
+  const val = (k) => { const i = rest.indexOf(k); return i >= 0 ? rest[i + 1] : null; };
+  const pos = rest.filter((a, i) => !a.startsWith("--") && !["--code", "--out"].includes(rest[i - 1]));
+  const [family, ...keys] = pos;
+  if (!family) { console.log("usage: move-engine.js parity <family> [moves…] [--cpu] [--no-game] [--code <gitref>] [--out <dir>]"); process.exit(1); }
+  const { parity } = require("../lib/parity.js");
+  const r = await parity(family, keys, { gpu: !flags.has("--cpu"), game: !flags.has("--no-game"), code: val("--code"), out: val("--out") });
+  for (const m of r.moves) console.log((m.ok ? "PASS " : "FAIL ") + m.key + (m.reasons.length ? "  · " + m.reasons.join("; ") : ""));
+  console.log("report: " + r.report);
+  process.exit(r.ok ? 0 : 1);
+}
+
 const [cmd, ...rest] = process.argv.slice(2);
 if (cmd === "commands") commands(rest.includes("--md"));
 else if (cmd === "check") check(rest);
-else { console.log("usage: move-engine.js commands [--md] | check <move files...>"); process.exit(cmd ? 1 : 0); }
+else if (cmd === "parity") parityCmd(rest).catch((e) => { console.error(e); process.exit(2); });
+else { console.log("usage: move-engine.js commands [--md] | check <move files...> | parity <family> [moves…] [--cpu] [--no-game] [--code <ref>] [--out <dir>]"); process.exit(cmd ? 1 : 0); }

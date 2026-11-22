@@ -1,0 +1,25 @@
+{
+ "name": "sonic-katar",
+ "note": "What `move-engine parity sonic-katar` needs. A page tune and a game outcome on the same move must describe the SAME result.",
+ "page": "page.js",
+ "assets": { "map": "assets.json", "metaFallback": true,
+  "sfxUrls": { "ro_sonicblow": "Sound/Ragnarok Online/ro_sonicblow.wav", "ro_katar": "Sound/Ragnarok Online/ro_attack_katar.wav", "ro_katar2": "Sound/Ragnarok Online/ro_attack_katar2.wav", "ro_hitdagger": "Sound/Ragnarok Online/ro_hit_dagger.wav" } },
+ "mockupActors": { "caster": "keren", "target": "orc" },
+ "shipped": { "module": "modules/fabula-ultima-companion/data-migrations/_gunblade-move-engine-anims.js",
+  "moves": { "gb_sword": "GUNBLADE_ATTACK_SCRIPT", "gb_gun": "GUNBLADE_ATTACK_SCRIPT", "gb_tf": "GUNBLADE_TRANSFORM_SCRIPT" },
+  "rebuild": "node tools/move-engine/build/pilot-gunblade.js (+ a migration that refreshes move-engine scripts of another engine version)" },
+ "game": { "snapshot": "snap-lionheart", "scene": "Valley_Battlemap001", "caster": "Keren", "target": "Test Target Enemy", "casterAt": [0.72, 0.62], "targetAt": [0.30, 0.60] },
+ "moves": {
+  "gb_sword": { "label": "Gunblade · Attack · Sword (odd total → fires)", "files": ["head", "gunblade"], "pageTune": { "roll": 1 }, "gameOutcome": { "hit": true, "crit": false, "total": 7 },
+   "shots": [{ "at": 900, "name": "roll · muzzle + ignite" }, { "at": 1300, "name": "cut · wind-up" }, { "at": 1450, "name": "cut · fire slash lands" }, { "at": 2050, "name": "back · hop home" }] },
+  "gb_gun": { "label": "Gunblade · Attack · Firearm", "files": ["head", "gunblade"], "pageTune": { "roll": 1 }, "gameOutcome": { "hit": true, "crit": false, "total": 7 },
+   "shots": [{ "at": 640, "name": "shot · muzzle + tracer" }, { "at": 720, "name": "shot · pierce hit" }] },
+  "gb_tf": { "label": "Gunblade · Transform (Sword → Firearm)", "files": ["head", "gunblade"], "pageTune": { "dir": 0 }, "gameOutcome": null,
+   "shots": [{ "at": 250, "name": "click · glint" }, { "at": 700, "name": "transform · power-up" }] },
+  "sk_attack": { "label": "Sonic Katar · Attack (hit)", "files": ["head", "sonic"], "pageTune": { "result": 1 }, "gameOutcome": { "hit": true, "crit": false, "total": 9 },
+   "shots": [{ "at": 900, "name": "swing" }] },
+  "sonicblow": { "label": "Sonic Blow · 8/8 + Perfect", "files": ["head", "sonic"], "pageTune": { "result": 1 },
+   "gameStrikes": ["hit", "hit", "hit", "hit", "hit", "hit", "hit", "hit", "perfect"],
+   "shots": [{ "at": 1300, "name": "dash in" }, { "at": 2140, "name": "strikes" }, { "at": 3230, "name": "Perfect gold hit" }] }
+ }
+}

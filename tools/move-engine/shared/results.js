@@ -54,7 +54,9 @@ const CHECK_PRESETS = {
 };
 const forcedCheck = (name, bonus) => makeResult(Object.assign({ source: "forced" }, (CHECK_PRESETS[name] || CHECK_PRESETS.hit)(bonus || 0)));
 // a Chain forced to k landed of n (no crits), the misses placed by the move's seeded jitter
-function forcedChain(n, k) { k = Math.max(0, Math.min(n, k)); const idx = new Set(); while (idx.size < k) idx.add(Math.floor(MOVE_RNG() * n));
+// (its own generator: picking the misses must not use up the move's jitter stream, or every later jitter would differ from a
+// run where the game supplied the plan)
+function forcedChain(n, k) { k = Math.max(0, Math.min(n, k)); const R = makeRng(n * 131 + k * 7 + 1); const idx = new Set(); while (idx.size < k) idx.add(Math.floor(R() * n));
   return Array.from({ length: n }, (_, i) => makeResult({ hit: idx.has(i), source: "forced" })); }
 
 const traceResult = (what, list) => traceEv("result", { what, list: list.map((r) => r.kind + (r.crit ? "+crit" : "") + (r.perfect ? "+perfect" : "") + (r.total != null ? "@" + r.total : "")) });
