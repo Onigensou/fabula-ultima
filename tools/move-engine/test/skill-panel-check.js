@@ -22,11 +22,14 @@ require("../moves/sonic-katar/page.js").build({ out: OUT });
   assert.ok(p, "panel on the page");
   assert.match(p.text, /Sonic Blow/); assert.match(p.text, /props\.cost/); assert.match(p.text, /30 MP/); assert.equal(p.hl, 0); assert.equal(p.copy, false);
   console.log("Sonic Blow, approved:     ok (cost 30 MP, nothing marked)");
+  assert.match(p.text, /In the game · 3 real battles/); assert.match(p.text, /81/); assert.doesNotMatch(p.text, /from before your slider change/);
+  console.log("Game numbers:             ok (3 battles from the pack, not stale)");
 
   await slide("mp", 40); await page.waitForTimeout(200);
   p = await panel();
   assert.match(p.text, /40 MP/); assert.equal(p.hl, 1); assert.equal(p.copy, true); assert.match(p.text, /1 field\(s\) changed/);
-  console.log("MP slider → 40:           ok (row follows live, 1 change marked, Copy enabled)");
+  assert.match(p.text, /Measured at mp = 30/);
+  console.log("MP slider → 40:           ok (row follows live, 1 change marked, Copy enabled)");  console.log("Pack after the change:    ok (flagged as measured at mp = 30)");
   await slide("mp", 30); await page.waitForTimeout(200);
   p = await panel(); assert.equal(p.hl, 0);
   console.log("MP slider back → 30:      ok (mark cleared)");

@@ -14,6 +14,14 @@ assert.deepEqual(r.strikes, [2, 2, null, null, null, 2, null, 2]); assert.equal(
 const perfect = [{ kind: "spend", token: C, resource: "mp", amount: 30 }, ...[1, 2, 3, 4, 5, 6, 7, 8].map((k) => loss(3, k)), loss(12, 9)];
 r = readRun(perfect, 8);
 assert.deepEqual(r.strikes, Array(8).fill(3)); assert.deepEqual(r.extra, [12]); assert.equal(r.total, 36); assert.equal(r.perfect, true);
+// real 11-22 stream shapes: the battle opens with another MP spend (100) + gain, and strike 1 lands BEFORE the 30 MP spend
+const opening = [{ kind: "spend", token: C, resource: "mp", amount: 100 }, { kind: "gain", token: C, resource: "mp", amount: 20 },
+  loss(6, 1), { kind: "spend", token: "Scene.s.Token.c2", resource: "mp", amount: 30 }, ...[2, 3, 4, 5, 6, 7, 8].map((k) => loss(6, k)), loss(27, 9, { crit: true })];
+r = readRun(opening, 8);
+assert.deepEqual(r.strikes, Array(8).fill(6)); assert.equal(r.total, 75); assert.equal(r.perfect, true); assert.equal(r.crit, true);
+// a single hit (no Chain numbering): its first HP number
+r = readRun([{ kind: "spend", token: C }, loss(14, null)], 1);
+assert.deepEqual(r.strikes, [14]);
 // a crit flag anywhere marks the run
 r = readRun([{ kind: "spend", token: C }, loss(5, 1, { crit: true }), miss(2)], 2);
 assert.equal(r.crit, true); assert.deepEqual(r.strikes, [5, null]);

@@ -1,0 +1,79 @@
+{
+ "block": "sonic_blow",
+ "skill": "Sonic Blow",
+ "setup": {
+  "actor": "Blanche",
+  "weapon": "Sonic Katar",
+  "target": "Test Target Enemy",
+  "skill": "Sonic Blow",
+  "strikes": 8
+ },
+ "measuredAt": "2026-11-22",
+ "code": "12005bb0",
+ "bound": {
+  "mp": 30,
+  "pen": 2,
+  "n": 8,
+  "share": 0.25,
+  "critm": 1.5,
+  "perf": 1.5
+ },
+ "runs": [
+  {
+   "strikes": [
+    4,
+    4,
+    null,
+    3,
+    null,
+    4,
+    3,
+    4
+   ],
+   "extra": [],
+   "total": 22,
+   "crit": true,
+   "perfect": false,
+   "element": "Physical",
+   "affinity": "NE"
+  },
+  {
+   "strikes": [
+    6,
+    null,
+    6,
+    null,
+    6,
+    6,
+    6,
+    null
+   ],
+   "extra": [],
+   "total": 30,
+   "crit": false,
+   "perfect": false,
+   "element": "bolt",
+   "affinity": "VU"
+  },
+  {
+   "strikes": [
+    6,
+    6,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8
+   ],
+   "extra": [
+    27
+   ],
+   "total": 81,
+   "crit": true,
+   "perfect": true,
+   "element": "bolt",
+   "affinity": "VU"
+  }
+ ]
+}

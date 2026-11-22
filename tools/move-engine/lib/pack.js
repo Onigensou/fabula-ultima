@@ -45,11 +45,15 @@ return out;
 `;
 }
 
-// the skill's numbers out of one battle's damage-number stream: from its cost spend to the next spend, the target's HP numbers
+// the skill's numbers out of one battle's damage-number stream: BD numbers each strike of a Chain (`cascade` 1..n, a Perfect
+// bonus after them); the target = the token with the most numbered strikes. Spends are NOT an anchor: a battle opens with
+// other MP spends, and a strike's number can arrive before the cost's.
 function readRun(nums, count) {
-  let i = nums.findIndex((x) => x.kind === "spend");
-  const tail = nums.slice(i + 1); const j = tail.findIndex((x) => x.kind === "spend");
-  const mine = (j < 0 ? tail : tail.slice(0, j)).filter((x) => x.kind === "miss" || (x.kind === "loss" && x.resource === "hp"));
+  const numbered = nums.filter((x) => x.cascade != null && (x.kind === "miss" || (x.kind === "loss" && x.resource === "hp")));
+  const by = {}; for (const x of numbered) by[x.token] = (by[x.token] || 0) + 1;
+  const target = Object.keys(by).sort((a, b) => by[b] - by[a])[0];
+  let mine = numbered.filter((x) => x.token === target);
+  if (!mine.length) { const hp = nums.filter((x) => x.kind === "loss" && x.resource === "hp"); mine = hp.length ? [{ ...hp[0], cascade: 1 }] : []; }   // a single hit: its first HP number
   const strikes = Array(count).fill(undefined), extra = [];
   for (const x of mine) { const k = Number(x.cascade); const v = x.kind === "miss" ? null : x.amount;
     if (k >= 1 && k <= count && strikes[k - 1] === undefined) strikes[k - 1] = v; else if (v != null) extra.push(v); }
@@ -60,7 +64,7 @@ function readRun(nums, count) {
     element: first?.element ?? null, affinity: first?.affinity ?? null };
 }
 
-function pack(family, key, { runs = 3, code = null, snapshot = "snap-blade", port = 30170 } = {}) {
+function pack(family, key, { runs = 3, code = null, snapshot = "snap-blade", port = 30170, reread = false } = {}) {
   const r = resolve(family, [key])[key]; if (!r) throw new Error("no block " + key);
   const setup = r.block.pack || require(path.join(ROOT, "moves", family, "skills.js"))[key].pack;
   if (!setup) throw new Error(key + ": no `pack` setup on the block ({ actor, weapon, target, skill, strikes })");
@@ -69,7 +73,8 @@ function pack(family, key, { runs = 3, code = null, snapshot = "snap-blade", por
   const { pack: _p, ...block } = r.block;
   fs.writeFileSync(evalFile, packEval(block, setup, runs));
   const args = ["../snapshot-runner/bin/run.mjs", "--snapshot", snapshot, "--port", String(port), "--canvas", "full", "--eval", evalFile, "--dump", dump, ...(code ? ["--code", code] : [])];
-  const res = spawnSync(process.execPath, args, { cwd: path.join(DATA, "tools", "fvtt-playwright"), encoding: "utf8", timeout: 3600000 });
+  // --reread: parse the last battles again (the runner dump) without fighting them again
+  const res = reread && fs.existsSync(dump) ? {} : spawnSync(process.execPath, args, { cwd: path.join(DATA, "tools", "fvtt-playwright"), encoding: "utf8", timeout: 3600000 });
   if (!fs.existsSync(dump)) throw new Error("the snapshot runner wrote no result:\n" + ((res.stdout || "") + (res.stderr || "")).slice(-2000));
   const raw = JSON.parse(fs.readFileSync(dump, "utf8")); const x = raw.result || raw;
   const count = setup.strikes || 1;
