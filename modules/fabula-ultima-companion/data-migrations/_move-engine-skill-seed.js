@@ -4,7 +4,8 @@
  *   dryRun: true   → only report what differs (the `export --check` round trip runs this in the snapshot runner)
  *   dryRun: false  → write it (an export migration calls this)
  * A block's LOGIC fields only: system.props keys it names, the effect_table / reaction_config_table rows (a table it names is
- * replaced whole: an update MERGES objects, so the old row keys are deleted explicitly), and the module flags it names.
+ * replaced whole: an update MERGES objects, so the old row keys are deleted explicitly), the module flags it names, and the
+ * embedded Active Effects it names (`aes: [{ name, changes, transfer }]`, matched by name; other AEs are left alone).
  * Every copy: the world item by id, plus actor / unlinked-token copies by name (and parent weapon name when `doc.container`).
  * Text, art and animation fields are not touched.
  */
@@ -41,7 +42,23 @@ export function diffSkill(item, block) {
     }
   }
   for (const [k, v] of Object.entries(block.flags ?? {})) if (!same(item.flags?.[M]?.[k], v)) diffs.push({ field: "flags." + k, game: item.flags?.[M]?.[k] ?? null, block: v });
+  // embedded Active Effects the block names (by name): their changes (key / mode / value / priority) and transfer.
+  // Other AEs on the item are not touched.
+  for (const want of block.aes ?? []) {
+    const ae = item.effects?.find?.((e) => e.name === want.name);
+    if (!ae) { diffs.push({ field: "ae " + want.name, game: null, block: "(create)" }); continue; }
+    const norm = (chs) => (chs ?? []).map((c) => ({ key: c.key, mode: Number(c.mode ?? 0), value: String(c.value ?? ""), priority: c.priority == null ? null : Number(c.priority) }));
+    if (!same(norm(ae.changes), norm(want.changes))) diffs.push({ field: "ae " + want.name + ".changes", game: norm(ae.changes), block: norm(want.changes) });
+    if (want.transfer != null && !!ae.transfer !== !!want.transfer) diffs.push({ field: "ae " + want.name + ".transfer", game: !!ae.transfer, block: !!want.transfer });
+  }
   return diffs;
+}
+async function applyAes(item, block) {
+  for (const want of block.aes ?? []) {
+    const data = { name: want.name, changes: want.changes, transfer: want.transfer ?? true, disabled: false, ...(want.img ? { img: want.img } : {}) };
+    const ae = item.effects?.find?.((e) => e.name === want.name);
+    if (ae) await ae.update({ changes: data.changes, transfer: data.transfer }); else await item.createEmbeddedDocuments("ActiveEffect", [data]);
+  }
 }
 
 function patchFor(item, block) {
@@ -70,7 +87,8 @@ export async function applySkills(game, blocks, { dryRun = true, log = () => {} 
       // a table rewrite: delete the old row keys first, then write the rows (one update with both would merge)
       const p = patchFor(it, block), dels = Object.fromEntries(Object.entries(p).filter(([k]) => k.includes(".-="))), sets = Object.fromEntries(Object.entries(p).filter(([k]) => !k.includes(".-=")));
       if (Object.keys(dels).length) await it.update(dels);
-      await it.update(sets);
+      if (Object.keys(sets).length) await it.update(sets);
+      if ((block.aes ?? []).length) await applyAes(it, block);
       log(`~ ${it.parent ? it.parent.name + " / " : ""}${it.name}: ${diffs.length} field(s) written`);
     }
     results.push(res);

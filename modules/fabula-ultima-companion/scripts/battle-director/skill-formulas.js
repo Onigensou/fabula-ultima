@@ -31,6 +31,7 @@ export const SKILL_FORMULAS_SCHEMA = 12;
 // No `eval` / `new Function`. Tokenizer + recursive-descent parser.
 
 import { log, warn } from "./logger.js";
+import { aliasCategories } from "./weapon-alias.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { orbmentReduction } from "../orbment/orbment-dr.js";
 import { bossStage } from "./boss-rules/boss-rules.js";
@@ -2873,7 +2874,8 @@ function hasEquippedWeaponOfType(actor, weaponType) {
     const cat = weaponFamilyOf(item);
     // A transforming weapon's active form may change its range (Lionheart Gun = Ranged).
     const range = String(activeFormOverride(item, "weapon_range") ?? p.weapon_range ?? "").toLowerCase();
-    if (cat === wanted || range === wanted) return true;
+    // Blade Adept-style alias: a melee dagger that also counts as a sword (weapon-alias.js)
+    if (cat === wanted || range === wanted || aliasCategories(actor, cat, range).includes(wanted)) return true;
   }
   // "You are treated as having an <X> weapon equipped" (Red Tunic): a live
   // `counts_as_weapon_category` AE change whose comma-list names the family.
@@ -2921,7 +2923,7 @@ function usedWeaponIsOfType(payload, weaponType) {
   if (String(p.item_type ?? "").toLowerCase() !== "weapon") return false;
   const cat = weaponFamilyOf(item);
   const range = String(p.weapon_range ?? "").toLowerCase();
-  return cat === wanted || range === wanted;
+  return cat === wanted || range === wanted || aliasCategories(item?.parent ?? null, cat, range).includes(wanted);
 }
 
 // True if the actor has any EQUIPPED item with the given `item_type`

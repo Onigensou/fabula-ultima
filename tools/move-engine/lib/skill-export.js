@@ -13,10 +13,11 @@ const REPO = path.join(ROOT, "..", "..");
 const DATA = process.env.MOVE_ENGINE_DATA || "C:/Users/Oni/AppData/Local/FoundryVTT/Data";
 
 function loadSkills(family) { const f = path.join(ROOT, "moves", family, "skills.js"); delete require.cache[require.resolve(f)]; return require(f); }
-function familyFiles(family) { const fam = JSON.parse(fs.readFileSync(path.join(ROOT, "moves", family, "family.json"), "utf8"));
-  return [...new Set(Object.values(fam.moves).flatMap((m) => m.files))]; }
+function familyFiles(family) { const f = path.join(ROOT, "moves", family, "family.json"); if (!fs.existsSync(f)) return [];
+  const fam = JSON.parse(fs.readFileSync(f, "utf8")); return [...new Set(Object.values(fam.moves || {}).flatMap((m) => m.files))]; }
 
 // set a bound value: props.x | flags.a.b | effects.<label>.<field> | reactions.<index>.<field>
+// (Active Effect values are not bindable yet: `aes` blocks are plain data)
 function setPath(block, p, v) {
   const [head, ...rest] = p.split(".");
   if (head === "effects") { const row = block.effects.find((r) => r.effect_label === rest[0]); if (!row) throw new Error("no effect row " + rest[0]); row[rest[1]] = v; return; }
@@ -24,11 +25,12 @@ function setPath(block, p, v) {
   let o = block[head] = block[head] || {}; for (let i = 0; i < rest.length - 1; i++) o = o[rest[i]] = o[rest[i]] || {}; o[rest[rest.length - 1]] = v;
 }
 function resolve(family, keys = null, overrides = {}) {
-  const skills = loadSkills(family), SK = loadDefs(family, familyFiles(family));
+  const skills = loadSkills(family), anyMove = Object.values(skills).some((b) => b.move);
+  const SK = anyMove ? loadDefs(family, familyFiles(family)) : null;   // a family of rules-only blocks (no move) loads no move defs
   const out = {};
   for (const [name, b] of Object.entries(skills)) {
     if (keys && keys.length && !keys.includes(name)) continue;
-    const block = JSON.parse(JSON.stringify({ doc: b.doc, props: b.props || {}, effects: b.effects || [], reactions: b.reactions || [], flags: b.flags || {} }));
+    const block = JSON.parse(JSON.stringify({ doc: b.doc, props: b.props || {}, effects: b.effects || [], reactions: b.reactions || [], flags: b.flags || {}, ...(b.aes ? { aes: b.aes } : {}) }));
     const T = b.move ? tuneOf(SK, b.move, overrides[b.move] || {}) : {};
     const bound = [];
     for (const [k, bind] of Object.entries(b.bind || {})) {

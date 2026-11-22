@@ -4,6 +4,7 @@
 // view rather than racing with live document mutations.
 
 import { warn } from "./logger.js";
+import { aliasCategories } from "./weapon-alias.js";
 import { isPermanentSoulFragment } from "./battlefield-object.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
@@ -1088,6 +1089,9 @@ function gearCarrierDormant(ae) {
 // carrier is additionally equip-gated (gearCarrierDormant).
 export function attackerCanMeleeFlying(actor, weaponType) {
   const cat = String(weaponType ?? "").trim().toLowerCase();
+  // the weapon's own category plus what it also counts as (weapon-alias.js: Blade Adept's melee dagger = sword too,
+  // so Psychokinesis' "sword" exception covers it). This check is about melee attacks.
+  const mine = [cat, ...aliasCategories(actor, cat, "melee")];
   const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
   for (const ae of effs) {
     if (ae?.disabled) continue;
@@ -1095,7 +1099,7 @@ export function attackerCanMeleeFlying(actor, weaponType) {
     for (const ch of (ae.changes ?? [])) {
       if (ch?.key !== "can_target_flying_with") continue;
       const cats = String(ch.value ?? "").split(/[\s,]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
-      if (cats.length === 0 || cats.includes(cat)) return true;
+      if (cats.length === 0 || mine.some((c) => cats.includes(c))) return true;
     }
   }
   return false;

@@ -79,12 +79,12 @@ async function parityCmd(rest) {
   process.exit(r.ok ? 0 : 1);
 }
 
-// export <family> [skill…] [--check [--code <ref>]] [--write <migration-key> --desc "<text>"]
+// export <family> [skill…] [--check [--code <ref>] [--snapshot <dir> --port <n>]] [--write <migration-key> --desc "<text>"]
 async function exportCmd(rest) {
   const val = (k) => { const i = rest.indexOf(k); return i >= 0 ? rest[i + 1] : null; };
-  const pos = rest.filter((a, i) => !a.startsWith("--") && !["--code", "--write", "--desc", "--out"].includes(rest[i - 1]));
+  const pos = rest.filter((a, i) => !a.startsWith("--") && !["--code", "--write", "--desc", "--out", "--snapshot", "--port"].includes(rest[i - 1]));
   const [family, ...keys] = pos;
-  if (!family) { console.log("usage: move-engine.js export <family> [skill…] [--check [--code <ref>]] [--write <key> --desc <text>]"); process.exit(1); }
+  if (!family) { console.log("usage: move-engine.js export <family> [skill…] [--check [--code <ref>] [--snapshot <dir> --port <n>]] [--write <key> --desc <text>]"); process.exit(1); }
   const SE = require("../lib/skill-export.js");
   const resolved = SE.resolve(family, keys);
   for (const [name, r] of Object.entries(resolved)) {
@@ -95,7 +95,7 @@ async function exportCmd(rest) {
   if (rest.includes("--check")) {
     const outDir = val("--out") || path.join(ROOT, "out", "export", family);
     console.log("\nchecking against the world (snapshot runner, after its migrations)…");
-    const r = SE.check(family, keys, { code: val("--code"), outDir });
+    const r = SE.check(family, keys, { code: val("--code"), outDir, ...(val("--snapshot") ? { snapshot: val("--snapshot") } : {}), ...(val("--port") ? { port: Number(val("--port")) } : {}) });
     for (const res of r.results) {
       if (!res.found) { console.log("  ✗ " + res.name + ": not in the world"); ok = false; continue; }
       for (const c of res.copies) { const where = (c.parent ? c.parent + " / " : "") + res.name + " (" + c.id + ")";
