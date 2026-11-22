@@ -14752,7 +14752,7 @@
               "effect_label": "ws_mp",
               "menu_description": "Each target hit loses SL × 10 Mind Points.",
               "menu_label": "Drain Mind Points",
-              "on_empty": "skip",
+              "on_empty": "drain",
               "target_ref": "hit_action_targets"
             },
             "6": {
