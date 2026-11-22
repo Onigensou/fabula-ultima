@@ -167,6 +167,12 @@ item by id + actor / unlinked-token copies by name). Workflow: round trip first 
 Pilots: Sonic Blow + Gunblade (Passive) (round trip, `moves/sonic-katar/skills.js`); Blade Adept (forward, v1.0.656: the
 new `weapon_category_alias` AE key, `scripts/battle-director/weapon-alias.js`).
 
+**On the page** (`mockup/skill-panel.js`, part `skillPanel(family)`): a "Game item" card under the balance read shows each
+block of the move on screen, its slider-bound fields following the sliders live, changes from the approved values marked,
+and "Copy my changes" (block, slider, field, old → new) for the review. Under it, the game's own numbers: a **pack**
+(`moves/<family>/packs/<block>.json`) measured in real Battle Director sim battles, flagged when the sliders moved since.
+Check: `node test/skill-panel-check.js`.
+
 ## Known limits (Phase 1)
 
 - Scripts carry the whole shared library (~97 KB each); unused helpers are not stripped yet.

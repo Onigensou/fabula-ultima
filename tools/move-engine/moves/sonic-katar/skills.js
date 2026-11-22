@@ -10,6 +10,8 @@ const MOVE_SKILLS = {
   sonic_blow: {
     doc: { id: "f3QKcoZ4HwrR607a", name: "Sonic Blow" },
     move: "sonicblow",
+    // game numbers for the page: real sim battles (move-engine.js pack sonic-katar sonic_blow); Blanche = the DEX d12 wielder the balance read uses
+    pack: { actor: "Blanche", weapon: "Sonic Katar", target: "Test Target Enemy", skill: "Sonic Blow", strikes: 8 },
     props: { skill_type: "Active", cost: "30 MP", skill_target: "One creature", duration: "Instantaneous", skill_range: "Melee",
       isCheck: true, rolled_atr1: "DEX", rolled_atr2: "DEX", check_bonus: "-2", damage_bonus: "", type_damage: "",
       defense_target_type: "def", action_keywords: "chain 8 volley", attack_with_carrier: true, on_activate_effect_ref: "",

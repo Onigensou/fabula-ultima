@@ -54,7 +54,7 @@ function mspPack(key, b, now) {
   const avg = (f) => n ? (runs.reduce((s, r) => s + f(r), 0) / n) : 0;
   const rowsHtml = runs.map((r, i) => `<tr><th>Battle ${i + 1}${r.perfect ? " · Perfect" : ""}${r.crit ? " · crit" : ""}</th><td style="text-align:left;font-weight:400">${(r.strikes || []).map((s) => s == null ? '<span class="muted">miss</span>' : s).join(" · ")}</td><td>${r.total}</td></tr>`).join("");
   return `<h3 style="margin-top:14px">In the game · ${n} real battle${n === 1 ? "" : "s"}</h3>
-    <p class="muted" style="margin:0 0 6px;font-size:13px">${mspEsc(P.setup.actor)} with ${mspEsc(P.setup.weapon)} vs ${mspEsc(P.setup.target)} · Battle Director sim, real dice · measured ${mspEsc(P.measuredAt)} on ${mspEsc(P.code)}.
+    <p class="muted" style="margin:0 0 6px;font-size:13px">${mspEsc(P.setup.actor)} with ${mspEsc(P.setup.weapon)} vs ${mspEsc(P.setup.target)} · Battle Director sim, real dice${runs[0] && runs[0].element ? ` · ${mspEsc(runs[0].element)} damage, target ${mspEsc(runs[0].affinity)}` : ""} · measured ${mspEsc(P.measuredAt)} on ${mspEsc(P.code)}.
     Landed ${avg((r) => (r.strikes || []).filter((s) => s != null).length).toFixed(1)} of ${(runs[0] && runs[0].strikes || []).length} strikes, ${avg((r) => r.total).toFixed(1)} damage on average.</p>
     ${stale.length ? `<p style="margin:0 0 6px;color:var(--bug);font-size:13px">Measured at ${stale.map((x) => `${mspEsc(x.slider)} = ${mspEsc(P.bound[x.slider])}`).join(", ")}: these numbers are from before your slider change.</p>` : ""}
     <div class="tablewrap"><table class="bal"><thead><tr><th>Battle</th><th style="text-align:left">Strikes (damage each)</th><th>Total</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
