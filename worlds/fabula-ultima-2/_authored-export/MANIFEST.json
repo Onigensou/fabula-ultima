@@ -3662,7 +3662,7 @@
         "id": "OM63d9oT3OOOtRdr",
         "name": "Blade Adept",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "enbL361u8CaT5owG",
@@ -7061,6 +7061,24 @@
         "effects": 0
       },
       {
+        "id": "mODVDmjIfozcfERi",
+        "name": "Gunblade",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SnGbGunbladePsv1",
+        "name": "Gunblade (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SnGbGunbladeTfm1",
+        "name": "Gunblade: Transform",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "CYfthrIA03zaPLGj",
         "name": "Gungnir",
         "type": "equippableItem",
@@ -7801,12 +7819,6 @@
       {
         "id": "yMLrVvxbSK3VK8ol",
         "name": "Imp's Tail",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "mODVDmjIfozcfERi",
-        "name": "Imperial Gunblade",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12080,13 +12092,13 @@
         "id": "f3QKcoZ4HwrR607a",
         "name": "Sonic Blow",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "3ZV5drjroWrvXqkw",
         "name": "Sonic Katar",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 1
       },
       {
         "id": "rSdCKOYJzRyfFcVe",

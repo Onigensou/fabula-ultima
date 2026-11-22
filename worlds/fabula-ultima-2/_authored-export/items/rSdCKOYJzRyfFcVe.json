@@ -28,63 +28,16 @@
     "container": "3ZV5drjroWrvXqkw",
     "props": {
       "cost": "",
-      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\">Double Strike</a></p></li><li><p>You may perform the skill <a class=\"content-link\" data-uuid=\"Item.f3QKcoZ4HwrR607a\" data-id=\"f3QKcoZ4HwrR607a\" data-type=\"Item\">Sonic Blow</a></p></li></ul>",
-      "effect_table": {
-        "0": {
-          "accuracy_amount": "-2",
-          "accuracy_operation": "add",
-          "effect_kind": "adjust_accuracy",
-          "effect_label": "skat_acc"
-        },
-        "1": {
-          "damage_amount": "1.5",
-          "damage_operation": "multiply",
-          "damage_stage": "outgoing",
-          "effect_kind": "adjust_damage",
-          "effect_label": "skat_crit"
-        },
-        "2": {
-          "ae_template_ref": "Sonic Blow",
-          "count": "all",
-          "effect_kind": "remove_ae",
-          "effect_label": "skat_clear",
-          "target_ref": "self"
-        }
-      },
+      "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Double Strike</span></strong></a></span></span></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.f3QKcoZ4HwrR607a]{Sonic Blow}</strong>】</p></li></ul>",
+      "effect_table": {},
       "id": "rSdCKOYJzRyfFcVe",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1284.gif",
       "isCheck": false,
       "isReaction": true,
       "name": "Sonic Katar (Passive)",
       "on_activate_effect_ref": "",
-      "reaction_config_table": {
-        "0": {
-          "condition_formula": "AE_COUNT_SONIC_BLOW > 0",
-          "reaction_action_kind": "Attack",
-          "reaction_effect_ref": "skat_acc",
-          "reaction_passive_mode": "force",
-          "reaction_passive_target": "self",
-          "reaction_requires_weapon_used": true,
-          "reaction_source": "self",
-          "reaction_trigger": "creature_performs_action"
-        },
-        "1": {
-          "condition_formula": "ACTION_IS_ATTACK == 1 && ATTACK_IS_CRIT == 1 && AE_COUNT_SONIC_BLOW > 0",
-          "reaction_effect_ref": "skat_crit",
-          "reaction_passive_mode": "force",
-          "reaction_requires_weapon_used": true,
-          "reaction_source": "self",
-          "reaction_trigger": "creature_will_deal_damage"
-        },
-        "2": {
-          "condition_formula": "AE_COUNT_SONIC_BLOW > 0",
-          "reaction_effect_ref": "skat_clear",
-          "reaction_passive_mode": "force",
-          "reaction_source": "self",
-          "reaction_trigger": "turn_end"
-        }
-      },
-      "skill_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\">Double Strike</a></p></li><li><p>You may perform the skill <a class=\"content-link\" data-uuid=\"Item.f3QKcoZ4HwrR607a\" data-id=\"f3QKcoZ4HwrR607a\" data-type=\"Item\">Sonic Blow</a></p></li></ul>",
+      "reaction_config_table": {},
+      "skill_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.T8FOTz5J8Ys7sbya\" data-id=\"T8FOTz5J8Ys7sbya\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Double Strike</span></strong></a></span></span></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.f3QKcoZ4HwrR607a]{Sonic Blow}</strong>】</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

@@ -7539,6 +7539,24 @@
           },
           "changes": [
             {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeEquippedWhen(\"melee_dagger\", \"1\")"
+            },
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeEquippedWhen(\"melee_dagger\", \"1\")"
+            },
+            {
+              "key": "weapon_category_alias",
+              "mode": 0,
+              "priority": 20,
+              "value": "melee_dagger: brawling, sword, thrown"
+            },
+            {
               "key": "can_target_flying_with",
               "mode": 5,
               "priority": 20,
@@ -7860,7 +7878,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isIngredient": false,
           "isKey": false,
           "isMartial": false,
@@ -11342,7 +11360,7 @@
       "main_attrib_1": "DEX",
       "main_attrib_2": "WLP",
       "main_details": "<ul><li><p>This weapon gain bonus <strong>Accuracy</strong> equal to <strong>【1 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li><li><p>This weapon deals bonus damage equal to <strong>【2 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li></ul>",
-      "main_hand": "+6 Psychic Dagger",
+      "main_hand": "+7 Psychic Dagger",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
@@ -11612,7 +11630,7 @@
       "off_attrib_2": "SHI",
       "off_base_mod_1": "2",
       "off_base_mod_2": "0",
-      "off_details": "<ul>\n<li>You have Resistance to<strong> Fire</strong>&nbsp;damage.</li>\n</ul>",
+      "off_details": "<ul>\n<li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage.</li>\n</ul>",
       "off_hand": "+5 Ignis Shield",
       "off_hand_attack": "",
       "off_mod_1": 2,
@@ -12423,7 +12441,7 @@
       "turbulence_status": 0,
       "uuid": "Actor.gdJZ1L1kv5mjTTMr",
       "weak_status": 0,
-      "weapon1_base_damage": "11",
+      "weapon1_base_damage": 12,
       "weapon1_base_mod": "0",
       "weapon1_damage": 11,
       "weapon1_damagetype": "Dark",
