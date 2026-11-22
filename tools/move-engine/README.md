@@ -144,10 +144,33 @@ Checks: `node test/picker-check.js --gpu` (picker overrides sliders), `node test
 hit,miss,…,perfect` (a BD-shaped Chain plan), the battle check (amount / element / affinity per outcome).
 Sonic Blow + the plain attack now live in `moves/sonic-katar/sonic.js` (comparison; v1.0.652 ships Sonic Blow's hand port).
 
+## Skill logic export (Phase 4)
+
+A skill's RULES live next to its move, as plain data: `moves/<family>/skills.js` (`MOVE_SKILLS`, one block per game
+document). A block names only logic fields: `props` (system.props keys), `effects` / `reactions` (the two row tables, replaced
+whole), `flags` (module flags) and `aes` (embedded Active Effects by name: `changes` + `transfer`; other AEs are left alone).
+`bind` ties a page slider to a field (`{ mp: { path: "props.cost", to: (v) => v + " MP" } }`), so the approved slider value
+IS the skill's value. Rules-only families (no move, no family.json) work too: `moves/class-skills/skills.js`.
+
+```
+node bin/move-engine.js export <family> [skill…]                       # resolve: what each block + its sliders give
+node bin/move-engine.js export <family> [skill…] --check --code <ref> [--snapshot <dir> --port <n>]
+                                                                       # dry run in the snapshot runner: per copy, what differs
+                                                                       # from the world (after its migrations) + the skill validator
+node bin/move-engine.js export <family> [skill…] --write <key> --desc "<text>"   # data-migrations/<key>.js + manifest entry
+```
+
+One game-side helper does both the check and the write: `data-migrations/_move-engine-skill-seed.js` (every copy: the world
+item by id + actor / unlinked-token copies by name). Workflow: round trip first (a block that mirrors today's item must show
+"every logic field matches"), then change the block, `--check` shows exactly the intended diffs, `--write`, real-server boot.
+
+Pilots: Sonic Blow + Gunblade (Passive) (round trip, `moves/sonic-katar/skills.js`); Blade Adept (forward, v1.0.656: the
+new `weapon_category_alias` AE key, `scripts/battle-director/weapon-alias.js`).
+
 ## Known limits (Phase 1)
 
 - Scripts carry the whole shared library (~97 KB each); unused helpers are not stripped yet.
 - Mid-tween state a move READS in the game is the dry run's estimate (exact at awaited points).
 - The beat clock makes old approved pages a little quicker than they played: the old engine's timers drifted ~4.6 ms per
   wait (Sonic Blow: 3910 vs 3998 ms to its last beat). Pages built on this package play their authored numbers.
-- Results contract (Phase 2), a one-command parity check with side-by-sides (Phase 3) and skill logic (Phase 4) come next.
+- Phases 2-4 shipped: results contract, parity command, skill logic export (sections above).
