@@ -687,11 +687,12 @@ function outcomesFromDirector(director) {
         tokenUuid: r?.tokenUuid ?? null,
         total,
         fumble,
-        // The PLANNED damage as COMPUTE left it (damage-time reactions such as Gunblade's
-        // +10 Fire are applied later, at RESOLVE): amount, its element, the target's
-        // affinity code (VU / RS / IM / AB / NE). move-engine's RESULT shape reads these.
+        // The PLANNED damage as the action result holds it when ANIMATION starts: amount,
+        // its element, the target's affinity code (VU / RS / IM / AB / NE). Reactions folded
+        // in before ANIMATION are included (Gunblade's +10 Fire: 23 fire); anything RESOLVE
+        // still changes is not. move-engine's RESULT shape reads these.
         amount: typeof r?.damage === "number" ? r.damage : null,
-        element: String(r?.element ?? ar?.damageType ?? "").toLowerCase() || null,
+        element: String(r?.element ?? ar?.damageType ?? ar?.damage?.element ?? ar?.weapon?.damageType ?? "").toLowerCase() || null,
         affinity: r?.affinity ?? null,
         hit: t ? t.landed > 0 : !!r?.hit,
         crit: t ? t.crits > 0 : !!r?.crit,

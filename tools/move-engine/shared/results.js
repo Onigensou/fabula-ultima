@@ -4,7 +4,8 @@
 //     kind     "hit" | "miss" | "block" | "immune" | "absorb" | "lost"
 //     hit      the attack landed (hit / immune / absorb)
 //     total    the Accuracy Check total (null when unknown)   a, b: the two dice when known
-//     amount   the PLANNED damage (before damage-time reactions: Gunblade's +10 Fire is added later), element, affinity
+//     amount   the PLANNED damage as the game holds it when the animation starts (reactions already folded in are
+//              included, e.g. Gunblade's +10 Fire), element, affinity
 //              "weak" | "resist" | "immune" | "absorb" | null
 //     perfect  a Chain's Perfect bonus strike
 // Who supplies it, in this order:
