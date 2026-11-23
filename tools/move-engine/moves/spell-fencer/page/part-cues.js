@@ -14,10 +14,10 @@
 // CUE_P holds every number (the page's cue sliders write it; the port bakes the approved values as constants).
 const CUE_P = {
   // ol / olw / olbr / olcol = the v2 outline glow (strength 0..1, width px at stage size, breath s per half cycle, blend colour)
-  spell: { n: 7, dmin: 2.6, dmax: 3.8, size: 7, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0, ol: 0.45, olw: 6, olbr: 2.6 },
-  attack: { n: 7, dmin: 2.6, dmax: 3.8, size: 7, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0, ol: 0.45, olw: 6, olbr: 2.6 },
-  reso: { n: 6, period: 3.2, size: 7, rx: 0.42, ry: 12, notes: 2, noteEvery: 4.2, cell: 3.5, ol: 0.5, olw: 7, olbr: 2.6, olcol: 0 },
-  braid: { n: 8, period: 2.4, size: 6, r: 0.3, turns: 1.25, glow: 0.4, ol: 0.55, olw: 7, olbr: 2.2, olcol: 0 },
+  spell: { n: 5, dmin: 2.6, dmax: 3.8, size: 4, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0, ol: 0.45, olw: 6, olbr: 2.6 },
+  attack: { n: 5, dmin: 2.6, dmax: 3.8, size: 4, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0, ol: 0.45, olw: 6, olbr: 2.6 },
+  reso: { n: 3, period: 2.1, size: 6, rx: 0.3, ry: 5, notes: 0, noteEvery: 1.5, cell: 1.5, ol: 0.65, olw: 7, olbr: 2.6, olcol: 0 },
+  braid: { n: 7, period: 2.6, size: 9, r: 0.35, turns: 1.25, glow: 0.45, ol: 0.8, olw: 13, olbr: 4.2, olcol: 0 },
 };
 
 // ── v2 OUTLINE GLOW. Port: a PIXI GlowFilter + OutlineFilter on the token mesh, the way battle-director/turn-glow.js

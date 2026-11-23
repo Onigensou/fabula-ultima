@@ -760,6 +760,10 @@
     {
       "key": "2026-11-23-spell-fencer-rules",
       "path": "data-migrations/2026-11-23-spell-fencer-rules.js"
+    },
+    {
+      "key": "2026-11-23-spell-fencer-anims",
+      "path": "data-migrations/2026-11-23-spell-fencer-anims.js"
     }
   ]
 }

@@ -4,7 +4,7 @@ GROUPS.cues = "Held auras · token status cues";
 const CUE_REVIEW = {};   // cue key -> the sandbox state that shows it alone
 function cueDef(key, name, tag, state, intro, tune, apply, changes) {
   CUE_REVIEW[key] = state;
-  def(key, { status: "new", boss: "cues", page: true, name, icon: key === "cue_reso" || key === "cue_braid" ? "icon_reso" : "icon_rh", tag, intro, changes,
+  def(key, { status: "approved", boss: "cues", page: true, name, icon: key === "cue_reso" || key === "cue_braid" ? "icon_reso" : "icon_rh", tag, intro, changes,
     rules: "A loop, not a one-shot: it holds on Keren for as long as its marker lasts. Particles: the game's status-cue technique (status-cues.js, a DOM layer docked to the drawn sprite, sized by sprite height / 250). Outline glow (v2): in the game a PIXI glow + outline filter on the token, like the acting-turn glow (turn-glow.js); tick \"Keren's turn\" in the sandbox to see how the two share the outline. Sliders apply live; press Play to restart the look.",
     tune, beats: [{ name: "Hold the aura", note: "the loop on Keren (no animation plays)", run: async (C) => { apply(C); SB_SHOW(state); await wait(tv(C, "look")); } }] });
 }
@@ -16,8 +16,8 @@ const olTune = (d, blend) => [T("ol", "Outline glow strength (0 = off)", d.ol, 0
 const olApply = (p, C) => { p.ol = tv(C, "ol"); p.olw = tv(C, "olw"); p.olbr = tv(C, "olbr") / 1000; if (C.cfg.olcol != null) p.olcol = tv(C, "olcol"); };
 const sideApply = (k) => (C) => { const p = CUE_P[k]; p.n = tv(C, "n"); p.dmin = tv(C, "dmin") / 1000; p.dmax = Math.max(p.dmin + .1, tv(C, "dmax") / 1000); p.size = tv(C, "size");
   p.rise = tv(C, "rise") / 100; p.glow = tv(C, "glow"); p.breathe = tv(C, "breathe") / 1000; p.col = tv(C, "col"); olApply(p, C); };
-const sideTune = (cols, k) => [T("n", "Motes", 7, 2, 16, 1), T("dmin", "Mote rise time, shortest (ms)", 2600, 800, 6000, 100), T("dmax", "Mote rise time, longest (ms)", 3800, 1000, 7000, 100),
-  T("size", "Mote size (px at sprite height 250)", 7, 3, 14, 1), T("rise", "Mote rise (% of body height)", 45, 15, 90, 5),
+const sideTune = (cols, k) => [T("n", "Motes", 5, 2, 16, 1), T("dmin", "Mote rise time, shortest (ms)", 2600, 800, 6000, 100), T("dmax", "Mote rise time, longest (ms)", 3800, 1000, 7000, 100),
+  T("size", "Mote size (px at sprite height 250)", 4, 3, 14, 1), T("rise", "Mote rise (% of body height)", 45, 15, 90, 5),
   T("glow", "Underglow strength", .55, 0, 1, .05), T("breathe", "Underglow breath (ms per half cycle)", 2600, 600, 5000, 100), TO("col", "Colour", cols, 0), ...olTune(CUE_P[k], false), LOOK];
 const resoApply = (C) => { const p = CUE_P.reso; p.n = tv(C, "n"); p.period = tv(C, "period") / 1000; p.size = tv(C, "size"); p.rx = tv(C, "rx") / 100; p.ry = tv(C, "ry");
   p.notes = tv(C, "notes"); p.noteEvery = tv(C, "every") / 1000; p.cell = tv(C, "cell"); olApply(p, C); };
@@ -32,15 +32,15 @@ cueDef("cue_attack", "Next Attack · red aura", "Loop · after an Offensive Spel
   [{ id: "v2-outline", re: "Add a subtle red glow border around user sprite too", text: "Added a subtle red outline glow round Keren's sprite (strength .45, 6 px, breathing over 2.6 s; three sliders). Same PIXI filter in the game as Next Spell's, red." }]);
 cueDef("cue_reso", "Resonance ready · gold + blend glow", "Loop · 2+ stacks, on top of red / blue", { next: "attack", reso: 2, rhap: false },
   "Gold and violet motes orbit the waist (the far half dims and shrinks, so it reads as passing behind) and now and then a pixel music note rises. It layers on top of the blue or red particles, but the OUTLINE turns to the red/blue blend (v2): Resonance ready means Rhapsody is available, so the blend wins over the red or blue outline. Shown here over Next Attack, so you see the blend beat the red.",
-  [T("n", "Orbiting motes", 6, 2, 12, 1), T("period", "One orbit (ms)", 3200, 1200, 7000, 100), T("size", "Mote size (px at sprite height 250)", 7, 3, 14, 1),
-    T("rx", "Orbit width (% of sprite width)", 42, 20, 70, 1), T("ry", "Orbit depth (px at 250)", 12, 2, 30, 1), T("notes", "Rising notes", 2, 0, 4, 1),
-    T("every", "Each note's cycle (ms; it shows for the first 40%)", 4200, 1500, 9000, 100), T("cell", "Note pixel size (px at 250)", 3.5, 1.5, 6, .5), ...olTune(CUE_P.reso, true), LOOK],
+  [T("n", "Orbiting motes", 3, 2, 12, 1), T("period", "One orbit (ms)", 2100, 1200, 7000, 100), T("size", "Mote size (px at sprite height 250)", 6, 3, 14, 1),
+    T("rx", "Orbit width (% of sprite width)", 30, 20, 70, 1), T("ry", "Orbit depth (px at 250)", 5, 2, 30, 1), T("notes", "Rising notes", 0, 0, 4, 1),
+    T("every", "Each note's cycle (ms; it shows for the first 40%)", 1500, 1500, 9000, 100), T("cell", "Note pixel size (px at 250)", 1.5, 1.5, 6, .5), ...olTune(CUE_P.reso, true), LOOK],
   resoApply,
   [{ id: "v2-outline", re: "Add a glow of the combination of red and blue color around the sprite too (come up with a middle color between blue and red)", text: "Added an outline glow in the red/blue blend. Proposed colour: violet #b45cff (an even mix that reads as both manas, and is the Red Mage's own blend colour); the select also offers magenta #d94cc8 (leans red) and indigo-violet #8f6bff (leans blue). Precedence: this blend outline replaces the red / blue outline while Resonance is ready (Rhapsody is available)." }]);
 cueDef("cue_braid", "Rhapsody Turn · braid + blend glow", "Loop · the held state after Rhapsody", { next: null, reso: 0, rhap: true },
   "Red and blue motes braid up the body in a double helix (half a turn apart; the far half of each turn dims), over a red / blue underglow and (v2) the red/blue blend outline glow. The held state after Spellblade Rhapsody, until the round ends. It replaces the other auras while it holds.",
-  [T("n", "Motes per strand", 8, 3, 16, 1), T("period", "One climb (ms)", 2400, 1000, 6000, 100), T("size", "Mote size (px at 250)", 6, 3, 14, 1),
-    T("r", "Helix radius (% of sprite width)", 30, 15, 50, 1), T("glow", "Underglow strength", .4, 0, 1, .05), ...olTune(CUE_P.braid, true), LOOK],
+  [T("n", "Motes per strand", 7, 3, 16, 1), T("period", "One climb (ms)", 2600, 1000, 6000, 100), T("size", "Mote size (px at 250)", 9, 3, 14, 1),
+    T("r", "Helix radius (% of sprite width)", 35, 15, 50, 1), T("glow", "Underglow strength", .45, 0, 1, .05), ...olTune(CUE_P.braid, true), LOOK],
   braidApply,
   [{ id: "v2-outline", re: "Add a glow of the combination of red and blue color around the sprite too (come up with a middle color between blue and red)", text: "Added the same red/blue blend outline glow as Resonance ready (violet #b45cff by default, magenta / indigo-violet in the select), a little stronger (.55) and faster (2.2 s breath) because it is the active Rhapsody turn." }]);
 // apply every cue's current sliders (sandbox plays use them too)
