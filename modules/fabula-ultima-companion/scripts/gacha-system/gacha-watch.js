@@ -323,11 +323,32 @@ function showCard(payload) {
   });
   el.querySelector("[data-x]").addEventListener("click", removeCard);
   requestAnimationFrame(() => el.classList.add("is-on"));
-  clearTimeout(W.cardTimer);
-  W.cardTimer = setTimeout(removeCard, 20_000);
+  armCardTimer();
 }
 
+/**
+ * The card is mostly for players who were BUSY when the wish happened, so it
+ * must outlive whatever kept them busy: no countdown while a scene, battle or
+ * duel is running; 20s once they are free. (Sandbox 2026-11-23: a fixed 20s
+ * timer removed the card before a busy player could press Watch replay.)
+ */
+const CARD_LINGER_MS = 20_000;
+function armCardTimer() {
+  clearTimeout(W.cardTimer);
+  W.cardTimer = null;
+  if (!document.getElementById(CARD_ID)) return;
+  if (busyReason()) return;               // re-armed by onBusyChanged below
+  W.cardTimer = setTimeout(removeCard, CARD_LINGER_MS);
+}
+const onBusyChanged = () => setTimeout(armCardTimer, 0);   // after the busy flags update
+Hooks.on("oniEventExecuteStart", onBusyChanged);
+Hooks.on("oniEventExecuteDone", onBusyChanged);
+Hooks.on("fuBattleFocusChanged", onBusyChanged);
+Hooks.on("fabulaArcanaWindow", onBusyChanged);
+
 function removeCard() {
+  clearTimeout(W.cardTimer);
+  W.cardTimer = null;
   const el = document.getElementById(CARD_ID);
   if (!el) return;
   el.classList.remove("is-on");

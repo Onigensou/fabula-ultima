@@ -492,6 +492,20 @@ const S = {
   unsubPresence: null,
 };
 
+// A clicked <button> keeps keyboard focus, and then Enter re-clicks it and the
+// game's Confirm / Cancel (Z / X, window.oni.Input) never fire — Foundry skips
+// its keybindings while a control has focus. Found in the sandbox 2026-11-23:
+// after clicking History, X no longer left the machine. Drop focus after any
+// click inside the gacha's own screens so mouse and keyboard can be mixed.
+const GACHA_ROOTS = "#gacha-ui, #gacha-panel, #gacha-confirm, #gacha-fx, #gacha-callout, #gacha-result-card";
+document.addEventListener("click", (ev) => {
+  if (!ev.target?.closest?.(GACHA_ROOTS)) return;
+  setTimeout(() => {
+    const a = document.activeElement;
+    if (a && a !== document.body && a.closest?.(GACHA_ROOTS)) a.blur?.();
+  }, 0);
+}, true);
+
 /** Bootstrap owns what leaving means (audio, presence, movement). */
 export function setLeaveHandler(fn) { S.onLeave = fn; }
 
