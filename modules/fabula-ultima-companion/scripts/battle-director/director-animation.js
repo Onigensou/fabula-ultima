@@ -20,6 +20,8 @@ import { skillPose } from "./battler-pose-rules.js";
 import { stageScript, waitStaged, frameMeter } from "../action-animation/animation-stage.js";
 import { createChainPresenter } from "./chain-presenter.js";
 import { armImpactOffsetsCollector } from "./impact-offsets.js";
+import { hpLossPlan, publishShowHpPlan, clearShowHpPlan } from "./show-hurt-rules.js";
+import { SimMode } from "./sim/sim-mode.js";
 import { beginAnimRun, closeAnimRun, endBelongsToRun, startBelongsToRun } from "./anim-run-scope.js";
 import { CHAIN_MAX, fallbackBeatMs } from "./chain-strikes.js";
 import {
@@ -484,6 +486,7 @@ async function executeAnimationScript({
   strikes = null,
   variant = null,
   runId = null,
+  hpPlan = null,
 }) {
   // Which run this is (anim-run-scope.js). A caller that armed an end-watch passes its id;
   // a caller with none (Anim Studio preview / bench) is UNSCOPED (null: legacy-accepting) —
@@ -594,6 +597,10 @@ async function executeAnimationScript({
   try { if (casterTok) casterTok.control({ releaseOthers: true }); }
   catch (e) { warn("[BD Anim] caster control bridge (set) threw", e); }
   const meter = frameMeter(`anim:${casterTok?.name ?? "?"}`);
+  // The planned per-target HP loss (show-hurt-rules.js), read by pseudo.play
+  // into the show's message until this run's gate: a show then poses a PC hurt
+  // at the visible contact only when the hit takes HP. Cleared at the gate.
+  const hpPlanSlot = hpPlan ? publishShowHpPlan(hpPlan, animRunId) : null;
   try {
     const result = fn(payload, targets);
     if (result && typeof result.then === "function") await result;
@@ -612,7 +619,8 @@ async function executeAnimationScript({
     } catch (e) { warn("[BD Anim] caster control bridge (restore) threw", e); }
   }
 
-  await gatePromise;
+  try { await gatePromise; }
+  finally { clearShowHpPlan(hpPlanSlot); }
   // up to the damage moment: most scripts return at once and run on via the
   // per-client pseudo script, which is metered on its own (pseudo:<scriptId>)
   meter.stop({ staged });
@@ -737,6 +745,15 @@ function outcomesFromDirector(director) {
   }
 }
 
+// The HP-loss plan for this action's show (show-hurt-rules.js hpLossPlan, the
+// same per-target reads as outcomesFromDirector above). Never in SimMode: a sim
+// battle holds no pose. null = no plan = the hurt pose stays at the number.
+function showHpPlanFor(director) {
+  if (SimMode.active) return null;
+  try { return hpLossPlan(director?.ctx?.actionResult); }
+  catch (e) { warn("[BD Anim] could not plan show HP loss", e); return null; }
+}
+
 // ── Staging ahead of ANIMATION ──────────────────────────────────────────
 //
 // CONFIRM starts staging the action's animation on every client while the
@@ -797,7 +814,12 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   let abortResolve;
   const abortPromise = new Promise((res) => { abortResolve = res; });
   let aborted = false;
-  const abort = () => { aborted = true; endWatch.settle(); presenter?.flush(); abortResolve(); };
+  const abort = () => {
+    aborted = true; endWatch.settle(); presenter?.flush(); abortResolve();
+    // Skip Animation: the show-hurt controller starts no new contact holds for this run (GM-local; players
+    // are covered by its "number already landed" refusal).
+    try { Hooks.callAll("oni:showAborted", { runId: endWatch.runId }); } catch (_e) { /* cosmetic only */ }
+  };
 
   director.ctx.animationController = { playing: true, abort };
 
@@ -810,6 +832,7 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
       abortPromise, timeoutMs: 35000, runId: endWatch.runId,
       stageJob: takePrestaged(director, script),
       strikes: chainPlan?.strikes ?? null,
+      hpPlan: showHpPlanFor(director),
     });
     ran = !!r?.ran;
     // Nothing played (hidden window, no viewers): nothing owns the hit sound.

@@ -541,6 +541,86 @@ async function markCalled(actor) {
   } catch (e) { console.warn("[soul-tithe] Called marker failed", e); }
 }
 
+/**
+ * Which of the owner's ActiveEffects must be left out of its "status-free" sheet?
+ * Pure; the predicates are the engine's own (skill-effects.js `isBuffOrDebuffAE`, the same
+ * one Cleanse / on-KO cleanse use, and `isTransientAE`), passed in so this stays node-testable.
+ * Dropped: disabled effects, buffs/debuffs (tags), and transient effects (director-applied,
+ * duration-bearing, or tagged). Kept: gear transfer AEs, passives, persistent_counter
+ * trackers (isBuffOrDebuffAE already refuses those) and the event's own Soul-Torn
+ * (conflictScoped makes isTransientAE call it transient, but it is not a stat status).
+ * Returns the Set of effect ids to drop.
+ */
+export function transientEffectIds(effects, { isBuffOrDebuff, isTransient } = {}) {
+  const drop = new Set();
+  for (const e of effects ?? []) {
+    if (!e) continue;
+    const id = e.id ?? e._id;
+    if (id == null) continue;
+    if (e.flags?.[FLAG_NS]?.soulTorn === true) continue;
+    if (e.disabled === true || isBuffOrDebuff?.(e) || isTransient?.(e)) drop.add(id);
+  }
+  return drop;
+}
+
+let _statusFreeWarned = false;
+
+/**
+ * The owner's DEF / MDEF with every transient buff / debuff / status removed, computed by CSB
+ * itself (exact by construction, 2026-11-23). An in-memory, unsaved copy of the owner is built
+ * from its source data minus the transient AEs and constructed through the world's Actor
+ * document class: Foundry's constructor runs prepareData -> CustomActor.prepareDerivedData ->
+ * TemplateSystem.prepareData, i.e. the real prop computation incl. clamps, armor floors and AE
+ * priority order. Nothing is saved or registered (no parent, no collection, no create call).
+ * Returns { def, mdef } as rounded integers, or null (caller keeps the template's 6/6).
+ * `ActorClass` and `preds` are injectable for tests.
+ */
+export function ownerStatusFreeSheet(owner, { ActorClass, preds } = {}) {
+  try {
+    const Cls = ActorClass ?? globalThis.CONFIG?.Actor?.documentClass ?? globalThis.Actor?.implementation;
+    if (!owner || !Cls) return null;
+    const live = owner.effects?.contents ?? [...(owner.effects ?? [])];
+    const drop = transientEffectIds(live, preds);
+    const data = owner.toObject();
+    data.effects = (data.effects ?? []).filter((e) => !drop.has(e._id));
+    const clone = new Cls(data);
+    const num = (v) => (v === null || v === undefined || v === "" ? NaN : Number(v));
+    const def = num(clone.system?.props?.defense), mdef = num(clone.system?.props?.magic_defense);
+    if (!Number.isFinite(def) || !Number.isFinite(mdef)) return null;
+    return { def: Math.round(def), mdef: Math.round(mdef) };
+  } catch (e) {
+    if (!_statusFreeWarned) { _statusFreeWarned = true; console.warn("[soul-tithe] status-free owner sheet failed", e); }
+    return null;
+  }
+}
+
+/** The engine's shared predicates (dynamic: skill-effects.js needs Foundry globals to load). */
+async function engineAePredicates() {
+  const m = await import("../../battle-director/skill-effects.js");
+  return { isBuffOrDebuff: m.isBuffOrDebuffAE, isTransient: m.isTransientAE ?? null };
+}
+
+/**
+ * A fragment's DEF / MDEF mirror its owner's STATUS-FREE values, snapshotted at spawn.
+ * CSB derives them as: defense = def_mod has "+" ? dex_current + def_mod : def_mod;
+ * magic_defense = ins_current + mdef_mod. Both mods are RELATIVE signed integer strings
+ * ("+N" / "-N") against the fragment's own status-free dex_base / ins_base (default 6), so
+ * with no statuses the computed value equals the owner's and the fragment's own Slow /
+ * Dazed ... would move it, but the fragment layout floors dex_current/ins_current at 6, so only Swift/Clarity/Awake (+2) and AE-key statuses (Armor Break ...) do. Owner values are rounded first (a fractional value would be read as
+ * x100 by the accuracy readers). Returns null when unreadable: the caller keeps 6/6.
+ */
+export function fragmentDefenseMods({ ownerDef, ownerMdef, fragDex = 6, fragIns = 6 } = {}) {
+  const num = (v) => (v === null || v === undefined || v === "" ? NaN : Number(v));
+  const d = num(ownerDef), m = num(ownerMdef), dx = num(fragDex), i = num(fragIns);
+  if (![d, m, dx, i].every(Number.isFinite)) return null;
+  const sgn = (n) => (n < 0 ? String(n) : `+${n}`);
+  const dd = Math.round(d) - Math.round(dx);
+  // The DEF formula tests def_mod.includes('+'): a "-N" would be read as the ABSOLUTE value -N.
+  // So a negative DEF diff (owner DEF below the fragment's dex basis) is written absolute: the
+  // value stays correct, only the fragment's own Slow stops moving it. MDEF has no such test.
+  return { def_mod: dd < 0 ? String(Math.round(d)) : sgn(dd), mdef_mod: sgn(Math.round(m) - Math.round(i)) };
+}
+
 async function spawnFragment(ctx, owner, slot, amount, round, { hold = false, permanent = false } = {}) {
   const template = findFragmentTemplate();
   if (!template) {
@@ -592,8 +672,18 @@ async function spawnFragment(ctx, owner, slot, amount, round, { hold = false, pe
     [`flags.${FLAG_NS}.soulFragmentOwner`]: owner.actorDoc.uuid,
     [`flags.${FLAG_NS}.conflictSpawned`]: true,
   });
+  let free = null;
+  try { free = ownerStatusFreeSheet(owner.actorDoc, { preds: await engineAePredicates() }); }
+  catch (e) { ctx.warn("status-free owner sheet unavailable", e); }
+  const fragProps = tokenDoc.actor?.system?.props;
+  const defMods = fragmentDefenseMods({
+    ownerDef: free?.def, ownerMdef: free?.mdef,
+    fragDex: fragProps?.dex_base ?? 6, fragIns: fragProps?.ins_base ?? 6,
+  });
+  if (!defMods) ctx.warn(`${owner.actorDoc?.name}: DEF/MDEF unreadable, fragment keeps the template's`);
   await tokenDoc.actor.update({
     name,
+    ...(defMods ? { "system.props.def_mod": defMods.def_mod, "system.props.mdef_mod": defMods.mdef_mod } : {}),
     ...(owner.actorDoc?.img ? { img: owner.actorDoc.img } : {}),
     "system.props.max_hp": amount,
     "system.props.current_hp": amount,

@@ -83,6 +83,7 @@ import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, topIsRes
 // Grappled (Advanced Debuff) — turn-start break-free helpers.
 import { isGrappled, breakFree } from "./grappled.js";
 import { escapeDlFacing } from "./snapshot.js";
+import { targetsFilteredToNothing, shouldForfeitFreeAction } from "./free-action-lock-gate.js";
 // Boss "Super Armor" — Domination State / Ultima actions (Domination /
 // Escape / Recovery). See [[domination.js]].
 import {
@@ -3282,6 +3283,14 @@ const Declare = {
     // happen by role (GM picks/auto, owner gets the picker). Compose-style free
     // actions (action_ref = a type) carry no preset and fall through to compose.
     const presetGrant = freeActions.get(snap.actorId);
+    // A preset that already bounced (no_eligible) in THIS free-action frame is not re-staged:
+    // forfeit the free action (TIMEOUT -> FREE_ACTION_WINDOW pops the frame). Belt and braces
+    // to the TARGET_BACK forfeit route in states.js.
+    if (presetGrant?.preset?.command && topIsFreeAction(director.ctx) && peekTop(director.ctx)?.extra?.presetBounced) {
+      warn(`DECLARE: free_action preset "${presetGrant.sourceLabel ?? "?"}" already bounced (no eligible target) in this frame; forfeiting instead of re-staging`);
+      director.enqueue({ type: INTENTS.TIMEOUT });
+      return;
+    }
     if (presetGrant?.preset?.command) {
       // Action-gating debuff backstop: a free-action preset of a blocked type
       // (e.g. a granted free Attack while Frightened) bypasses the Octopath
@@ -3816,6 +3825,37 @@ const Declare = {
 //
 // Returns { ok, cancelled, skipped?, secondaryValue?, targets, targetUuids }.
 // When ok is false, cancelled/reason indicates why (user cancel vs no targets).
+// no_eligible result. Inside a FREE-ACTION frame it also FORFEITS the free action: the
+// frame is marked, and states.js routes TARGET_BACK to FREE_ACTION_WINDOW (like DECLARE's
+// TIMEOUT) instead of DECLARE. Without that a preset free action whose lock filters to zero
+// (Drill Stab -> preset Drill Spin locked on a now-KO'd PC) re-staged itself on every DECLARE
+// forever (review 2026-11-23, B1). Outside a free-action frame the TARGET_BACK bounce stays.
+// Forfeit only when the frame has no real choice: a preset grant, a target-locked grant, or an AI
+// performer (autopilot / sim) whose re-pick would repeat the same lock. An open-choice free action
+// driven by a HUMAN keeps TARGET_BACK -> DECLARE so they can choose something else.
+// AI vs human is decided by the DECLARATION, not the current combatant: a free action is taken by
+// the REACTOR on someone else's turn (enemy-autopilot.js), so "whose turn is it" answers for the
+// wrong creature. DECLARE stamps autoDeclaredTurnKey only when the bundle was machine-chosen; a
+// human composing (autopilot returned null = manual fallback) leaves it unset (re-gate B1).
+function freeActionPerformerIsMachine(director, attackerSnap) {
+  if (SimMode.active) return true;
+  try { return !!attackerSnap && director?.ctx?.autoDeclaredTurnKey === summonTurnKey(director, attackerSnap); } catch (_) { return false; }
+}
+function freeActionHasNoRealChoice(director, attackerSnap) {
+  const grant = freeActions.get(attackerSnap?.actorId);
+  return shouldForfeitFreeAction({ grant, aiPerformer: freeActionPerformerIsMachine(director, attackerSnap) });
+}
+function noEligibleResult(director, attackerSnap = null) {
+  try {
+    if (topIsFreeAction(director?.ctx) && freeActionHasNoRealChoice(director, attackerSnap)) {
+      director.ctx.freeActionForfeit = true;
+      const top = peekTop(director.ctx);
+      if (top) (top.extra ??= {}).presetBounced = true;
+    }
+  } catch (_) { /* bookkeeping only */ }
+  return { ok: false, cancelled: false, reason: "no_eligible", targets: [], targetUuids: [] };
+}
+
 async function resolveActionTargets(director, attackerSnap, opts = {}) {
   const {
     skillTargetText:    rawText       = "One Enemy",
@@ -3880,7 +3920,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
       }
       if (!r?.ok || !r.tokens?.length) {
         ui.notifications?.warn(`No eligible target for "${ref}".`);
-        return { ok: false, cancelled: false, reason: r?.reason ?? "no_eligible", targets: [], targetUuids: [] };
+        return r?.reason && r.reason !== "no_eligible" ? { ok: false, cancelled: false, reason: r.reason, targets: [], targetUuids: [] } : noEligibleResult(director, attackerSnap);
       }
       const uuids = r.tokens.map((tk) => tk?.document?.uuid ?? tk?.uuid).filter(Boolean);
       namedPicks[ref] = uuids;
@@ -3932,7 +3972,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   if (!survey.ok) {
     warn(`resolveActionTargets: survey could not answer (${survey.reason}) for ${attackerSnap?.name ?? "?"}`);
     ui.notifications?.warn(`Could not resolve targets for this action (${survey.reason}).`);
-    return { ok: false, cancelled: false, reason: "no_eligible", targets: [], targetUuids: [] };
+    return noEligibleResult(director, attackerSnap);
   }
 
   const isSelf            = survey.isSelf;
@@ -3947,7 +3987,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   if (!isSelf && !eligibleForPicker.length) {
     const categoryLabel = category === "any" ? "creatures" : `${category}s`;
     ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
-    return { ok: false, cancelled: false, reason: "no_eligible", targets: [], targetUuids: [] };
+    return noEligibleResult(director, attackerSnap);
   }
 
   director.ctx.eligibleTargets = eligibleForPicker;
@@ -4053,6 +4093,16 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     }
   }
   const targets     = eligibleForPicker.filter((e) => targetUuids.includes(e.tokenUuid));
+  // A pre-composed pick (sim / autopilot / player compose / scripted directive) taken as given
+  // can be wholly outside the pool (a permanent Soul Fragment the party may not target). Zero
+  // targets must NOT go on: the action script bails before oni:animationStart and the offset
+  // gate then waits its 35 s failsafe (stall hunt 2026-11-23). Callers treat no_eligible as
+  // TARGET_BACK; the sim re-declare guard retires the repeated pick.
+  if (targetsFilteredToNothing({ isSelf, skipped: result.skipped, targets })) {
+    warn(`resolveActionTargets: pick left ZERO eligible targets for ${attackerSnap?.name ?? "?"} - dropped [${targetUuids.join(", ")}]; bouncing (no_eligible)`);
+    ui.notifications?.warn("No eligible target left for this action.");
+    return noEligibleResult(director, attackerSnap);
+  }
   return {
     ok: true, cancelled: false,
     skipped: result.skipped ?? false, secondaryValue: result.secondaryValue ?? null,
@@ -4065,6 +4115,7 @@ const Target = {
   async onEnter(director, { triggerIntent }) {
     const command = triggerIntent?.body?.command ?? director.ctx.declaredCommand;
     director.ctx.declaredCommand = command;
+    director.ctx.freeActionForfeit = false;   // stale flag from an earlier bounce must not forfeit this pass
     log(`TARGET — command: ${command}`);
 
     // ─── Guard (RAW Core p.70) ────────────────────────────────────────
@@ -9245,6 +9296,10 @@ const FreeActionWindow = {
     // singleton entry for this reactor. The frame's `extra` carries the
     // request + reactorActorId so we can identify whom to clear.
     if (topIsFreeAction(ctx)) {
+      if (ctx.freeActionForfeit) {
+        log(`FREE_ACTION_WINDOW: free action "${peekTop(ctx)?.extra?.request?.sourceLabel ?? "?"}" FORFEITED (no eligible target)`);
+        ctx.freeActionForfeit = false;
+      }
       const popped = popFrame(director);
       const reactorId = popped?.extra?.reactorActorId
         ?? popped?.extra?.request?.reactorActorId

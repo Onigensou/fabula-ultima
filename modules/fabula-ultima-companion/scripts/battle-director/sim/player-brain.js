@@ -32,6 +32,7 @@ import { canAffordItem, parseCost } from "./cost.js";
 import { getLinkedSkillUuid } from "../item-resource.js";
 import { protectExhausted } from "./reaction-brain.js";
 import { resolveAttackerWeapon, resolveVirtualAttacks, resolvePrimaryAttackWeapon, getTargetSideBlocks } from "../snapshot.js";
+import { isLockedUuidBlockedInCombat, targetableRows } from "../free-action-lock-gate.js";
 
 import { ActionReaderCore as AR } from "../../action-reader/actionReader-core.js";
 import { resolveActionReaderPerformer } from "../../action-reader/actionReader-resolvePerformer.js";
@@ -587,7 +588,12 @@ function bestDamagingSpell(api, actorDoc, foes, maxMpCost) {
 // The grant may restrict WHICH skills are legal (`allowedSkillRefs`, matched by name or
 // uuid — Counter Pass only permits Passes), and may lock the target (the enemy that
 // triggered it). Both are honoured.
-function bestFreeSkill(api, actorDoc, foes, { allowedSkillRefs = null, lockedTargetTokenUuid = null } = {}) {
+function bestFreeSkill(api, actorDoc, allFoes, { allowedSkillRefs = null, lockedTargetTokenUuid = null, dCombat = null } = {}) {
+  // A lock on a creature this actor may not target (party vs a permanent Soul Fragment) is
+  // unanswerable: decline, never fall back to a different foe (the grant locks the target).
+  if (lockedTargetTokenUuid && isLockedUuidBlockedInCombat(lockedTargetTokenUuid, actorDoc, dCombat)) return null;
+  // Same pool rule as the normal pick (hazard-brain): never aim at an untargetable foe.
+  const foes = targetableRows(allFoes, actorDoc, dCombat);
   // The allow-list matches by NAME, by UUID, or by TAG ("tag:dance"). Zarg's Dance grant
   // uses the tag form exclusively, and a name/uuid-only matcher found nothing — so he
   // reported "nothing left that works", fell back to Guard, and Guard is not legal under
@@ -796,6 +802,7 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), gr
       const skill = bestFreeSkill(policyApi, actorDoc, foes, {
         allowedSkillRefs: grant?.allowedSkillRefs ?? null,
         lockedTargetTokenUuid: grant?.lockedTargetTokenUuid ?? null,
+        dCombat: director?.dCombat ?? null,
       });
       if (skill && !isBlocked(skill._name)) {
         SimMode.note("free-action", `${snap?.name} spends it on ${skill._name}`);

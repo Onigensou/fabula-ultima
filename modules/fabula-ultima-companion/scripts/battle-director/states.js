@@ -151,7 +151,9 @@ export const TRANSITIONS = Object.freeze({
 
   [STATES.TARGET]: {
     [INTENTS.TARGET_PICKED]: { next: STATES.COMPUTE },
-    [INTENTS.TARGET_BACK]: { next: STATES.DECLARE },
+    // no_eligible inside a free-action frame FORFEITS the free action (flag set by state-handlers
+    // noEligibleResult) -> FAW pops the frame; otherwise back to DECLARE.
+    [INTENTS.TARGET_BACK]: { next: (ctx) => (ctx.freeActionForfeit && topIsFreeAction(ctx)) ? STATES.FREE_ACTION_WINDOW : STATES.DECLARE },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
     [INTENTS.TIMEOUT]: { next: STATES.ABORTED },
   },

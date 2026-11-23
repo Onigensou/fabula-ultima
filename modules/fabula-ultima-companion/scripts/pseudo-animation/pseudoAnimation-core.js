@@ -37,6 +37,15 @@ function makeRunId() {
     p.meta ??= {};
     p.meta.senderUserId ??= game.user?.id;
     p.meta.senderUserName ??= game.user?.name;
+    // Hurt pose in shows (battle-director/show-hurt.js): while an action's show
+    // starts, the acting GM's director-animation.js publishes the planned
+    // per-target HP loss ({ [tokenUuid]: bool }); it rides the message so every
+    // client's oni.hit can tell an HP hit from a status-only one. Absent outside
+    // a real FSM action (bench, reaction path, SimMode) = no contact pose.
+    if (p.hpPlan === undefined) {
+      const slot = globalThis.__ONI_SHOW_HP_PLAN__;
+      if (slot && slot.plan && typeof slot.plan === "object") p.hpPlan = { ...slot.plan };
+    }
     return p;
   }
 

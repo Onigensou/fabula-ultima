@@ -71,6 +71,7 @@ import { initHitCounter } from "./hit-counter.js";
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
 import { initBattlerPose, emitBattlerPose, playBattlerPoseLocal, describeToken as describeBattlerPose } from "./battler-pose.js";
+import { initShowHurt } from "./show-hurt.js";
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
 import { initNpcStatusStrip } from "./npc-status-strip.js";
 import { initStatusPop } from "./status-pop.js";
@@ -2013,6 +2014,10 @@ Hooks.once("ready", () => {
   // every client from the actor's markers + one-shot broadcasts.
   try { initBattlerPose(); }
   catch (e) { warn("initBattlerPose on ready threw", e); }
+  // Hurt pose inside the animation shows: a PC hit by a show holds its hurt
+  // art from the visible contact (show-hurt.js; local on every client).
+  try { initShowHurt(); }
+  catch (e) { warn("initShowHurt on ready threw", e); }
 
   // Painted-camera depth on the battle backdrops: battler depth scale (through
   // depth-index) + the parallax backdrop. Every client draws its own.

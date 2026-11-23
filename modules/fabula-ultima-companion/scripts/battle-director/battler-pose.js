@@ -11,6 +11,8 @@
 //   one-shots      hurt rides the existing hurt-reaction broadcast;
 //                  attack / cast are broadcast by the GM when an action's
 //                  animation starts (emitBattlerPose).
+//   show holds     a show's visible contact holds a PC's hurt pose until the
+//                  show lets go (show-hurt.js; beginShowHurtHold below).
 //
 // Fallback: a pose with no art on the sheet (or art that fails to load) shows
 // the token's own image, i.e. exactly what the game did before. Rules and the
@@ -50,6 +52,11 @@ const SHAKE_PX = { normal: 4, strong: 8 };
 // After a hurt clip on a hit that took HP to 0: how long to hold its last
 // frame waiting for the KO to take over before standing back up.
 const LETHAL_HURT_HOLD_MS = 1500;
+// Same bridge when the hurt was a SHOW hold (show-hurt.js): the KO can land
+// seconds after the number (real play: +3.4 s), and standing up early plays the
+// Crisis clip from frame 0 before the fall. Keep the frozen hurt frame until the
+// KO pose starts, capped here (from the hand-over), then end normally.
+const SHOW_LETHAL_HURT_HOLD_MS = 6000;
 const STRONG_TINT = 0xff7a7a;
 
 let _socket = null;
@@ -130,6 +137,10 @@ export function playBattlerPoseLocal({ tokenUuid, pose, hold = false } = {}) {
   return startOneShot(token, pose, { hold: hold || HOLD.has(pose) });
 }
 
+// show-hurt.js listens to every engine hurt this client plays (held or not).
+let _engineHurtListener = null;
+export function setEngineHurtListener(fn) { _engineHurtListener = typeof fn === "function" ? fn : null; }
+
 // Hurt with art: called by the hurt reaction on every client. Returns true
 // when this token has hurt art ready and the pose system took the hit (the
 // hurt reaction then skips its image-copy flinch); false = use the old flinch.
@@ -137,16 +148,126 @@ export function playHurtPoseLocal(tokenUuid, intensity = "normal") {
   const token = tokenFromUuid(tokenUuid);
   if (!token || !inScope(token) || !token.mesh) return false;
   const entry = entryFor(token);
+  try { _engineHurtListener?.(tokenUuid); } catch (e) { warn("battler-pose: engine hurt listener threw", e); }
   if (entry.lasting === "ko") return false;
+  const tier = intensity === "strong" ? "strong" : "normal";
+  // A show already holds this token in its hurt pose (show-hurt.js): no clip
+  // restart, no flash, no red; the number lands as a pivot shake on the held
+  // frame. The show decides what comes next (brief: the normal end after this
+  // shake; sustained: keep holding to its gate).
+  const rec = entry.oneShot;
+  if (rec?.show && !rec.show.dropped) {
+    startShake(token, tier, { tint: false });
+    trace(token, "show-hold-hurt", { tier, ending: !!rec.show.ending });
+    let owned = false;
+    if (!rec.show.ending) {
+      try { owned = rec.show.onEngineHurt?.(tier) === true; } catch (e) { warn("battler-pose: show hold onEngineHurt threw", e); }
+    }
+    // a second number in the tail, or a hold nobody owns any more: end after this shake
+    if (!owned || rec.show.ending) scheduleShowTail(token.id, rec, tier);
+    return true;
+  }
   const src = poseSrc(propsOf(token), "hurt", _failedSrcs);
   if (!src) return false;
   const art = _arts.get(artKey(token.id, src));
   if (!art?.ready) return false;           // not loaded yet: old flinch this time
   startOneShot(token, "hurt", { art });
-  const tier = intensity === "strong" ? "strong" : "normal";
   if (hurtFlinchMode() === "full") startFullFlinch(token, tier);
   else startShake(token, tier);
   return true;
+}
+
+// ── show hurt holds (show-hurt.js drives these; client-local) ────────────
+// A show holds a PC in its hurt pose from the visible contact. The hold is a
+// one-shot record { pose: "hurt", hold: true, show: {...} }, started through
+// startOneShot's guards (KO, staged KO), frozen on its last frame by render,
+// and only ever ended if it is still the token's one-shot.
+//
+// Returns a handle { tokenId, record, adopted, engineHurtSeen } or null.
+//   adoptRunning  an engine hurt clip is already playing (it arrived before
+//                 this client's contact): true = take it over without a
+//                 restart (sustained); false = leave it to end normally (brief).
+export function beginShowHurtHold(tokenUuid, { adoptRunning = false, onEngineHurt = null, onDropped = null } = {}) {
+  const token = tokenFromUuid(tokenUuid);
+  if (!token || token.destroyed || !inScope(token) || !token.mesh) return null;
+  if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) return null;
+  const entry = entryFor(token);
+  if (entry.lasting === "ko") return null;
+  const cur = entry.oneShot;
+  if (cur?.pose === "ko" && cur.hold) return null;          // a staged KO stays down
+  const show = { onEngineHurt, onDropped, ending: false, dropped: false };
+  if (cur?.show) {
+    // Already a show hold (its tail, or one whose owner let go): take it over.
+    if (cur.timer) { clearTimeout(cur.timer); cur.timer = null; }
+    cur.show.dropped = true;                                 // silence the old owner
+    cur.show = show;
+    cur.hold = true;
+    trace(token, "show-hold", { adopted: "show" });
+    return { tokenId: token.id, record: cur, adopted: true, engineHurtSeen: false };
+  }
+  if (cur?.pose === "hurt" && !cur.hold) {
+    if (!adoptRunning) return null;
+    if (cur.timer) { clearTimeout(cur.timer); cur.timer = null; }
+    cur.hold = true;
+    cur.show = show;
+    trace(token, "show-hold", { adopted: "engine-hurt" });
+    return { tokenId: token.id, record: cur, adopted: true, engineHurtSeen: true };
+  }
+  const src = poseSrc(propsOf(token), "hurt", _failedSrcs);
+  if (!src) return null;
+  const art = _arts.get(artKey(token.id, src));
+  if (!art?.ready) return null;                              // cold art: skip, never queue
+  const ms = startOneShot(token, "hurt", { art, hold: true, extra: { show } });
+  if (!ms || entry.oneShot?.show !== show) return null;
+  trace(token, "show-hold", { adopted: false });
+  return { tokenId: token.id, record: entry.oneShot, adopted: false, engineHurtSeen: false };
+}
+
+function ownedHold(handle) {
+  const entry = handle?.tokenId ? _tokens.get(handle.tokenId) : null;
+  const rec = handle?.record;
+  return entry && rec?.show && !rec.show.dropped && entry.oneShot === rec ? rec : null;
+}
+
+// End the hold now (sustained release, caps, dispose). Through endOneShot, so
+// a lethal hit holds its frame for the KO. False = not ours any more.
+export function releaseShowHurtHold(handle) {
+  const rec = ownedHold(handle);
+  if (!rec) return false;
+  if (rec.timer) { clearTimeout(rec.timer); rec.timer = null; }
+  rec.show.dropped = true;
+  trace(canvas?.tokens?.get?.(handle.tokenId), "show-release");
+  endOneShot(handle.tokenId, "hurt", rec);
+  return true;
+}
+
+// The engine hurt reached a brief hold: keep the frame for its shake, then
+// the normal one-shot end (lethal -> KO bridge included).
+export function finishShowHurtHold(handle, tier = "normal") {
+  const rec = ownedHold(handle);
+  if (!rec) return false;
+  scheduleShowTail(handle.tokenId, rec, tier);
+  return true;
+}
+
+function scheduleShowTail(tokenId, rec, tier) {
+  rec.show.ending = true;
+  if (rec.timer) clearTimeout(rec.timer);
+  rec.timer = setTimeout(() => {
+    rec.timer = null;
+    const entry = _tokens.get(tokenId);
+    if (!entry || entry.oneShot !== rec) return;
+    rec.show.dropped = true;
+    endOneShot(tokenId, "hurt", rec);
+  }, (SHAKE_MS[tier] ?? SHAKE_MS.normal) + 30);
+}
+
+// The pose let go of a show hold on its own: tell its owner (once).
+function dropShowHold(rec, why) {
+  const s = rec?.show;
+  if (!s || s.dropped) return;
+  s.dropped = true;
+  try { s.onDropped?.(why); } catch (e) { warn("battler-pose: show hold onDropped threw", e); }
 }
 
 // GM: play the KO clip on a creature that is about to be removed, on every
@@ -172,6 +293,7 @@ export function describeToken(tokenOrUuid) {
   return {
     name: token.name, inScope: inScope(token),
     lasting: e?.lasting ?? null, oneShot: e?.oneShot?.pose ?? null, shown: e?.shown ?? null,
+    showHold: e?.oneShot?.show ? (e.oneShot.show.ending ? "ending" : "held") : null,
     arts: [..._arts.values()].filter((a) => a.tokenId === token.id).map((a) => ({ src: a.src, kind: a.kind, ready: a.ready, failed: a.failed })),
   };
 }
@@ -213,6 +335,14 @@ function onEffectChanged(effect) {
     entry.stateArt = nextArt;
     trace(token, "lasting", { from: prev, to: next, effect: effect.name });
     log(`battler-pose: ${token.name} ${prev} -> ${next}`);
+    // A show's hurt hold ends with the KO; left in place it would come back on a revive.
+    if (next === "ko" && entry.oneShot?.show) {
+      const rec = entry.oneShot;
+      if (rec.timer) clearTimeout(rec.timer);
+      entry.oneShot = null;
+      dropShowHold(rec, "ko");
+    }
+    if (next === "ko" && entry.lethalTimer) { clearTimeout(entry.lethalTimer); entry.lethalTimer = null; }
     // Entering KO plays the fall from the start; anything else just switches.
     render(token, { restart: next === "ko" });
   }
@@ -222,6 +352,8 @@ function forgetToken(tokenId) {
   if (!tokenId) return;
   const e = _tokens.get(tokenId);
   if (e?.oneShot?.timer) clearTimeout(e.oneShot.timer);
+  if (e?.lethalTimer) { clearTimeout(e.lethalTimer); e.lethalTimer = null; }
+  if (e?.oneShot?.show) dropShowHold(e.oneShot, "forget");
   if (e?.shake) e.shake.stop();
   _tokens.delete(tokenId);
   dropArtsFor(tokenId);
@@ -234,7 +366,8 @@ function forgetAll() {
 }
 
 // ── one-shots ───────────────────────────────────────────────────────────
-function startOneShot(token, pose, { hold = false, art = null } = {}) {
+// `extra` adds fields to the one-shot record (a show's hurt hold: `show`).
+function startOneShot(token, pose, { hold = false, art = null, extra = null } = {}) {
   const entry = entryFor(token);
   if (entry.lasting === "ko" && pose !== "ko") return 0;   // the fallen don't flinch
   // ...nor does one held down by a staged KO (Life Charm) until "idle" releases it.
@@ -244,8 +377,12 @@ function startOneShot(token, pose, { hold = false, art = null } = {}) {
   const a = art ?? loadArt(token, src);
   const begin = () => {
     if (token.destroyed) return 0;
-    if (entry.oneShot?.timer) clearTimeout(entry.oneShot.timer);
-    entry.oneShot = { pose, hold, timer: null };
+    const prev = entry.oneShot;
+    if (prev?.timer) clearTimeout(prev.timer);
+    if (entry.lethalTimer) { clearTimeout(entry.lethalTimer); entry.lethalTimer = null; }
+    entry.oneShot = { pose, hold, timer: null, ...(extra ?? {}) };
+    // Another pose (a KO hold, a reaction's attack) replaced a show's hurt hold.
+    if (prev?.show && prev !== entry.oneShot) dropShowHold(prev, "replaced");
     trace(token, "oneShot", { pose, hold, ms: clipMs(a) });
     render(token, { restart: true });
     const ms = Math.min(MAX_ONE_SHOT_MS, clipMs(a) || STILL_MS);
@@ -269,14 +406,19 @@ function releaseOneShot(token) {
   if (!entry?.oneShot) return 0;
   if (entry.oneShot.timer) clearTimeout(entry.oneShot.timer);
   trace(token, "release", { pose: entry.oneShot.pose });
+  const prev = entry.oneShot;
   entry.oneShot = null;
+  if (prev.show) dropShowHold(prev, "idle");
   render(token, { restart: true });
   return 0;
 }
 
-function endOneShot(tokenId, pose) {
+// `record`: end only that one-shot (a show hold ending must never end a pose
+// that has replaced it since).
+function endOneShot(tokenId, pose, record = null) {
   const entry = _tokens.get(tokenId);
   if (!entry?.oneShot || entry.oneShot.pose !== pose) return;
+  if (record && entry.oneShot !== record) return;
   trace(canvas?.tokens?.get?.(tokenId), "end", { pose });
   entry.oneShot = null;
   const token = canvas?.tokens?.get?.(tokenId);
@@ -286,12 +428,18 @@ function endOneShot(tokenId, pose) {
   // up for that moment; whatever comes next renders over it. If nothing does
   // (no KO marker, no removal), stand up after a short wait.
   if (pose === "hurt" && Number(propsOf(token).current_hp) <= 0) {
-    trace(token, "hold-hurt-until-ko");
-    setTimeout(() => {
-      const t = canvas?.tokens?.get?.(tokenId);
+    const showLethal = !!record?.show;
+    trace(token, "hold-hurt-until-ko", showLethal ? { show: true } : {});
+    if (entry.lethalTimer) clearTimeout(entry.lethalTimer);
+    entry.lethalTimer = setTimeout(() => {
       const e = _tokens.get(tokenId);
-      if (t && !t.destroyed && e && !e.oneShot && e.shown === "hurt") render(t, { restart: true });
-    }, LETHAL_HURT_HOLD_MS);
+      if (e) e.lethalTimer = null;
+      const t = canvas?.tokens?.get?.(tokenId);
+      if (t && !t.destroyed && e && !e.oneShot && e.shown === "hurt") {
+        if (showLethal) { trace(t, "show-lethal-ko-never-came"); log(`battler-pose: ${t.name} show hold: no KO within ${SHOW_LETHAL_HURT_HOLD_MS} ms, standing up`); }
+        render(t, { restart: true });
+      }
+    }, showLethal ? SHOW_LETHAL_HURT_HOLD_MS : LETHAL_HURT_HOLD_MS);
     return;
   }
   render(token, { restart: true });
@@ -328,12 +476,17 @@ function render(token, { restart = false, fresh = false } = {}) {
 
   const holdPose = HOLD.has(pose) || !!entry.oneShot?.hold;
   const loop = LOOPING.has(pose);
+  const sameArt = entry.shownArt === art;
   if (art.kind === "video") {
     const v = art.video;
     v.loop = loop;
     if (holdPose && fresh && !restart) {
       seekToEnd(art);                                       // already fallen
-    } else if (restart || entry.shownArt !== art || v.paused) {
+    } else if (holdPose && sameArt && !restart) {
+      // A held clip that is already on screen: a re-render (Crisis / Guard
+      // gained mid-hold) keeps it playing on, or frozen on its last frame once
+      // it has ended (an ended video reports paused) — never back to frame 0.
+    } else if (restart || !sameArt || v.paused) {
       try { v.currentTime = 0; } catch {}
       v.play?.().catch(() => {});
     }
@@ -419,8 +572,9 @@ function applySizing(token, entry) {
 }
 
 // A short jitter for a hurt pose, on the mesh pivot (Foundry never sets the
-// pivot, so its refreshes do not fight this), plus a red pulse on strong hits.
-function startShake(token, tier) {
+// pivot, so its refreshes do not fight this), plus a red pulse on strong hits
+// (`tint: false` = the pivot only: the number landing during a show's hold).
+function startShake(token, tier, { tint = true } = {}) {
   const entry = entryFor(token);
   if (entry.shake) entry.shake.stop();
   const mesh = token.mesh;
@@ -435,7 +589,7 @@ function startShake(token, tier) {
     const sx = Math.abs(m.scale.x) || 1;
     const off = Math.sin(t * Math.PI * 7) * amp * (1 - t);
     m.pivot.x = off / sx;
-    if (tier === "strong") m.tint = t < 0.55 ? STRONG_TINT : baseTint;
+    if (tint && tier === "strong") m.tint = t < 0.55 ? STRONG_TINT : baseTint;
   };
   let stopped = false;
   function stop() {
@@ -443,7 +597,11 @@ function startShake(token, tier) {
     stopped = true;
     try { canvas.app.ticker.remove(tick); } catch {}
     const m = token.mesh;
-    if (m && !token.destroyed) { m.pivot.x = 0; m.tint = token.document?.texture?.tint ?? baseTint; }
+    if (m && !token.destroyed) {
+      m.pivot.x = 0;
+      // pivot-only never touched the tint, and must not reset a show's own wash
+      if (tint) m.tint = token.document?.texture?.tint ?? baseTint;
+    }
     if (entry.shake === handle) entry.shake = null;
   }
   const handle = { stop };

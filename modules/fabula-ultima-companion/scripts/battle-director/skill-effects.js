@@ -35,6 +35,7 @@ import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
 import { resolveAttackerWeapon, attrDieSize } from "./snapshot.js";
+import { lockedGrantVerdict, refusalMessage, notifyGrantRefused, grantDisplayName, isPayloadTargetRef } from "./free-action-lock-gate.js";
 import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX, targetsKnockedOutAlly, grappleHoldCap } from "./snapshot.js";
 import { tokensGrappledBy } from "./grappled.js";
 import { INVENTORY_ACTION_TAG } from "./skill-intent.js";
@@ -44,6 +45,13 @@ import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { getIntentChannel } from "./intent-channel.js";
 import { SimMode } from "./sim/sim-mode.js";
+// Refusal notices for locked free-action grants: silent only when nobody is at the table (sim / harness / no DOM).
+// NOT noHumanToAsk(): reaction chains run isPassive:true, which would silence every reaction-fired refusal in play.
+function refusalUnattended() {
+  return SimMode.active || globalThis.__FU_HARNESS_HEADLESS__ === true
+    || globalThis.__fudActiveDCombat?.__isHarnessCombat === true || typeof document === "undefined";
+}
+
 import { INTENTS } from "./intents.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 import { potionRainHalves } from "../healing-system/potion-rain.js";
@@ -83,7 +91,7 @@ const RESOURCE_PROPS = RESOURCE_REGISTRY;
 // Passive AEs (equipment-derived, class-trait, etc.) typically have no
 // duration, no buff/debuff tag, and no director stamp — they fall through
 // to "keep".
-function isTransientAE(eff) {
+export function isTransientAE(eff) {
   const fuFlags = eff?.flags?.[FLAG_NS] ?? {};
   // A conflict event's own marker: never ticked (directorPermanent), but it must
   // not outlive the battle, even one that ended without its teardown.
@@ -11432,7 +11440,15 @@ async function applyFreeActionEffect(row, ctx) {
   if (String(row.target_ref ?? "").trim()) {
     try {
       const tr = await resolveTargetRef(row.target_ref, ctx);
-      if (tr.ok && tr.tokens?.length) {
+      {
+        // Q1: a target_ref that resolves to NOTHING (a Nox Servant dropped from a direct ref, a dead
+        // pick) must not yield an UNLOCKED grant; a lock the performer may not target is refused too.
+        const verdict = lockedGrantVerdict(tr, performer, { dCombat: ctx.dCombat ?? null });
+        if (verdict.refuse) {
+          log(`skill-effects.free_action: "${row.effect_label ?? "?"}" NOT granted - ${verdict.why === "untargetable" ? `locked target ${(verdict.token.document ?? verdict.token).name ?? "?"} is not targetable by ${performer.name}` : `target_ref "${row.target_ref}" resolved no targets (grant would be unlocked)`}`);
+          await notifyGrantRefused(performer, refusalMessage(verdict, grantDisplayName(row, ctx), performer), { sim: refusalUnattended() });
+          return { ok: true, kind: "free_action", skipped: "locked-target-untargetable" };
+        }
         presetTargetTokenUuids = tr.tokens.map((t) => t.uuid ?? t.document?.uuid).filter(Boolean);
       }
     } catch (e) { warn(`skill-effects.free_action: target_ref "${row.target_ref}" resolve threw`, e); }
@@ -14485,6 +14501,34 @@ async function applyChanceEffect(row, ctx) {
 
 // ── chain ──────────────────────────────────────────────────────────────
 
+// Walk a chain's steps (nested chains too, depth-capped) for a `free_action` row with a
+// `target_ref` whose target the reactor may not target. Returns that row's label, or null.
+async function findUntargetableLockedFreeAction(steps, ctx, depth = 0, seen = new Set(), scratch = null) {
+  const performer = ctx.reactorActor;
+  if (!performer || depth > 4) return null;
+  // Q2: resolve on a SCRATCH ctx (own memo map) so nothing is cached onto the real ctx.resolvedTargets
+  // or prompts early; only payload-derived refs, and never a step that has a condition_formula.
+  scratch = scratch ?? { ...ctx, resolvedTargets: new Map() };
+  for (const label of steps) {
+    if (seen.has(label)) continue;
+    seen.add(label);
+    const r = findEffectRow(ctx, label);
+    const kind = String(r?.effect_kind ?? "").trim().toLowerCase();
+    if (String(r?.condition_formula ?? "").trim()) continue;   // decides at run time
+    if (kind === "chain") {
+      const inner = await findUntargetableLockedFreeAction(parseEffectRefList(r.chain_steps), ctx, depth + 1, seen, scratch);
+      if (inner) return inner;
+    } else if (kind === "free_action" && isPayloadTargetRef(r.target_ref) && !String(r.performer_ref ?? "").trim()) {
+      try {
+        const tr = await resolveTargetRef(r.target_ref, scratch);
+        const verdict = lockedGrantVerdict(tr, performer, { dCombat: ctx.dCombat ?? null });
+        if (verdict.refuse) return { label, verdict };
+      } catch { /* resolve trouble: let the step itself decide */ }
+    }
+  }
+  return null;
+}
+
 async function applyChainEffect(row, ctx) {
   // Shared parser with `open_action_menu.menu_option_refs` — same
   // "comma- or newline-separated list of effect_table labels" grammar.
@@ -14514,6 +14558,14 @@ async function applyChainEffect(row, ctx) {
   // batch; only the owner flushes + clears it at the end. We flush before any
   // non-apply_ae step so its reads see committed state, and in `finally` so an
   // abort / step-failure / throw still commits whatever queued first.
+  // Pre-flight FIRST (B2): an early return after the batch is created would leak ctx._aeBatch.
+  const lockedStep = await findUntargetableLockedFreeAction(steps, ctx);
+  if (lockedStep) {
+    log(`skill-effects.chain: skipped - step "${lockedStep.label}" locks a target ${ctx.reactorActor?.name ?? "the reactor"} cannot target (${lockedStep.verdict.why}); nothing spent`);
+    await notifyGrantRefused(ctx.reactorActor, refusalMessage(lockedStep.verdict, grantDisplayName(row, ctx), ctx.reactorActor), { sim: refusalUnattended() });
+    return { ok: true, kind: "chain", applied: [], skipped: "locked-target-untargetable" };
+  }
+
   const ownsBatch = !ctx._aeBatch;
   if (ownsBatch) ctx._aeBatch = makeAeBatch();
   const batch = ctx._aeBatch;

@@ -31,6 +31,7 @@ import { registerDevTool } from "./dev-tools-menu.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { decidePlayerAction } from "./sim/player-brain.js";
 import { freeActions } from "./free-actions.js";
+import { isLockedUuidBlockedInCombat } from "./free-action-lock-gate.js";
 import { isWeightedWeapon, weightedActorKey, weightedBlockReason } from "./weighted-rules.js";
 
 // ── ActionReader pipeline (direct ESM import — same singleton the world macro
@@ -1070,7 +1071,11 @@ async function decideFreeActionBundle(director, snap, grant) {
     // Targets: a locked target wins; otherwise ActionReader targeting on the item.
     let targetUuids = null;
     if (grant?.lockedTargetTokenUuid) {
-      targetUuids = [grant.lockedTargetTokenUuid];
+      // A lock on a creature this actor may not target (permanent Soul Fragment) = no target;
+      // the "resolved no target" branch below declines. Same rule the pool builder applies.
+      targetUuids = isLockedUuidBlockedInCombat(grant.lockedTargetTokenUuid, actor, director?.dCombat)
+        ? []
+        : [grant.lockedTargetTokenUuid];
     } else {
       ctx.chosenAction = {
         item,

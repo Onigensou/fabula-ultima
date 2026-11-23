@@ -21,6 +21,7 @@
 
 import { takeVideo, releaseVideo } from "../action-animation/animation-stage.js";
 import { createTimeline } from "./oni-timeline.js";
+import { hurtFromPlan, SHOW_GATE_HOOK, RUN_DISPOSED_HOOK } from "../battle-director/show-hurt-rules.js";
 
 // ── Easing ──────────────────────────────────────────────────────────────────
 export const EASE = {
@@ -400,9 +401,20 @@ export function buildOni(ctx, env) {
 
   // Fire the BD damage gate (oni:animationEnd via the doneHook the outer script
   // set). Call this at the impact moment so damage lands on impact.
+  // It also fires a LOCAL "oni:showGate" { runId, scriptId } on every client
+  // that runs the show (the doneHook is heard on the acting GM only), so
+  // client-local presentation can key on the show's own gate (show-hurt.js).
   function fireDone() {
     const hook = ctx?.params?.doneHook;
     if (hook) { try { Hooks.callAll(hook); } catch (e) { console.warn("[oni] fireDone threw", e); } }
+    if (ctx?.runId) {
+      try {
+        Hooks.callAll(SHOW_GATE_HOOK, {
+          runId: ctx.runId, scriptId: ctx?.msg?.scriptId ?? null,
+          casterTokenUuid: ctx?.casterToken?.document?.uuid ?? null,
+        });
+      } catch (e) { console.warn("[oni] showGate threw", e); }
+    }
   }
 
   // ── Chain strikes ─────────────────────────────────────────────────────────
@@ -411,13 +423,24 @@ export function buildOni(ctx, env) {
   // number, flinch and HP bar land on this frame (the acting GM's own run of the
   // script drives it; chain-presenter.js). Call it once per hit, in order. A
   // non-Chain action ignores it, so a shared script can always cue its hits.
+  //
+  // The payload also carries the show's `scriptId` and, for a target the acting
+  // GM planned (ctx.msg.hpPlan, see show-hurt-rules.js hpLossPlan), `hurt`:
+  // true = this hit takes HP. No plan = no `hurt` (show-hurt.js then leaves the
+  // hurt pose to the damage number, as before).
   function hit(info = {}) {
     try {
-      Hooks.callAll("oni:hit", {
+      const d = {
         casterTokenUuid: ctx?.casterToken?.document?.uuid ?? null,
         runId: ctx?.runId ?? null,
+        scriptId: ctx?.msg?.scriptId ?? null,
         ...info,
-      });
+      };
+      if (d.hurt === undefined && d.tokenUuid) {
+        const planned = hurtFromPlan(ctx?.msg?.hpPlan, d.tokenUuid);
+        if (planned !== undefined) d.hurt = planned;
+      }
+      Hooks.callAll("oni:hit", d);
     } catch (e) { console.warn("[oni] hit threw", e); }
   }
 
@@ -433,6 +456,7 @@ export function buildOni(ctx, env) {
       Hooks.callAll("oni:impactOffsets", {
         casterTokenUuid: ctx?.casterToken?.document?.uuid ?? null,
         runId: ctx?.runId ?? null,
+        scriptId: ctx?.msg?.scriptId ?? null,
         offsets: map && typeof map === "object" ? { ...map } : {},
       });
     } catch (e) { console.warn("[oni] impactOffsets threw", e); }
@@ -456,8 +480,18 @@ export function buildOni(ctx, env) {
   // Tear down everything created via this helper (idempotent). The listener
   // calls this in a finally after the inner script resolves, so even a script
   // that forgets to clean up leaves the stage at baseline.
+  //
+  // The first dispose of a pseudo run (it has a runId) also fires a LOCAL
+  // "oni:runDisposed" { runId, scriptId }: the one per-client signal that holds
+  // on every exit path, a throw included (the listener's finally).
+  let _disposedOnce = false;
   function dispose() {
     for (const fn of _disposers.splice(0).reverse()) { try { fn(); } catch {} }
+    if (!_disposedOnce && ctx?.runId) {
+      _disposedOnce = true;
+      try { Hooks.callAll(RUN_DISPOSED_HOOK, { runId: ctx.runId, scriptId: ctx?.msg?.scriptId ?? null }); }
+      catch (e) { console.warn("[oni] runDisposed threw", e); }
+    }
   }
 
   // ── Camera-proof screen space (live transform) ───────────────────────────
