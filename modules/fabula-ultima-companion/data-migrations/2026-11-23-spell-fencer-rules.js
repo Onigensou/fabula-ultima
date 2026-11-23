@@ -251,7 +251,7 @@ const BLOCKS = [
     "effect_label": "rh_pay_enc",
     "charge_key": "encore",
     "count": "1",
-    "on_empty": "abort",
+    "on_empty": "skip",
     "target_ref": "self",
     "condition_formula": "AE_CHARGES_RESONANCE < 2",
     "on_condition_fail": "skip"
@@ -261,7 +261,7 @@ const BLOCKS = [
     "effect_label": "rh_pay_res",
     "charge_key": "resonance",
     "count": "2",
-    "on_empty": "abort",
+    "on_empty": "skip",
     "target_ref": "self",
     "condition_formula": "AE_CHARGES_RESONANCE >= 2",
     "on_condition_fail": "skip"

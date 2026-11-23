@@ -97,9 +97,12 @@ const MOVE_SKILLS = {
       action_command: "skill" },
     effects: [
       { effect_kind: "chain", effect_label: "rh_root", chain_steps: "rh_pay_enc, rh_pay_res, rh_turn, rh_pend, rh_first, rh_first_d" },
-      { effect_kind: "consume_charge", effect_label: "rh_pay_enc", charge_key: "encore", count: "1", on_empty: "abort", target_ref: "self",
+      // on_empty "skip" (not "abort"): the picker cost gate (skill-effects analyzeChainCost) counts every consume_charge row and
+      // ignores condition_formula, so "abort" made Rhapsody unaffordable unless the actor held BOTH Encore and 2 Resonance.
+      // The gate is availability_formula; the rows pick the payment.
+      { effect_kind: "consume_charge", effect_label: "rh_pay_enc", charge_key: "encore", count: "1", on_empty: "skip", target_ref: "self",
         condition_formula: "AE_CHARGES_RESONANCE < 2", on_condition_fail: "skip" },
-      { effect_kind: "consume_charge", effect_label: "rh_pay_res", charge_key: "resonance", count: "2", on_empty: "abort", target_ref: "self",
+      { effect_kind: "consume_charge", effect_label: "rh_pay_res", charge_key: "resonance", count: "2", on_empty: "skip", target_ref: "self",
         condition_formula: "AE_CHARGES_RESONANCE >= 2", on_condition_fail: "skip" },
       { effect_kind: "apply_ae", effect_label: "rh_turn", ae_template_ref: "Rhapsody Turn", ae_duplicate_mode: "replace",
         ae_lifetime_mode: "round_end", ae_duration_rounds: "1", target_ref: "self" },

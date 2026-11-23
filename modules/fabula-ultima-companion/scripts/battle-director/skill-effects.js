@@ -3212,6 +3212,12 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
         subjectActorUuid: r.actorUuid,
         subjectTokenUuid: r.tokenUuid,
         actionKind: ar.kind ?? null,
+        // Same spell / check fields the CONFIRM scan carries (state-handlers ~6086). Spells are stamped
+        // ar.kind "Skill", so without these ACTION_IS_SPELL / ACTION_IS_OFFENSIVE_SPELL / ACTION_ROLLS_ACCURACY read 0
+        // on this second pass and a spell-gated will_deal_damage row (Mystic Infusion's apply_ae) lost every subject.
+        actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+        actionIsCheck: !!ar.isCheck,
+        actionCanMiss: !!ar.canMiss,
         // Same Item gate + create/use mode as the CONFIRM scan. Without itemMode
         // an ACTION_IS_ITEM_CREATE row matched at CONFIRM and then lost every
         // subject here, so its damage silently never landed.

@@ -290,6 +290,8 @@ const CHARGE_LABELS = {
   grave:     "Grave Points",
   brainwave: "Brainwave",
   cartridge: "Cartridge",
+  resonance: "Resonance",   // Spell Fencer class resource
+  encore:    "Encore",      // Spell Fencer Heroic: one free Rhapsody per scene
 };
 
 // Build a candidate from props (shared by the live-item walk and the
