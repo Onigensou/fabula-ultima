@@ -1,0 +1,19 @@
+/* ── Spell Fencer page: the sandbox strip under the move sheet ── */
+.lhhead { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; align-items: center; }
+.lhhead img { width: 52px; height: 52px; border-radius: 6px; background: var(--wood); object-fit: cover; }
+.sbx { display: grid; gap: 10px; }
+.sbx h3 { margin: 0; }
+.sbrow { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.sbrow .lbl { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.sbb { border: 1px solid var(--line); background: var(--page); color: var(--ink); border-radius: 5px; padding: 7px 12px; font: 600 14px var(--font-body); cursor: pointer; }
+.sbb:hover:not(:disabled) { border-color: var(--gold); }
+.sbb:disabled { opacity: .45; cursor: not-allowed; }
+.sbb.atk { border-color: #a8372a; } .sbb.spl { border-color: #2f5fa8; }
+.sbb.rh { background: var(--wood); color: #f3e4c0; box-shadow: inset 0 0 0 1px #c79a45; }
+.sbb.end { border-color: var(--ok); } .sbb.ghost { background: transparent; }
+.pips { display: inline-flex; gap: 6px; align-items: center; }
+.pips i { display: inline-block; width: 13px; height: 13px; transform: rotate(45deg); border: 1px solid var(--gold); background: transparent; }
+.pips i.on { background: var(--gold-soft); } .pips i.ready { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+.pips b { margin-left: 6px; font-variant-numeric: tabular-nums; font-size: 13px; }
+.sblog { display: grid; gap: 2px; font-size: 13px; color: var(--muted); min-height: 1.5em; }
+.sblog div:first-child { color: var(--ink); }

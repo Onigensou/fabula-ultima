@@ -1,0 +1,59 @@
+{
+ "name": "spell-fencer",
+ "note": "Spell Fencer class moves (self-only). Rules: skills.js. Page: page.js (node moves/spell-fencer/page.js <out> [--publish --version vN] [--game]).",
+ "page": "page.js",
+ "assets": {
+  "map": "assets.json"
+ },
+ "mockupActors": {
+  "caster": "keren"
+ },
+ "game": {
+  "scene": "Valley_Battlemap001",
+  "caster": "Keren"
+ },
+ "moves": {
+  "rhapsody": {
+   "label": "Spellblade Rhapsody · activation",
+   "files": [
+    "head",
+    "rhapsody"
+   ],
+   "pageTune": {},
+   "gameOutcome": null,
+   "shots": [
+    {
+     "at": 200,
+     "name": "guard stance"
+    },
+    {
+     "at": 800,
+     "name": "ribbons climb"
+    },
+    {
+     "at": 1200,
+     "name": "meet · flash · notes · buff beat"
+    },
+    {
+     "at": 1900,
+     "name": "braid thins"
+    }
+   ]
+  },
+  "resonance_gain": {
+   "label": "+1 Resonance pulse",
+   "files": [
+    "head",
+    "rhapsody"
+   ],
+   "pageTune": {},
+   "gameOutcome": null,
+   "shots": [
+    {
+     "at": 200,
+     "name": "ring + note"
+    }
+   ]
+  }
+ }
+}
