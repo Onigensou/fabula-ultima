@@ -15,12 +15,46 @@
 
 const NS = "fabula-ultima-companion";
 
+// APPROVED v2 (round rmwsrvdn3, 2026-11-23). ol / olw / olbr / olcol = the outline glow (spell-fencer-glow.js): strength 0..1,
+// width px, breath seconds per half cycle, blend colour index into OL_BLEND.
 export const CUE_P = {
-  spell: { n: 7, dmin: 2.6, dmax: 3.8, size: 7, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0 },
-  attack: { n: 7, dmin: 2.6, dmax: 3.8, size: 7, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0 },
-  reso: { n: 6, period: 3.2, size: 7, rx: 0.42, ry: 12, notes: 2, noteEvery: 4.2, cell: 3.5 },
-  braid: { n: 8, period: 2.4, size: 6, r: 0.3, turns: 1.25, glow: 0.4 },
+  spell: { n: 5, dmin: 2.6, dmax: 3.8, size: 4, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0, ol: 0.45, olw: 6, olbr: 2.6 },
+  attack: { n: 5, dmin: 2.6, dmax: 3.8, size: 4, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0, ol: 0.45, olw: 6, olbr: 2.6 },
+  reso: { n: 3, period: 2.1, size: 6, rx: 0.3, ry: 5, notes: 0, noteEvery: 1.5, cell: 1.5, ol: 0.65, olw: 7, olbr: 2.6, olcol: 0 },
+  braid: { n: 7, period: 2.6, size: 9, r: 0.35, turns: 1.25, glow: 0.45, ol: 0.8, olw: 13, olbr: 4.2, olcol: 0 },
 };
+
+// ── Outline glow (v2): colour by precedence, one outline per token. Rhapsody Turn > Resonance ready (both = the red/blue
+// BLEND: Rhapsody is active / available) > Next Attack red > Next Spell blue. Pure: spell-fencer-glow.js draws it.
+export const OL_BLEND = [[180, 92, 255], [217, 76, 200], [143, 107, 255]];   // violet #b45cff (approved) / magenta / indigo-violet
+export const OL_SIDE = { spell: [77, 166, 255], attack: [255, 77, 61] };
+/** The outline for a cue set: { cue, rgb: [r,g,b], strength, width, breathMs } or null. */
+export function sfOutline(cues, P = CUE_P) {
+  const pick = (cue, p, rgb) => ({ cue, rgb, strength: p.ol, width: p.olw, breathMs: p.olbr * 1000 });
+  if (cues.has("sfbraid")) return pick("sfbraid", P.braid, OL_BLEND[P.braid.olcol] ?? OL_BLEND[0]);
+  if (cues.has("sfreso")) return pick("sfreso", P.reso, OL_BLEND[P.reso.olcol] ?? OL_BLEND[0]);
+  if (cues.has("sfattack")) return pick("sfattack", P.attack, OL_SIDE.attack);
+  if (cues.has("sfspell")) return pick("sfspell", P.spell, OL_SIDE.spell);
+  return null;
+}
+/** Eased 0..1..0 breath (alternate ease-in-out), the same curve as the mockup and turn-glow.js. */
+export const sfBreath = (ms, halfMs) => 0.5 - 0.5 * Math.cos((ms / halfMs) * Math.PI);
+// The mockup drew the outline as two CSS drop-shadows: a 1 px rim at alpha min(1, ol × 1.6) and a glow of radius
+// olw × (1 + .3 b) at alpha ol × (.7 + .3 b). PIXI equivalents (a GlowFilter's distance is compiled into its shader, so it
+// stays fixed at the breath's peak; the breath rides on outerStrength instead).
+export const SF_GLOW_K = 4;                 // outerStrength per unit of mockup strength
+/** Filter values for an outline at time ms (k = 0..1 fade): { distance, outerStrength, glowAlpha, outlineAlpha, color }. */
+export function sfGlowParams(o, ms, k = 1) {
+  if (!o) return null;
+  const b = sfBreath(ms, o.breathMs);
+  return {
+    color: (o.rgb[0] << 16) | (o.rgb[1] << 8) | o.rgb[2],
+    distance: Math.max(2, Math.ceil(o.width * 1.3)),
+    outerStrength: o.strength * SF_GLOW_K * (0.7 + 0.3 * b) * k,
+    glowAlpha: k,
+    outlineAlpha: Math.min(1, o.strength * 1.6) * k,
+  };
+}
 const CUE_COLS = {
   spell: [["#e0f2ff", "#a8d8ff", "77,166,255"], ["#f2fbff", "#cfeaff", "130,200,255"], ["#d8ecff", "#6fb6ff", "40,120,240"]],
   attack: [["#ffe0d0", "#ffb199", "255,77,61"], ["#fff0e8", "#ffcab8", "255,120,100"], ["#ffd0c0", "#ff7a66", "220,40,30"]],

@@ -48,6 +48,10 @@ export function holdTurnGlowOff() {
   return () => { if (!done) { done = true; _offHolds = Math.max(0, _offHolds - 1); } };
 }
 
+/** The token id the turn glow is on (not fading out), else null. Other outline glows (spell-fencer-glow.js) stand
+ *  down on that token: the turn glow wins, and theirs returns when the turn ends. */
+export function turnGlowTokenId() { return _rec && !_rec.fadeOutAt ? _rec.tokenId : null; }
+
 // Show the glow on one token (or clear it with null). Idempotent per token.
 export function setTurnGlow(target) {
   if (_offHolds > 0) target = null;

@@ -82,6 +82,7 @@ import { initDefeatFx } from "./defeat-fx.js";
 import { initAspectAura } from "./aspect-aura.js";
 import { initTokenTint } from "./token-tint.js";
 import { initStatusCues } from "./status-cues.js";
+import { initSpellFencerGlow } from "./spell-fencer-glow.js";
 import { initBrandMark } from "./brand-mark.js";
 import { initCameraAuthority } from "./camera-authority.js";
 import { initBattleStage3d } from "./battle-stage-3d.js";
@@ -2066,6 +2067,9 @@ Hooks.once("ready", () => {
   // bubble / vein / Zs on the sprite, washes through token-tint's provider.
   try { initStatusCues(); }
   catch (e) { warn("initStatusCues on ready threw", e); }
+  // Spell Fencer aura outline glow (PIXI filter on the token; the turn glow wins on the acting token)
+  try { initSpellFencerGlow(); }
+  catch (e) { warn("initSpellFencerGlow on ready threw", e); }
 
   // Brand Mark badges — same AE-replication pattern again. Keyed off the mark
   // AE itself, so a mark that is passed to an ally takes its badge along.
