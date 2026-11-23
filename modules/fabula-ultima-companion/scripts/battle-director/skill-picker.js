@@ -593,6 +593,9 @@ function candidateToRow(c) {
   if (parts.length && c.costVariable) costLabel = `${parts.join(", ")} + Varied`;
   else if (parts.length) costLabel = parts.join(", ");
   else if (c.costVariable) costLabel = "Varied";
+  // A cost the parser has no resource for (a class resource paid in the chain with on_empty "skip", e.g. Spellblade
+  // Rhapsody's "2 Resonance" that Encore can pay instead): show the authored text rather than claiming "No MP".
+  else if (/[a-z]/i.test(c.rawCost ?? "") && !/^\s*(-|free|none|0)\s*$/i.test(c.rawCost ?? "")) costLabel = String(c.rawCost).trim();
   // Not "Free": on this tag that read as "no action", and Pulse uses your action.
   // A granted free cast (below) and a reaction's Cost line keep saying Free.
   else costLabel = "No MP";

@@ -5626,6 +5626,19 @@ export function keywordChipHTML({ key, label, icon }) {
 }
 
 // Status term — icon + bold/underline label, inline in the prose.
+// True when a keyword link sits inside real prose: its block (li / p / …) still has words once every keyword link's own
+// text and a trailing value ("2", "(3)") are taken out. "Chain 2" / "Unleash" alone on a line → false (a badge).
+function isInlineKeyword(a) {
+  const block = a.closest?.("li, p, h1, h2, h3, h4, h5, h6, td, th");
+  if (!block) return false;
+  let rest = block.textContent || "";
+  for (const k of Array.from(block.querySelectorAll("a.content-link[data-uuid], a[data-uuid]"))) {
+    const entry = lookupLinkTerm(k.getAttribute("data-uuid") || "", (k.textContent || "").trim());
+    if (entry?.kind === "keyword") rest = rest.replace((k.textContent || "").trim(), " ");
+  }
+  return /[A-Za-z]{2,}/.test(rest);
+}
+
 function statusChipHTML({ key, label, icon }) {
   return `<span class="fud-kw-term is-status" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}">`
     + `${chipIconHTML(icon)}`
@@ -5671,6 +5684,18 @@ export function parseEffectDescription(html) {
       // the registry label for plain-text matches.
       const label = text || entry?.label || "";
 
+      // A keyword INSIDE a sentence ("Generates no Resonance this turn") still gets its badge (unchanged), but the word
+      // also stays in the prose as a clickable term: removing the anchor left a hole in the sentence. A keyword that IS
+      // its line ("Chain 2", "Unleash") is lifted as before.
+      if (entry?.kind === "keyword" && isInlineKeyword(a)) {
+        const key = entry.key ?? uuid, chipLabel = normalizeKeywordLabel(label), dedup = `${key}|${chipLabel}`;
+        if (!seenKw.has(dedup)) { seenKw.add(dedup); keywords.push({ key, label: chipLabel, icon: entry.icon ?? null }); }
+        const span = document.createElement("span");
+        span.innerHTML = `<span class="fud-kw-term is-keyword" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}">`
+          + `<span class="fud-kw-label">${escapeHtml(label)}</span></span>`;
+        a.replaceWith(span.firstElementChild ?? document.createTextNode(text));
+        continue;
+      }
       if (entry?.kind === "keyword") {
         const key = entry.key ?? uuid;
         // "Chain" + " 2 Pick" authored outside the link → one chip, CHAIN 2
