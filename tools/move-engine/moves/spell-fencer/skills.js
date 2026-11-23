@@ -5,7 +5,7 @@
 //              Spellblade Rhapsody is used grant none.
 //   Rhythm     two marker AEs, "Next Spell" (last action was a weapon attack) / "Next Attack" (last was an Offensive Spell),
 //              swapped when an attack / spell completes. They drive the switch gain, Bladework and the red / blue aura.
-//   Rhapsody   2 Resonance (or Encore's once-per-scene charge): marks the turn ("Rhapsody Turn", round end), then a free
+//   Rhapsody   2 Resonance (or Encore's once-per-scene charge): marks the turn ("Rhapsody Turn", until the end of the bearer's turn), then a free
 //              Attack or Offensive Spell (≤ SL × 10 MP), and when it completes, a free action of the other kind.
 // The text of every skill is authored by data-migrations/2026-11-23-spell-fencer-author.js (it also creates the 3 Heroics).
 //   node tools/move-engine/bin/move-engine.js export spell-fencer [skill…] [--check]
@@ -111,7 +111,7 @@ const MOVE_SKILLS = {
       { effect_kind: "consume_charge", effect_label: "rh_pay_res", charge_key: "resonance", count: "2", on_empty: "skip", target_ref: "self",
         condition_formula: "AE_CHARGES_RESONANCE >= 2", on_condition_fail: "skip" },
       { effect_kind: "apply_ae", effect_label: "rh_turn", ae_template_ref: "Rhapsody Turn", ae_duplicate_mode: "replace",
-        ae_lifetime_mode: "round_end", ae_duration_rounds: "1", target_ref: "self" },
+        ae_lifetime_mode: "target_turn_end", ae_duration_rounds: "1", target_ref: "self" },   // ends with Keren's turn (user 11-23: "this turn")
       { effect_kind: "apply_ae", effect_label: "rh_pend", ae_template_ref: "Rhapsody Pending", ae_duplicate_mode: "replace",
         ae_lifetime_mode: "persistent_counter", target_ref: "self" },
       // the first free action: either kind (the second is the other kind, from the completion rows below)
@@ -139,7 +139,7 @@ const MOVE_SKILLS = {
     flags: {},
     aes: [
       { name: "Rhapsody Turn", transfer: false, changes: [], img: SK + "15_RDM/fleche.png", statuses: ["fud-rhapsody-turn"],
-        flags: { lifetimeMode: "round_end", tags: ["spell-fencer"] } },
+        flags: { lifetimeMode: "target_turn_end", tags: ["spell-fencer"] } },
       { name: "Rhapsody Pending", transfer: false, changes: [], img: SK + "15_RDM/fleche.png",
         flags: { lifetimeMode: "persistent_counter", tags: ["spell-fencer"] } },
     ],

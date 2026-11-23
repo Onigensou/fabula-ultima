@@ -287,7 +287,7 @@ const BLOCKS = [
     "effect_label": "rh_turn",
     "ae_template_ref": "Rhapsody Turn",
     "ae_duplicate_mode": "replace",
-    "ae_lifetime_mode": "round_end",
+    "ae_lifetime_mode": "target_turn_end",
     "ae_duration_rounds": "1",
     "target_ref": "self"
    },
@@ -393,7 +393,7 @@ const BLOCKS = [
      "fud-rhapsody-turn"
     ],
     "flags": {
-     "lifetimeMode": "round_end",
+     "lifetimeMode": "target_turn_end",
      "tags": [
       "spell-fencer"
      ]
