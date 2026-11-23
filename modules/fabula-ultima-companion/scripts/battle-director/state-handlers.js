@@ -10,6 +10,7 @@
 
 import { anyTargetDeniesCritOpportunity, attackerDeniesOwnCritOpportunity } from "./snapshot.js";
 import { log, warn, err } from "./logger.js";
+import { orderAcceptedForFire } from "./card-reaction-order.js";
 import { watchGone, noteGmWaiting, trackWait } from "./player-presence.js";
 import { runStudyReveal } from "./unit-inspect/study-reveal.js";
 import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "./gm-card-override.js";
@@ -1300,7 +1301,9 @@ async function resolveAction(director, ar, opts = {}) {
   const accepted = Array.isArray(ar.acceptedCardReactions) ? ar.acceptedCardReactions : [];
   if (accepted.length) {
     const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
-    for (const cand of accepted) {
+    // A spell's creature_completes_spell chains fire after its creature_performs_action
+    // chains (Spellweave: the Resonance spend before the switch gain) — card-reaction-order.js.
+    for (const cand of orderAcceptedForFire(accepted)) {
       try {
         // Hit-gated reactions (creature_will_deal_damage: Warning Shot, Cheap
         // Shot, …) carry `appliesToTargetUuids` = the targets actually hit.
