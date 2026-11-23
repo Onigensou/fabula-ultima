@@ -51,12 +51,18 @@ const MOVE_SKILLS = {
         ae_initial_charges: "1", ae_initial_charges_max: "SL + 1", target_ref: "sw_self" },
       { effect_kind: "remove_ae", effect_label: "sw_seed_clear", ae_template_ref: "Next Spell, Next Attack", include_persistent: true, target_ref: "self" },
       // after a weapon attack: +1 if the last action was an Offensive Spell, then Next Spell
-      { effect_kind: "chain", effect_label: "sw_atk", chain_steps: "sw_atk_gain, sw_atk_off, sw_atk_on" },
+      { effect_kind: "chain", effect_label: "sw_atk", chain_steps: "sw_atk_anim, sw_atk_gain, sw_atk_off, sw_atk_on" },
+      // the +1 Resonance pulse (Spellweave's animation_script = move resonance_gain, approved 11-23): only when the gain
+      // below really adds a stack (same gate + below the max), evaluated before the gain row runs
+      { effect_kind: "play_animation", effect_label: "sw_atk_anim", action_ref: "Spellweave", target_ref: "self",
+        condition_formula: "AE_COUNT_NEXT_ATTACK > 0 && " + NO_RHAPSODY + " && AE_CHARGES_RESONANCE < SL + 1", on_condition_fail: "skip" },
       { effect_kind: "apply_ae", effect_label: "sw_atk_gain", ae_template_ref: "Resonance", ae_duplicate_mode: "add_charges",
         ae_initial_charges: "1", ae_initial_charges_max: "SL + 1", target_ref: "sw_self",
         condition_formula: "AE_COUNT_NEXT_ATTACK > 0 && " + NO_RHAPSODY, on_condition_fail: "skip" },
       // after an Offensive Spell: +1 if the last action was a weapon attack, then Next Attack
-      { effect_kind: "chain", effect_label: "sw_spl", chain_steps: "sw_spl_gain, sw_spl_off, sw_spl_on" },
+      { effect_kind: "chain", effect_label: "sw_spl", chain_steps: "sw_spl_anim, sw_spl_gain, sw_spl_off, sw_spl_on" },
+      { effect_kind: "play_animation", effect_label: "sw_spl_anim", action_ref: "Spellweave", target_ref: "self",
+        condition_formula: "AE_COUNT_NEXT_SPELL > 0 && " + NO_RHAPSODY + " && AE_CHARGES_RESONANCE < SL + 1", on_condition_fail: "skip" },
       { effect_kind: "apply_ae", effect_label: "sw_spl_gain", ae_template_ref: "Resonance", ae_duplicate_mode: "add_charges",
         ae_initial_charges: "1", ae_initial_charges_max: "SL + 1", target_ref: "sw_self",
         condition_formula: "AE_COUNT_NEXT_SPELL > 0 && " + NO_RHAPSODY, on_condition_fail: "skip" },

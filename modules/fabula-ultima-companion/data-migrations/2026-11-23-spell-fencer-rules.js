@@ -54,7 +54,15 @@ const BLOCKS = [
    {
     "effect_kind": "chain",
     "effect_label": "sw_atk",
-    "chain_steps": "sw_atk_gain, sw_atk_off, sw_atk_on"
+    "chain_steps": "sw_atk_anim, sw_atk_gain, sw_atk_off, sw_atk_on"
+   },
+   {
+    "effect_kind": "play_animation",
+    "effect_label": "sw_atk_anim",
+    "action_ref": "Spellweave",
+    "target_ref": "self",
+    "condition_formula": "AE_COUNT_NEXT_ATTACK > 0 && AE_COUNT_RHAPSODY_TURN == 0 && AE_CHARGES_RESONANCE < SL + 1",
+    "on_condition_fail": "skip"
    },
    {
     "effect_kind": "apply_ae",
@@ -70,7 +78,15 @@ const BLOCKS = [
    {
     "effect_kind": "chain",
     "effect_label": "sw_spl",
-    "chain_steps": "sw_spl_gain, sw_spl_off, sw_spl_on"
+    "chain_steps": "sw_spl_anim, sw_spl_gain, sw_spl_off, sw_spl_on"
+   },
+   {
+    "effect_kind": "play_animation",
+    "effect_label": "sw_spl_anim",
+    "action_ref": "Spellweave",
+    "target_ref": "self",
+    "condition_formula": "AE_COUNT_NEXT_SPELL > 0 && AE_COUNT_RHAPSODY_TURN == 0 && AE_CHARGES_RESONANCE < SL + 1",
+    "on_condition_fail": "skip"
    },
    {
     "effect_kind": "apply_ae",
