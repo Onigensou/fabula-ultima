@@ -168,19 +168,48 @@ export function resolveRates(actor) {
 
 const pityRoot = (actor) => actor?.getFlag?.(GACHA.FLAG_NS, GACHA.FLAG_KEY)?.pity ?? {};
 
+/**
+ * `guaranteed` is the 50/50 carry: true after a 5-star landed on the FILLER
+ * set, which forces the banner's next 5-star onto the featured set.
+ */
 export function readPity(actor, bannerId) {
   const rec = pityRoot(actor)[bannerId] ?? {};
   return {
     five: Math.max(0, Number(rec.five ?? 0) || 0),
     four: Math.max(0, Number(rec.four ?? 0) || 0),
+    guaranteed: rec.guaranteed === true,
   };
 }
 
 /** GM-only. Written once per batch, not once per pull. */
-export async function writePity(actor, bannerId, { five, four }) {
+export async function writePity(actor, bannerId, { five, four, guaranteed = false }) {
   await actor.setFlag(GACHA.FLAG_NS, GACHA.FLAG_KEY, {
-    pity: { ...pityRoot(actor), [bannerId]: { five, four } },
+    pity: { ...pityRoot(actor), [bannerId]: { five, four, guaranteed: guaranteed === true } },
   });
+}
+
+// ── Wish History ────────────────────────────────────────────────────────────
+// The party's shared log: who pulled what, newest first, capped. Lives next to
+// pity on the party actor. Only 4-star+ results are kept per entry (plus a 3-star
+// count) — ten full item records per x10 would bloat the flag for nothing.
+
+export function readHistory(actor) {
+  const h = actor?.getFlag?.(GACHA.FLAG_NS, GACHA.FLAG_KEY)?.history;
+  return Array.isArray(h) ? h : [];
+}
+
+/** GM-only. */
+export async function appendHistory(actor, entry) {
+  const next = [entry, ...readHistory(actor)].slice(0, GACHA.HISTORY_MAX);
+  // setFlag merges objects but REPLACES arrays, which is what we want here.
+  await actor.setFlag(GACHA.FLAG_NS, GACHA.FLAG_KEY, { history: next });
+}
+
+/** Compact a result list for the log. */
+export function historyResults(results) {
+  const keep = results.filter((r) => r.rarity !== "three")
+    .map((r) => ({ rarity: r.rarity, name: r.name, img: r.img, uuid: r.uuid, featured: r.featured ?? null }));
+  return { keep, threes: results.length - keep.length };
 }
 
 /**

@@ -28,7 +28,7 @@
 
 import { GACHA, TICKET_NAME, log, warn } from "./gacha-const.js";
 import { listBanners, resolveTableItems, imgOf } from "./gacha-banners.js";
-import { partyActor, partyMembers, spendTicket, readPool } from "./gacha-state.js";
+import { partyActor, partyMembers, spendTicket, readPool, appendHistory } from "./gacha-state.js";
 import { reconcileSetBonuses } from "../battle-director/set-bonus.js";
 
 const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() === true;
@@ -282,5 +282,15 @@ export async function executeRedeem({ targetItemUuid, requesterUserId }) {
   if (!grant?.ok) return { ok: false, reason: "grant_failed" };
 
   log(`${TICKET_NAME} redeemed → "${target.name}"`);
+  // Wish History: a ticket redemption is a 5-star the party chose, and belongs
+  // in the same log. It does NOT touch pity or the 50/50 (they are separate).
+  try {
+    const u = game.users?.get(requesterUserId);
+    await appendHistory(party, {
+      at: Date.now(), kind: "redeem", count: 1, userId: requesterUserId ?? null, userName: u?.name ?? null,
+      actorId: u?.character?.id ?? null, bannerId: null, bannerName: "5-Star Exchange Ticket",
+      results: [{ rarity: "five", name: target.name, img: target.img, uuid: target.uuid, featured: null }], threes: 0,
+    });
+  } catch (e) { warn("History append failed", e); }
   return { ok: true, itemName: target.name, pool: readPool(party) };
 }

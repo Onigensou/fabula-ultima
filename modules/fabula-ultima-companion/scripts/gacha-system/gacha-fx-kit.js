@@ -532,6 +532,42 @@ const CSS = `
 @keyframes gfx-anykey-in { to { opacity: 1; } }
 @keyframes gfx-anykey-pulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
 
+/* ── Walk-up access additions (2026-11-23) ─────────────────────────────────
+   Whose wish this is, the 50/50 outcome on a 5-star, and the watchers' cheer /
+   groan badges. Labels and badges only — the sequence itself is unchanged. */
+.gfx-byline {
+  position: absolute; left: 26px; top: 22px; z-index: 3; pointer-events: none;
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 16px 5px 5px; border-radius: 999px;
+  background: rgba(15,10,6,.6); border: 1px solid rgba(201,164,74,.55);
+  font: 17px Signika, "Segoe UI", sans-serif; color: #f4e8c0;
+  animation: gfx-anykey-in 400ms ease-out both;
+}
+.gfx-byline img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover;
+  object-position: 50% 12%; border: 2px solid #c9a44a; background: #fff; }
+.gfx-prize-side { margin-top: 10px; opacity: 0; padding: 6px 18px; border-radius: 999px;
+  font: 18px Signika, "Segoe UI", sans-serif; letter-spacing: .5px;
+  background: rgba(15,10,6,.7); border: 1px solid #e6a015; color: #ffe2a0;
+  text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+.gfx-prize-side.is-filler { border-color: #8fc4ff; color: #cfe6ff; }
+.gfx-prize-side.is-on { animation: gfx-pop 320ms cubic-bezier(.2,.9,.3,1.3) 120ms both; }
+.gfx-cheers { position: absolute; left: 26px; bottom: 26px; z-index: 4; pointer-events: none;
+  display: flex; flex-direction: column-reverse; gap: 10px; }
+.gfx-cheer { display: flex; align-items: center; gap: 8px; padding: 5px 14px 5px 5px;
+  border-radius: 999px; background: rgba(15,10,6,.78); border: 2px solid var(--sc, #f2c35a);
+  font: 22px Signika, sans-serif; color: var(--sc, #f2c35a);
+  animation: gfx-cheer-life 2600ms ease-out both; }
+.gfx-cheer img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; object-position: 50% 12%; }
+@keyframes gfx-cheer-life {
+  0% { opacity: 0; transform: translateY(20px) scale(.8); } 12% { opacity: 1; transform: none; }
+  80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px); } }
+.gfx-react { position: absolute; right: 26px; bottom: 26px; z-index: 4; display: flex; gap: 10px; }
+.gfx-react button { width: 56px !important; height: 56px; border-radius: 50%; cursor: pointer;
+  border: 2px solid #c9a44a; background: rgba(15,10,6,.8); color: #ffd56a; font-size: 24px;
+  display: flex; align-items: center; justify-content: center; padding: 0; }
+.gfx-react button.is-groan { color: #8fc4ff; border-color: #6aa0dd; }
+.gfx-react button:hover { filter: brightness(1.25); transform: translateY(-2px); }
+
 @media (prefers-reduced-motion: reduce) {
   .gfx-particle, .gfx-rays, .gfx-ring, .gfx-beam, .gfx-shock { display: none; }
   .gfx-card { animation-duration: 1ms; animation-delay: 0ms; }

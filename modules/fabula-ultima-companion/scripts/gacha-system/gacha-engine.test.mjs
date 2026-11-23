@@ -15,7 +15,7 @@
 // those need real documents and are verified in-game.
 // ============================================================================
 
-import { rollRarities } from "./gacha-engine.js";
+import { rollRarities, chooseFiveSide } from "./gacha-engine.js";
 import { PITY_FIVE, PITY_FOUR } from "./gacha-const.js";
 
 let passed = 0;
@@ -129,6 +129,35 @@ withRandom(0.5, () => {
   const { rarities } = rollRarities(10, { five: 0.03, four: 0.12, three: 0.85 }, zero);
   check("a x10 returns exactly ten outcomes", rarities.length, 10);
 });
+
+// ── 50/50 featured guarantee ────────────────────────────────────────────────
+
+console.log("\ngacha: 50/50 featured guarantee\n");
+
+check("a winning coin lands on the featured set and arms nothing",
+  chooseFiveSide(false, () => 0.2), { featured: true, guaranteedAfter: false });
+check("a losing coin lands on the filler set and arms the guarantee",
+  chooseFiveSide(false, () => 0.8), { featured: false, guaranteedAfter: true });
+check("the coin is a true half: 0.5 exactly loses (rand() < 0.5 wins)",
+  chooseFiveSide(false, () => 0.5).featured, false);
+check("an armed guarantee forces featured even on a losing coin",
+  chooseFiveSide(true, () => 0.99), { featured: true, guaranteedAfter: false });
+
+// Two 5-stars in one x10: lose the first flip, the second is then forced.
+{
+  let g = false;
+  const first  = chooseFiveSide(g, () => 0.9); g = first.guaranteedAfter;
+  const second = chooseFiveSide(g, () => 0.9); g = second.guaranteedAfter;
+  check("lose then forced win inside one batch", [first.featured, second.featured, g], [false, true, false]);
+}
+
+// With the carry, about 2/3 of all 5-stars land on the featured set.
+{
+  let featured = 0; const N = 20000; let g = false;
+  for (let i = 0; i < N; i++) { const r = chooseFiveSide(g); if (r.featured) featured++; g = r.guaranteedAfter; }
+  const share = featured / N;
+  check("with the carry, about 2/3 of 5-stars are featured", share > 0.64 && share < 0.69, true);
+}
 
 console.log(`\n${passed} passed, ${failed} failed\n`);
 process.exit(failed > 0 ? 1 : 0);
