@@ -768,6 +768,10 @@
     {
       "key": "2026-11-23-gacha-vendor-hako",
       "path": "data-migrations/2026-11-23-gacha-vendor-hako.js"
+    },
+    {
+      "key": "2026-11-24-oathsworn-paladin-set",
+      "path": "data-migrations/2026-11-24-oathsworn-paladin-set.js"
     }
   ]
 }

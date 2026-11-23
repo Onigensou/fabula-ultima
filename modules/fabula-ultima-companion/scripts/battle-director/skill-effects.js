@@ -2005,6 +2005,16 @@ export function getReactionGate(actor, { carrier, carrierKind, row, effectTable,
   return null;
 }
 
+// Per-ROW KO opt-in (checkbox column `reaction_works_while_ko`). A KO'd creature
+// reacts to nothing (findPassiveCandidates) unless the row says it may — a rule
+// that explicitly lets a downed character act (Oathsworn Paladin 3pc). The row's
+// own condition_formula should still gate the KO-only case (CUR_HP <= 0) and its
+// chain should pay whatever the rule charges for it.
+export function rowWorksWhileKo(row) {
+  const v = row?.reaction_works_while_ko;
+  return v === true || v === 1 || v === "true" || v === "1";
+}
+
 // Per-ROW weapon-USED gate. A reaction row may DECLARE (via the checkbox column
 // `reaction_requires_weapon_used`) that it only fires when the weapon BACKING it
 // is the one actually used in the triggering action — the gear `_skill`-inside-
@@ -2233,10 +2243,14 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
   const OUT_OF_CONFLICT_TRIGGERS = new Set(["party_rested", "session_started"]);
   // creature_knocked_out is the KO'd creature's own Auto-Life / Reraise, fired by
   // the defeat reactor after the KO lands (knockout-revive.js) — down by definition.
-  if (trigger !== "creature_defeated"
+  // ONE opt-in exception: a row ticked `reaction_works_while_ko` still reaches a
+  // KO'd reactor (Oathsworn Paladin 3pc: "spend 1 FP to Protect while you are
+  // KO"). Every other row of that reactor stays suppressed, so the default rule
+  // (a KO'd creature can't react) holds for everything that doesn't ask.
+  const reactorDown = trigger !== "creature_defeated"
       && trigger !== "creature_knocked_out"
       && !OUT_OF_CONFLICT_TRIGGERS.has(trigger)
-      && isActorDefeated(casterActor)) return [];
+      && isActorDefeated(casterActor);
   const out = [];
 
   // Single-mode model (reaction_isPassive retired 2026-06-07): every row's
@@ -2249,6 +2263,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
   function shouldKeep(row) {
     if (!row || row.$deleted) return false;
     if (String(row.reaction_trigger ?? "").trim() !== trigger) return false;
+    if (reactorDown && !rowWorksWhileKo(row)) return false;
     return true;
   }
   function modeFor(row) {
