@@ -21,12 +21,18 @@
  * "perform the skill Protect". Paladin Armor's free spell on Protect / Cover
  * was already automated (v1.0.568, transfer AE on the armor) and is unchanged.
  *
+ * Text: the three pieces (world + every actor copy, refine prefix ignored) and
+ * Save the Queen (Passive) get the user-approved Genshin-style rewrite
+ * (2026-11-24): set bonus lines, Paladin Armor, Royal Shield ("Fortess" typo),
+ * Save the Queen (Heal grant as a link, no embedded <details> block). Gated per
+ * document by the flag oathswornPaladinText.
+ *
  * SEED-ONLY: fixed ids ("OsPal…"), skipped when they exist, so a re-run never
  * re-applies and later hand edits are kept.
  */
 
 export const key = "2026-11-24-oathsworn-paladin-set";
-export const description = "Oathsworn Paladin set: set definition + 2pc Oath of Vigilance (extra Protect per round) + 3pc Unbroken Oath (1 FP: Protect while KO).";
+export const description = "Oathsworn Paladin set: set definition + 2pc Oath of Vigilance (extra Protect per round) + 3pc Unbroken Oath (1 FP: Protect while KO) + Genshin-style piece text.";
 
 const M = "fabula-ultima-companion";
 const FLAG = "oathswornPaladin";
@@ -47,11 +53,38 @@ const OATH = "Unbroken Oath";
 const VIGIL_AE = "Oathsworn Vigil";
 
 const table = (rows) => Object.fromEntries(rows.map((r, i) => [String(i), r]));
-const PROTECT = `<strong>【💥Protect】</strong>`;
-const TEXT = {
-  vigil: `<p>You can use ${PROTECT} one more time per round.</p>`,
-  oath: `<p>While KO, you can spend <strong>1 Fabula Point</strong> to use ${PROTECT}. Once per round.</p>`,
+const ul = (...li) => `<ul>${li.map((t) => `<li><p>${t}</p></li>`).join("")}</ul>`;
+const PROTECT = `【💥<strong>Protect</strong>】`;
+const DARK = `<a class="content-link" data-uuid="Item.vKU8UYT6DBhgOjtE" data-id="vKU8UYT6DBhgOjtE" data-type="Item">Dark</a>`;
+const LINE = {
+  vigil: `Use ${PROTECT} one more time per round.`,
+  oath: `While KO, spend <strong>1 Fabula Point</strong> to use ${PROTECT}. Once per round.`,
 };
+const TEXT = {
+  vigil: ul(LINE.vigil),
+  oath: ul(LINE.oath),
+  // Genshin-style rewrite of the pieces (user-approved 2026-11-24).
+  set: `<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p>` + ul(LINE.vigil)
+    + `<hr><p><strong>3-Piece</strong></p>` + ul(LINE.oath),
+  armor: ul(
+    `Resistance to ${DARK} damage.`,
+    `When you <strong>Cover</strong> or <strong>Protect</strong> an ally, you may cast a <strong>non-offensive spell</strong> on them as a <strong>Free Action</strong>.`,
+  ),
+  shield: ul(`<strong>【Defensive Mastery】SL+1</strong>`, `<strong>【Fortress】SL+2</strong>`),
+  queen: ul(
+    `Deals <strong>5</strong> extra damage to <strong>Dark-Attribute</strong> creatures.`,
+    `You may cast the spell 【✨<strong>@UUID[Item.TD3i1fdSE7qGwApx]{Heal}</strong>】`,
+  ),
+  queenPassive: ul(`Deals <strong>5</strong> extra damage to <strong>Dark-Attribute</strong> creatures.`),
+};
+// World pieces (copies on actors are matched by base name, refine prefix "+N " ignored).
+const PIECES = [
+  { id: "oQuaoYmMq9vsbgUf", base: "Paladin Armor", text: TEXT.armor },
+  { id: "arnuPVqayNC3fcXE", base: "Royal Shield", text: TEXT.shield },
+  { id: "zKJP8tR2S8Gg1rRZ", base: "Save the Queen", text: TEXT.queen },
+];
+const QUEEN_PASSIVE = "rrtMjWJ0MlrYHQhD";      // Save the Queen (Passive), container = Save the Queen
+const TEXT_FLAG = "oathswornPaladinText";
 
 function cloneData(srcId, { id, name, container = null, folder, img, props = {}, effects } = {}) {
   const src = game.items.get(srcId);
@@ -152,22 +185,64 @@ async function authorOath(out) {
   }), out);
 }
 
+// ── Piece text + grants ─────────────────────────────────────────────────────
+// Each actor's copies are edited, and its set bonuses reconciled ONCE, inside
+// withManagedEquip: an edit to a set piece schedules set-bonus-hooks' own
+// debounced reconcile, and two reconciles overlapping on one actor each grant
+// the skill (sandbox 11-24: Blanche got Oath of Vigilance twice). The guard
+// makes the hooks stand down so only the reconcile here runs.
+const baseOf = (n) => String(n ?? "").replace(/^\+\d+\s+/, "").trim();
+const label = (doc) => `${doc.parent?.name ? doc.parent.name + ": " : ""}${doc.name}`;
+
+async function setText(doc, text, out) {
+  if (doc.getFlag(M, TEXT_FLAG)) { out.push(`= ${label(doc)} text already set`); return; }
+  await doc.update({ "system.props.description": text, "system.props.set_description": TEXT.set, [`flags.${M}.${TEXT_FLAG}`]: true });
+  out.push(`~ text ${label(doc)}`);
+}
+
+async function rewriteWorldText(out) {
+  for (const p of PIECES) {
+    const w = game.items.get(p.id);
+    if (w) await setText(w, p.text, out); else out.push(`! ${p.base} (${p.id}) missing`);
+  }
+  const qp = game.items.get(QUEEN_PASSIVE);
+  if (qp && !qp.getFlag(M, TEXT_FLAG)) {
+    await qp.update({ "system.props.description": TEXT.queenPassive, "system.props.skill_description": TEXT.queenPassive, [`flags.${M}.${TEXT_FLAG}`]: true });
+    out.push(`~ text ${qp.name}`);
+  }
+}
+
+async function updateActors(out) {
+  const api = await import("../scripts/battle-director/set-bonus.js").catch(() => null);
+  for (const a of game.actors) {
+    const copies = a.items.filter((i) => i.system?.props?.set_name === SET_NAME);
+    if (!copies.length) continue;
+    const run = async () => {
+      for (const i of copies) {
+        const p = PIECES.find((x) => x.base === baseOf(i.name));
+        if (p) await setText(i, p.text, out);
+      }
+      // Anyone already wearing 2+ pieces gets the grants now, not on their next equip.
+      if (typeof api?.reconcileSetBonuses === "function" && copies.some((i) => i.system?.props?.isEquipped)) {
+        await api.reconcileSetBonuses(a);
+        out.push(`~ reconciled ${a.name}`);
+      }
+    };
+    try {
+      if (typeof api?.withManagedEquip === "function") await api.withManagedEquip(a, run);
+      else await run();
+    } catch (e) { out.push(`! ${a.name}: ${e?.message ?? e}`); }
+  }
+}
+
 // ── Entry ────────────────────────────────────────────────────────────────────
 export async function migrate(game, log = () => {}) {
   const out = [];
   await authorSetDef(out);
   await authorVigil(out);
   await authorOath(out);
-  // Anyone already wearing 2+ pieces gets the grants now, not on their next equip.
-  const api = await import("../scripts/battle-director/set-bonus.js").catch(() => null);
-  if (typeof api?.reconcileSetBonuses === "function") {
-    for (const a of game.actors) {
-      const wearing = a.items.some((i) => i.system?.props?.set_name === SET_NAME && i.system?.props?.isEquipped);
-      if (!wearing) continue;
-      try { await api.reconcileSetBonuses(a); out.push(`~ reconciled ${a.name}`); }
-      catch (e) { out.push(`! reconcile ${a.name}: ${e?.message ?? e}`); }
-    }
-  }
+  await rewriteWorldText(out);
+  await updateActors(out);
   for (const l of out) log(l);
   return { applied: true, summary: out.join(" | ") };
 }
