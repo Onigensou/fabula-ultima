@@ -61,6 +61,7 @@ import { spriteRect } from "./unit-anchors.js";
 import { setStatusTintProvider, syncActorTint } from "./token-tint.js";
 import { installChargeOrbitFx } from "./charge-orbit-fx.js";
 import { installSlayerFx } from "./slayer-fx.js";
+import { applySpellFencerCues, sfCueCss, sfCueHTML } from "./spell-fencer-cues.js";
 
 const NS = "fabula-ultima-companion";
 const ROOT_ID = "fu-status-cue-root";
@@ -184,7 +185,7 @@ function ensureStyles() {
 /* clip cues (an effect's own looping clip, e.g. Asura's blade slashes) */
 .fu-cue video.clip { position: absolute; display: block; pointer-events: none; object-fit: contain; }
 @media (prefers-reduced-motion: reduce) { .fu-cue * { animation-play-state: paused !important; } }
-`;
+` + sfCueCss();   // Spell Fencer rhythm auras (spell-fencer-cues.js)
   document.head.appendChild(st);
 }
 
@@ -212,6 +213,8 @@ export function cuesOf(actor) {
       if (c) out.add(c);
     }
   } catch { /* */ }
+  // Spell Fencer: "Resonance ready" from the charge count, and the Rhapsody braid hiding the other three
+  try { applySpellFencerCues(actor, out); } catch { /* */ }
   return out;
 }
 
@@ -368,6 +371,7 @@ function cueHTML(token, cues, w, H) {
       + [0, 1, 2].map((i) => `<b style="--z:${px((12 + i * 5) * k)};animation-delay:-${(i * 0.8).toFixed(1)}s">Z</b>`).join("")
       + `</span>`;
   }
+  h += sfCueHTML(id, cues, w, H, rng, px);   // Spell Fencer rhythm auras (spell-fencer-cues.js)
   return h;
 }
 
