@@ -18,7 +18,7 @@
 // screen. Only party members (and the GM) get the interactive controls.
 // ============================================================================
 
-import { GACHA, RARITY, BACKDROP_SRC, PITY_FIVE, PITY_FOUR, log } from "./gacha-const.js";
+import { GACHA, RARITY, BACKDROP_SRC, PITY_FIVE, PITY_FOUR, MAP_OVERLAY_LAYERS, log } from "./gacha-const.js";
 import { listBanners, imgOf, FALLBACK_IMG } from "./gacha-banners.js";
 import { partyActor, readPool, readPity, isPartyMemberClient, couponCost } from "./gacha-state.js";
 import { request, announceStart, announceEnd } from "./gacha-net.js";
@@ -32,13 +32,9 @@ const ROOT_ID  = "gacha-ui";
 const STYLE_ID = "gacha-ui-style";
 const BACKDROP_ID = "gacha-backdrop";
 
-// Overhead button layers of the map underneath. The machine is a full screen;
-// a Talk bubble or Shop tag floating over it would read as part of it.
-const MAP_LAYERS = [
-  "#oni-event-ui-layer", "#fu-shopopen-layer-v1", "#fu-innopen-layer-v1", "#fu-craft-layer-v1",
-  "#oni-craft-spot-layer", "#oni-fishing-spot-layer", "#oni-pose-spot-layer",
-  "#fa-duel-layer", "#fa-duel-icons", "#oni-interact-menu",
-];
+// Overhead UI of the map underneath (gacha-const.js). The machine is a full
+// screen; a Talk bubble or camp button floating over it would read as part of it.
+const MAP_LAYERS = MAP_OVERLAY_LAYERS;
 
 
 const THUMB_W = 96;    // thumbnail + gap, used to centre the rail strip
@@ -269,6 +265,18 @@ body.fu-gacha-open ${MAP_LAYERS.join(", body.fu-gacha-open ")} { visibility: hid
 }
 .gu-hint {
   margin-top: auto; font-size: 12px; font-style: italic; color: var(--gc-ink-soft);
+}
+
+/* Shorter screens: the party pity line (2026-11-23) made the text column run
+   past the card at 900px tall and cut off Hako's fine print, which must stay
+   fully readable. Tighten the column's spacing instead of dropping any copy;
+   measured: 74px over at 1600x900 before, this recovers ~85px. */
+@media (max-height: 1000px) {
+  .gu-card-text { padding: 20px 30px; gap: 7px; }
+  .gu-title { font-size: 36px; }
+  .gu-guarantee { line-height: 1.55; }
+  .gu-filler { line-height: 1.55; padding-top: 2px; margin-top: 2px; }
+  .gu-setline { line-height: 1.6; }
 }
 
 .gu-card-art {

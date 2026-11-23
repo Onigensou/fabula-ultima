@@ -94,17 +94,36 @@ function hide(tokenId) {
   rec.timer = setTimeout(() => { if (desired.has(tokenId)) return; rec.el.remove(); btns.delete(tokenId); }, ANIM_OUT_MS + 20);
 }
 
+// Hako's Shop button honours per-actor offsets (shop_icon_offset_x/y), so the
+// star docks to the Shop button itself when it is showing, and only falls back
+// to its own offset from the token centre when it is not.
+const SHOP_LAYER = "fu-shopopen-layer-v1";
+function shopAnchor(tokenId) {
+  const el = document.querySelector(`#${SHOP_LAYER} .fu-shop-btn[data-token-id="${tokenId}"]`);
+  if (!el || el.classList.contains("is-hiding")) return null;
+  const x = parseFloat(el.style.left), y = parseFloat(el.style.top);
+  return Number.isFinite(x) && Number.isFinite(y) ? { x, y } : null;
+}
+
 function place() {
   const wt = canvas?.app?.stage?.worldTransform;
   if (!wt) return;
   for (const [id, rec] of btns) {
     const tok = canvas.tokens?.get(id);
     if (!tok) continue;
+    const shop = shopAnchor(id);
+    if (shop) {
+      rec.el.style.left = `${shop.x + OFFSET_X}px`;
+      rec.el.style.top  = `${shop.y}px`;
+      continue;
+    }
     const c = centerOf(tok);
     rec.el.style.left = `${c.x * wt.a + wt.tx + OFFSET_X}px`;
     rec.el.style.top  = `${c.y * wt.d + wt.ty - OFFSET_Y}px`;
   }
 }
+// Shop repositions on the same pan; run after it.
+const placeSoon = () => requestAnimationFrame(place);
 
 // ── who is "us" on this map ─────────────────────────────────────────────────
 
@@ -152,6 +171,7 @@ async function scan() {
     for (const id of want) show(id);
     for (const id of [...btns.keys()]) if (!want.has(id)) hide(id);
     place();
+    placeSoon();   // Shop may create its button in this same frame
   } catch (e) { console.error("[FU][Gacha] entrance scan", e); }
 }
 
@@ -196,8 +216,8 @@ export function installEntrance() {
   Hooks.on("deleteToken", queue);
   Hooks.on("updateActor", (a, ch) => { if (ch?.flags?.[GACHA.MODULE_ID]) queue(); });
   Hooks.on("canvasReady", queue);
-  Hooks.on("canvasPan", place);
-  window.addEventListener("resize", place);
+  Hooks.on("canvasPan", placeSoon);
+  window.addEventListener("resize", placeSoon);
   setInterval(queue, 2000);   // party membership / follow token can change without movement
   queue();
   log("Walk-up entrance ready.");

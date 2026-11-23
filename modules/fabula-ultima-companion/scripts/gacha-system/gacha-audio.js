@@ -25,6 +25,21 @@ let themeWanted = false;
 
 const CHANNELS = ["music", "environment"];
 
+// What Foundry itself drives each channel's gain to: the raw core volume
+// setting (measured in v12: gain 0.5 == setting 0.5 on both channels). The
+// restore targets THIS, not the value read at duck time — a duck that lands
+// right after the first click can read the AudioContext's default 1.0 before
+// Foundry has applied the player's slider, and restoring that would leave the
+// scene music louder than the player set it.
+const CHANNEL_SETTING = { music: "globalPlaylistVolume", environment: "globalAmbientVolume" };
+function channelTarget(name, fallback) {
+  try {
+    const v = Number(game.settings.get("core", CHANNEL_SETTING[name]));
+    if (Number.isFinite(v)) return Math.max(0, Math.min(1, v));
+  } catch {}
+  return fallback;
+}
+
 function musicVolume() {
   let v = 0.5;
   try { v = Number(game.settings.get("core", "globalPlaylistVolume")); } catch {}
@@ -44,7 +59,7 @@ function duck(on) {
         if (!saved.has(name)) saved.set(name, gn.gain.value);
         gn.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
       } else if (saved.has(name)) {
-        gn.gain.setTargetAtTime(saved.get(name), ctx.currentTime, 0.6);
+        gn.gain.setTargetAtTime(channelTarget(name, saved.get(name)), ctx.currentTime, 0.6);
         saved.delete(name);
       }
     } catch (e) { warn("audio duck", name, e); }

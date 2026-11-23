@@ -23,7 +23,7 @@
 
 import { GACHA, log } from "./gacha-const.js";
 const MODULE_ID_SAFE = GACHA.MODULE_ID;
-import { beginReveal, playReveal, activeRoot, isPlaying } from "./gacha-fx.js";
+import { beginReveal, playReveal, activeRoot, isPlaying, stop as stopFx } from "./gacha-fx.js";
 import { sendCheer } from "./gacha-net.js";
 import * as Audio from "./gacha-audio.js";
 
@@ -86,7 +86,12 @@ function reset() {
 /** Someone pressed Wish. */
 export function onRemoteStart(payload) {
   if (!payload?.byUserId || payload.byUserId === game.user.id) return;
-  // A new reveal supersedes whatever card is still on screen.
+  // A new reveal supersedes whatever is still on screen — the last card, or the
+  // last reveal's summary nobody dismissed yet. Close that reveal FIRST: its
+  // teardown fires fuGachaRevealEnd, which resets the watch state, and it must
+  // reset the OLD watch, not the one being set up below. (Sandbox 2026-11-23:
+  // the Spectator, still on the previous summary, missed the next wish.)
+  if (isPlaying()) stopFx();
   removeCard();
   reset();
   W.byUserId = payload.byUserId;

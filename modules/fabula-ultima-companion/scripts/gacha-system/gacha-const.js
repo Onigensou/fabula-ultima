@@ -76,6 +76,19 @@ export const VENDOR_FLAG = "gachaVendor";
 export const BACKDROP_SRC =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Scene/Gacha_Scene001.png";
 
+// The map's own overhead UI. The machine and the reveal are full screens now
+// opened over ANY map, so these hide while either is up (the old dedicated
+// scene had none of them). Found by listing everything stacked above the gacha
+// layers on a camp map in the sandbox, 2026-11-23.
+export const MAP_OVERLAY_LAYERS = [
+  "#oni-event-ui-layer", "#fu-shopopen-layer-v1", "#fu-innopen-layer-v1", "#fu-craft-layer-v1",
+  "#oni-craft-spot-layer", "#oni-fishing-spot-layer", "#oni-pose-spot-layer",
+  "#fa-duel-layer", "#fa-duel-icons", "#oni-interact-menu", "#gacha-entrance-layer",
+  "#oni-camp-btn-wrap",    // camp footprints / phase button
+  "#fu-summon-campbtn",    // camp Summon button
+  "#oni-camp-gm-panel",    // camp GM panel (took the cheer button's clicks on the GM)
+];
+
 // Local machine theme: plays only on the client that has the machine open.
 export const BGM_SRC =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/DRG_Gacha.mp3";

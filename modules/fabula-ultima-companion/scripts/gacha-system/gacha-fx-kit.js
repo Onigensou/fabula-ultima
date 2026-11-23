@@ -12,7 +12,7 @@
 //     has left this codebase's overlays wedged before
 // ============================================================================
 
-import { RARITY } from "./gacha-const.js";
+import { RARITY, MAP_OVERLAY_LAYERS } from "./gacha-const.js";
 import { ensureTheme } from "./gacha-theme.js";
 
 export const FX_ROOT_ID = "gacha-fx";
@@ -535,8 +535,14 @@ const CSS = `
 /* ── Walk-up access additions (2026-11-23) ─────────────────────────────────
    Whose wish this is, the 50/50 outcome on a 5-star, and the watchers' cheer /
    groan badges. Labels and badges only — the sequence itself is unchanged. */
+/* Watchers may be on any map now: its overhead UI (camp buttons sit at
+   z 99998) must not float over the reveal. */
+${MAP_OVERLAY_LAYERS.map((s) => `body:has(#gacha-fx) ${s}`).join(", ")} { visibility: hidden !important; }
+
+/* Top-centre: top-left belongs to Skip. */
 .gfx-byline {
-  position: absolute; left: 26px; top: 22px; z-index: 3; pointer-events: none;
+  position: absolute; left: 50%; top: 22px; transform: translateX(-50%); z-index: 15; pointer-events: none;
+  white-space: nowrap;
   display: flex; align-items: center; gap: 10px;
   padding: 5px 16px 5px 5px; border-radius: 999px;
   background: rgba(15,10,6,.6); border: 1px solid rgba(201,164,74,.55);
@@ -551,7 +557,8 @@ const CSS = `
   text-shadow: 0 1px 4px rgba(0,0,0,.8); }
 .gfx-prize-side.is-filler { border-color: #8fc4ff; color: #cfe6ff; }
 .gfx-prize-side.is-on { animation: gfx-pop 320ms cubic-bezier(.2,.9,.3,1.3) 120ms both; }
-.gfx-cheers { position: absolute; left: 26px; bottom: 26px; z-index: 4; pointer-events: none;
+/* Above the reveal (8) and the summary (12): the buttons must take real clicks. */
+.gfx-cheers { position: absolute; left: 26px; bottom: 26px; z-index: 22; pointer-events: none;
   display: flex; flex-direction: column-reverse; gap: 10px; }
 .gfx-cheer { display: flex; align-items: center; gap: 8px; padding: 5px 14px 5px 5px;
   border-radius: 999px; background: rgba(15,10,6,.78); border: 2px solid var(--sc, #f2c35a);
@@ -561,7 +568,8 @@ const CSS = `
 @keyframes gfx-cheer-life {
   0% { opacity: 0; transform: translateY(20px) scale(.8); } 12% { opacity: 1; transform: none; }
   80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px); } }
-.gfx-react { position: absolute; right: 26px; bottom: 26px; z-index: 4; display: flex; gap: 10px; }
+/* Above the "n / 10" counter in the bottom-right corner. */
+.gfx-react { position: absolute; right: 26px; bottom: 64px; z-index: 22; display: flex; gap: 10px; }
 .gfx-react button { width: 56px !important; height: 56px; border-radius: 50%; cursor: pointer;
   border: 2px solid #c9a44a; background: rgba(15,10,6,.8); color: #ffd56a; font-size: 24px;
   display: flex; align-items: center; justify-content: center; padding: 0; }
