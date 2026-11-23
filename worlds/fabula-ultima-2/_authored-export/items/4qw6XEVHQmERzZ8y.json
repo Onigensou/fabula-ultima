@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "spellFencerText": "2026-11-23-r4"
     }
   },
   "folder": "nNKbXiI5DqqWmDy0",
@@ -28,7 +31,7 @@
       "class": "Spell Fencer",
       "cost": "2 Resonance",
       "damage_bonus": "0",
-      "description": "<p>Spend <strong>2 Resonance, </strong>During this turn, you may perform both the <strong>【Attack】</strong>action and <strong>【Spell】</strong>action, the spell you cast this way must be an <strong>Offensive Spell </strong>and must have the mind point cost of equal to or less than <strong>【SL x 10】</strong></p>",
+      "description": "<ul><li><p>At the start of your turn: this turn, perform both the 【⚔️Attack】 and 【📕Spell】 actions.</p></li><li><p>The spell must be an 【⚡Offensive Spell】 costing <strong>【SL × 10】</strong> MP or less.</p></li><li><p>Generates no <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> this turn.</p></li></ul>",
       "duration": "Turn",
       "heroic_requirement": "",
       "isCheck": false,
@@ -41,6 +44,7 @@
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p>At the start of your turn: this turn, perform both the 【⚔️Attack】 and 【📕Spell】 actions.</p></li><li><p>The spell must be an 【⚡Offensive Spell】 costing <strong>【SL × 10】</strong> MP or less.</p></li><li><p>Generates no <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> this turn.</p></li></ul>",
       "skill_target": "self",
       "skill_type": "Active",
       "type_damage": "",

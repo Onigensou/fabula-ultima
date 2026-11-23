@@ -4691,6 +4691,12 @@
         "effects": 0
       },
       {
+        "id": "SpFnCrescendo001",
+        "name": "Crescendo",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "t597ugKHmPnHiIwY",
         "name": "Crescent Edge",
         "type": "equippableItem",
@@ -5351,6 +5357,12 @@
         "effects": 0
       },
       {
+        "id": "SpFnDuelGuard001",
+        "name": "Duelist's Guard",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "WNinVwRHGs85lOOj",
         "name": "Dusk Star",
         "type": "equippableItem",
@@ -5661,6 +5673,12 @@
         "name": "Enchanted Delayed Blast Remote",
         "type": "equippableItem",
         "effects": 1
+      },
+      {
+        "id": "SpFnEncore000001",
+        "name": "Encore",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "PjTYcvt9L33XCWZG",
@@ -12278,7 +12296,7 @@
         "id": "dDT8OrIPHFQuyfQp",
         "name": "Spellweave",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 3
       },
       {
         "id": "dnouOqucx5rnWsT4",
@@ -25702,6 +25720,18 @@
           {
             "id": "wx5wTGlFPa49QzmU",
             "name": "Book and Blade"
+          },
+          {
+            "id": "fa2grKJEx4c5TSzL",
+            "name": "Crescendo"
+          },
+          {
+            "id": "g6JsM3QckgogJkya",
+            "name": "Duelist's Guard"
+          },
+          {
+            "id": "l9Mmqt0pOrFSUzle",
+            "name": "Encore"
           },
           {
             "id": "Rk7U5oKGepTDAz9X",

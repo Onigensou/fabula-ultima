@@ -576,6 +576,11 @@ export const SUPPRESS_MAX_MS = 8000;
  * `hideMesh: true` also hides the token mesh (the per-frame applyMesh does it every frame, so it
  * survives a token refreshState) and makes isHeld(tokenId) true, which hides the HP badge.
  * The returned function also has `.hideMesh(bool)` to change that while held.
+ * It also has `.look({ k, flare, bright })` to drive the fire's look while held (each field optional; k is the
+ * fire's strength, flare 0..2, bright 0..1). A no-op once restored/timed out, when a foreign override replaced ours, or when a
+ * NEWER holder of the same fire is still active (holders share one override; among holders that write through `.look`,
+ * the newest live one, by call order, is the only writer. When it restores, the next-newest live holder writes again.
+ * Code that mutates `fire.override` directly (e.g. the anim-studio fragment core) is NOT bound by this rule).
  * Overlapping calls on one fire share one override (hidden if any holder asks for it); the fire
  * goes back to the override that was there before the FIRST call once the LAST holder has
  * restored or timed out. A newer show's own override (one that replaced ours) is left alone.
@@ -589,7 +594,7 @@ export function suppressFire(fire, { maxMs = SUPPRESS_MAX_MS, hideMesh = false }
     s = fire._supp = { holders: new Set(), prev: fire.override ?? null, ov: { k: 0, flare: 0, bright: 0, hideMesh: false, suppressed: true } };
     fire.override = s.ov;
   }
-  const holder = { hide: !!hideMesh };
+  const holder = { hide: !!hideMesh, seq: s.seq = (s.seq || 0) + 1 };
   const sync = () => {
     let any = false;
     for (const h of s.holders) any = any || h.hide;
@@ -612,6 +617,14 @@ export function suppressFire(fire, { maxMs = SUPPRESS_MAX_MS, hideMesh = false }
     }
   };
   restore.hideMesh = (on) => { if (done) return; holder.hide = !!on; if (fire.override === s.ov) sync(); };
+  restore.look = ({ k, flare, bright } = {}) => {
+    if (done || fire.override !== s.ov) return;
+    for (const h of s.holders) if (h.seq > holder.seq) return;   // a newer holder is live: it drives the look
+    if (k != null) s.ov.k = k;
+    if (flare != null) s.ov.flare = flare;
+    if (bright != null) s.ov.bright = bright;
+    fire.dirty = true;
+  };
   timer = setTimeout(restore, Math.max(0, Number(maxMs) || 0));
   timer?.unref?.();
   return restore;

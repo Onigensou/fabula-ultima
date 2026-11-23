@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "spellFencerText": "2026-11-23-r4"
     }
   },
   "folder": "nNKbXiI5DqqWmDy0",
@@ -32,9 +35,9 @@
       "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>The Spells use to trigger the effects of 【<strong>Bladework】 </strong>and 【<strong>Spellweave】</strong> no longer needs to be an <strong>Offensive Spell, </strong>additionally, you may also cast <strong>Non-Offensive Spells </strong>when you use <strong>【Spellblade Rhapsody】</strong> as well</p>",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"Item.dDT8OrIPHFQuyfQp\" data-id=\"dDT8OrIPHFQuyfQp\" data-type=\"Item\">Spellweave</a>, <a class=\"content-link\" data-uuid=\"Item.GqVU8ps3IJp0KQ3Y\" data-id=\"GqVU8ps3IJp0KQ3Y\" data-type=\"Item\">Bladework</a> and <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a> work with every 【📕Spell】, not only 【⚡Offensive Spell】.</p></li></ul>",
       "duration": "",
-      "heroic_requirement": "",
+      "heroic_requirement": "You must have mastered the Spell Fencer Class.",
       "ignore_hr": false,
       "isCheck": false,
       "isFacet": false,
@@ -51,6 +54,7 @@
       "rolled_atr2": "-",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"Item.dDT8OrIPHFQuyfQp\" data-id=\"dDT8OrIPHFQuyfQp\" data-type=\"Item\">Spellweave</a>, <a class=\"content-link\" data-uuid=\"Item.GqVU8ps3IJp0KQ3Y\" data-id=\"GqVU8ps3IJp0KQ3Y\" data-type=\"Item\">Bladework</a> and <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a> work with every 【📕Spell】, not only 【⚡Offensive Spell】.</p></li></ul>",
       "skill_information": "",
       "skill_range": "",
       "skill_target": "",

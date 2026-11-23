@@ -2,15 +2,18 @@
   "_id": "8XdohFASv0voFz4E",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1753926252524,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
-    "systemVersion": "4.8.4"
+    "systemVersion": "4.8.5"
   },
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "spellFencerText": "2026-11-23-r4"
     }
   },
   "folder": "lrk2jhOW5Ok9sgH1",
@@ -26,9 +29,129 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "cQ77gX9Ipt2ceNtL",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1795438503154,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "cQ77gX9Ipt2ceNtL",
+              "originalParentId": "11oIbATAKKdeqBBA",
+              "originalUuid": "Actor.8XdohFASv0voFz4E.Item.11oIbATAKKdeqBBA.ActiveEffect.cQ77gX9Ipt2ceNtL"
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "resonance",
+              "charges": 1,
+              "chargesMax": 3,
+              "lifetimeMode": "persistent_counter",
+              "tags": [
+                "resource"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/dualcast.png",
+          "name": "Resonance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-resonance"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "wPA9fc7YEj605JnK",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1795438503172,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "wPA9fc7YEj605JnK",
+              "originalParentId": "11oIbATAKKdeqBBA",
+              "originalUuid": "Actor.8XdohFASv0voFz4E.Item.11oIbATAKKdeqBBA.ActiveEffect.wPA9fc7YEj605JnK"
+            },
+            "fabula-ultima-companion": {
+              "lifetimeMode": "persistent_counter",
+              "tags": [
+                "spell-fencer-rhythm"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20UP.png",
+          "name": "Next Spell",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-next-spell"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "spellFencerText": "2026-11-23-r4"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -46,17 +169,189 @@
           "class": "Spell Fencer",
           "cost": "",
           "damage_bonus": "0",
-          "description": "<p>When you cast an <strong>Offensive Spell, </strong>if you perform the 【Attack】action <em>(excluding Free Attack)  </em>during your previous turn, Gain 1 <strong>Resonance.</strong></p><p>When you cast an <strong>Offensive Spell, </strong>you may spend up to <strong>【SL】Resonance, </strong>For each Resonance you spent this way, increase the spell's <strong>Magic Check </strong>by 1 .</p><p>You may have up to <strong>【SL + 1】</strong>Resonance and you lose all Resonance at the end of each scene</p>",
+          "description": "<ul><li><p>Switching between a weapon attack and an 【⚡Offensive Spell】 grants 1 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>.</p></li><li><p>Start each conflict with 1 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>. Max <strong>【SL + 1】</strong> stacks. Lost at the end of the scene.</p></li><li><p>When you cast an 【⚡Offensive Spell】, spend up to <strong>【SL】</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> for +1 Accuracy each.</p></li></ul>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "auto_confirm_when_obvious": true,
+              "auto_target": "skip",
+              "candidate_source": "self",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "sw_self",
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            },
+            "1": {
+              "chain_steps": "sw_seed_res, sw_seed_clear",
+              "effect_kind": "chain",
+              "effect_label": "sw_seed"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "1",
+              "ae_initial_charges_max": "SL + 1",
+              "ae_template_ref": "Resonance",
+              "effect_kind": "apply_ae",
+              "effect_label": "sw_seed_res",
+              "target_ref": "sw_self"
+            },
+            "3": {
+              "ae_template_ref": "Next Spell, Next Attack",
+              "effect_kind": "remove_ae",
+              "effect_label": "sw_seed_clear",
+              "include_persistent": true,
+              "target_ref": "self"
+            },
+            "4": {
+              "chain_steps": "sw_atk_anim, sw_atk_gain, sw_atk_off, sw_atk_on",
+              "effect_kind": "chain",
+              "effect_label": "sw_atk"
+            },
+            "5": {
+              "action_ref": "Spellweave",
+              "condition_formula": "AE_COUNT_NEXT_ATTACK > 0 && AE_COUNT_RHAPSODY_TURN == 0 && AE_CHARGES_RESONANCE < SL + 1",
+              "effect_kind": "play_animation",
+              "effect_label": "sw_atk_anim",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "6": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_initial_charges_max": "SL + 1",
+              "ae_template_ref": "Resonance",
+              "condition_formula": "AE_COUNT_NEXT_ATTACK > 0 && AE_COUNT_RHAPSODY_TURN == 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "sw_atk_gain",
+              "on_condition_fail": "skip",
+              "target_ref": "sw_self"
+            },
+            "7": {
+              "chain_steps": "sw_spl_anim, sw_spl_gain, sw_spl_off, sw_spl_on",
+              "effect_kind": "chain",
+              "effect_label": "sw_spl"
+            },
+            "8": {
+              "action_ref": "Spellweave",
+              "condition_formula": "AE_COUNT_NEXT_SPELL > 0 && AE_COUNT_RHAPSODY_TURN == 0 && AE_CHARGES_RESONANCE < SL + 1",
+              "effect_kind": "play_animation",
+              "effect_label": "sw_spl_anim",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "9": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_initial_charges_max": "SL + 1",
+              "ae_template_ref": "Resonance",
+              "condition_formula": "AE_COUNT_NEXT_SPELL > 0 && AE_COUNT_RHAPSODY_TURN == 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "sw_spl_gain",
+              "on_condition_fail": "skip",
+              "target_ref": "sw_self"
+            },
+            "10": {
+              "ae_template_ref": "Next Attack",
+              "effect_kind": "remove_ae",
+              "effect_label": "sw_atk_off",
+              "include_persistent": true,
+              "target_ref": "self"
+            },
+            "11": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Next Spell",
+              "effect_kind": "apply_ae",
+              "effect_label": "sw_atk_on",
+              "target_ref": "sw_self"
+            },
+            "12": {
+              "ae_template_ref": "Next Spell",
+              "effect_kind": "remove_ae",
+              "effect_label": "sw_spl_off",
+              "include_persistent": true,
+              "target_ref": "self"
+            },
+            "13": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Next Attack",
+              "effect_kind": "apply_ae",
+              "effect_label": "sw_spl_on",
+              "target_ref": "sw_self"
+            },
+            "14": {
+              "chain_steps": "sw_spend_n, sw_spend_acc, sw_spend_pay",
+              "effect_kind": "chain",
+              "effect_label": "sw_spend",
+              "menu_description": "Spend Resonance: +1 Accuracy each.",
+              "menu_label": "Spellweave"
+            },
+            "15": {
+              "effect_kind": "prompt_number",
+              "effect_label": "sw_spend_n",
+              "prompt_label": "Spellweave: spend Resonance (+1 Accuracy each)",
+              "prompt_max": "min(SL, AE_CHARGES_RESONANCE)",
+              "prompt_min": "1",
+              "prompt_step": "1",
+              "prompt_var": "res_spend"
+            },
+            "16": {
+              "accuracy_amount": "VAR_RES_SPEND",
+              "accuracy_operation": "add",
+              "effect_kind": "adjust_accuracy",
+              "effect_label": "sw_spend_acc"
+            },
+            "17": {
+              "charge_ae_name": "Resonance",
+              "charge_amount": "VAR_RES_SPEND",
+              "charge_operation": "subtract",
+              "effect_kind": "adjust_charges",
+              "effect_label": "sw_spend_pay",
+              "target_ref": "self"
+            }
+          },
           "isCheck": false,
           "isHeroic": false,
           "level": "1",
           "max_level": "5",
           "name": "Spellweave",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "sw_seed",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_trigger": "conflict_start"
+            },
+            "1": {
+              "reaction_effect_ref": "sw_atk",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_attack"
+            },
+            "2": {
+              "condition_formula": "ACTION_IS_SPELL == 1 && (ACTION_ROLLS_ACCURACY == 1 || HAS_SKILL_MASTER_OF_DUALITY == 1)",
+              "reaction_effect_ref": "sw_spl",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_spell"
+            },
+            "3": {
+              "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && AE_CHARGES_RESONANCE >= 1",
+              "reaction_action_kind": "Skill,Spell",
+              "reaction_effect_ref": "sw_spend",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_target": "",
+          "skill_description": "<ul><li><p>Switching between a weapon attack and an 【⚡Offensive Spell】 grants 1 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>.</p></li><li><p>Start each conflict with 1 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>. Max <strong>【SL + 1】</strong> stacks. Lost at the end of the scene.</p></li><li><p>When you cast an 【⚡Offensive Spell】, spend up to <strong>【SL】</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> for +1 Accuracy each.</p></li></ul>",
+          "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
@@ -81,6 +376,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "spellFencerText": "2026-11-23-r4"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -98,7 +396,7 @@
           "class": "Spell Fencer",
           "cost": "",
           "damage_bonus": "0",
-          "description": "<p>When you <strong>hit </strong>a creature with a weapon attack <em>(excluding Free Attack) </em> you regains <strong>【SL x 2】</strong>MP if you cast an <strong>offensive spell </strong>during your previous turn.</p>",
+          "description": "<ul><li><p>After you cast an 【⚡Offensive Spell】, your next weapon attack deals <strong>【SL】</strong> extra damage.</p></li><li><p>On hit, recover <strong>【SL × 2】</strong> MP.</p></li></ul>",
           "duration": "",
           "isCheck": false,
           "isHeroic": false,
@@ -108,6 +406,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_description": "<ul><li><p>After you cast an 【⚡Offensive Spell】, your next weapon attack deals <strong>【SL】</strong> extra damage.</p></li><li><p>On hit, recover <strong>【SL × 2】</strong> MP.</p></li></ul>",
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
@@ -117,6 +416,231 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "GqVU8ps3IJp0KQ3Y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "fa2grKJEx4c5TSzL",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795438459563,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "spellFencerText": "2026-11-23-r4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/verflare.png",
+      "name": "Crescendo",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>During <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a>, your 【⚔️Attack】 and your 【📕Spell】 each deal 10 extra damage.</p></li></ul>",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "You must have mastered the Spell Fencer Class.",
+          "id": "SpFnCrescendo001",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/verflare.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Crescendo",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<ul><li><p>During <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a>, your 【⚔️Attack】 and your 【📕Spell】 each deal 10 extra damage.</p></li></ul>",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Item.SpFnCrescendo001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "SpFnCrescendo001"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "g6JsM3QckgogJkya",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795438459563,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "spellFencerText": "2026-11-23-r4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/veraero.png",
+      "name": "Duelist's Guard",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>While you have 2 or more <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>, gain +2 DEF and +2 MDEF.</p></li></ul>",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "You must have mastered the Spell Fencer Class.",
+          "id": "SpFnDuelGuard001",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/veraero.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Duelist's Guard",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<ul><li><p>While you have 2 or more <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>, gain +2 DEF and +2 MDEF.</p></li></ul>",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Item.SpFnDuelGuard001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "SpFnDuelGuard001"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "l9Mmqt0pOrFSUzle",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795438459563,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "spellFencerText": "2026-11-23-r4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/embolden.png",
+      "name": "Encore",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Once per scene, <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a> costs no <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>.</p></li></ul>",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "You must have mastered the Spell Fencer Class.",
+          "id": "SpFnEncore000001",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/embolden.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Encore",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<ul><li><p>Once per scene, <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a> costs no <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>.</p></li></ul>",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Item.SpFnEncore000001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "SpFnEncore000001"
       },
       "type": "equippableItem"
     },
@@ -133,6 +657,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "spellFencerText": "2026-11-23-r4"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -150,7 +677,7 @@
           "class": "Spell Fencer",
           "cost": "2 Resonance",
           "damage_bonus": "0",
-          "description": "<p>Spend <strong>2 Resonance, </strong>During this turn, you may perform both the <strong>【Attack】</strong>action and <strong>【Spell】</strong>action, the spell you cast this way must be an <strong>Offensive Spell </strong>and must have the mind point cost of equal to or less than <strong>【SL x 10】</strong></p>",
+          "description": "<ul><li><p>At the start of your turn: this turn, perform both the 【⚔️Attack】 and 【📕Spell】 actions.</p></li><li><p>The spell must be an 【⚡Offensive Spell】 costing <strong>【SL × 10】</strong> MP or less.</p></li><li><p>Generates no <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> this turn.</p></li></ul>",
           "duration": "Turn",
           "isCheck": false,
           "isHeroic": false,
@@ -160,6 +687,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_description": "<ul><li><p>At the start of your turn: this turn, perform both the 【⚔️Attack】 and 【📕Spell】 actions.</p></li><li><p>The spell must be an 【⚡Offensive Spell】 costing <strong>【SL × 10】</strong> MP or less.</p></li><li><p>Generates no <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> this turn.</p></li></ul>",
           "skill_target": "self",
           "skill_type": "Active",
           "type_damage": "",
@@ -185,6 +713,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "spellFencerText": "2026-11-23-r4"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -202,7 +733,7 @@
           "class": "Spell Fencer",
           "cost": "",
           "damage_bonus": "0",
-          "description": "<p>When you cast an <strong>Offensive Spell, </strong>you may have the next <strong>Weapon Attack </strong>you perform deals the damage type of the spell you've cast instead the weapon's normal type</p>",
+          "description": "<ul><li><p>After you cast an 【⚡Offensive Spell】, your next weapon attack deals that spell's damage type.</p></li></ul>",
           "duration": "",
           "isCheck": false,
           "isHeroic": false,
@@ -212,6 +743,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_description": "<ul><li><p>After you cast an 【⚡Offensive Spell】, your next weapon attack deals that spell's damage type.</p></li></ul>",
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
@@ -237,6 +769,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "spellFencerText": "2026-11-23-r4"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -254,8 +789,9 @@
           "class": "Spell Fencer",
           "cost": "",
           "damage_bonus": "0",
-          "description": "<p>The Spells use to trigger the effects of 【<strong>Bladework】 </strong>and 【<strong>Spellweave】</strong> no longer needs to be an <strong>Offensive Spell, </strong>additionally, you may also cast <strong>Non-Offensive Spells </strong>when you use <strong>【Spellblade Rhapsody】</strong> as well</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"Item.dDT8OrIPHFQuyfQp\" data-id=\"dDT8OrIPHFQuyfQp\" data-type=\"Item\">Spellweave</a>, <a class=\"content-link\" data-uuid=\"Item.GqVU8ps3IJp0KQ3Y\" data-id=\"GqVU8ps3IJp0KQ3Y\" data-type=\"Item\">Bladework</a> and <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a> work with every 【📕Spell】, not only 【⚡Offensive Spell】.</p></li></ul>",
           "duration": "",
+          "heroic_requirement": "You must have mastered the Spell Fencer Class.",
           "isCheck": false,
           "isHeroic": true,
           "level": "1",
@@ -264,6 +800,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"Item.dDT8OrIPHFQuyfQp\" data-id=\"dDT8OrIPHFQuyfQp\" data-type=\"Item\">Spellweave</a>, <a class=\"content-link\" data-uuid=\"Item.GqVU8ps3IJp0KQ3Y\" data-id=\"GqVU8ps3IJp0KQ3Y\" data-type=\"Item\">Bladework</a> and <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a> work with every 【📕Spell】, not only 【⚡Offensive Spell】.</p></li></ul>",
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
@@ -289,6 +826,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "spellFencerText": "2026-11-23-r4"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -306,7 +846,7 @@
           "class": "Spell Fencer",
           "cost": "",
           "damage_bonus": "0",
-          "description": "<p>You may equipped a <strong>Two-handed Arcane weapon</strong> with one hand</p>",
+          "description": "<ul><li><p>You can equip two-handed arcane weapons in one hand.</p></li></ul>",
           "duration": "",
           "isCheck": false,
           "isHeroic": false,
@@ -316,6 +856,7 @@
           "optional_params": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
+          "skill_description": "<ul><li><p>You can equip two-handed arcane weapons in one hand.</p></li></ul>",
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
@@ -576,7 +1117,7 @@
     "props": {
       "also_text": "Arcane Duelist, Magic Knight, Blade Mage",
       "benefit_dropdown": "choice_benefit",
-      "classMechanic_text": "<h1>Resonance</h1><p></p><h2>SYMPHONY OF MAGIC AND STEEL</h2><p><strong>Resonance</strong> represents the harmony between your blade and spellcraft—an energy that builds as you weave martial strikes with arcane precision. As your control over both disciplines grows, so too does your ability to blend them into a seamless rhythm of offense.</p><p></p><h2>GAINING RESONANCE</h2><p>You begin generating Resonance once you acquire the <strong>【Spellweave】</strong> skill. Each time you cast an <strong>Offensive Spell</strong> and follow up with an <strong>【Attack】</strong> action (excluding Free Attacks), you gain 1 Resonance at the end of your turn.</p><p>The maximum amount of Resonance you can store is equal to your <strong>【Spellweave】</strong> level +1. All Resonance is lost when the scene ends.</p><p></p><h2>SPENDING RESONANCE</h2><p>Resonance can be expended in various ways, such as enhancing spell potency through <strong>【Spellweave】</strong>—increasing your <strong>Magic Check</strong> by 1 for each point spent—or unlocking advanced techniques like <strong>【Spellblade Rhapsody】</strong>, which allows you to cast an <strong>Offensive Spell</strong> and strike in the same turn.</p><p>Other skills, like <strong>【Bladework】</strong>, synergize with your spellcasting by refunding MP if you attacked after casting. This creates a tempo-based playstyle where alternating between spells and attacks keeps your momentum flowing.</p><p>Mastering Resonance means playing both parts of the symphony—ensuring neither blade nor spell stands alone.</p>",
+      "classMechanic_text": "<h1>Resonance</h1><h3>SYMPHONY OF MAGIC AND STEEL</h3><p><a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> is the harmony between your blade and your spellcraft. Keep switching between the two to build it.</p><h3>GAINING RESONANCE</h3><ul><li><p>Switching between a weapon attack and an 【⚡Offensive Spell】 grants 1 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>.</p></li><li><p>Start each conflict with 1. Max <strong>【Spellweave SL + 1】</strong>. Lost at the end of the scene.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a> turns generate none.</p></li></ul><h3>SPENDING RESONANCE</h3><ul><li><p><a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a>: 2 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> to attack and cast in the same turn.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.dDT8OrIPHFQuyfQp\" data-id=\"dDT8OrIPHFQuyfQp\" data-type=\"Item\">Spellweave</a>: +1 Accuracy per <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> spent on an 【⚡Offensive Spell】.</p></li></ul><h3>THE RHYTHM</h3><ul><li><p>A blue aura means a spell comes next; a red aura means an attack. A golden aura means Spellblade Rhapsody is ready.</p></li></ul>",
       "class_facet": {
         "11oIbATAKKdeqBBA": {
           "facet_cost": "",

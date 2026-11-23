@@ -8,9 +8,185 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "31xINiOAgTVfCfDf",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795438502852,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "31xINiOAgTVfCfDf",
+          "originalParentId": "dDT8OrIPHFQuyfQp",
+          "originalUuid": "Item.dDT8OrIPHFQuyfQp.ActiveEffect.31xINiOAgTVfCfDf"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "spell-fencer-rhythm"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20UP.png",
+      "name": "Next Spell",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-next-spell"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "5vKiIQoBZUvz9a5M",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795438502869,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "5vKiIQoBZUvz9a5M",
+          "originalParentId": "dDT8OrIPHFQuyfQp",
+          "originalUuid": "Item.dDT8OrIPHFQuyfQp.ActiveEffect.5vKiIQoBZUvz9a5M"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "spell-fencer-rhythm"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+      "name": "Next Attack",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-next-attack"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "g9CCdVF6Zfyzeyhl",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795438502832,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "g9CCdVF6Zfyzeyhl",
+          "originalParentId": "dDT8OrIPHFQuyfQp",
+          "originalUuid": "Item.dDT8OrIPHFQuyfQp.ActiveEffect.g9CCdVF6Zfyzeyhl"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "resonance",
+          "charges": 1,
+          "chargesMax": 3,
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "resource"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/dualcast.png",
+      "name": "Resonance",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-resonance"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "spellFencerText": "2026-11-23-r4"
     }
   },
   "folder": "nNKbXiI5DqqWmDy0",
@@ -28,8 +204,148 @@
       "class": "Spell Fencer",
       "cost": "",
       "damage_bonus": "0",
-      "description": "<p>When you cast an <strong>Offensive Spell, </strong>if you perform the 【Attack】action <em>(excluding Free Attack)  </em>during your previous turn, Gain 1 <strong>Resonance.</strong></p><p>When you cast an <strong>Offensive Spell, </strong>you may spend up to <strong>【SL】Resonance, </strong>For each Resonance you spent this way, increase the spell's <strong>Magic Check </strong>by 1 .</p><p>You may have up to <strong>【SL + 1】</strong>Resonance and you lose all Resonance at the end of each scene</p>",
+      "description": "<ul><li><p>Switching between a weapon attack and an 【⚡Offensive Spell】 grants 1 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>.</p></li><li><p>Start each conflict with 1 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>. Max <strong>【SL + 1】</strong> stacks. Lost at the end of the scene.</p></li><li><p>When you cast an 【⚡Offensive Spell】, spend up to <strong>【SL】</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> for +1 Accuracy each.</p></li></ul>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "auto_confirm_when_obvious": true,
+          "auto_target": "skip",
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "sw_self",
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "1": {
+          "chain_steps": "sw_seed_res, sw_seed_clear",
+          "effect_kind": "chain",
+          "effect_label": "sw_seed"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "SL + 1",
+          "ae_template_ref": "Resonance",
+          "effect_kind": "apply_ae",
+          "effect_label": "sw_seed_res",
+          "target_ref": "sw_self"
+        },
+        "3": {
+          "ae_template_ref": "Next Spell, Next Attack",
+          "effect_kind": "remove_ae",
+          "effect_label": "sw_seed_clear",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "4": {
+          "chain_steps": "sw_atk_anim, sw_atk_gain, sw_atk_off, sw_atk_on",
+          "effect_kind": "chain",
+          "effect_label": "sw_atk"
+        },
+        "5": {
+          "action_ref": "Spellweave",
+          "condition_formula": "AE_COUNT_NEXT_ATTACK > 0 && AE_COUNT_RHAPSODY_TURN == 0 && AE_CHARGES_RESONANCE < SL + 1",
+          "effect_kind": "play_animation",
+          "effect_label": "sw_atk_anim",
+          "on_condition_fail": "skip",
+          "target_ref": "self"
+        },
+        "6": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "SL + 1",
+          "ae_template_ref": "Resonance",
+          "condition_formula": "AE_COUNT_NEXT_ATTACK > 0 && AE_COUNT_RHAPSODY_TURN == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "sw_atk_gain",
+          "on_condition_fail": "skip",
+          "target_ref": "sw_self"
+        },
+        "7": {
+          "chain_steps": "sw_spl_anim, sw_spl_gain, sw_spl_off, sw_spl_on",
+          "effect_kind": "chain",
+          "effect_label": "sw_spl"
+        },
+        "8": {
+          "action_ref": "Spellweave",
+          "condition_formula": "AE_COUNT_NEXT_SPELL > 0 && AE_COUNT_RHAPSODY_TURN == 0 && AE_CHARGES_RESONANCE < SL + 1",
+          "effect_kind": "play_animation",
+          "effect_label": "sw_spl_anim",
+          "on_condition_fail": "skip",
+          "target_ref": "self"
+        },
+        "9": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "SL + 1",
+          "ae_template_ref": "Resonance",
+          "condition_formula": "AE_COUNT_NEXT_SPELL > 0 && AE_COUNT_RHAPSODY_TURN == 0",
+          "effect_kind": "apply_ae",
+          "effect_label": "sw_spl_gain",
+          "on_condition_fail": "skip",
+          "target_ref": "sw_self"
+        },
+        "10": {
+          "ae_template_ref": "Next Attack",
+          "effect_kind": "remove_ae",
+          "effect_label": "sw_atk_off",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "11": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Next Spell",
+          "effect_kind": "apply_ae",
+          "effect_label": "sw_atk_on",
+          "target_ref": "sw_self"
+        },
+        "12": {
+          "ae_template_ref": "Next Spell",
+          "effect_kind": "remove_ae",
+          "effect_label": "sw_spl_off",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "13": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Next Attack",
+          "effect_kind": "apply_ae",
+          "effect_label": "sw_spl_on",
+          "target_ref": "sw_self"
+        },
+        "14": {
+          "chain_steps": "sw_spend_n, sw_spend_acc, sw_spend_pay",
+          "effect_kind": "chain",
+          "effect_label": "sw_spend",
+          "menu_description": "Spend Resonance: +1 Accuracy each.",
+          "menu_label": "Spellweave"
+        },
+        "15": {
+          "effect_kind": "prompt_number",
+          "effect_label": "sw_spend_n",
+          "prompt_label": "Spellweave: spend Resonance (+1 Accuracy each)",
+          "prompt_max": "min(SL, AE_CHARGES_RESONANCE)",
+          "prompt_min": "1",
+          "prompt_step": "1",
+          "prompt_var": "res_spend"
+        },
+        "16": {
+          "accuracy_amount": "VAR_RES_SPEND",
+          "accuracy_operation": "add",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "sw_spend_acc"
+        },
+        "17": {
+          "charge_ae_name": "Resonance",
+          "charge_amount": "VAR_RES_SPEND",
+          "charge_operation": "subtract",
+          "effect_kind": "adjust_charges",
+          "effect_label": "sw_spend_pay",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
@@ -38,10 +354,42 @@
       "max_level": "5",
       "name": "Spellweave",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "sw_seed",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "reaction_effect_ref": "sw_atk",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_attack"
+        },
+        "2": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && (ACTION_ROLLS_ACCURACY == 1 || HAS_SKILL_MASTER_OF_DUALITY == 1)",
+          "reaction_effect_ref": "sw_spl",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_spell"
+        },
+        "3": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && AE_CHARGES_RESONANCE >= 1",
+          "reaction_action_kind": "Skill,Spell",
+          "reaction_effect_ref": "sw_spend",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
-      "skill_target": "",
+      "skill_description": "<ul><li><p>Switching between a weapon attack and an 【⚡Offensive Spell】 grants 1 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>.</p></li><li><p>Start each conflict with 1 <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>. Max <strong>【SL + 1】</strong> stacks. Lost at the end of the scene.</p></li><li><p>When you cast an 【⚡Offensive Spell】, spend up to <strong>【SL】</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a> for +1 Accuracy each.</p></li></ul>",
+      "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",
       "use_optional_params": false
