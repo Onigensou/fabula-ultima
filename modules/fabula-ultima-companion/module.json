@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.664",
+  "version": "1.0.665",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -552,6 +552,7 @@
     "scripts/battle-director/timed-strike-gauge.js",
     "scripts/battle-director/timed-strike-cinematic.js",
     "scripts/shared/held-status.js",
+    "scripts/shared/stash-effect-suppress.js",
     "scripts/battle-director/unit-inspect/unit-inspect.js",
     "scripts/battle-director/set-bonus-hooks.js",
     "scripts/battle-director/armor-equip-gate.js",

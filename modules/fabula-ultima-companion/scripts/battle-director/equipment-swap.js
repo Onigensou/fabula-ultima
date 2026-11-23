@@ -773,6 +773,24 @@ export async function syncItemEffectsToEquip(item) {
   return updates.length;
 }
 
+// Switch OFF an item's equip-linked AEs (carried effects are left alone).
+// For a hand/accessory item that just arrived unworn: it shipped with whatever
+// `disabled` the world item had, which is often `false` (Gravedigger Shovel's
+// "Cursed"). Disable-only, idempotent; returns the number of effects flipped.
+export async function disableItemEquipEffects(item) {
+  if (!item?.id) return 0;
+  const updates = resolveItemEffectDocs(item)
+    .filter((fx) => !fx.disabled)
+    .map((fx) => ({ _id: fx.id, disabled: true }));
+  if (!updates.length) return 0;
+  try {
+    await item.updateEmbeddedDocuments("ActiveEffect", updates);
+  } catch (e) {
+    warn(`disableItemEquipEffects: AE sync failed for ${item.name}`, e);
+  }
+  return updates.length;
+}
+
 // ─── Public: apply the swap ─────────────────────────────────────────
 
 // `selections` = { main: itemIdOrNull, off: itemIdOrNull,
