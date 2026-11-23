@@ -3686,7 +3686,7 @@
         "id": "GqVU8ps3IJp0KQ3Y",
         "name": "Bladework",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "OHZETPJgAZNg0AUU",
@@ -3944,7 +3944,7 @@
         "id": "grSkhZspOgRbAgCJ",
         "name": "Book and Blade",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "oahgecKQD4NvCFcI",
@@ -4691,6 +4691,12 @@
         "effects": 0
       },
       {
+        "id": "SpFnCrescendo001",
+        "name": "Crescendo",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "t597ugKHmPnHiIwY",
         "name": "Crescent Edge",
         "type": "equippableItem",
@@ -5351,6 +5357,12 @@
         "effects": 0
       },
       {
+        "id": "SpFnDuelGuard001",
+        "name": "Duelist's Guard",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "WNinVwRHGs85lOOj",
         "name": "Dusk Star",
         "type": "equippableItem",
@@ -5659,6 +5671,12 @@
       {
         "id": "999BdRk7rsWKxGJr",
         "name": "Enchanted Delayed Blast Remote",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "SpFnEncore000001",
+        "name": "Encore",
         "type": "equippableItem",
         "effects": 1
       },
@@ -9734,7 +9752,7 @@
         "id": "XwoHbYxHvfqvHHAZ",
         "name": "Mystic Infusion",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 8
       },
       {
         "id": "Bq6whExuUmb3sq5p",
@@ -12266,7 +12284,7 @@
         "id": "4qw6XEVHQmERzZ8y",
         "name": "Spellblade Rhapsody",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "0Q0LLVyzDqkW8zV6",
@@ -12278,7 +12296,7 @@
         "id": "dDT8OrIPHFQuyfQp",
         "name": "Spellweave",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 3
       },
       {
         "id": "dnouOqucx5rnWsT4",
@@ -25702,6 +25720,18 @@
           {
             "id": "wx5wTGlFPa49QzmU",
             "name": "Book and Blade"
+          },
+          {
+            "id": "N0gHI9y3RH1d8Kos",
+            "name": "Crescendo"
+          },
+          {
+            "id": "Gfh5OKhJWJ5t0sCU",
+            "name": "Duelist's Guard"
+          },
+          {
+            "id": "5jT9u4zwSvie87Za",
+            "name": "Encore"
           },
           {
             "id": "Rk7U5oKGepTDAz9X",

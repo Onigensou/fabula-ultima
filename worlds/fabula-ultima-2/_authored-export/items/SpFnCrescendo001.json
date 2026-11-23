@@ -1,0 +1,93 @@
+{
+  "_id": "SpFnCrescendo001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795436871798,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "spellFencerText": "2026-11-23-r4"
+    }
+  },
+  "folder": "nNKbXiI5DqqWmDy0",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/verflare.png",
+  "name": "Crescendo",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Spell Fencer",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>During <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a>, your 【⚔️Attack】 and your 【📕Spell】 each deal 10 extra damage.</p></li></ul>",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "cr_dmg",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "heroic_requirement": "You must have mastered the Spell Fencer Class.",
+      "id": "SpFnCrescendo001",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/verflare.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Crescendo",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "(ACTION_IS_ATTACK == 1 || ACTION_IS_SPELL == 1) && DAMAGE_IS_HP == 1 && AE_COUNT_RHAPSODY_TURN > 0",
+          "reaction_action_target": "enemy",
+          "reaction_effect_ref": "cr_dmg",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p>During <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a>, your 【⚔️Attack】 and your 【📕Spell】 each deal 10 extra damage.</p></li></ul>",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.SpFnCrescendo001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "SpFnCrescendo001"
+  },
+  "type": "equippableItem"
+}
