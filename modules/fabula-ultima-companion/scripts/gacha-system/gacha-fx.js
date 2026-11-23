@@ -168,7 +168,13 @@ export function stop() {
   cleanup?.();
   el?.remove();
   _active = null;
+  // Watchers return to the map on this, and the roller frees the machine.
+  try { Hooks.callAll("fuGachaRevealEnd", { byUserId: state.byUserId ?? null }); } catch {}
 }
+
+/** The live reveal root, for the watch layer's badges. Null when nothing plays. */
+export const activeRoot = () => _active?.el ?? null;
+export const isPlaying = () => !!_active;
 
 // ── Sequence ────────────────────────────────────────────────────────────────
 
@@ -210,6 +216,8 @@ async function run(el, state, resultPromise) {
   const results = payload.results;
   state.results = results;
   state.bannerName = payload.bannerName;   // titles the summary
+  state.byUserId = payload.byUserId ?? null;
+  addByline(el, payload, results.length);
 
   if (state.jumpToSummary || state.skip) { showSummary(el, state, results); return; }
 
@@ -364,6 +372,8 @@ async function revealOne(el, state, prize, whiteToClear) {
            style="--slide-ms:${FX.SILHOUETTE_IN}ms">
       <div class="gfx-prize-name" data-name>${esc(prize.name)}</div>
       <div class="gfx-prize-stars" data-stars>${"★".repeat(c.stars)}</div>
+      ${typeof prize.featured === "boolean" ? `<div class="gfx-prize-side${prize.featured ? "" : " is-filler"}" data-side>${
+        prize.featured ? "Featured set!" : "Filler set · the next 5★ is guaranteed featured"}</div>` : ""}
     </div>`;
   el.appendChild(wrap);
 
@@ -404,6 +414,7 @@ async function revealOne(el, state, prize, whiteToClear) {
   await phase(FX.FLASH, state);
   wrap.querySelector("[data-name]")?.classList.add("is-on");
   wrap.querySelector("[data-stars]")?.classList.add("is-on");
+  wrap.querySelector("[data-side]")?.classList.add("is-on");
 
   await phase(FX.REVEAL_HOLD[prize.rarity] ?? FX.REVEAL_HOLD.three, state);
 
@@ -411,6 +422,23 @@ async function revealOne(el, state, prize, whiteToClear) {
     { duration: 200, easing: "ease-in", fill: "both" })
     .finished.catch(() => {}).finally(() => wrap.remove());
   await phase(180, state);
+}
+
+/**
+ * Whose wish this is, top-left, for the whole reveal. Everyone sees it: on a
+ * shared machine the first question is always "who pulled that?".
+ */
+function addByline(el, payload, count) {
+  if (!payload?.byUserId || el.querySelector(".gfx-byline")) return;
+  const user = game.users?.get(payload.byUserId);
+  const name = user?.character?.name ?? payload.byName ?? user?.name ?? "";
+  if (!name) return;
+  const img = user?.character?.img ?? user?.avatar ?? "";
+  const chip = document.createElement("div");
+  chip.className = "gfx-byline";
+  chip.innerHTML = `${img ? `<img src="${img}" alt="">` : ""}${esc(name)} · Wish ×${count}${
+    payload.bannerName ? ` · ${esc(payload.bannerName)}` : ""}`;
+  el.appendChild(chip);
 }
 
 /** Every prize at once, held until dismissed. Terminal state. */

@@ -21,7 +21,7 @@
 // ============================================================================
 
 import { GACHA, log, warn } from "./gacha-const.js";
-import { executeWish, executeBuy } from "./gacha-engine.js";
+import { executeWish, executeBuy, releaseMachine } from "./gacha-engine.js";
 import { executeSwap, executeRedeem } from "./gacha-exchange.js";
 
 const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() === true;
@@ -44,16 +44,26 @@ const RESULT_TYPES = new Set([
 let _onReveal = null;
 let _onPool = null;
 let _onStart = null;
+let _onEnd = null;
+let _onPresence = null;
+let _onCheer = null;
 
 /**
  * @param {object} handlers
- * @param {(payload:object)=>void} handlers.onReveal  play the animation
- * @param {(payload:object)=>void} handlers.onPool    refresh the currency UI
+ * @param {(payload:object)=>void} handlers.onReveal    play the animation
+ * @param {(payload:object)=>void} handlers.onPool      refresh the currency UI
+ * @param {(payload:object)=>void} handlers.onStart     someone pressed Wish
+ * @param {(payload:object)=>void} handlers.onEnd       the roller's reveal ended (machine free)
+ * @param {(payload:object)=>void} handlers.onPresence  who has the machine open
+ * @param {(payload:object)=>void} handlers.onCheer     a cheer / groan badge
  */
-export function setup({ onReveal, onPool, onStart } = {}) {
+export function setup({ onReveal, onPool, onStart, onEnd, onPresence, onCheer } = {}) {
   _onReveal = onReveal ?? null;
   _onPool = onPool ?? null;
   _onStart = onStart ?? null;
+  _onEnd = onEnd ?? null;
+  _onPresence = onPresence ?? null;
+  _onCheer = onCheer ?? null;
 
   game.socket.on(GACHA.CHANNEL, async (payload) => {
     if (!payload || typeof payload !== "object") return;
@@ -63,6 +73,14 @@ export function setup({ onReveal, onPool, onStart } = {}) {
     if (type === GACHA.MSG.WISH_START) { _onStart?.(payload); return; }
     if (type === GACHA.MSG.REVEAL) { _onReveal?.(payload); return; }
     if (type === GACHA.MSG.POOL_UPDATE) { _onPool?.(payload); return; }
+    if (type === GACHA.MSG.PRESENCE) { _onPresence?.(payload); return; }
+    if (type === GACHA.MSG.CHEER) { _onCheer?.(payload); return; }
+    if (type === GACHA.MSG.REVEAL_END) {
+      // The GM's machine lock is released by the roller, and only the roller.
+      if (isPrimaryGM()) releaseMachine(payload.byUserId);
+      _onEnd?.(payload);
+      return;
+    }
 
     // ── Paired results: only the client that asked ───────────────────────
     if (RESULT_TYPES.has(type)) {
@@ -120,8 +138,33 @@ function emit(msg) {
  * the roller's rather than after the GM round-trip. Fire-and-forget: this is
  * presentation only and carries no outcome.
  */
-export function announceStart(count) {
-  emit({ type: GACHA.MSG.WISH_START, count, byUserId: game.user.id });
+export function announceStart(count, { bannerId = null, bannerName = "" } = {}) {
+  emit({ type: GACHA.MSG.WISH_START, count, bannerId, bannerName, byUserId: game.user.id, at: Date.now() });
+}
+
+/**
+ * The roller's reveal was dismissed: the machine is free. Sent by the roller
+ * only. Sockets do not echo, so the local side (and, when the roller IS the
+ * primary GM, the lock) is handled here too.
+ */
+export function announceEnd() {
+  const msg = { type: GACHA.MSG.REVEAL_END, byUserId: game.user.id };
+  emit(msg);
+  if (isPrimaryGM()) releaseMachine(game.user.id);
+  _onEnd?.(msg);
+}
+
+/** Presentation-only broadcasts. Applied locally as well, since sockets do not echo. */
+export function sendPresence(op, data = {}) {
+  const msg = { type: GACHA.MSG.PRESENCE, op, userId: game.user.id, ...data };
+  emit(msg);
+  _onPresence?.(msg);
+}
+
+export function sendCheer(kind) {
+  const msg = { type: GACHA.MSG.CHEER, kind, userId: game.user.id };
+  emit(msg);
+  _onCheer?.(msg);
 }
 
 /**
@@ -131,9 +174,15 @@ export function announceStart(count) {
  * grants and pity writes finish, so the reveal is not held hostage to several
  * seconds of document I/O.
  */
-function publishReveal({ bannerId, bannerName, results }) {
-  emit({ type: GACHA.MSG.REVEAL, bannerId, bannerName, results, byUserId: game.user.id });
-  _onReveal?.({ bannerId, bannerName, results, byUserId: game.user.id });
+function publishReveal({ bannerId, bannerName, results, requesterUserId, requesterName, guaranteed }) {
+  // byUserId is the ROLLER, not the GM that decided it — watchers label the
+  // reveal with it, and the machine lock is keyed on it.
+  const msg = {
+    type: GACHA.MSG.REVEAL, bannerId, bannerName, results,
+    byUserId: requesterUserId ?? game.user.id, byName: requesterName ?? null, guaranteed: guaranteed === true,
+  };
+  emit(msg);
+  _onReveal?.(msg);
 }
 
 /**

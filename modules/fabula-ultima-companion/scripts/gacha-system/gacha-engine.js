@@ -24,6 +24,7 @@ import { getBanner, getPoolTable, resolveTableItems } from "./gacha-banners.js";
 import {
   partyActor, readPool, resolveRates, readPity, writePity,
   spendCoupons, grantCoupons, couponCost, migrateLegacyPity,
+  appendHistory, historyResults,
 } from "./gacha-state.js";
 
 const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() === true;
@@ -34,8 +35,8 @@ const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() === true;
 // x10. Weight is the span of each result's range, which is exactly how Foundry
 // resolves a table roll.
 
-function pickFromTable(table) {
-  const entries = resolveTableItems(table);
+function pickFromTable(table, only = null) {
+  const entries = resolveTableItems(table).filter((e) => !only || only.has(e.uuid));
   if (!entries.length) return null;
 
   const results = table.results.contents;
@@ -96,6 +97,42 @@ export function rollRarities(count, rates, pity) {
   return { rarities: out, pity: { five, four } };
 }
 
+// ── 50/50 featured guarantee ────────────────────────────────────────────────
+
+/**
+ * Which set a 5-star lands on. A fair coin between the featured (main) set and
+ * the filler set(s) — deliberately NOT the table weights, which would make a
+ * 4-piece main set beat a 3-piece filler 57/43 and turn "50/50" into a lie.
+ *
+ * A 5-star that lands on the filler set arms `guaranteed`, which forces the
+ * banner's next 5-star (rolled or hard pity) onto the featured set. Pure, so
+ * the test harness can pin it.
+ */
+export function chooseFiveSide(guaranteed, rand = Math.random) {
+  const featured = guaranteed === true || rand() < 0.5;
+  return { featured, guaranteedAfter: !featured };
+}
+
+// ── Machine lock ────────────────────────────────────────────────────────────
+// One reveal at a time: the machine is a shared object everyone is watching.
+// Held from the moment a wish is accepted until the roller's reveal ends
+// (REVEAL_END), with a timeout so a roller who disconnects mid-reveal cannot
+// jam the machine for the rest of the session. GM memory only — a GM reload
+// clears it, which is the right answer anyway.
+
+const _machine = { byUserId: null, until: 0 };
+
+export function machineState() {
+  return Date.now() < _machine.until ? { busy: true, byUserId: _machine.byUserId } : { busy: false, byUserId: null };
+}
+
+export function releaseMachine(userId) {
+  if (!_machine.byUserId || (userId && userId !== _machine.byUserId)) return false;
+  _machine.byUserId = null;
+  _machine.until = 0;
+  return true;
+}
+
 // ── Main entry ──────────────────────────────────────────────────────────────
 
 /**
@@ -116,9 +153,16 @@ export async function executeWish({ bannerId, count, requesterUserId, onDecided 
 
   await migrateLegacyPity(actor, bannerId);
 
+  // 1b. One reveal at a time.
+  const m = machineState();
+  if (m.busy) return { ok: false, reason: "machine_busy", byUserId: m.byUserId };
+
   // 2. Spend first — atomic, and the only place the batch can be refused.
   const spend = await spendCoupons(actor, size);
   if (!spend.ok) return { ok: false, ...spend };
+
+  _machine.byUserId = requesterUserId ?? null;
+  _machine.until = Date.now() + GACHA.MACHINE_LOCK_MS;
 
   // 3. Roll.
   const rates = resolveRates(actor);
@@ -131,10 +175,26 @@ export async function executeWish({ bannerId, count, requesterUserId, onDecided 
     three: getPoolTable("three"),
   };
 
+  // The two halves of the 50/50. A banner with no filler set (or no main set)
+  // has nothing to flip between, so its 5-stars draw from whatever it has and
+  // the guarantee is left alone.
+  const mainUuids   = new Set((banner.mainSet?.entries ?? []).map((e) => e.uuid));
+  const fillerUuids = new Set(banner.fillerSets.flatMap((g) => g.entries).map((e) => e.uuid));
+  const canFlip = mainUuids.size > 0 && fillerUuids.size > 0;
+  let guaranteed = before.guaranteed;
+
   const results = [];
   for (const rarity of rarities) {
     const table = pools[rarity];
-    const pick = table ? pickFromTable(table) : null;
+    let pick = null, featured = null;
+    if (rarity === "five" && table && canFlip) {
+      const side = chooseFiveSide(guaranteed);
+      featured = side.featured;
+      guaranteed = side.guaranteedAfter;
+      pick = pickFromTable(table, featured ? mainUuids : fillerUuids);
+    } else {
+      pick = table ? pickFromTable(table) : null;
+    }
 
     if (!pick) {
       warn(`No drawable entry for rarity "${rarity}" — substituting 3-star.`);
@@ -143,7 +203,7 @@ export async function executeWish({ bannerId, count, requesterUserId, onDecided 
       results.push({ rarity: "three", ...serialise(fb) });
       continue;
     }
-    results.push({ rarity, ...serialise(pick) });
+    results.push({ rarity, ...serialise(pick), ...(featured === null ? {} : { featured }) });
   }
 
   // 3b. The outcome is now DECIDED. Publish it before persisting it.
@@ -156,24 +216,36 @@ export async function executeWish({ bannerId, count, requesterUserId, onDecided 
   //
   // Safe because the only thing that MUST be atomic with the roll -- spending
   // the coupons -- already happened above.
-  try { onDecided?.({ bannerId, bannerName: banner.title, results }); }
+  const requesterName = game.users?.get(requesterUserId)?.name ?? null;
+  try { onDecided?.({ bannerId, bannerName: banner.title, results, requesterUserId, requesterName, guaranteed }); }
   catch (e) { warn("onDecided handler threw", e); }
 
   // 4. Grant — collapse duplicates so a x10 of the same 3-star is one write.
   await grantAll(actor, results);
 
   // 5. Pity, once.
-  await writePity(actor, bannerId, after);
+  await writePity(actor, bannerId, { ...after, guaranteed });
 
   // 6. ONE chat message for the whole batch — the durable receipt. The old
   // system spent 8 document updates per pull animating in chat; the animation
   // is now a local overlay and chat is left to do the one job it is good at.
   await postReceipt(banner.title, results, requesterUserId);
 
+  // 7. The party's Wish History.
+  try {
+    const { keep, threes } = historyResults(results);
+    await appendHistory(actor, {
+      at: Date.now(), kind: "wish", count: size,
+      userId: requesterUserId ?? null, userName: requesterName,
+      actorId: game.users?.get(requesterUserId)?.character?.id ?? null,
+      bannerId, bannerName: banner.title, results: keep, threes,
+    });
+  } catch (e) { warn("History append failed", e); }
+
   const pool = readPool(actor);
   log(`Wish x${size} on "${banner.title}" →`, results.map((r) => `${RARITY[r.rarity].label} ${r.name}`));
 
-  return { ok: true, bannerId, bannerName: banner.title, results, pool, requesterUserId };
+  return { ok: true, bannerId, bannerName: banner.title, results, pool, requesterUserId, guaranteed };
 }
 
 async function postReceipt(bannerName, results, requesterUserId) {

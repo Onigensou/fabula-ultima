@@ -18,17 +18,23 @@
 // screen. Only party members (and the GM) get the interactive controls.
 // ============================================================================
 
-import { GACHA, RARITY, log } from "./gacha-const.js";
+import { GACHA, RARITY, BACKDROP_SRC, PITY_FIVE, PITY_FOUR, MAP_OVERLAY_LAYERS, log } from "./gacha-const.js";
 import { listBanners, imgOf, FALLBACK_IMG } from "./gacha-banners.js";
-import { partyActor, readPool, isPartyMemberClient, couponCost } from "./gacha-state.js";
-import { request, announceStart } from "./gacha-net.js";
-import { beginReveal, stop as stopFx } from "./gacha-fx.js";
+import { partyActor, readPool, readPity, isPartyMemberClient, couponCost } from "./gacha-state.js";
+import { request, announceStart, announceEnd } from "./gacha-net.js";
+import { beginReveal, isPlaying, stop as stopFx } from "./gacha-fx.js";
 import { renderPanel, confirmModal } from "./gacha-panels.js";
 import { ensureTheme } from "./gacha-theme.js";
 import { sfx } from "./gacha-sfx.js";
+import * as Presence from "./gacha-presence.js";
 
 const ROOT_ID  = "gacha-ui";
 const STYLE_ID = "gacha-ui-style";
+const BACKDROP_ID = "gacha-backdrop";
+
+// Overhead UI of the map underneath (gacha-const.js). The machine is a full
+// screen; a Talk bubble or camp button floating over it would read as part of it.
+const MAP_LAYERS = MAP_OVERLAY_LAYERS;
 
 
 const THUMB_W = 96;    // thumbnail + gap, used to centre the rail strip
@@ -52,6 +58,17 @@ const FILLER_COPY = `
   narrative causality.`;
 
 const CSS = `
+/* The machine's own ground. Fully opaque: the map underneath must never show
+   through (the old dedicated scene painted this art on the canvas; now the
+   overlay carries it). Sits just above the canvas and below Foundry's chrome. */
+#${BACKDROP_ID} {
+  position: fixed; inset: 0; z-index: 0; pointer-events: auto;
+  background: #0d1124 url("${BACKDROP_SRC}") center / cover no-repeat;
+  opacity: 0; transition: opacity 280ms ease-out;
+}
+#${BACKDROP_ID}.is-on { opacity: 1; }
+body.fu-gacha-open ${MAP_LAYERS.join(", body.fu-gacha-open ")} { visibility: hidden !important; }
+
 #${ROOT_ID} {
   position: fixed;
   top: var(--gu-top, 0px); right: var(--gu-right, 0px);
@@ -135,13 +152,61 @@ const CSS = `
   transition: background .13s, border-color .13s;
 }
 .gu-buy:hover { background: #fffaec; border-color: var(--gc-gold); }
-.gu-pity {
-  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--gc-ink-3); text-align: right;
-  padding: 5px 12px; border-radius: 999px;
-  background: rgba(247,240,223,.8); border: 1px solid var(--gc-line);
+/* Who else has the machine open (gacha-presence.js). */
+.gu-here {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 6px 5px 12px; border-radius: 999px;
+  background: rgba(247,240,223,.9); border: 1px solid var(--gc-line);
+  font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gc-ink-3);
 }
-.gu-pity b { color: var(--gc-title); font-weight: 700; }
+.gu-here img {
+  width: 24px; height: 24px; border-radius: 50%; object-fit: cover; object-position: 50% 12%;
+  border: 2px solid var(--gc-gold); background: #fff; margin-left: -4px;
+}
+.gu-here img:first-of-type { margin-left: 0; }
+.gu-here img.is-me { border-color: var(--gc-title); }
+
+/* Leave: an arrow only, top-left. Esc / Cancel do the same. */
+#gacha-ui button.gu-back {
+  position: absolute; top: 0; left: 0; width: 50px; height: 50px; padding: 0;
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--gc-line-3);
+  background: linear-gradient(180deg, var(--gc-parch), var(--gc-panel));
+  color: var(--gc-ink-2); font-size: 22px; line-height: 1;
+  box-shadow: 0 8px 18px -10px rgba(40,26,10,.8);
+  transition: background .13s, border-color .13s, transform .13s;
+}
+#gacha-ui button.gu-back:hover { background: #fffaec; border-color: var(--gc-gold); transform: translateX(-2px); }
+
+/* Party pity: ONE line on the card (user-approved; do not grow it). */
+.gu-pityline {
+  font-size: 13px; line-height: 1.6; color: var(--gc-ink-2);
+  border: 1px dashed var(--gc-gold); border-radius: var(--gc-radius);
+  padding: 6px 10px; background: rgba(230,160,21,.08);
+}
+.gu-pityline b { color: var(--gc-title); }
+.gu-promo-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.gu-promo-row .gu-promo { margin-top: 0; }
+/* The 50/50 status rides the promo row so the card gets no taller. */
+.gu-ff {
+  padding: 4px 11px; border-radius: 999px; cursor: help;
+  border: 1px solid var(--gc-gold); background: rgba(230,160,21,.08);
+  font-size: 12px; color: var(--gc-ink-2);
+}
+.gu-ff.is-guaranteed {
+  background: linear-gradient(180deg, #f6cf6a, #e6a015); border-color: #b77a00;
+  color: #3a2408; font-weight: 700;
+}
+
+/* Someone else's reveal is running: the machine is busy. */
+.gu-busy {
+  position: absolute; right: 0; bottom: 66px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: var(--gc-radius);
+  background: rgba(40,26,10,.85); color: #ffe7b0; font-size: 13px;
+}
+.gu-busy img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; object-position: 50% 12%; }
 
 /* ── banner card ────────────────────────────────────────────────────────── */
 /* Top inset leaves clear air under the rail — the two must not run tangent.
@@ -200,6 +265,18 @@ const CSS = `
 }
 .gu-hint {
   margin-top: auto; font-size: 12px; font-style: italic; color: var(--gc-ink-soft);
+}
+
+/* Shorter screens: the party pity line (2026-11-23) made the text column run
+   past the card at 900px tall and cut off Hako's fine print, which must stay
+   fully readable. Tighten the column's spacing instead of dropping any copy;
+   measured: 74px over at 1600x900 before, this recovers ~85px. */
+@media (max-height: 1000px) {
+  .gu-card-text { padding: 20px 30px; gap: 7px; }
+  .gu-title { font-size: 36px; }
+  .gu-guarantee { line-height: 1.55; }
+  .gu-filler { line-height: 1.55; padding-top: 2px; margin-top: 2px; }
+  .gu-setline { line-height: 1.6; }
 }
 
 .gu-card-art {
@@ -409,20 +486,51 @@ const S = {
   actor: null, canPlay: false,
   pool: { coupons: 0, tickets: 0 },
   cost: 200, busy: false,
+  source: null,                 // "scene" (GM opened for everyone) | "vendor" | "api"
+  machine: { busy: false, byUserId: null },   // someone ELSE's reveal is running
+  onLeave: null,
+  unsubPresence: null,
 };
+
+// A clicked <button> keeps keyboard focus, and then Enter re-clicks it and the
+// game's Confirm / Cancel (Z / X, window.oni.Input) never fire — Foundry skips
+// its keybindings while a control has focus. Found in the sandbox 2026-11-23:
+// after clicking History, X no longer left the machine. Drop focus after any
+// click inside the gacha's own screens so mouse and keyboard can be mixed.
+const GACHA_ROOTS = "#gacha-ui, #gacha-panel, #gacha-confirm, #gacha-fx, #gacha-callout, #gacha-result-card";
+document.addEventListener("click", (ev) => {
+  if (!ev.target?.closest?.(GACHA_ROOTS)) return;
+  setTimeout(() => {
+    const a = document.activeElement;
+    if (a && a !== document.body && a.closest?.(GACHA_ROOTS)) a.blur?.();
+  }, 0);
+}, true);
+
+/** Bootstrap owns what leaving means (audio, presence, movement). */
+export function setLeaveHandler(fn) { S.onLeave = fn; }
+
+/** Another client's wish started / ended. */
+export function setMachine(busy, byUserId = null) {
+  S.machine = { busy: !!busy, byUserId: busy ? byUserId : null };
+  if (S.el) paintActions();
+}
 
 const current = () => S.banners[S.index] ?? null;
 
 // ── Open / close ────────────────────────────────────────────────────────────
 
-export async function open() {
+export async function open({ source = "api" } = {}) {
   // Re-entrancy guard, not just "already open": open() awaits before assigning
   // S.el, and install() + canvasReady both fire on boot. Without this, two
   // overlays get appended and the screen renders doubled.
-  if (S.el || S.opening) return;
+  if (S.el || S.opening) return !!S.el;
   S.opening = true;
+  S.source = source;
   try { await build(); } finally { S.opening = false; }
+  return !!S.el;
 }
+
+export const openedBy = () => (S.el ? S.source : null);
 
 async function build() {
   S.actor = await partyActor();
@@ -437,12 +545,22 @@ async function build() {
   S.cost    = await couponCost();
 
   ensureStyle();
-  document.querySelectorAll(`#${ROOT_ID}`).forEach((n) => n.remove());
+  document.querySelectorAll(`#${ROOT_ID}, #${BACKDROP_ID}`).forEach((n) => n.remove());
+
+  // The opaque ground first, directly above the canvas so Foundry's own chrome
+  // (sidebar, hotbar, players) still sits on top of it, as on the old scene.
+  const bd = document.createElement("div");
+  bd.id = BACKDROP_ID;
+  const board = document.getElementById("board");
+  if (board?.parentNode) board.parentNode.insertBefore(bd, board.nextSibling);
+  else document.body.prepend(bd);
+  requestAnimationFrame(() => bd.classList.add("is-on"));
 
   S.el = document.createElement("div");
   S.el.id = ROOT_ID;
   S.el.innerHTML = shellHTML();
   document.body.appendChild(S.el);
+  document.body.classList.add("fu-gacha-open");
 
   bindShell();
   paintRail();
@@ -451,32 +569,53 @@ async function build() {
   paintActions();
   applyInsets();
 
-  log("Overlay open —", S.canPlay ? "participant" : "spectator");
+  S.unsubPresence = Presence.subscribe(() => { if (S.el) paintConsole(); });
+
+  log("Overlay open —", S.canPlay ? "participant" : "spectator", `(${S.source})`);
 }
 
 export function close() {
   document.querySelectorAll(`#${ROOT_ID}`).forEach((n) => n.remove());
+  const bd = document.getElementById(BACKDROP_ID);
+  if (bd) { bd.classList.remove("is-on"); setTimeout(() => bd.remove(), 300); }
+  document.body.classList.remove("fu-gacha-open");
+  S.unbindKeys?.();
+  S.unbindKeys = null;
+  S.unsubPresence?.();
+  S.unsubPresence = null;
   S.el = null;
   S.busy = false;
+  S.source = null;
+}
+
+/** Leave from the screen itself (← button, Esc / Cancel). */
+function requestLeave() {
+  if (!S.el || S.source === "scene") return;          // the GM's scene: the GM ends it
+  if (isPlaying()) return;                             // the reveal handles its own keys
+  if (document.getElementById("gacha-panel") || document.getElementById("gacha-confirm")) return;
+  sfx.close?.();
+  if (S.onLeave) S.onLeave(); else close();
 }
 
 export const isOpen = () => !!S.el;
 export const partyActorId = () => S.actor?.id ?? null;
 export function relayout() { applyInsets(); }
 
-/** Currency changed somewhere — repaint only what shows it. */
+/** Currency or pity changed somewhere — repaint only what shows it. */
 export function refreshPool(pool) {
   if (pool) S.pool = pool;
   else if (S.actor) S.pool = readPool(S.actor);
   if (!S.el) return;
   paintConsole();
   paintActions();
+  paintPity();
 }
 
 // ── Shell ───────────────────────────────────────────────────────────────────
 
 function shellHTML() {
   return `
+    ${S.source === "scene" ? "" : `<button class="gu-back gu-on" data-leave title="Leave (Esc)" aria-label="Leave">←</button>`}
     <div class="gu-rail gu-on">
       <div class="gu-arrow" data-nav="-1">‹</div>
       <div class="gu-rail-view"><div class="gu-rail-strip"></div></div>
@@ -488,6 +627,7 @@ function shellHTML() {
       <button class="gu-nav-btn" data-act="details">Details</button>
       <button class="gu-nav-btn" data-act="exchange">Exchange</button>
       ${S.canPlay ? `<button class="gu-nav-btn" data-act="shop">Shop</button>` : ""}
+      <button class="gu-nav-btn" data-act="history">History</button>
     </div>
     ${S.canPlay ? `<div class="gu-actions gu-on"></div>` : ""}
   `;
@@ -505,6 +645,23 @@ function bindShell() {
       renderPanel(b.dataset.act, { banner: current(), state: S, refresh: refreshPool })
     )
   );
+
+  el.querySelector("[data-leave]")?.addEventListener("click", requestLeave);
+
+  // Leave on Esc, or on the game's Cancel (X / gamepad) through window.oni.Input.
+  // Registered at open, so it runs BEFORE any panel / confirm / reveal key
+  // handler added later — requestLeave() checks for those and stands down.
+  const onEsc = (ev) => { if (ev.key === "Escape") requestLeave(); };
+  window.addEventListener("keydown", onEsc);
+  const A = window.oni?.Input?.ACTIONS ?? {};
+  const stopInput = window.oni?.Input?.listen?.(({ action }) => {
+    if (!S.el) return false;
+    if (action === A.CANCEL) { requestLeave(); return true; }
+    // Swallow the rest: Confirm / Up / Down must not reach the map's Interact
+    // menu or the walker underneath a full-screen machine.
+    return true;
+  });
+  S.unbindKeys = () => { window.removeEventListener("keydown", onEsc); stopInput?.(); };
 
   // Wheel anywhere over the screen moves the selection. passive:false so the
   // canvas underneath does not also zoom.
@@ -581,6 +738,7 @@ function step(dir) {
 function select(i, dir) {
   S.index = i;
   sfx.scroll();
+  Presence.select(current()?.id ?? null);
 
   S.el.querySelectorAll(".gu-thumb").forEach((n) =>
     n.classList.toggle("is-active", Number(n.dataset.i) === i)
@@ -611,11 +769,15 @@ function paintStage(dir) {
       <div class="gu-card-text">
         ${b.epithet ? `<div class="gu-epithet">${esc(b.epithet)}</div>` : ""}
         <div class="gu-title">${esc(b.title)}</div>
-        <div class="gu-promo">Probability increased!</div>
+        <div class="gu-promo-row">
+          <div class="gu-promo">Probability increased!</div>
+          <span class="gu-ff" data-ff></span>
+        </div>
         <div class="gu-guarantee">
           Every 10 wishes is guaranteed to include at least one
           <b>${RARITY.four.label} or higher</b> item.
         </div>
+        <div class="gu-pityline" data-pity></div>
         <div class="gu-setline">
           Featured set — <b>${esc(b.mainSet?.setName ?? b.title)}</b> (${mainCount} pieces)
           ${fillerNames ? `<br>Also featuring — <b>${esc(fillerNames)}</b>` : ""}
@@ -644,7 +806,33 @@ function paintStage(dir) {
   bindFallbacks(stage);
   markPixel(stage.querySelector(".gu-lead"));
   bindFeaturePreview(stage, showable);
+  paintPity();
   cardIntro(stage);
+}
+
+/**
+ * Party pity, one line, plus the 50/50 pill beside the promo bar. Both read
+ * straight off the party actor's flag for the banner on screen, so another
+ * player's wish updates them through the updateActor → refreshPool path.
+ */
+function paintPity() {
+  if (!S.el) return;
+  const b = current();
+  const line = S.el.querySelector("[data-pity]");
+  const ff = S.el.querySelector("[data-ff]");
+  if (!b || !line || !ff) return;
+  const p = readPity(S.actor, b.id);
+  const toFive = Math.max(1, PITY_FIVE - p.five);   // 1 at minimum: the next wish
+  const toFour = Math.max(1, PITY_FOUR - p.four);
+  line.innerHTML = `<b>Party pity ${p.five}/${PITY_FIVE}</b> — a ${RARITY.five.label} is guaranteed within
+    <b>${toFive}</b> wish${toFive === 1 ? "" : "es"}; a ${RARITY.four.label} or better within <b>${toFour}</b>.`;
+  const hasFlip = (b.mainSet?.entries?.length ?? 0) > 0 && b.fillerSets.some((g) => g.entries.length);
+  ff.hidden = !hasFlip;
+  ff.classList.toggle("is-guaranteed", p.guaranteed);
+  ff.textContent = p.guaranteed ? `Next ${RARITY.five.label}: featured` : `Next ${RARITY.five.label}: 50/50`;
+  ff.title = p.guaranteed
+    ? `The last ${RARITY.five.label} came from the filler set, so the next one is from the featured set (${b.mainSet?.setName ?? b.title}).`
+    : `The next ${RARITY.five.label} has an even chance of coming from the featured set (${b.mainSet?.setName ?? b.title}). If it doesn't, the one after it will.`;
 }
 
 /** Snap small sprites to nearest-neighbour once their natural size is known. */
@@ -723,8 +911,16 @@ function cardIntro(stage) {
 function paintConsole() {
   const box = S.el.querySelector(".gu-console");
 
-  // Currency only. The pity readout moved into the banner card's promo block,
-  // where it reads as part of the offer rather than as a stray HUD number.
+  // Currency, and who else has the machine open. Party pity is NOT here: it is
+  // the one dashed line on the banner card (paintPity), with the 50/50 pill
+  // beside "Probability increased!".
+  const here = Presence.here();
+  const faces = here.map((id) => {
+    const u = game.users?.get(id);
+    const img = u?.character?.img ?? u?.avatar ?? "";
+    const name = u?.character?.name ?? u?.name ?? "";
+    return img ? `<img class="${id === game.user.id ? "is-me" : ""}" src="${img}" alt="" title="${esc(name)}">` : "";
+  }).join("");
   box.innerHTML = `
     <div class="gu-wallet">
       <div class="gu-coin">
@@ -732,7 +928,8 @@ function paintConsole() {
         ${S.canPlay ? `<div class="gu-buy" data-act="buy" title="Buy Hako Coupons">+</div>` : ""}
       </div>
       ${S.pool.tickets > 0 ? `<div class="gu-coin is-ticket">★ ${S.pool.tickets}</div>` : ""}
-    </div>`;
+    </div>
+    ${here.length > 1 ? `<div class="gu-here">At the machine ${faces}</div>` : ""}`;
 
   box.querySelector('[data-act="buy"]')?.addEventListener("click", () =>
     renderPanel("shop", { banner: current(), state: S, refresh: refreshPool })
@@ -744,15 +941,26 @@ function paintActions() {
   const box = S.el.querySelector(".gu-actions");
   if (!box) return;
   const img = couponImgSrc();
+  const other = S.machine.busy && S.machine.byUserId !== game.user.id;
 
   box.innerHTML = [1, 10].map((n) => {
-    const off = S.pool.coupons < n || S.busy;
+    const off = S.pool.coupons < n || S.busy || other;
     return `
       <button class="gu-wish${off ? " is-off" : ""}" data-wish="${n}">
         Wish ×${n}
         <small><img src="${img}" alt="" data-fallback>×${n}</small>
       </button>`;
   }).join("");
+
+  // One reveal at a time: say whose, instead of leaving the buttons dead.
+  S.el.querySelector(".gu-busy")?.remove();
+  if (other) {
+    const u = game.users?.get(S.machine.byUserId);
+    const who = u?.character?.name ?? u?.name ?? "Someone";
+    const face = u?.character?.img ?? u?.avatar ?? "";
+    box.insertAdjacentHTML("beforebegin",
+      `<div class="gu-busy">${face ? `<img src="${face}" alt="">` : ""}Machine in use: ${esc(who)} is wishing…</div>`);
+  }
 
   box.querySelectorAll("[data-wish]").forEach((b) =>
     b.addEventListener("click", () => wish(Number(b.dataset.wish)))
@@ -764,6 +972,7 @@ function paintActions() {
 
 async function wish(count) {
   if (S.busy || S.pool.coupons < count) return;
+  if (S.machine.busy && S.machine.byUserId !== game.user.id) return;
 
   // Coupons are scarce and a wish is irreversible, so a misclick must not cost
   // the party ten of them. Gate BEFORE anything is spent or animated.
@@ -793,7 +1002,7 @@ async function wish(count) {
   // Launch the streak on the click, not on the answer — the engine spends a
   // couple of seconds writing documents and the stars fly grey until it lands.
   beginReveal(count);
-  announceStart(count);
+  announceStart(count, { bannerId: b?.id ?? null, bannerName: b?.title ?? "" });
 
   const res = await request(GACHA.MSG.WISH_REQ, {
     bannerId: current()?.id,
@@ -805,9 +1014,15 @@ async function wish(count) {
 
   if (!res?.ok) {
     stopFx();
+    // Watchers were told a wish started; tell them it is over so their
+    // call-out clears and the machine shows free again.
+    announceEnd();
     toast(failureText(res), true);
-  } else if (res.pool) {
-    S.pool = res.pool;
+  } else {
+    if (res.pool) S.pool = res.pool;
+    // No reveal on this client (VFX suppressed): free the machine now rather
+    // than leave everyone waiting on the lock timeout.
+    if (!isPlaying()) announceEnd();
   }
 
   paintActions();
@@ -818,6 +1033,10 @@ async function wish(count) {
 function failureText(res) {
   switch (res?.reason) {
     case "insufficient_coupons": return `Not enough coupons (${res.have}/${res.need}).`;
+    case "machine_busy": {
+      const u = game.users?.get(res.byUserId);
+      return `Machine in use: ${u?.character?.name ?? u?.name ?? "someone"} is wishing. Try again in a moment.`;
+    }
     case "timeout":              return "No GM responded — is one connected?";
     case "banner_not_found":     return "That banner no longer exists.";
     case "party_actor_missing":  return "Party sheet could not be resolved.";

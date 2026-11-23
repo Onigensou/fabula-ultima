@@ -41,11 +41,57 @@ export const GACHA = {
     // GM → everyone (spectators included)
     REVEAL:        "FU_GACHA_REVEAL_V1",
     POOL_UPDATE:   "FU_GACHA_POOL_UPDATE_V1",
+    // roller → everyone, when the roller's own reveal is dismissed: frees the
+    // machine for the next wish (the GM's lock listens to this too)
+    REVEAL_END:    "FU_GACHA_REVEAL_END_V1",
+    // everyone → everyone, presentation only (no writes, no GM gate)
+    PRESENCE:      "FU_GACHA_PRESENCE_V1",      // {op: enter|leave|select|hello, userId, bannerId}
+    CHEER:         "FU_GACHA_CHEER_V1",         // {userId, kind: cheer|groan}
   },
 
   // How long a client waits on a GM round-trip before giving up.
   REQ_TIMEOUT_MS: 15_000,
+
+  // The machine runs one reveal at a time. The lock is released by the
+  // roller's REVEAL_END; this is only the fallback if that never arrives
+  // (roller disconnected mid-reveal). A x10 measured ~22s end to end.
+  MACHINE_LOCK_MS: 45_000,
+
+  // Client setting: what happens on THIS client when someone else wishes and
+  // this client does not have the machine open.
+  WATCH_SETTING: "gachaWatchMode",           // auto | ask | card
+  WATCH_COUNTDOWN_MS: 1600,
+
+  // Party wish log on the party actor: flags[MODULE_ID].gacha.history
+  HISTORY_MAX: 50,
 };
+
+// ── Walk-up access ──────────────────────────────────────────────────────────
+// Actor flag that puts the Gachapon button over an NPC (Hako). Set by the
+// 2026-11-23-gacha-vendor migration, or FUCompanion.api.gacha.setVendor().
+export const VENDOR_FLAG = "gachaVendor";
+
+// The machine no longer needs its own map: it opens over whatever scene is
+// loaded, so it paints the Wonderous Gachapon art itself, fully opaque.
+export const BACKDROP_SRC =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Scene/Gacha_Scene001.png";
+
+// The map's own overhead UI. The machine and the reveal are full screens now
+// opened over ANY map, so these hide while either is up (the old dedicated
+// scene had none of them). Found by listing everything stacked above the gacha
+// layers on a camp map in the sandbox, 2026-11-23.
+export const MAP_OVERLAY_LAYERS = [
+  "#oni-event-ui-layer", "#fu-shopopen-layer-v1", "#fu-innopen-layer-v1", "#fu-craft-layer-v1",
+  "#oni-craft-spot-layer", "#oni-fishing-spot-layer", "#oni-pose-spot-layer",
+  "#fa-duel-layer", "#fa-duel-icons", "#oni-interact-menu", "#gacha-entrance-layer",
+  "#oni-camp-btn-wrap",    // camp footprints / phase button
+  "#fu-summon-campbtn",    // camp Summon button
+  "#oni-camp-gm-panel",    // camp GM panel (took the cheer button's clicks on the GM)
+];
+
+// Local machine theme: plays only on the client that has the machine open.
+export const BGM_SRC =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/DRG_Gacha.mp3";
 
 // ── Currency ────────────────────────────────────────────────────────────────
 // Hako Coupon is the pull currency; the pool is the `item_quantity` on the

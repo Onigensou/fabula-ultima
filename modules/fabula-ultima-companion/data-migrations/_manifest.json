@@ -764,6 +764,10 @@
     {
       "key": "2026-11-23-spell-fencer-anims",
       "path": "data-migrations/2026-11-23-spell-fencer-anims.js"
+    },
+    {
+      "key": "2026-11-23-gacha-vendor-hako",
+      "path": "data-migrations/2026-11-23-gacha-vendor-hako.js"
     }
   ]
 }

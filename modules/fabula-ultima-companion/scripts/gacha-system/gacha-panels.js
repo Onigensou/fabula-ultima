@@ -20,6 +20,7 @@ import { listSetBoard } from "./gacha-exchange.js";
 import { request } from "./gacha-net.js";
 import { ensureTheme } from "./gacha-theme.js";
 import { sfx } from "./gacha-sfx.js";
+import { readHistory } from "./gacha-state.js";
 
 const PANEL_ID   = "gacha-panel";
 const TIP_ID     = "gacha-tip";
@@ -185,6 +186,23 @@ const CSS = `
 .gp-note { font-size: 12px; color: var(--gc-ink-3); line-height: 1.65; margin-top: 12px; }
 .gp-note b { color: var(--gc-ink); }
 .gp-empty { font-size: 13px; color: var(--gc-ink-3); padding: 26px 0; text-align: center; }
+
+/* Wish History — the party's shared log. */
+.gp-hist { display: flex; flex-direction: column; }
+.gp-hrow { display: grid; grid-template-columns: 40px 190px 1fr 120px; gap: 12px; align-items: center;
+  padding: 9px 0; border-top: 1px solid var(--gc-line); font-size: 13px; }
+.gp-hrow:first-child { border-top: 0; }
+.gp-hrow .p { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: 50% 12%;
+  border: 2px solid var(--gc-line-2); background: #fff; }
+.gp-hrow .who b { color: var(--gc-ink); } .gp-hrow .who span { color: var(--gc-ink-3); font-size: 12px; }
+.gp-hrow .its { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.gp-hrow .it { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 3px; border-radius: 999px;
+  border: 1px solid currentColor; font-size: 12px; background: rgba(255,255,255,.5); }
+.gp-hrow .it img { width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
+.gp-hrow .it.r5 { color: #9a6500; } .gp-hrow .it.r4 { color: #7d22c9; }
+.gp-hrow .it .tag { font-size: 10.5px; opacity: .8; }
+.gp-hrow .threes { color: var(--gc-ink-soft); font-size: 12px; }
+.gp-hrow .t { color: var(--gc-ink-soft); font-size: 12px; text-align: right; }
 
 /* ── shop ──────────────────────────────────────────────────────────────── */
 /* Same coin art the shop, sell and refinement windows use, so Zenit reads the
@@ -613,9 +631,49 @@ function bindFallbacks(root) {
 // ── Router ──────────────────────────────────────────────────────────────────
 
 export async function renderPanel(kind, ctx) {
+  if (kind === "history")  return history(ctx);
   if (kind === "details")  return details(ctx);
   if (kind === "shop" || kind === "buy") return shop(ctx);
   if (kind === "exchange") return exchange(ctx);
+}
+
+// ── Wish History ────────────────────────────────────────────────────────────
+
+function ago(ts) {
+  const s = Math.max(0, (Date.now() - Number(ts || 0)) / 1000);
+  if (s < 90) return "just now";
+  if (s < 3600) return `${Math.round(s / 60)} min ago`;
+  if (s < 86400) return `${Math.round(s / 3600)} h ago`;
+  const d = new Date(Number(ts));
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function history({ state }) {
+  const rows = readHistory(state?.actor);
+  const body = frame("Wish History", rows.length ? `
+    <div class="gp-hist">${rows.map((h) => {
+      const user = game.users?.get(h.userId);
+      const actor = game.actors?.get(h.actorId) ?? user?.character ?? null;
+      const img = actor?.img ?? user?.avatar ?? "";
+      const name = actor?.name ?? h.userName ?? "Someone";
+      const what = h.kind === "redeem" ? "Redeemed a ticket" : `Wish ×${h.count ?? (h.results?.length ?? 0) + (h.threes ?? 0)}`;
+      const items = (h.results ?? []).map((r) => {
+        const c = RARITY[r.rarity] ?? RARITY.four;
+        const side = r.rarity === "five" && typeof r.featured === "boolean" ? `<span class="tag">${r.featured ? "featured" : "filler"}</span>` : "";
+        return `<span class="it r${c.stars}" data-tip="${esc(r.name)}" data-tip-sub="${esc(c.label)}"><img src="${r.img || FALLBACK_IMG}" alt="">${c.label} ${esc(r.name)} ${side}</span>`;
+      }).join("");
+      const threes = h.threes ? `<span class="threes">+ ${h.threes}× ${RARITY.three.label}</span>` : "";
+      return `<div class="gp-hrow">
+        ${img ? `<img class="p" src="${img}" alt="">` : "<span></span>"}
+        <div class="who"><b>${esc(name)}</b><br><span>${esc(what)} · ${esc(h.bannerName ?? "")}</span></div>
+        <div class="its">${items || ""}${threes || (items ? "" : `<span class="threes">nothing above ${RARITY.three.label}</span>`)}</div>
+        <div class="t">${ago(h.at)}</div>
+      </div>`;
+    }).join("")}</div>
+    <div class="gp-note">Newest first. The last ${GACHA.HISTORY_MAX} wishes are kept for the whole party.</div>`
+    : `<div class="gp-empty">No wishes yet. The machine is waiting.</div>`, { width: 900 });
+  bindTips(body);
+  bindFallbacks(body);
 }
 
 // ── Details ─────────────────────────────────────────────────────────────────
