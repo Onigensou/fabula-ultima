@@ -29,6 +29,27 @@ if ! git diff --cached --name-only | grep -q "^worlds/${WORLD}/data/"; then
   exit 0
 fi
 
+# ── whole-world gate (2026-11-23) ────────────────────────────────────────────
+# A world commit must carry EVERY store, not a hand-picked subset. Commits that
+# staged only actors/items/folders left settings/messages/users on disk only; a
+# later `git reset --hard origin/main` (co-dev pull) then wiped the 11-21
+# session's camp state, 88 chat messages and the migration ledger. Runs BEFORE
+# the export below, because the export itself opens (and rotates) stores.
+# Excluded on purpose: fu-saves (personal, skip-worktree), *.log/LOG/LOCK (ignored).
+left_out=$(git status --porcelain -- "worlds/${WORLD}/data" "worlds/${WORLD}/packs" \
+  | grep -E '^(.[^ ]|\?\?) ' \
+  | sed -n "s#^.. \"\{0,1\}worlds/${WORLD}/\(data\|packs\)/\([^/]*\)/.*#\1/\2#p" | sort -u)
+if [ -n "$left_out" ]; then
+  echo ""
+  echo "[world-export] ⛔ commit blocked: this world commit leaves store(s) out:"
+  echo "$left_out" | sed 's/^/  ✗ /'
+  echo "  Unsaved store changes are wiped by the next reset/checkout to origin."
+  echo "  Stage the WHOLE world (game closed, WALs flushed):"
+  echo "      git add -A worlds/${WORLD}/data worlds/${WORLD}/packs"
+  echo "  Only bypass with 'git commit --no-verify' if you genuinely intend it."
+  exit 1
+fi
+
 # Which data collections did the user stage? We re-stage exactly these after the
 # export, since opening the LevelDB to read it renumbers the shards (LevelDB
 # compaction on close) — without re-staging, the commit would capture a manifest

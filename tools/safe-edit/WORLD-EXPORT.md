@@ -33,6 +33,13 @@ playing. It still ignores true session churn (combats, messages, fog, settings).
 Scenes are covered separately by preflight's per-scene golden (`bless`). Output:
 `worlds/<world>/_authored-export/`.
 
+> ⚠ **"report 0/0/0" does NOT mean the local world is disposable.** The stores
+> this report ignores hold real game state: `settings` (camp phase, save choice,
+> dungeon trip, the data-migration ledger), `messages` (the session chat log),
+> `users`. On 2026-11-23 two co-dev pulls trusted 0/0/0, ran
+> `git reset --hard origin/main` and wiped the 11-21 session's camp state, 88
+> chat messages and the ledger. Use `storediff` (below) for that question.
+
 CSB-derived sheet fields and volatile `_stats` timestamps are stripped, and all
 keys are sorted, so diffs reflect real content changes only.
 
@@ -124,14 +131,36 @@ it's your private "last reviewed" marker, never shared.
 2. `node tools/safe-edit/bin/world-export.js report` — review the diff and,
    above all, the **removal warnings**. If a removal is unexpected, STOP and
    reconcile (restore the dropped content) before going further.
-3. `git add worlds/ && git commit` — the pre-commit hook (below) regenerates and
-   stages the export and re-checks for losses automatically.
-4. Push.
+3. Flush every store's write-ahead log: no `worlds/<world>/{data,packs}/**/*.log`
+   may be non-empty (open the store once with classic-level, game closed).
+4. Stage the **whole** world, every store, settings/messages/users included:
+   `git add -A worlds/<world>/data worlds/<world>/packs worlds/<world>/_authored-export worlds/<world>/world.json worlds/<world>/assets/scenes`,
+   then `git commit`. The pre-commit hook (below) blocks a world commit that
+   leaves any store out, regenerates and stages the export, and re-checks for losses.
+   After the commit `git status --short worlds/<world>` must be empty (save slots
+   in `fu-saves` stay personal and are skip-worktree).
+5. Push.
+
+## Before discarding local world files (co-dev pull, reset, checkout) — `storediff`
+
+```
+node tools/safe-edit/bin/storediff.js [--ref HEAD] [--verbose]
+```
+
+A document-level diff of **every** store (data + packs), live world vs a git ref
+(`_stats` and `lastGitCheck` ignored). It reads copies only and never opens
+the live LevelDB, so it is safe any time (close Foundry for a definitive answer).
+
+- exit 0 → only rotation churn: safe to reset/discard.
+- exit 1 → real changes (it names them): **commit them first** (submit workflow
+  above), or adopt only the stores the co-dev touched (per-store adoption).
+  Never `reset --hard` over it, not even with a backup branch.
 
 ## Pre-commit hook (automatic gate)
 
 `hooks/pre-commit` blocks any commit that stages this world's LevelDB data if it
-would lose a document or an embedded skill. It also auto-stages the regenerated
+leaves any world store unstaged (whole-world gate), or if it would lose a
+document or an embedded skill. It also auto-stages the regenerated
 JSON so the export stays in lock-step with the binary data.
 
 Install (per clone — git hook config is not shared through the repo):
@@ -272,6 +301,7 @@ Two robustness fixes behind this, both root-caused 2026-08-26:
 | Need | Tool | Game |
 |------|------|------|
 | Reviewable diff + loss tripwire on a push | `world-export` (+ hook) | closed |
+| "Is anything real unsaved?" before a reset/pull | `storediff` | any (closed = definitive) |
 | Re-apply ONE dropped doc/skill from JSON | `world-import --only … --ref …` | open |
 | Rebuild a WHOLE collection from merged source | `world-pack` (CLI) | closed for `install` |
 
