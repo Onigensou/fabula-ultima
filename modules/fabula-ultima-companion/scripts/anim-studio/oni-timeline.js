@@ -515,7 +515,9 @@ export function createTimeline(spec = {}, env = {}) {
         T.push({ t0, t1: t0 + dur, clip: c, loop: !!o.loop, fn: (tl, S) => {
           const src = c.frame(!!o.loop); if (!src) return;
           const a = o.alpha ? o.alpha(clamp01(tl / dur)) : 1; if (a <= 0) return;
-          const draw = (g) => {
+          const draw = (g0) => {
+            const P = o.add === "plus" && g0.__plus ? g0.__plus : null, g = P || g0;
+            if (P) { P.setTransform(g0.getTransform()); P.W = g0.W; P.H = g0.H; }
             const V = src; let dw, dh, x, y, rot = o.rot || 0;
             let persp = o.persp || null, sx = o.sx, sy = o.sy;
             if (o.screen) { dh = g.H * o.wh; x = o.screen.x * g.W; y = o.screen.y * g.H; if (o.live) { const p = o.live(tl, S, g); if (!p) return; x = p.x; y = p.y; dh = g.H * p.wh; rot = p.rot || 0; if (p.persp) persp = p.persp; if (p.sx != null) sx = p.sx; if (p.sy != null) sy = p.sy; } dw = dh * def.w / def.h; }
@@ -556,20 +558,30 @@ export function createTimeline(spec = {}, env = {}) {
 
   // ── the overlay ──
   let overlay = null, octx = null, dpr = 1;
+  // pctx: the "plus" overlay (2026-11-23, Spell Fencer GPU look). A clip with o.add === "plus" (a pixelfx _light layer, made
+  // on opaque black for ADD) is drawn here; the canvas is composited over the page with CSS plus-lighter, so its black adds
+  // nothing and its light adds to the board under it, like the mockup's <video> with mix-blend-mode: plus-lighter.
+  // ("lighter" on the transparent main overlay adds ALPHA too, so black came out as an opaque black box.) o.add === true
+  // keeps its old path unchanged.
+  let pover = null, pctx = null;
   function makeOverlay() {
-    const view = app?.view; const el = document.createElement("canvas");
+    const view = app?.view; const el = document.createElement("canvas"), pl = document.createElement("canvas");
     el.className = "oni-timeline-overlay";
     el.style.cssText = "position:fixed; pointer-events:none; z-index:65;";
+    pl.className = "oni-timeline-overlay oni-timeline-plus";
+    pl.style.cssText = "position:fixed; pointer-events:none; z-index:65; mix-blend-mode:plus-lighter;";
     const place = () => {
       const r = view?.getBoundingClientRect?.() ?? { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
       dpr = Math.min(2, window.devicePixelRatio || 1);
-      el.style.left = r.left + "px"; el.style.top = r.top + "px"; el.style.width = r.width + "px"; el.style.height = r.height + "px";
       const bw = Math.round(r.width * dpr), bh = Math.round(r.height * dpr);
-      if (el.width !== bw || el.height !== bh) { el.width = bw; el.height = bh; }
+      for (const c of [el, pl]) {
+        c.style.left = r.left + "px"; c.style.top = r.top + "px"; c.style.width = r.width + "px"; c.style.height = r.height + "px";
+        if (c.width !== bw || c.height !== bh) { c.width = bw; c.height = bh; }
+      }
     };
-    place(); window.addEventListener("resize", place); document.body.appendChild(el);
-    overlay = el; octx = el.getContext("2d");
-    return () => { window.removeEventListener("resize", place); try { el.remove(); } catch {} overlay = null; octx = null; };
+    place(); window.addEventListener("resize", place); document.body.appendChild(el); document.body.appendChild(pl);
+    overlay = el; octx = el.getContext("2d"); pover = pl; pctx = pl.getContext("2d");
+    return () => { window.removeEventListener("resize", place); try { el.remove(); } catch {} try { pl.remove(); } catch {} overlay = null; octx = null; pover = null; pctx = null; };
   }
   const view = () => { const W = app?.renderer?.screen?.width ?? window.innerWidth, H = app?.renderer?.screen?.height ?? window.innerHeight; return { W, H }; };
 
@@ -701,6 +713,7 @@ export function createTimeline(spec = {}, env = {}) {
     if (!octx || !overlay) return;
     const g = octx; const { W, H, shx, shy } = applyCamera(S, t);
     g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, overlay.width, overlay.height);
+    if (pctx) { pctx.setTransform(1, 0, 0, 1, 0, 0); pctx.clearRect(0, 0, pover.width, pover.height); g.__plus = pctx; }
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const base = [dpr, 0, 0, dpr, 0, 0]; g.__base = base;
     // The stage matrix from the camera we JUST wrote (PIXI's worldTransform is

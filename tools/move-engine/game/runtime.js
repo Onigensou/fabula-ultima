@@ -162,7 +162,7 @@ function clip(key, pt, { scale = 1, filter = "", blend = "", rate = 1, flip = fa
   if (PHASE !== "dry" || !c) { if (!c) meWarn("clip missing: " + key); return ME_CLIP_DUMMY; }
   const k = scale * (c.k != null ? c.k : (c.ro ? 1.1 : .55)), wp = toW(pt), at = VT, dur = (c.dur || 1000) / (rate || 1);
   const under = !!(parent && parent.id === "fground");
-  const o = { x: wp.x, y: wp.y, w: c.w * k * KP, rate, flip, rot: rot * Math.PI / 180, filter: filter || undefined, add: !!(c.add || /screen|lighter/.test(blend || "")), depth: false,
+  const o = { x: wp.x, y: wp.y, w: c.w * k * KP, rate, flip, rot: rot * Math.PI / 180, filter: filter || undefined, add: (c.add || /plus-lighter/.test(blend || "")) ? "plus" : /screen|lighter/.test(blend || ""), depth: false,
     z: under ? 3 : 26 + clamp((z || 0) / 10000, 0, 2.9), sy: sy !== 1 ? sy : undefined, loop, hold: loop ? 1e9 : undefined, alpha: opacity !== 1 ? () => opacity : undefined };
   TM.clip(key, at, o); const tr = TRK[TRK.length - 1];
   return { done: loop ? new Promise(() => {}) : wait(dur), impact: wait((c.impact != null ? c.impact : (c.dur || 1000) * .4) / (rate || 1)), el: null,
