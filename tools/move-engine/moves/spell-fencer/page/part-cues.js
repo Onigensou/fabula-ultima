@@ -13,11 +13,27 @@
 //
 // CUE_P holds every number (the page's cue sliders write it; the port bakes the approved values as constants).
 const CUE_P = {
-  spell: { n: 7, dmin: 2.6, dmax: 3.8, size: 7, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0 },
-  attack: { n: 7, dmin: 2.6, dmax: 3.8, size: 7, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0 },
-  reso: { n: 6, period: 3.2, size: 7, rx: 0.42, ry: 12, notes: 2, noteEvery: 4.2, cell: 3.5 },
-  braid: { n: 8, period: 2.4, size: 6, r: 0.3, turns: 1.25, glow: 0.4 },
+  // ol / olw / olbr / olcol = the v2 outline glow (strength 0..1, width px at stage size, breath s per half cycle, blend colour)
+  spell: { n: 7, dmin: 2.6, dmax: 3.8, size: 7, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0, ol: 0.45, olw: 6, olbr: 2.6 },
+  attack: { n: 7, dmin: 2.6, dmax: 3.8, size: 7, rise: 0.45, glow: 0.55, breathe: 2.6, col: 0, ol: 0.45, olw: 6, olbr: 2.6 },
+  reso: { n: 6, period: 3.2, size: 7, rx: 0.42, ry: 12, notes: 2, noteEvery: 4.2, cell: 3.5, ol: 0.5, olw: 7, olbr: 2.6, olcol: 0 },
+  braid: { n: 8, period: 2.4, size: 6, r: 0.3, turns: 1.25, glow: 0.4, ol: 0.55, olw: 7, olbr: 2.2, olcol: 0 },
 };
+
+// ── v2 OUTLINE GLOW. Port: a PIXI GlowFilter + OutlineFilter on the token mesh, the way battle-director/turn-glow.js
+// outlines the acting token (a DOM layer cannot outline the sprite). Colour by precedence: Rhapsody Turn > Resonance
+// ready (both = the red/blue BLEND: Rhapsody is active / available) > Next Attack red > Next Spell blue. One outline per
+// token, never two stacked.
+const OL_BLEND = [["Violet #b45cff (both manas, even)", "180,92,255"], ["Magenta #d94cc8 (leans red)", "217,76,200"], ["Indigo-violet #8f6bff (leans blue)", "143,107,255"]];
+const OL_SIDE = { spell: "77,166,255", attack: "255,77,61" };
+function sfOutline(cues, P = CUE_P) {
+  const pick = (p, rgb) => ({ rgb, a: p.ol, w: p.olw, br: p.olbr });
+  if (cues.has("sfbraid")) return pick(P.braid, OL_BLEND[P.braid.olcol][1]);
+  if (cues.has("sfreso")) return pick(P.reso, OL_BLEND[P.reso.olcol][1]);
+  if (cues.has("sfattack")) return pick(P.attack, OL_SIDE.attack);
+  if (cues.has("sfspell")) return pick(P.spell, OL_SIDE.spell);
+  return null;
+}
 const CUE_COLS = {
   spell: [["#e0f2ff", "#a8d8ff", "77,166,255"], ["#f2fbff", "#cfeaff", "130,200,255"], ["#d8ecff", "#6fb6ff", "40,120,240"]],
   attack: [["#ffe0d0", "#ffb199", "255,77,61"], ["#fff0e8", "#ffcab8", "255,120,100"], ["#ffd0c0", "#ff7a66", "220,40,30"]],
@@ -145,7 +161,29 @@ function cueRender(force) { if (!CUE.el || !CUE.a) return; const R = cueRect(CUE
   if (force || sig !== CUE.sig || Math.abs(R.height - CUE.h) > CUE.h * .08) {
     CUE.el.innerHTML = (CUE.berserk ? berserkHTML("keren", R.width, R.height) : "") + sfCueHTML("keren", CUE.cues, R.width, R.height);
     CUE.el.style.setProperty("--k", (R.height / 250).toFixed(3)); CUE.sig = sig; CUE.w = R.width; CUE.h = R.height; } }
-function cueTick() { if (CUE.el && CUE.a) { const R = cueRect(CUE.a);
+// ── page-only: the outline drawn as CSS drop-shadows on the battler (the PIXI filter's look), and the turn glow beside it
+// (turn-glow.js: party gold 255,216,102 at strength .7, outline 2 px + glow breathing over 3400 ms one way, a gold floor pool).
+// Coexistence rule (page select; the port follows the approved one):
+//   0 "Turn glow wins": on Keren's turn the gold turn glow is the only outline; her aura outline comes back when the turn ends
+//   1 "Aura takes the outline": on her turn the outline is the aura colour at the turn glow's strength; the gold floor pool stays
+const TURN_GOLD = "255,216,102";
+const TGL = { on: false, rule: 0, pool: null };
+const brth = (ms, half) => 0.5 - 0.5 * Math.cos((ms / half) * Math.PI);
+function outlineFilter(now) {
+  const o = CUE.hidden ? null : sfOutline(CUE.cues), tb = brth(now, 3400), parts = [];
+  if (TGL.on && !CUE.hidden && (TGL.rule === 0 || !o)) parts.push(`drop-shadow(0 0 2px rgba(${TURN_GOLD},.8))`, `drop-shadow(0 0 ${(8 + 6 * tb).toFixed(1)}px rgba(${TURN_GOLD},${((.55 + .25 * tb) * .7).toFixed(2)}))`);
+  else if (TGL.on && o) parts.push(`drop-shadow(0 0 2px rgba(${o.rgb},.85))`, `drop-shadow(0 0 ${(8 + 6 * tb).toFixed(1)}px rgba(${o.rgb},${(.55 + .25 * tb).toFixed(2)}))`);
+  else if (o && o.a > 0) { const b = brth(now, o.br * 1000);
+    parts.push(`drop-shadow(0 0 1px rgba(${o.rgb},${Math.min(1, o.a * 1.6).toFixed(2)}))`, `drop-shadow(0 0 ${(o.w * (1 + .3 * b)).toFixed(1)}px rgba(${o.rgb},${(o.a * (.7 + .3 * b)).toFixed(2)}))`); }
+  return parts.join(" ");
+}
+function poolTick(a, now) {
+  if (!TGL.pool || !TGL.pool.isConnected) { TGL.pool = document.createElement("div"); TGL.pool.style.cssText = "position:absolute;pointer-events:none;border-radius:50%;mix-blend-mode:screen"; $("fground").appendChild(TGL.pool); }
+  const b = brth(now, 3400), w = a.wb * a.s * 1.7 * (1 + .08 * b), h = a.wb * a.s * 1.7 * .29 * (1 + .12 * b);
+  Object.assign(TGL.pool.style, { display: TGL.on && !CUE.hidden ? "" : "none", left: (OX(a) - w / 2) + "px", top: (OY(a) - h / 2 - w * .04) + "px", width: w + "px", height: h + "px",
+    background: `radial-gradient(ellipse, rgba(${TURN_GOLD},.63), rgba(${TURN_GOLD},.28) 50%, rgba(${TURN_GOLD},0) 70%)`, opacity: (.7 * (.85 + .15 * (1 - b))).toFixed(2) }); }
+function cueTick() { if (CUE.el && CUE.a) { const R = cueRect(CUE.a), now = performance.now();
+  CUE.a.body.style.filter = outlineFilter(now); poolTick(CUE.a, now);
   Object.assign(CUE.el.style, { transform: `translate(${Math.round(R.left)}px, ${Math.round(R.top)}px)`, width: Math.round(R.width) + "px", height: Math.round(R.height) + "px" });
   if (Math.abs(R.height - CUE.h) > CUE.h * .08) cueRender(true); }
   requestAnimationFrame(cueTick); }

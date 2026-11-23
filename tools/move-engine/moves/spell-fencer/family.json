@@ -14,7 +14,7 @@
  },
  "moves": {
   "rhapsody": {
-   "label": "Spellblade Rhapsody · activation",
+   "label": "Spellblade Rhapsody · activation (v2 unleash)",
    "files": [
     "head",
     "rhapsody"
@@ -23,20 +23,20 @@
    "gameOutcome": null,
    "shots": [
     {
-     "at": 200,
-     "name": "guard stance"
+     "at": 300,
+     "name": "mana charge + guard"
     },
     {
-     "at": 800,
-     "name": "ribbons climb"
+     "at": 900,
+     "name": "circle + braid climb"
     },
     {
-     "at": 1200,
-     "name": "meet · flash · notes · buff beat"
+     "at": 1480,
+     "name": "UNLEASH"
     },
     {
-     "at": 1900,
-     "name": "braid thins"
+     "at": 2200,
+     "name": "petals + flakes drift"
     }
    ]
   },

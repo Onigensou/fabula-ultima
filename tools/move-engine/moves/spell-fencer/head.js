@@ -18,3 +18,10 @@ const sfBraidKey = (C) => SF_BRAIDS.find((k) => k === "sf_braid_r" + tv(C, "radi
 const SF_NOTE = ["..##.", "..#.#", "..#..", "..#..", "###..", "###..", ".#..."];
 function sfNote(c, x, y, u, rgb, a) { c.globalCompositeOperation = "source-over"; c.fillStyle = `rgba(${rgb},${a})`;
   SF_NOTE.forEach((row, ry) => { for (let rx = 0; rx < 5; rx++) if (row[rx] === "#") c.fillRect(Math.round(x + (rx - 2.5) * u), Math.round(y + (ry - 7) * u), Math.ceil(u), Math.ceil(u)); }); }
+// round 2 (Red Mage language): the mana charge at the hand, the duality sigil under the feet (+ optional crystal crown),
+// the unleash burst (pixelfx fu/mana-charge, fu/duality-sigil, fu/duality-unleash). Keys written out for the asset filter.
+const SF_CHARGE = "sf_charge";
+const SF_SIGILS = ["sf_sigil_k1", "sf_sigil_k0"];                      // crown On / Off (tune "crown" 0 / 1)
+const SF_UNLEASH = ["sf_unleash_d0", "sf_unleash_d1", "sf_unleash_d2"]; // light / full / heavy (tune "dens")
+const sfSigilKey = (C) => SF_SIGILS[tv(C, "crown")] || SF_SIGILS[0];
+const sfUnleashKey = (C) => SF_UNLEASH[tv(C, "dens")] || SF_UNLEASH[1];

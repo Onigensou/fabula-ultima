@@ -25,9 +25,14 @@ const uri = (f) => { const ext = path.extname(f).slice(1).toLowerCase(); if (!MI
 // sounds: page key → Forge path (meta.sfxSrc; the review kit lists them with these paths)
 const SFX = { guard: "Sound/Soundboard/SE_GUARDC.wav", wind7: "Sound/Soundboard/Wind7.ogg", magic1: "Sound/Soundboard/Magic1.ogg",
   bell3: "Sound/Soundboard/Bell3.ogg", starlight: "Sound/Soundboard/Starlight.ogg", item3: "Sound/Soundboard/Item3.ogg",
-  saint5: "Sound/Soundboard/Saint5.ogg", bell1: "Sound/Soundboard/Bell1.ogg", powerup: "Sound/Soundboard/Powerup.ogg" };
+  saint5: "Sound/Soundboard/Saint5.ogg", bell1: "Sound/Soundboard/Bell1.ogg", powerup: "Sound/Soundboard/Powerup.ogg",
+  // round 2: charge / unleash candidates
+  beginspell: "Sound/Beginspell.mp3", charginga: "Sound/ChargingA.wav", cast1: "Sound/Cast1.ogg", gacha_crystal: "Sound/SE_SYS_Gacha_Crystal.ogg",
+  saint3: "Sound/Soundboard/Saint3.ogg", exskill: "Sound/EXSkill.ogg", magic4: "Sound/Soundboard/Magic4.ogg", flower: "Sound/Flower.ogg" };
 const BRAIDS = [];
 for (const r of [0, 1, 2]) for (const n of [0, 1, 2]) for (const c of [0, 1]) BRAIDS.push(`sf_braid_r${r}n${n}c${c}`);
+// every pixelfx clip the moves use (round 2 adds the charge, the sigil and the unleash)
+const PXCLIPS = [...BRAIDS, "sf_charge", "sf_sigil_k0", "sf_sigil_k1", "sf_unleash_d0", "sf_unleash_d1", "sf_unleash_d2"];
 
 function meta() {
   const m = { sprites: {}, clips: {}, sfx: {}, sfxSrc: {} };
@@ -38,7 +43,7 @@ function meta() {
   m.sprites.icon_reso = uri(mirror("Skill Icon/FFXIVIcons Battle(PvE)/15_RDM/dualcast.png"));
   const sk = JSON.parse(rd(path.join(SONIC, "meta.json")));
   m.clips["051_powerup_1"] = { ...sk.clips["051_powerup_1"], src: uri(path.join(SONIC, sk.clips["051_powerup_1"].src)) };
-  for (const b of BRAIDS) { const dir = path.join(PXOUT, "pxfx_" + b), cj = JSON.parse(rd(path.join(dir, "clip.json")));
+  for (const b of PXCLIPS) { const dir = path.join(PXOUT, "pxfx_" + b), cj = JSON.parse(rd(path.join(dir, "clip.json")));
     for (const L of ["back", "front", "light"]) m.clips["px_" + b + "_" + L] = { src: uri(path.join(dir, cj.layers[L].file)), w: cj.width, h: cj.height, dur: cj.durationMs,
       ax: cj.anchor.x, ay: cj.anchor.y, impact: cj.impactMs, pos: "feet" }; }
   for (const [k, rel] of Object.entries(SFX)) { m.sfx[k] = uri(mirror(rel)); m.sfxSrc[k] = rel; }
@@ -52,7 +57,7 @@ function build({ out, version = "test", publish = false } = {}) {
   rep("<title>Nox Legion Actions</title>", publish ? "<title>Spell Fencer Animations</title>" : "<title>Spell Fencer Animations (move-engine test)</title>");
   rep(/<div class="eyebrow">[^<]*<\/div>/, `<div class="eyebrow">Battle Director · class animations · Spell Fencer · mockup ${version}</div>`);
   rep("<h1>Nox Legion Actions</h1>", "<h1>Spell Fencer · Rhapsody &amp; Resonance</h1>");
-  rep(/<p>Every active move[^]*?<\/p>/, `<p>Keren's Spellblade Rhapsody activation, the +1 Resonance pulse, and the four held auras that tell the player what comes next (blue = cast, red = attack, gold = Rhapsody ready, red + blue braid = the Rhapsody turn). Valley battle map on the 3D stage, the party at in-game size. Review each entry: approve it, write a note, pause anywhere to comment on that moment, drag any slider, then press Send feedback. The sandbox under the move sheet plays a turn loop.</p>`);
+  rep(/<p>Every active move[^]*?<\/p>/, `<p>Round 2: Spellblade Rhapsody rebuilt as the ultimate (charge, magic circle, unleash), the four held auras now with an outline glow, and the turn-glow case. Keren.s Spellblade Rhapsody activation, the +1 Resonance pulse (approved), and the four held auras that tell the player what comes next (blue = cast, red = attack, gold = Rhapsody ready, red + blue braid = the Rhapsody turn). Valley battle map on the 3D stage, the party at in-game size. Review each entry: approve it, write a note, pause anywhere to comment on that moment, drag any slider, then press Send feedback. The sandbox under the move sheet plays a turn loop.</p>`);
   rep("Valley_Battlemap004 · 3D stage", "Valley_Battlemap001 · 3D stage");
   rep(`<p class="muted" style="margin:0">Damage, heal and MP numbers are the game's own look. The real scripts won't draw text.</p>`,
     `<p class="muted" style="margin:0">Self-only moves: no numbers. The game draws the action card and the HUD's Resonance count itself.</p>`);
@@ -74,7 +79,7 @@ function gameCheck() {
   const GB = require("../../build/game-build.js");
   const files = ["head", "rhapsody"].map((f) => path.join(__dirname, f + ".js"));
   const clipUrls = {}; const FORGE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/";
-  for (const b of BRAIDS) for (const L of ["back", "front", "light"]) clipUrls["px_" + b + "_" + L] = FORGE + "Animation/pixelfx/px" + "fx_" + b + "_" + L + ".webm";
+  for (const b of PXCLIPS) for (const L of ["back", "front", "light"]) clipUrls["px_" + b + "_" + L] = FORGE + "Animation/pixelfx/px" + "fx_" + b + "_" + L + ".webm";
   const m = meta(); for (const c of Object.values(m.clips)) delete c.src;
   const sfxUrls = Object.fromEntries(Object.entries(SFX));
   const assets = GB.assetsFromMeta(m, { clipUrls, sfxUrls });
@@ -82,7 +87,7 @@ function gameCheck() {
     return { key, ok: r.ok, errors: r.errors, warnings: r.warnings, bytes: (r.encoded || r.script || "").length }; });
 }
 
-module.exports = { build, meta, gameCheck, SFX, BRAIDS };
+module.exports = { build, meta, gameCheck, SFX, BRAIDS, PXCLIPS };
 if (require.main === module) {
   const a = process.argv.slice(2), pub = a.includes("--publish"), vi = a.indexOf("--version");
   const out = a.find((x) => !x.startsWith("--") && a[a.indexOf(x) - 1] !== "--version") || path.join(__dirname, "..", "..", "out", "spell-fencer-anim.html");

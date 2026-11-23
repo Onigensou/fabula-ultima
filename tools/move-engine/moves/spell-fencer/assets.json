@@ -1,5 +1,5 @@
 {
- "note": "Forge URLs + clip sizes for the spell-fencer family. px_sf_braid_* are NOT on Forge yet (upload Animation/pixelfx/pxfx_sf_braid_<variant>_{back,front,light}.webm from pixelfx foundry/out). Ship only the approved variant.",
+ "note": "Forge URLs + clip sizes for the spell-fencer family. px_sf_* (braid, charge, sigil, unleash) are NOT on Forge yet (upload Animation/pixelfx/pxfx_sf_<name>_{back,front,light}.webm from pixelfx foundry/out). Ship only the approved variants.",
  "clips": {
   "051_powerup_1": {
    "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/051_powerup_1.webm",
@@ -605,6 +605,204 @@
    "k": 0.55,
    "impact": 1100,
    "add": true
+  },
+  "px_sf_charge_back": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_charge_back.webm",
+   "w": 160,
+   "h": 160,
+   "dur": 833,
+   "ax": 0.5,
+   "ay": 0.5,
+   "k": 0.55,
+   "impact": 333,
+   "add": false
+  },
+  "px_sf_charge_front": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_charge_front.webm",
+   "w": 160,
+   "h": 160,
+   "dur": 833,
+   "ax": 0.5,
+   "ay": 0.5,
+   "k": 0.55,
+   "impact": 333,
+   "add": false
+  },
+  "px_sf_charge_light": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_charge_light.webm",
+   "w": 160,
+   "h": 160,
+   "dur": 833,
+   "ax": 0.5,
+   "ay": 0.5,
+   "k": 0.55,
+   "impact": 333,
+   "add": true
+  },
+  "px_sf_sigil_k0_back": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_sigil_k0_back.webm",
+   "w": 400,
+   "h": 440,
+   "dur": 3033,
+   "ax": 0.5,
+   "ay": 0.8727,
+   "k": 0.55,
+   "impact": 1200,
+   "add": false
+  },
+  "px_sf_sigil_k0_front": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_sigil_k0_front.webm",
+   "w": 400,
+   "h": 440,
+   "dur": 3033,
+   "ax": 0.5,
+   "ay": 0.8727,
+   "k": 0.55,
+   "impact": 1200,
+   "add": false
+  },
+  "px_sf_sigil_k0_light": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_sigil_k0_light.webm",
+   "w": 400,
+   "h": 440,
+   "dur": 3033,
+   "ax": 0.5,
+   "ay": 0.8727,
+   "k": 0.55,
+   "impact": 1200,
+   "add": true
+  },
+  "px_sf_sigil_k1_back": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_sigil_k1_back.webm",
+   "w": 400,
+   "h": 440,
+   "dur": 3033,
+   "ax": 0.5,
+   "ay": 0.8727,
+   "k": 0.55,
+   "impact": 1200,
+   "add": false
+  },
+  "px_sf_sigil_k1_front": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_sigil_k1_front.webm",
+   "w": 400,
+   "h": 440,
+   "dur": 3033,
+   "ax": 0.5,
+   "ay": 0.8727,
+   "k": 0.55,
+   "impact": 1200,
+   "add": false
+  },
+  "px_sf_sigil_k1_light": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_sigil_k1_light.webm",
+   "w": 400,
+   "h": 440,
+   "dur": 3033,
+   "ax": 0.5,
+   "ay": 0.8727,
+   "k": 0.55,
+   "impact": 1200,
+   "add": true
+  },
+  "px_sf_unleash_d0_back": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_unleash_d0_back.webm",
+   "w": 480,
+   "h": 400,
+   "dur": 2133,
+   "ax": 0.5,
+   "ay": 0.86,
+   "k": 0.55,
+   "impact": 33,
+   "add": false
+  },
+  "px_sf_unleash_d0_front": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_unleash_d0_front.webm",
+   "w": 480,
+   "h": 400,
+   "dur": 2133,
+   "ax": 0.5,
+   "ay": 0.86,
+   "k": 0.55,
+   "impact": 33,
+   "add": false
+  },
+  "px_sf_unleash_d0_light": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_unleash_d0_light.webm",
+   "w": 480,
+   "h": 400,
+   "dur": 2133,
+   "ax": 0.5,
+   "ay": 0.86,
+   "k": 0.55,
+   "impact": 33,
+   "add": true
+  },
+  "px_sf_unleash_d1_back": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_unleash_d1_back.webm",
+   "w": 480,
+   "h": 400,
+   "dur": 2133,
+   "ax": 0.5,
+   "ay": 0.86,
+   "k": 0.55,
+   "impact": 33,
+   "add": false
+  },
+  "px_sf_unleash_d1_front": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_unleash_d1_front.webm",
+   "w": 480,
+   "h": 400,
+   "dur": 2133,
+   "ax": 0.5,
+   "ay": 0.86,
+   "k": 0.55,
+   "impact": 33,
+   "add": false
+  },
+  "px_sf_unleash_d1_light": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_unleash_d1_light.webm",
+   "w": 480,
+   "h": 400,
+   "dur": 2133,
+   "ax": 0.5,
+   "ay": 0.86,
+   "k": 0.55,
+   "impact": 33,
+   "add": true
+  },
+  "px_sf_unleash_d2_back": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_unleash_d2_back.webm",
+   "w": 480,
+   "h": 400,
+   "dur": 2133,
+   "ax": 0.5,
+   "ay": 0.86,
+   "k": 0.55,
+   "impact": 100,
+   "add": false
+  },
+  "px_sf_unleash_d2_front": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_unleash_d2_front.webm",
+   "w": 480,
+   "h": 400,
+   "dur": 2133,
+   "ax": 0.5,
+   "ay": 0.86,
+   "k": 0.55,
+   "impact": 100,
+   "add": false
+  },
+  "px_sf_unleash_d2_light": {
+   "url": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_sf_unleash_d2_light.webm",
+   "w": 480,
+   "h": 400,
+   "dur": 2133,
+   "ax": 0.5,
+   "ay": 0.86,
+   "k": 0.55,
+   "impact": 100,
+   "add": true
   }
  },
  "sfx": {
@@ -616,6 +814,14 @@
   "item3": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Item3.ogg",
   "saint5": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Saint5.ogg",
   "bell1": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Bell1.ogg",
-  "powerup": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Powerup.ogg"
+  "powerup": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Powerup.ogg",
+  "beginspell": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3",
+  "charginga": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/ChargingA.wav",
+  "cast1": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Cast1.ogg",
+  "gacha_crystal": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/SE_SYS_Gacha_Crystal.ogg",
+  "saint3": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Saint3.ogg",
+  "exskill": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/EXSkill.ogg",
+  "magic4": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Magic4.ogg",
+  "flower": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Flower.ogg"
  }
 }
