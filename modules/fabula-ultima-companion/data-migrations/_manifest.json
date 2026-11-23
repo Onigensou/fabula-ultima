@@ -752,6 +752,10 @@
     {
       "key": "2026-11-22-warning-shot-mp-drain",
       "path": "data-migrations/2026-11-22-warning-shot-mp-drain.js"
+    },
+    {
+      "key": "2026-11-23-spell-fencer-author",
+      "path": "data-migrations/2026-11-23-spell-fencer-author.js"
     }
   ]
 }

@@ -7,9 +7,8 @@ import { lookupLinkTerm, lookupTerm } from "../battle-director/keyword-registry.
 let fails = 0;
 const eq = (label, got, want) => { const ok = JSON.stringify(got) === JSON.stringify(want); if (!ok) fails++; console.log((ok ? "ok   " : "FAIL ") + label + (ok ? "" : `  got ${JSON.stringify(got)} want ${JSON.stringify(want)}`)); };
 
-const M = "fabula-ultima-companion";
 const item = (props) => ({ system: { props } });
-const actor = (flag) => ({ flags: flag == null ? {} : { [M]: { oneHandCategories: flag } }, getFlag(ns, k) { return this.flags?.[ns]?.[k]; } });
+const actor = (value) => ({ appliedEffects: value == null ? [] : [{ disabled: false, changes: [{ key: "one_hand_categories", mode: 5, value }] }] });
 const staff = item({ item_type: "weapon", category: "Arcane", hand_slots: "Two-handed" });
 const greatsword = item({ item_type: "weapon", category: "Heavy", hand_slots: "Two-handed" });
 const rapier = item({ item_type: "weapon", category: "Sword", hand_slots: "One-handed" });

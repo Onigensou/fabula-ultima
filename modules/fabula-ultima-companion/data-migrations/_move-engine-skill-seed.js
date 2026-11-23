@@ -50,14 +50,28 @@ export function diffSkill(item, block) {
     const norm = (chs) => (chs ?? []).map((c) => ({ key: c.key, mode: Number(c.mode ?? 0), value: String(c.value ?? ""), priority: c.priority == null ? null : Number(c.priority) }));
     if (!same(norm(ae.changes), norm(want.changes))) diffs.push({ field: "ae " + want.name + ".changes", game: norm(ae.changes), block: norm(want.changes) });
     if (want.transfer != null && !!ae.transfer !== !!want.transfer) diffs.push({ field: "ae " + want.name + ".transfer", game: !!ae.transfer, block: !!want.transfer });
+    // optional AE fields a block may name (2026-11-23, Spell Fencer: charge counters + token status need them):
+    //   flags (module flags, each key compared), statuses, img, description
+    for (const [k, v] of Object.entries(want.flags ?? {})) if (!same(ae.flags?.[M]?.[k], v)) diffs.push({ field: "ae " + want.name + ".flags." + k, game: ae.flags?.[M]?.[k] ?? null, block: v });
+    if (want.statuses && !same([...(ae.statuses ?? [])].sort(), [...want.statuses].sort())) diffs.push({ field: "ae " + want.name + ".statuses", game: [...(ae.statuses ?? [])], block: want.statuses });
+    if (want.img && ae.img !== want.img) diffs.push({ field: "ae " + want.name + ".img", game: ae.img ?? null, block: want.img });
+    if (want.description != null && (ae.description ?? "") !== want.description) diffs.push({ field: "ae " + want.name + ".description", game: ae.description ?? null, block: want.description });
   }
   return diffs;
 }
+function aeExtras(want) {
+  const x = {};
+  if (want.img) x.img = want.img;
+  if (want.statuses) x.statuses = want.statuses;
+  if (want.description != null) x.description = want.description;
+  if (want.flags && Object.keys(want.flags).length) x.flags = { [M]: want.flags };
+  return x;
+}
 async function applyAes(item, block) {
   for (const want of block.aes ?? []) {
-    const data = { name: want.name, changes: want.changes, transfer: want.transfer ?? true, disabled: false, ...(want.img ? { img: want.img } : {}) };
+    const data = { name: want.name, changes: want.changes ?? [], transfer: want.transfer ?? true, disabled: false, ...aeExtras(want) };
     const ae = item.effects?.find?.((e) => e.name === want.name);
-    if (ae) await ae.update({ changes: data.changes, transfer: data.transfer }); else await item.createEmbeddedDocuments("ActiveEffect", [data]);
+    if (ae) await ae.update({ changes: data.changes, transfer: data.transfer, ...aeExtras(want) }); else await item.createEmbeddedDocuments("ActiveEffect", [data]);
   }
 }
 
