@@ -10,7 +10,7 @@
 // The card lives on document.body, not in the menu: render() rebuilds the menu's
 // DOM on every key, and a card inside it would be wiped mid-read.
 
-import { lookupTerm } from "../battle-director/keyword-registry.js";
+import { lookupTerm, lookupLinkTerm } from "../battle-director/keyword-registry.js";
 import { esc, safeHtml, img } from "./party-menu-ui.js";
 
 const TIP_ID = "fud-pm-linktip";
@@ -28,7 +28,7 @@ function termOf(uuid, text) {
   const key = `${uuid}|${text}`;
   if (_cache.has(key)) return _cache.get(key);
   let out = null;
-  const entry = lookupTerm(uuid) ?? lookupTerm(text);
+  const entry = lookupLinkTerm(uuid, text);   // never turns an Item link into a keyword by name
   if (entry?.descHtml) out = { label: text || entry.label, icon: entry.icon ?? null, html: entry.descHtml };
   else {
     let doc = null;

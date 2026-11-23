@@ -34,7 +34,7 @@ import { resourceLabel, RESOURCE_REGISTRY } from "./resources.js";
 import { plateSettled } from "./director-player-hud.js";
 import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
-import { lookupTerm } from "./keyword-registry.js";
+import { lookupTerm, lookupLinkTerm } from "./keyword-registry.js";
 import { absorbKeywordValue, normalizeKeywordLabel } from "./keyword-value.js";
 import { DAMAGE as DAMAGE_TYPE_STYLE } from "../linked-text/lt-terms.js";
 import { formatHitChance, isConcealedRoll } from "./check.js";
@@ -5664,7 +5664,7 @@ export function parseEffectDescription(html) {
     for (const a of Array.from(root.querySelectorAll("a.content-link[data-uuid], a[data-uuid]"))) {
       const uuid = a.getAttribute("data-uuid") || "";
       const text = (a.textContent || "").trim();
-      const entry = lookupTerm(uuid) || lookupTerm(text);
+      const entry = lookupLinkTerm(uuid, text);   // never turns an Item link into a keyword by name
 
       // Prefer the link's own text for the displayed label (e.g. "Ice Shield"
       // when the variant shares the base "Shield" journal uuid); fall back to

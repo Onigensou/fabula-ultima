@@ -32,6 +32,7 @@ import {
 import { DESC_SENTINEL, stripOrbmentDescBlock, readOrbment, itemKindOf } from "../orbment/orbment-const.js";
 import { resolveAugment } from "../orbment/augment-registry.js";
 import { carryRoom } from "../item-transfer/carry-limit.js";
+import { isTwoHandedFor } from "../shared/hand-slots.js";
 
 const TAG = "[PartyMenu]";
 const log = (...a) => console.log(TAG, ...a);
@@ -415,8 +416,8 @@ export function equipSlotsOf(actor) {
   }));
 }
 
-const isTwoHanded = (item) => itemType(item) === "weapon"
-  && str(item?.system?.props?.hand_slots).toLowerCase().includes("two");
+const isTwoHanded = (item, actor = null) => itemType(item) === "weapon"
+  && isTwoHandedFor(actor, item);   // a skill may hold the category in one hand: shared/hand-slots.js
 
 /** Candidates for one slot: `{ item, check:{ok,reason}, wornIn }`, wearable first. */
 export function equipCandidates(actor, slotKey) {
@@ -470,7 +471,7 @@ export function equipSelection(actor, slotKey, itemId) {
   const sel = Object.fromEntries(slots.map((s) => [s.key, s.item?.id ?? null]));
   if (item) for (const k of Object.keys(sel)) if (sel[k] === item.id) sel[k] = null;   // one item, one slot
   sel[slotKey] = item?.id ?? null;
-  if (slotKey === "main" && isTwoHanded(item)) sel.off = null;
+  if (slotKey === "main" && isTwoHanded(item, actor)) sel.off = null;
   return { ok: true, sel };
 }
 

@@ -17,7 +17,7 @@
  * one that plainly reads as emphasis.
  */
 
-import { lookupTerm } from "../battle-director/keyword-registry.js";
+import { lookupTerm, lookupLinkTerm } from "../battle-director/keyword-registry.js";
 
 // Structural tags worth keeping. Everything else is unwrapped to its text so
 // authored sheet markup (font tags, spans full of inline styles) cannot drag
@@ -87,7 +87,7 @@ export function renderDescription(html) {
     const resolved = Array.from(root.querySelectorAll("a[data-uuid], a.content-link")).map((a) => {
       const uuid = a.getAttribute("data-uuid") || "";
       const text = (a.textContent || "").trim();
-      const entry = lookupTerm(uuid) || lookupTerm(text);
+      const entry = lookupLinkTerm(uuid, text);   // never turns an Item link into a keyword by name
       // The link's own text wins — "Ice Shield" and "Fire Shield" share the
       // base Shield journal uuid, and the registry label would flatten both.
       return { a, text, entry, label: text || entry?.label || "" };

@@ -107,6 +107,10 @@ const DATA = [
   ["Wet",         "2rh5lyMNU5yL8Btk", SK + "BLU/flying_sardine.png",     "status"],
   ["Wither",      "7nqnFPcHG5ZzNfC0", SK + "BLU/ink_jet.png",            "status"],
   ["Zombie",      "RZIAnKw95vY6yh2W", BF + "Zombie.png",                 "status"],
+  // Spell Fencer rhythm markers (2026-11-23, synthetic ids like Fickle: no journal, the text is baked in DESC). The Active
+  // Effects of the same name on Spellweave / Bladework drive the token status and the red / blue aura.
+  ["Next Spell",  "SpFnNextSpell001", BF + "MAGIC%20UP.png",             "status"],
+  ["Next Attack", "SpFnNextAttack01", BF + "AttackUp.png",               "status"],
 ];
 
 // ── Damage Types (Damage Type section) ──────────────────────────────────────
@@ -146,6 +150,9 @@ const KW_EXTRA = [
   // announces itself with its own cinematic / token tint — the Battle Director
   // shows NO passive card when it auto-fires. Read in firePreAcceptedCandidate.
   ["Silent",        "SiLenTKeyWord0001", null],
+  // Spell Fencer class resource (2026-11-23, synthetic id, no journal). Chanter's official skill "Resonance" is an Item and
+  // keeps its own card: lookupLinkTerm never turns an Item link into this keyword by name.
+  ["Resonance",     "SpFnResonanceKw1", "15_RDM/dualcast.png"],
   ["Strike Damage", "ZunRGiMDSgAapm5G", null],
   ["Magic Damage",  "XYQUsuXPU0CQjEYa", null],
   ["Melee",         "10LjF01NAYNKpRvn", null],
@@ -266,7 +273,10 @@ const DESC = {
   "SiLenTKeyWord0001": "<ul><li><p>This action announces itself with its own effect (a cinematic, or a change to the user's appearance) &mdash; no passive card is shown when it triggers.</p></li></ul>",
   "FicKLeKeyWord001":"<ul><li><p>The <strong>Accuracy Check</strong> for this action is hidden. Its dice are not shown, and its total is shown only as the range it could fall in.</p></li><li><p>Against each target, the result is shown as a <strong>chance to hit</strong> instead of a hit or a miss.</p></li><li><p>A <strong>Critical Hit</strong> is the exception &mdash; it always reveals itself, and the action resolves in the open as normal.</p></li><li><p>Nothing else changes: the Check is rolled normally and decides the outcome normally &mdash; you simply do not get to see it.</p></li></ul>",
   "1v5xrozP0fHlnjQj": "<ul><li><p><strong>Actions</strong> with this keyword will have their success conditions reversed: an accuracy check result <strong>lower</strong> than the target's defense counts as a <strong>hit</strong>, while a result <strong>higher</strong> than the target's defense counts as a <strong>miss</strong>.</p></li></ul>",
-  "ZunRGiMDSgAapm5G": "<ul><li>Any damage that targeted the target's Defense is consider \"Strike Damage\"</li></ul>",
+  "SpFnResonanceKw1": "<ul><li><p>Gain 1 when you switch between a weapon attack and an <strong>【⚡Offensive Spell】</strong>.</p></li><li><p>Start each conflict with 1. Max stacks: <strong>【Spellweave SL + 1】</strong>. Lost at the end of the scene.</p></li><li><p>Spent by <strong>Spellblade Rhapsody</strong> and <strong>Spellweave</strong>. Spellblade Rhapsody turns generate none.</p></li></ul>",
+  "SpFnNextSpell001": "<ul><li><p>Your last action was a weapon attack.</p></li><li><p>Cast an <strong>【⚡Offensive Spell】</strong> next to gain 1 <strong>Resonance</strong>.</p></li></ul>",
+  "SpFnNextAttack01": "<ul><li><p>Your last action was an <strong>【⚡Offensive Spell】</strong>.</p></li><li><p>Make a weapon attack next to gain 1 <strong>Resonance</strong>.</p></li></ul>",
+  "ZunRGiMDSgAapm5G":"<ul><li>Any damage that targeted the target's Defense is consider \"Strike Damage\"</li></ul>",
   "XYQUsuXPU0CQjEYa": "<ul><li>Any damage that targeted the target Magic Defense is considered <strong>\"Magic Damage\"</strong></li></ul>",
   "10LjF01NAYNKpRvn": "<p>Melee Attacks are closed ranged attacks, it lacks the ability to target Flying creature but are often more powerful than range attacks</p>",
   "Fcq1HgCEh3jxxELa": "<p>Range Attacks are attacks from a greater distance, they can target Flying or Elusive creatures, but are often weaker than Melee Attacks</p>",
@@ -363,6 +373,20 @@ export function lookupTerm(uuidOrName) {
   if (!uuidOrName) return null;
   const s = String(uuidOrName).trim();
   return _byUuid[s] ?? _byName[s.toLowerCase()] ?? null;
+}
+
+// Resolve a content link (its data-uuid + its text) to a registry term: by uuid first, then by the link's text. A link that
+// points at a document of its own (an Item / Actor / Scene) is that document: its text matching a keyword or status name must
+// not turn it into the keyword (Chanter's skill "Resonance" vs the Spell Fencer keyword, 2026-11-23). Damage types are
+// Item-keyed registry entries and keep the name fallback.
+export function lookupLinkTerm(uuid, text) {
+  const byUuid = lookupTerm(uuid);
+  if (byUuid) return byUuid;
+  const byName = lookupTerm(text);
+  if (!byName) return null;
+  const docLink = /^(Actor|Item|Scene|Compendium)\./.test(String(uuid ?? "").trim());
+  if (docLink && !String(byName.key).startsWith("Item.")) return null;
+  return byName;
 }
 
 // Rank-search terms by display name for the editor autocomplete. Returns up to

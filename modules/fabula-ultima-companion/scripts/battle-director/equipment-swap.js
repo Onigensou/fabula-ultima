@@ -28,6 +28,7 @@ import { reconcileSetBonuses, withManagedEquip } from "./set-bonus.js";
 import { getRegistry, resolveClass } from "../levelup-system/class-registry.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 import { resolveWornSlots, slotStamp } from "../shared/equipped-gear.js";
+import { isTwoHandedFor } from "../shared/hand-slots.js";
 
 const UNARM_STRIKE_ITEM_ID = "bwqZvS4NXw7bCrmV";
 const FLAG_NS = "fabula-ultima-companion";
@@ -169,7 +170,7 @@ function equipRestrictionClash(actor, item, slotKey) {
   const worn = resolveWornItems(actor);
   const p = item.system?.props ?? {};
   const twoHandedMain = slotKey === "main" && String(p.item_type ?? "").toLowerCase() !== ITEM_TYPE_SHIELD
-    && String(p.hand_slots ?? "").toLowerCase().includes("two");
+    && isTwoHandedFor(actor, item);   // a skill may hold the category in one hand: shared/hand-slots.js
   const staying = [
     slotKey !== "main" ? worn.main : null,
     slotKey !== "off" && !twoHandedMain ? worn.off : null,
@@ -209,7 +210,7 @@ export function canEquip(actor, item, slotKey) {
 
   // ── hand-slot rules ─────────────────────────────────────────────────────
   const isTwoHanded = type !== ITEM_TYPE_SHIELD
-    && String(p.hand_slots ?? "").toLowerCase().includes("two");
+    && isTwoHandedFor(actor, item);   // shared/hand-slots.js (Book and Blade: arcane in one hand)
 
   if (isTwoHanded && slotKey === "off") {
     return { ok: false, reason: "Two-handed — main hand only" };
@@ -224,7 +225,7 @@ export function canEquip(actor, item, slotKey) {
   // A two-handed weapon already worn in the main hand blocks the off hand.
   if (slotKey === "off") {
     const worn = equippedWeaponInSlot(actor, "main");
-    const wornTwoH = worn && String(worn.system?.props?.hand_slots ?? "").toLowerCase().includes("two");
+    const wornTwoH = worn && isTwoHandedFor(actor, worn);
     if (wornTwoH) return { ok: false, reason: `${worn.name} is two-handed` };
   }
 
@@ -494,7 +495,7 @@ export function planEquipmentActionCost(actor, { equipmentSelections, weaponForm
 // Exported so the Treasure Roulette equip-comparison window can describe a
 // not-yet-owned template item with the SAME field set the Equipment card shows.
 // Pure read-only projection — no behaviour change for BD.
-export function buildHandCandidate(it) {
+export function buildHandCandidate(it, actor = null) {
   const p = it.system?.props ?? {};
   const isShield = p.item_type === ITEM_TYPE_SHIELD;
   // `hand_slots` is a string ("One-handed" / "Two-handed") per the
@@ -502,7 +503,8 @@ export function buildHandCandidate(it) {
   // Match case-insensitively + on the substring "two" so any locale or
   // capitalisation variant still trips the flag.
   const handSlotsRaw = String(p.hand_slots ?? "").trim();
-  const isTwoHanded = !isShield && handSlotsRaw.toLowerCase().includes("two");
+  // With an actor, a skill may hold the category in one hand (shared/hand-slots.js); without one, the item's own data.
+  const isTwoHanded = !isShield && (actor ? isTwoHandedFor(actor, it) : handSlotsRaw.toLowerCase().includes("two"));
   const base = {
     id: it.id,
     name: p.name ?? it.name ?? "(unnamed)",
@@ -598,8 +600,8 @@ export function gatherEquipmentSlots(actor, { round = null, includeArmor = false
   const mainHandItems = allowShieldInMain
     ? handItems
     : handItems.filter((i) => i?.system?.props?.item_type !== ITEM_TYPE_SHIELD);
-  const mainHandCandidates = mainHandItems.map(buildHandCandidate);
-  const offHandCandidates  = handItems.map(buildHandCandidate);
+  const mainHandCandidates = mainHandItems.map((it) => buildHandCandidate(it, actor));
+  const offHandCandidates  = handItems.map((it) => buildHandCandidate(it, actor));
   const accCandidates      = accessories.map(buildAccCandidate);
 
   const mainIdx = worn.main ? handItems.indexOf(worn.main) : -1;
