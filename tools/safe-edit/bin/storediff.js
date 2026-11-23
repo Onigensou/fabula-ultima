@@ -15,7 +15,7 @@
  *
  * RULE: run this before ANY reset / checkout / discard of world files.
  *   exit 0  = live == ref in every store (truly disposable churn)
- *   exit 1  = real differences: commit them first (`git add -A worlds/<w>`)
+ *   exit 1  = real differences: keep them (commit first, or adopt per store)
  *
  * SAFE TO RUN ANY TIME: it never opens the live LevelDB (opening rotates the
  * MANIFEST, see the manifest-rotation trap). It copies the live stores and
@@ -149,7 +149,7 @@ async function main() {
       return 0;
     }
     console.log(`\n⛔ live world has ${total} real document change(s) vs ${ref} (+ = only live, - = only in ${ref}).`);
-    console.log(`  Do NOT reset/discard. Commit them first: close Foundry, flush WALs, git add -A ${rel}/data ${rel}/packs.`);
+    console.log(`  Do NOT reset/discard over them. Commit them first, or adopt only the stores the pull needs and keep the rest on disk.`);
     return 1;
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });

@@ -131,15 +131,9 @@ it's your private "last reviewed" marker, never shared.
 2. `node tools/safe-edit/bin/world-export.js report` — review the diff and,
    above all, the **removal warnings**. If a removal is unexpected, STOP and
    reconcile (restore the dropped content) before going further.
-3. Flush every store's write-ahead log: no `worlds/<world>/{data,packs}/**/*.log`
-   may be non-empty (open the store once with classic-level, game closed).
-4. Stage the **whole** world, every store, settings/messages/users included:
-   `git add -A worlds/<world>/data worlds/<world>/packs worlds/<world>/_authored-export worlds/<world>/world.json worlds/<world>/assets/scenes`,
-   then `git commit`. The pre-commit hook (below) blocks a world commit that
-   leaves any store out, regenerates and stages the export, and re-checks for losses.
-   After the commit `git status --short worlds/<world>` must be empty (save slots
-   in `fu-saves` stay personal and are skip-worktree).
-5. Push.
+3. `git add worlds/ && git commit` — the pre-commit hook (below) regenerates and
+   stages the export and re-checks for losses automatically.
+4. Push.
 
 ## Before discarding local world files (co-dev pull, reset, checkout) — `storediff`
 
@@ -152,15 +146,14 @@ A document-level diff of **every** store (data + packs), live world vs a git ref
 the live LevelDB, so it is safe any time (close Foundry for a definitive answer).
 
 - exit 0 → only rotation churn: safe to reset/discard.
-- exit 1 → real changes (it names them): **commit them first** (submit workflow
-  above), or adopt only the stores the co-dev touched (per-store adoption).
-  Never `reset --hard` over it, not even with a backup branch.
+- exit 1 → real changes (it names them): keep them. Commit them first, or adopt
+  only the stores the co-dev touched and leave the rest as they are on disk.
+  Never `reset --hard` over them, not even with a backup branch.
 
 ## Pre-commit hook (automatic gate)
 
 `hooks/pre-commit` blocks any commit that stages this world's LevelDB data if it
-leaves any world store unstaged (whole-world gate), or if it would lose a
-document or an embedded skill. It also auto-stages the regenerated
+would lose a document or an embedded skill. It also auto-stages the regenerated
 JSON so the export stays in lock-step with the binary data.
 
 Install (per clone — git hook config is not shared through the repo):
