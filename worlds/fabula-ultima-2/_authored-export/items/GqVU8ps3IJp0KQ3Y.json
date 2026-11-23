@@ -8,6 +8,120 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "hKYwjMjV6sKb2EAp",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875786,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hKYwjMjV6sKb2EAp",
+          "originalParentId": "GqVU8ps3IJp0KQ3Y",
+          "originalUuid": "Item.GqVU8ps3IJp0KQ3Y.ActiveEffect.hKYwjMjV6sKb2EAp"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "spell-fencer-rhythm"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+      "name": "Next Attack",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-next-attack"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "q1q1s5y8u6JwrcFI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875754,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "q1q1s5y8u6JwrcFI",
+          "originalParentId": "GqVU8ps3IJp0KQ3Y",
+          "originalUuid": "Item.GqVU8ps3IJp0KQ3Y.ActiveEffect.q1q1s5y8u6JwrcFI"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "spell-fencer-rhythm"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20UP.png",
+      "name": "Next Spell",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-next-spell"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -33,17 +147,114 @@
       "damage_bonus": "0",
       "description": "<ul><li><p>After you cast an 【⚡Offensive Spell】, your next weapon attack deals <strong>【SL】</strong> extra damage.</p></li><li><p>On hit, recover <strong>【SL × 2】</strong> MP.</p></li></ul>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "auto_confirm_when_obvious": true,
+          "auto_target": "skip",
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "bw_self",
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "1": {
+          "chain_steps": "bw_dmg, bw_mp",
+          "effect_kind": "chain",
+          "effect_label": "bw_hit"
+        },
+        "2": {
+          "damage_amount": "SL",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "bw_dmg",
+          "target_ref": "trigger_subject"
+        },
+        "3": {
+          "effect_kind": "grant",
+          "effect_label": "bw_mp",
+          "grant_amount": "SL * 2",
+          "grant_resource": "mp",
+          "target_ref": "bw_self"
+        },
+        "4": {
+          "chain_steps": "bw_atk_off, bw_atk_on",
+          "effect_kind": "chain",
+          "effect_label": "bw_atk"
+        },
+        "5": {
+          "chain_steps": "bw_spl_off, bw_spl_on",
+          "effect_kind": "chain",
+          "effect_label": "bw_spl"
+        },
+        "6": {
+          "ae_template_ref": "Next Attack",
+          "effect_kind": "remove_ae",
+          "effect_label": "bw_atk_off",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "7": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Next Spell",
+          "effect_kind": "apply_ae",
+          "effect_label": "bw_atk_on",
+          "target_ref": "bw_self"
+        },
+        "8": {
+          "ae_template_ref": "Next Spell",
+          "effect_kind": "remove_ae",
+          "effect_label": "bw_spl_off",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "9": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Next Attack",
+          "effect_kind": "apply_ae",
+          "effect_label": "bw_spl_on",
+          "target_ref": "bw_self"
+        }
+      },
       "isCheck": false,
       "isHeroic": false,
       "level": "1",
       "max_level": "5",
       "name": "Bladework",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && DAMAGE_IS_HP == 1 && AE_COUNT_NEXT_ATTACK > 0",
+          "reaction_action_target": "enemy",
+          "reaction_effect_ref": "bw_hit",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "1": {
+          "condition_formula": "HAS_SKILL_SPELLWEAVE == 0",
+          "reaction_effect_ref": "bw_atk",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_attack"
+        },
+        "2": {
+          "condition_formula": "HAS_SKILL_SPELLWEAVE == 0 && ACTION_IS_SPELL == 1 && (ACTION_ROLLS_ACCURACY == 1 || HAS_SKILL_MASTER_OF_DUALITY == 1)",
+          "reaction_effect_ref": "bw_spl",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_spell"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_description": "<ul><li><p>After you cast an 【⚡Offensive Spell】, your next weapon attack deals <strong>【SL】</strong> extra damage.</p></li><li><p>On hit, recover <strong>【SL × 2】</strong> MP.</p></li></ul>",
-      "skill_target": "",
+      "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",
       "use_optional_params": false

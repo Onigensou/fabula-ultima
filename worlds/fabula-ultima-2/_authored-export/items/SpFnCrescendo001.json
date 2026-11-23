@@ -3,7 +3,7 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1795438458146,
+    "createdTime": 1795436871798,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -20,7 +20,7 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/verflare.png",
   "name": "Crescendo",
   "ownership": {
-    "WQGFvLStTZeWGpak": 3,
+    "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "sort": 0,
@@ -37,7 +37,16 @@
       "defense_target_type": "def",
       "description": "<ul><li><p>During <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a>, your 【⚔️Attack】 and your 【📕Spell】 each deal 10 extra damage.</p></li></ul>",
       "duration": "",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "cr_dmg",
+          "target_ref": "trigger_subject"
+        }
+      },
       "heroic_requirement": "You must have mastered the Spell Fencer Class.",
       "id": "SpFnCrescendo001",
       "ignore_hr": false,
@@ -52,7 +61,16 @@
       "max_level": "1",
       "name": "Crescendo",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "(ACTION_IS_ATTACK == 1 || ACTION_IS_SPELL == 1) && DAMAGE_IS_HP == 1 && AE_COUNT_RHAPSODY_TURN > 0",
+          "reaction_action_target": "enemy",
+          "reaction_effect_ref": "cr_dmg",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

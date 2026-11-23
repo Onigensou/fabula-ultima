@@ -3,11 +3,72 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1795438458579,
+    "createdTime": 1795436872603,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "bZ6Q3bjVLYvbSJGw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436876151,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "bZ6Q3bjVLYvbSJGw",
+          "originalParentId": "SpFnEncore000001",
+          "originalUuid": "Item.SpFnEncore000001.ActiveEffect.bZ6Q3bjVLYvbSJGw"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "encore",
+          "charges": 1,
+          "chargesMax": 1,
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "resource"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/embolden.png",
+      "name": "Encore",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-encore"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -20,7 +81,7 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/embolden.png",
   "name": "Encore",
   "ownership": {
-    "WQGFvLStTZeWGpak": 3,
+    "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "sort": 0,
@@ -37,7 +98,17 @@
       "defense_target_type": "def",
       "description": "<ul><li><p>Once per scene, <a class=\"content-link\" data-uuid=\"Item.4qw6XEVHQmERzZ8y\" data-id=\"4qw6XEVHQmERzZ8y\" data-type=\"Item\">Spellblade Rhapsody</a> costs no <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>.</p></li></ul>",
       "duration": "",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "1",
+          "ae_template_ref": "Encore",
+          "effect_kind": "apply_ae",
+          "effect_label": "en_seed",
+          "target_ref": "self"
+        }
+      },
       "heroic_requirement": "You must have mastered the Spell Fencer Class.",
       "id": "SpFnEncore000001",
       "ignore_hr": false,
@@ -52,7 +123,14 @@
       "max_level": "1",
       "name": "Encore",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "en_seed",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_trigger": "conflict_start"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

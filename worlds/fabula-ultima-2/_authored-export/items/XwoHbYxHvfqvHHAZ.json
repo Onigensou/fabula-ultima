@@ -8,6 +8,520 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "2dW1xo5WqtZQocA2",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875875,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Dark"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "2dW1xo5WqtZQocA2",
+          "originalParentId": "XwoHbYxHvfqvHHAZ",
+          "originalUuid": "Item.XwoHbYxHvfqvHHAZ.ActiveEffect.2dW1xo5WqtZQocA2"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "buff",
+            "spell-fencer"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+      "name": "Mystic Infusion (Dark)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-infusion-dark"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Bm3NPI7g4WANkO0X",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875856,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Air"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Bm3NPI7g4WANkO0X",
+          "originalParentId": "XwoHbYxHvfqvHHAZ",
+          "originalUuid": "Item.XwoHbYxHvfqvHHAZ.ActiveEffect.Bm3NPI7g4WANkO0X"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "buff",
+            "spell-fencer"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+      "name": "Mystic Infusion (Air)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-infusion-air"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "cntbbiIbCfjg4269",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875903,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Ice"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "cntbbiIbCfjg4269",
+          "originalParentId": "XwoHbYxHvfqvHHAZ",
+          "originalUuid": "Item.XwoHbYxHvfqvHHAZ.ActiveEffect.cntbbiIbCfjg4269"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "buff",
+            "spell-fencer"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+      "name": "Mystic Infusion (Ice)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-infusion-ice"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "hxkWNV28RfdrCSnW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875881,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Earth"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hxkWNV28RfdrCSnW",
+          "originalParentId": "XwoHbYxHvfqvHHAZ",
+          "originalUuid": "Item.XwoHbYxHvfqvHHAZ.ActiveEffect.hxkWNV28RfdrCSnW"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "buff",
+            "spell-fencer"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+      "name": "Mystic Infusion (Earth)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-infusion-earth"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "LO9prtEMb3tnPpzF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875897,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Fire"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "LO9prtEMb3tnPpzF",
+          "originalParentId": "XwoHbYxHvfqvHHAZ",
+          "originalUuid": "Item.XwoHbYxHvfqvHHAZ.ActiveEffect.LO9prtEMb3tnPpzF"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "buff",
+            "spell-fencer"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+      "name": "Mystic Infusion (Fire)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-infusion-fire"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Memq0D70zhcZ5sOw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875862,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Bolt"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Memq0D70zhcZ5sOw",
+          "originalParentId": "XwoHbYxHvfqvHHAZ",
+          "originalUuid": "Item.XwoHbYxHvfqvHHAZ.ActiveEffect.Memq0D70zhcZ5sOw"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "buff",
+            "spell-fencer"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+      "name": "Mystic Infusion (Bolt)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-infusion-bolt"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "vHS04py7SFVEfLZ3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875914,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Light"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "vHS04py7SFVEfLZ3",
+          "originalParentId": "XwoHbYxHvfqvHHAZ",
+          "originalUuid": "Item.XwoHbYxHvfqvHHAZ.ActiveEffect.vHS04py7SFVEfLZ3"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "buff",
+            "spell-fencer"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+      "name": "Mystic Infusion (Light)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-infusion-light"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "xYIWSrfYnH0Z7UH9",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795436875928,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Poison"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "xYIWSrfYnH0Z7UH9",
+          "originalParentId": "XwoHbYxHvfqvHHAZ",
+          "originalUuid": "Item.XwoHbYxHvfqvHHAZ.ActiveEffect.xYIWSrfYnH0Z7UH9"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "buff",
+            "spell-fencer"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+      "name": "Mystic Infusion (Poison)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-infusion-poison"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -33,17 +547,187 @@
       "damage_bonus": "0",
       "description": "<ul><li><p>After you cast an 【⚡Offensive Spell】, your next weapon attack deals that spell's damage type.</p></li></ul>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "ae_template_ref": "Mystic Infusion (Air), Mystic Infusion (Bolt), Mystic Infusion (Dark), Mystic Infusion (Earth), Mystic Infusion (Fire), Mystic Infusion (Ice), Mystic Infusion (Light), Mystic Infusion (Poison)",
+          "effect_kind": "remove_ae",
+          "effect_label": "mi_clear",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "1": {
+          "chain_steps": "mi_clear, mi_ae_air",
+          "effect_kind": "chain",
+          "effect_label": "mi_air"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Mystic Infusion (Air)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mi_ae_air",
+          "target_ref": "self"
+        },
+        "3": {
+          "chain_steps": "mi_clear, mi_ae_bolt",
+          "effect_kind": "chain",
+          "effect_label": "mi_bolt"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Mystic Infusion (Bolt)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mi_ae_bolt",
+          "target_ref": "self"
+        },
+        "5": {
+          "chain_steps": "mi_clear, mi_ae_dark",
+          "effect_kind": "chain",
+          "effect_label": "mi_dark"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Mystic Infusion (Dark)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mi_ae_dark",
+          "target_ref": "self"
+        },
+        "7": {
+          "chain_steps": "mi_clear, mi_ae_earth",
+          "effect_kind": "chain",
+          "effect_label": "mi_earth"
+        },
+        "8": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Mystic Infusion (Earth)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mi_ae_earth",
+          "target_ref": "self"
+        },
+        "9": {
+          "chain_steps": "mi_clear, mi_ae_fire",
+          "effect_kind": "chain",
+          "effect_label": "mi_fire"
+        },
+        "10": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Mystic Infusion (Fire)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mi_ae_fire",
+          "target_ref": "self"
+        },
+        "11": {
+          "chain_steps": "mi_clear, mi_ae_ice",
+          "effect_kind": "chain",
+          "effect_label": "mi_ice"
+        },
+        "12": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Mystic Infusion (Ice)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mi_ae_ice",
+          "target_ref": "self"
+        },
+        "13": {
+          "chain_steps": "mi_clear, mi_ae_light",
+          "effect_kind": "chain",
+          "effect_label": "mi_light"
+        },
+        "14": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Mystic Infusion (Light)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mi_ae_light",
+          "target_ref": "self"
+        },
+        "15": {
+          "chain_steps": "mi_clear, mi_ae_poison",
+          "effect_kind": "chain",
+          "effect_label": "mi_poison"
+        },
+        "16": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Mystic Infusion (Poison)",
+          "effect_kind": "apply_ae",
+          "effect_label": "mi_ae_poison",
+          "target_ref": "self"
+        }
+      },
       "isCheck": false,
       "isHeroic": false,
       "level": "1",
       "max_level": "1",
       "name": "Mystic Infusion",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && TRIGGER_DAMAGE_IS_AIR == 1",
+          "reaction_effect_ref": "mi_air",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "1": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && TRIGGER_DAMAGE_IS_BOLT == 1",
+          "reaction_effect_ref": "mi_bolt",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "2": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && TRIGGER_DAMAGE_IS_DARK == 1",
+          "reaction_effect_ref": "mi_dark",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "3": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && TRIGGER_DAMAGE_IS_EARTH == 1",
+          "reaction_effect_ref": "mi_earth",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "4": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && TRIGGER_DAMAGE_IS_FIRE == 1",
+          "reaction_effect_ref": "mi_fire",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "5": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && TRIGGER_DAMAGE_IS_ICE == 1",
+          "reaction_effect_ref": "mi_ice",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "6": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && TRIGGER_DAMAGE_IS_LIGHT == 1",
+          "reaction_effect_ref": "mi_light",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "7": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1 && TRIGGER_DAMAGE_IS_POISON == 1",
+          "reaction_effect_ref": "mi_poison",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "8": {
+          "reaction_effect_ref": "mi_clear",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_attack"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",
       "skill_description": "<ul><li><p>After you cast an 【⚡Offensive Spell】, your next weapon attack deals that spell's damage type.</p></li></ul>",
-      "skill_target": "",
+      "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",
       "use_optional_params": false

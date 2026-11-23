@@ -3,7 +3,7 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1795438459091,
+    "createdTime": 1795436873297,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -20,7 +20,7 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/veraero.png",
   "name": "Duelist's Guard",
   "ownership": {
-    "WQGFvLStTZeWGpak": 3,
+    "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "sort": 0,
@@ -37,7 +37,14 @@
       "defense_target_type": "def",
       "description": "<ul><li><p>While you have 2 or more <a class=\"content-link\" data-uuid=\"JournalEntry.SpFnResonanceKw1\" data-id=\"SpFnResonanceKw1\" data-type=\"JournalEntry\">Resonance</a>, gain +2 DEF and +2 MDEF.</p></li></ul>",
       "duration": "",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "defense_amount": "2",
+          "defense_operation": "add",
+          "effect_kind": "adjust_defense",
+          "effect_label": "dg_def"
+        }
+      },
       "heroic_requirement": "You must have mastered the Spell Fencer Class.",
       "id": "SpFnDuelGuard001",
       "ignore_hr": false,
@@ -52,7 +59,17 @@
       "max_level": "1",
       "name": "Duelist's Guard",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "AE_CHARGES_RESONANCE >= 2",
+          "reaction_action_intent": "harmful",
+          "reaction_action_kind": "Attack,Spell,Skill",
+          "reaction_effect_ref": "dg_def",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_targeted_by_action"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

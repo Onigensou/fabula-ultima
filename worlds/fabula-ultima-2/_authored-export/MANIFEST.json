@@ -3686,7 +3686,7 @@
         "id": "GqVU8ps3IJp0KQ3Y",
         "name": "Bladework",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "OHZETPJgAZNg0AUU",
@@ -3944,7 +3944,7 @@
         "id": "grSkhZspOgRbAgCJ",
         "name": "Book and Blade",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "oahgecKQD4NvCFcI",
@@ -5678,7 +5678,7 @@
         "id": "SpFnEncore000001",
         "name": "Encore",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "PjTYcvt9L33XCWZG",
@@ -9752,7 +9752,7 @@
         "id": "XwoHbYxHvfqvHHAZ",
         "name": "Mystic Infusion",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 8
       },
       {
         "id": "Bq6whExuUmb3sq5p",
@@ -12284,7 +12284,7 @@
         "id": "4qw6XEVHQmERzZ8y",
         "name": "Spellblade Rhapsody",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "0Q0LLVyzDqkW8zV6",
@@ -25722,15 +25722,15 @@
             "name": "Book and Blade"
           },
           {
-            "id": "fa2grKJEx4c5TSzL",
+            "id": "N0gHI9y3RH1d8Kos",
             "name": "Crescendo"
           },
           {
-            "id": "g6JsM3QckgogJkya",
+            "id": "Gfh5OKhJWJ5t0sCU",
             "name": "Duelist's Guard"
           },
           {
-            "id": "l9Mmqt0pOrFSUzle",
+            "id": "5jT9u4zwSvie87Za",
             "name": "Encore"
           },
           {
