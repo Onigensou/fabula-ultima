@@ -249,7 +249,8 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "oathswornPaladinText": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -292,7 +293,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>【<strong>Defensive Mastery</strong>】<strong>SL+1</strong></p></li><li><p>【<strong>Fortess</strong>】<strong>SL+2</strong></p></li></ul>",
+      "description": "<ul><li><p><strong>【Defensive Mastery】SL+1</strong></p></li><li><p><strong>【Fortress】SL+2</strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -333,7 +334,7 @@
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
-      "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2-Piece</strong></p><ul><li><p>You can perform the skill 💥<strong>Protect </strong>one additional time per round</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>You can spend <strong>1 Fabula Point </strong>to perform the skill 💥<strong>Protect </strong>when you are <strong>KO </strong><em>(other rules for KO still apply to you)</em></p></li></ul></li></ul>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>While KO, spend <strong>1 Fabula Point</strong> to use 【💥<strong>Protect</strong>】. Once per round.</p></li></ul>",
       "set_name": "Oathsworn Paladin",
       "soldier_ef": "100",
       "spirit_ef": "100",

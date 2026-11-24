@@ -10789,7 +10789,7 @@
           "damage_bonus": "7",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>You are always <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a></p></li><li><p>You gain +2 to all Checks that involve <strong>Digging</strong></p></li><li><p>When you hit an <strong>Undead </strong>or <strong>Earth-Attribute </strong>creature with this weapon, You gain <strong>【The target's level / 10】</strong>IP and <strong>【50 - 200】</strong>zenit, You may trigger this effect once per creature</p></li></ul>",
+          "description": "<ul><li><p>While equipped, you gain <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a>.</p></li><li><p>You gain +2 to all Checks that involve <strong>Digging</strong></p></li><li><p>When you hit an <strong>Undead </strong>or <strong>Earth-Attribute </strong>creature with this weapon, You gain <strong>【The target's level / 10】</strong>IP and <strong>【50 - 200】</strong>zenit, You may trigger this effect once per creature</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -11737,7 +11737,7 @@
       "system": {
         "container": "PvpZGxUFPZBk7By6",
         "props": {
-          "description": "<p>Equipped passive: +2 to Checks involving Digging. You are always Cursed.</p>",
+          "description": "<p>Equipped passive: +2 to Checks involving Digging. While equipped, you gain Curse.</p>",
           "effect_table": {
             "0": {
               "check_buff_action": "digging",

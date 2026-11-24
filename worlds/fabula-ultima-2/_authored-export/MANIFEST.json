@@ -9923,6 +9923,18 @@
         "effects": 0
       },
       {
+        "id": "OsPalVigilSkl001",
+        "name": "Oath of Vigilance",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "OsPalSetDef00001",
+        "name": "Oathsworn Paladin — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Ct03jR1j4OXXr55R",
         "name": "Obsidian",
         "type": "equippableItem",
@@ -13685,6 +13697,12 @@
         "effects": 1
       },
       {
+        "id": "OsPalOathSkl0001",
+        "name": "Unbroken Oath",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "3HjwalzP8A5208qr",
         "name": "Unerring Focus",
         "type": "equippableItem",
@@ -16299,6 +16317,10 @@
           {
             "id": "F9KcVJMSMXOPrK05",
             "name": "Muleta"
+          },
+          {
+            "id": "S3NSrQ6FsKn4NplP",
+            "name": "Oath of Vigilance"
           },
           {
             "id": "darifaK6tZNResIN",

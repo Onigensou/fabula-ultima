@@ -1,0 +1,140 @@
+{
+  "_id": "OsPalVigilSkl001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795482944351,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "OsPalVigilAE0001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Oathsworn Vigil:</em> One extra 【💥<strong>Protect</strong>】 this round.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "chargeKey": "protect",
+          "charges": 1,
+          "chargesMax": 1,
+          "lifetimeMode": "persistent_counter",
+          "oathswornPaladin": "vigil-ae"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+      "name": "Oathsworn Vigil",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-oathsworn-vigil"
+      ],
+      "system": {
+        "tags": [
+          "ready"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "oathswornPaladin": "created"
+    }
+  },
+  "folder": "lU1fGjiR2mTgyPzI",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+  "name": "Oath of Vigilance",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "OsPalSetDef00001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Oathsworn Vigil",
+          "count": "1",
+          "effect_kind": "apply_ae",
+          "effect_label": "ov_refill",
+          "on_empty": "abort",
+          "target_ref": "ov_self"
+        },
+        "1": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "ov_self",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        }
+      },
+      "id": "OsPalVigilSkl001",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Oath of Vigilance",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_SKILL_PROTECT == 1",
+          "reaction_effect_ref": "ov_refill",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        },
+        "1": {
+          "condition_formula": "HAS_SKILL_PROTECT == 1",
+          "reaction_effect_ref": "ov_refill",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_description": "<ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.OsPalVigilSkl001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "OsPalVigilSkl001"
+  },
+  "type": "equippableItem"
+}

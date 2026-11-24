@@ -3041,7 +3041,7 @@
           "check_bonus": "0",
           "cost": "1000",
           "damage_bonus": "7",
-          "description": "<ul><li><p>You are always <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a></p></li><li><p>You gain +2 to all Checks that involve <strong>Digging</strong></p></li><li><p>When you hit an <strong>Undead </strong>or <strong>Earth-Attribute </strong>creature with this weapon, You gain <strong>【The target's level / 10】</strong>IP and <strong>【50 - 200】</strong>zenit, You may trigger this effect once per creature</p></li></ul>",
+          "description": "<ul><li><p>While equipped, you gain <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a>.</p></li><li><p>You gain +2 to all Checks that involve <strong>Digging</strong></p></li><li><p>When you hit an <strong>Undead </strong>or <strong>Earth-Attribute </strong>creature with this weapon, You gain <strong>【The target's level / 10】</strong>IP and <strong>【50 - 200】</strong>zenit, You may trigger this effect once per creature</p></li></ul>",
           "flavor_text": "<p><em>One man's trash is another man's treasure</em></p>",
           "hand_slots": "Two-handed",
           "id": "BIbreDnYgqPYJy6s",

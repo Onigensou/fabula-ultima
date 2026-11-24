@@ -24,7 +24,7 @@
   "system": {
     "container": "BIbreDnYgqPYJy6s",
     "props": {
-      "description": "<p>Equipped passive: +2 to Checks involving Digging. You are always Cursed.</p>",
+      "description": "<p>Equipped passive: +2 to Checks involving Digging. While equipped, you gain Curse.</p>",
       "effect_table": {
         "0": {
           "check_buff_action": "digging",

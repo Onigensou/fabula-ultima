@@ -395,7 +395,8 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "oathswornPaladinText": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -443,7 +444,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</li><li>When you <strong>Cover </strong>or <strong>Protect </strong>another creature, you may cast a <strong>non-offensive spell </strong>targeting that creature as a <strong>Free Action</strong></li></ul>",
+      "description": "<ul><li><p>Resistance to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</p></li><li><p>When you <strong>Cover</strong> or <strong>Protect</strong> an ally, you may cast a <strong>non-offensive spell</strong> on them as a <strong>Free Action</strong>.</p></li></ul>",
       "dragon_ef": "100",
       "effect_table": {},
       "elemental_ef": "100",
@@ -487,7 +488,7 @@
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
-      "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2-Piece</strong></p><ul><li><p>You can perform the skill 💥<strong>Protect </strong>one additional time per round</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>You can spend <strong>1 Fabula Point </strong>to perform the skill 💥<strong>Protect </strong>when you are <strong>KO </strong><em>(other rules for KO still apply to you)</em></p></li></ul></li></ul>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>While KO, spend <strong>1 Fabula Point</strong> to use 【💥<strong>Protect</strong>】. Once per round.</p></li></ul>",
       "set_name": "Oathsworn Paladin",
       "skill_tags": "",
       "skill_target": "One Enemy",

@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.6.4"
     },
+    "fabula-ultima-companion": {
+      "oathswornPaladinText": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "weapon",
@@ -50,7 +53,7 @@
       "damage_bonus": "15",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><strong>+5</strong> bonus damage to<strong> Dark-Attribute </strong>creature</p></li><li><p>You may cast the Spell <strong>【✨ Heal 】</strong></p><hr></li></ul><details><summary>✨ <strong>Heal</strong></summary><p><strong>Cost: -</strong></p><p><strong>Target: One Creature</strong></p><p><strong>Duration: Instantaneous</strong></p><p>You invigorate your companions, soothing their pain and healing their fatigue. Each target recovers 40 Hit Points. This amount increases to 50 Hit Points if you are level 20 or higher, or to 60 Hit Points if you are level 40 or higher.</p><p></p></details>",
+      "description": "<ul><li><p>Deals <strong>5</strong> extra damage to <strong>Dark-Attribute</strong> creatures.</p></li><li><p>You may cast the spell 【✨<strong>@UUID[Item.TD3i1fdSE7qGwApx]{Heal}</strong>】</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -110,7 +113,7 @@
       "reptilian_ef": "100",
       "rolled_atr1": "MIG",
       "rolled_atr2": "WLP",
-      "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2-Piece</strong></p><ul><li><p>You can perform the skill 💥<strong>Protect </strong>one additional time per round</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>You can spend <strong>1 Fabula Point </strong>to perform the skill 💥<strong>Protect </strong>when you are <strong>KO </strong><em>(other rules for KO still apply to you)</em></p></li></ul></li></ul>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>While KO, spend <strong>1 Fabula Point</strong> to use 【💥<strong>Protect</strong>】. Once per round.</p></li></ul>",
       "set_name": "Oathsworn Paladin",
       "skill_target": "One Enemy",
       "soldier_ef": "100",

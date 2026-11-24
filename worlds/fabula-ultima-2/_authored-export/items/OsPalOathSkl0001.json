@@ -1,0 +1,116 @@
+{
+  "_id": "OsPalOathSkl0001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795482945227,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "oathswornPaladin": "created"
+    }
+  },
+  "folder": "lU1fGjiR2mTgyPzI",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+  "name": "Unbroken Oath",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "OsPalSetDef00001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>While KO, spend <strong>1 Fabula Point</strong> to use 【💥<strong>Protect</strong>】. Once per round.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "uo_fp, uo_anim, uo_redirect",
+          "effect_kind": "chain",
+          "effect_label": "uo_react"
+        },
+        "1": {
+          "consume_amount": "1",
+          "consume_resource": "fp",
+          "effect_kind": "consume_resource",
+          "effect_label": "uo_fp",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "action_ref": "Protect",
+          "effect_kind": "play_animation",
+          "effect_label": "uo_anim",
+          "target_ref": "trigger_subject"
+        },
+        "3": {
+          "count": "1",
+          "destination_ref": "uo_self",
+          "effect_kind": "redirect_target",
+          "effect_label": "uo_redirect",
+          "on_empty": "abort",
+          "rebuild_card": true,
+          "target_ref": "uo_incoming"
+        },
+        "4": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "uo_self",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "5": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "action_targets",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "uo_incoming",
+          "exclude_self": true,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        }
+      },
+      "id": "OsPalOathSkl0001",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Unbroken Oath",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "CUR_HP <= 0 && HAS_SKILL_PROTECT == 1",
+          "reaction_action_intent": "harmful",
+          "reaction_effect_ref": "uo_react",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "ally",
+          "reaction_trigger": "creature_targeted_by_action",
+          "reaction_works_while_ko": true
+        }
+      },
+      "skill_description": "<ul><li><p>While KO, spend <strong>1 Fabula Point</strong> to use 【💥<strong>Protect</strong>】. Once per round.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.OsPalOathSkl0001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "OsPalOathSkl0001"
+  },
+  "type": "equippableItem"
+}

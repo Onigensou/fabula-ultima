@@ -1,0 +1,56 @@
+{
+  "_id": "OsPalSetDef00001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795482943362,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "oathswornPaladin": "created"
+    }
+  },
+  "folder": "lU1fGjiR2mTgyPzI",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Oathsworn Paladin — Equipment Set",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "id": "OsPalSetDef00001",
+      "isSet": false,
+      "name": "Oathsworn Paladin — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Protect one more time per round",
+          "bonus_skill_ref": "Oath of Vigilance",
+          "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "While KO: 1 FP → Protect (once per round)",
+          "bonus_skill_ref": "Unbroken Oath",
+          "pieces": "3"
+        }
+      },
+      "set_name": "Oathsworn Paladin",
+      "uuid": "Item.OsPalSetDef00001"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "OsPalSetDef00001"
+  },
+  "type": "equippableItem"
+}

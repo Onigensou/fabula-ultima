@@ -4593,6 +4593,7 @@
               "source": "World Item"
             }
           },
+          "oathswornPaladinText": true,
           "orbment": {
             "baseProps": [],
             "linkGroup": [
@@ -4656,7 +4657,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>【<strong>Defensive Mastery</strong>】<strong>SL+1</strong></p></li><li><p>【<strong>Fortess</strong>】<strong>SL+2</strong></p></li></ul>",
+          "description": "<ul><li><p><strong>【Defensive Mastery】SL+1</strong></p></li><li><p><strong>【Fortress】SL+2</strong></p></li></ul>",
           "dragon_ef": "100",
           "effect_table": {},
           "elemental_ef": "100",
@@ -4699,7 +4700,7 @@
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
-          "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2-Piece</strong></p><ul><li><p>You can perform the skill 💥<strong>Protect </strong>one additional time per round</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>You can spend <strong>1 Fabula Point </strong>to perform the skill 💥<strong>Protect </strong>when you are <strong>KO </strong><em>(other rules for KO still apply to you)</em></p></li></ul></li></ul>",
+          "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>While KO, spend <strong>1 Fabula Point</strong> to use 【💥<strong>Protect</strong>】. Once per round.</p></li></ul>",
           "set_name": "Oathsworn Paladin",
           "soldier_ef": "100",
           "spirit_ef": "100",
@@ -8187,6 +8188,148 @@
       "type": "equippableItem"
     },
     {
+      "_id": "S3NSrQ6FsKn4NplP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795482946529,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "OsPalVigilAE0001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Oathsworn Vigil:</em> One extra 【💥<strong>Protect</strong>】 this round.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "chargeKey": "protect",
+              "charges": 1,
+              "chargesMax": 1,
+              "lifetimeMode": "persistent_counter",
+              "oathswornPaladin": "vigil-ae"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+          "name": "Oathsworn Vigil",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-oathsworn-vigil"
+          ],
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "oathswornPaladin": "created",
+          "setBonusSkill": "Oathsworn Paladin:2:skill",
+          "setBonusSkillSig": "{\"n\":\"Oath of Vigilance\",\"t\":\"equippableItem\",\"p\":{\"cost\":\"\",\"description\":\"<ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul>\",\"effect_table\":{\"0\":{\"effect_label\":\"ov_refill\",\"effect_kind\":\"apply_ae\",\"ae_template_ref\":\"Oathsworn Vigil\",\"ae_duplicate_mode\":\"replace\",\"target_ref\":\"ov_self\",\"on_empty\":\"abort\",\"count\":\"1\"},\"1\":{\"effect_label\":\"ov_self\",\"effect_kind\":\"targeting\",\"candidate_source\":\"self\",\"mode\":\"exact\",\"count\":\"1\",\"exclude_self\":false,\"auto_confirm_when_obvious\":true,\"skip_when_passive\":true,\"iteration_mode\":\"together\"}},\"isCheck\":false,\"name\":\"Oath of Vigilance\",\"on_activate_effect_ref\":\"\",\"reaction_config_table\":{\"0\":{\"reaction_trigger\":\"turn_start\",\"reaction_source\":\"self\",\"reaction_passive_mode\":\"force\",\"reaction_passive_target\":\"self\",\"condition_formula\":\"HAS_SKILL_PROTECT == 1\",\"reaction_effect_ref\":\"ov_refill\"},\"1\":{\"reaction_trigger\":\"conflict_start\",\"reaction_source\":\"\",\"reaction_passive_mode\":\"force\",\"reaction_passive_target\":\"self\",\"condition_formula\":\"HAS_SKILL_PROTECT == 1\",\"reaction_effect_ref\":\"ov_refill\"}},\"skill_target\":\"Self\",\"skill_type\":\"Passive\",\"type_damage\":\"\",\"skill_description\":\"<ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul>\",\"img\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png\",\"isReaction\":true,\"id\":\"OsPalVigilSkl001\",\"uuid\":\"Item.OsPalVigilSkl001\",\"max_level\":1}}"
+        }
+      },
+      "folder": "lU1fGjiR2mTgyPzI",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+      "name": "Oath of Vigilance",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "-",
+        "props": {
+          "cost": "",
+          "description": "<ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul>",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Oathsworn Vigil",
+              "count": "1",
+              "effect_kind": "apply_ae",
+              "effect_label": "ov_refill",
+              "on_empty": "abort",
+              "target_ref": "ov_self"
+            },
+            "1": {
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "ov_self",
+              "exclude_self": false,
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
+          "id": "OsPalVigilSkl001",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+          "isCheck": false,
+          "isReaction": true,
+          "max_level": 1,
+          "name": "Oath of Vigilance",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "HAS_SKILL_PROTECT == 1",
+              "reaction_effect_ref": "ov_refill",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            },
+            "1": {
+              "condition_formula": "HAS_SKILL_PROTECT == 1",
+              "reaction_effect_ref": "ov_refill",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "skill_description": "<ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "uuid": "Item.OsPalVigilSkl001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "S3NSrQ6FsKn4NplP"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "s7GhfXoC9ZMy71wM",
       "_stats": {
         "compendiumSource": null,
@@ -9892,6 +10035,7 @@
               "source": "World Item"
             }
           },
+          "oathswornPaladinText": true,
           "orbment": {
             "baseProps": [],
             "linkGroup": [
@@ -9959,7 +10103,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</li><li>When you <strong>Cover </strong>or <strong>Protect </strong>another creature, you may cast a <strong>non-offensive spell </strong>targeting that creature as a <strong>Free Action</strong></li></ul>",
+          "description": "<ul><li><p>Resistance to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</p></li><li><p>When you <strong>Cover</strong> or <strong>Protect</strong> an ally, you may cast a <strong>non-offensive spell</strong> on them as a <strong>Free Action</strong>.</p></li></ul>",
           "dragon_ef": "100",
           "effect_table": {},
           "elemental_ef": "100",
@@ -10002,7 +10146,7 @@
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
-          "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2-Piece</strong></p><ul><li><p>You can perform the skill 💥<strong>Protect </strong>one additional time per round</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>You can spend <strong>1 Fabula Point </strong>to perform the skill 💥<strong>Protect </strong>when you are <strong>KO </strong><em>(other rules for KO still apply to you)</em></p></li></ul></li></ul>",
+          "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>Use 【💥<strong>Protect</strong>】 one more time per round.</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>While KO, spend <strong>1 Fabula Point</strong> to use 【💥<strong>Protect</strong>】. Once per round.</p></li></ul>",
           "set_name": "Oathsworn Paladin",
           "soldier_ef": "100",
           "spirit_ef": "100",
@@ -13273,7 +13417,7 @@
       "off_attrib_2": "SHI",
       "off_base_mod_1": "2",
       "off_base_mod_2": "2",
-      "off_details": "<ul><li><p>【<strong>Defensive Mastery</strong>】<strong>SL+1</strong></p></li><li><p>【<strong>Fortess</strong>】<strong>SL+2</strong></p></li></ul>",
+      "off_details": "<ul><li><p><strong>【Defensive Mastery】SL+1</strong></p></li><li><p><strong>【Fortress】SL+2</strong></p></li></ul>",
       "off_hand": "+4 Royal Shield",
       "off_hand_attack": "",
       "off_mod_1": 2,

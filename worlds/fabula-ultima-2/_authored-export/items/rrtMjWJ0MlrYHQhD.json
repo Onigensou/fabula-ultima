@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "oathswornPaladinText": true
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
@@ -25,7 +28,7 @@
   "system": {
     "container": "zKJP8tR2S8Gg1rRZ",
     "props": {
-      "description": "<p>Attacks with this weapon deal <strong>5 extra damage</strong> to Dark-Attribute creatures.</p>",
+      "description": "<ul><li><p>Deals <strong>5</strong> extra damage to <strong>Dark-Attribute</strong> creatures.</p></li></ul>",
       "details_roller": "Show",
       "effect_table": {
         "0": {
@@ -68,7 +71,7 @@
       },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
-      "skill_description": "<p>Attacks with this weapon deal <strong>5 extra damage</strong> to Dark-Attribute creatures.</p>",
+      "skill_description": "<ul><li><p>Deals <strong>5</strong> extra damage to <strong>Dark-Attribute</strong> creatures.</p></li></ul>",
       "skill_type": "Passive",
       "uuid": "Item.rrtMjWJ0MlrYHQhD"
     },
