@@ -28,6 +28,15 @@
 //   GM  → all  FISHING_NEXT_ROUND  → beginRound()
 //   own → GM   FISHING_PROCEED     → resolveProceed()  (after the last round)
 //   GM  → all  FISHING_DONE        → hide()
+//
+// Spectators (CAMP.MG.isOwner decides who plays): owner messages go out with
+// CAMP.Socket.send. FISHING_LURE `ev` kinds: tackle {act: open|step|focus|
+// picker|hov|pick|back, rodI, baitI, focusRow, picker, round, rods/baits on
+// open} (read-only Tackle mirror + its sounds), g {v,dir} (10 Hz gauge
+// re-anchor), reel (map spot reel-in), wait, v/v0 (10 Hz visitor target,
+// smoothed locally), nib, hook, unhook, bolt {x,y} (too-soon strike), twitch,
+// strike, out, end. FISHING_HIT carries `burst` (fight bubbles). Late join:
+// CAMP.MG.registerGame("FISHING").
 // ============================================================================
 (() => {
   const CAMP      = globalThis.CampSystem ??= {};
@@ -103,32 +112,22 @@
   function stop(a) { if (!a) return; try { a.pause(); a.currentTime = 0; } catch {} }
 
   // ── ownership ─────────────────────────────────────────────────────────────
-  function _ownerUserId(actor) {
-    return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const u = game.users?.get(id);
-      return lvl === 3 && u && !u.isGM;
-    })?.[0] ?? null;
-  }
-  // A player-owned actor plays on its player's screen; an unowned one on the primary GM's only.
+  // Shared owner rule (camp-minigame-sync.js): the Spectator decider, else the primary GM.
   function _isOwner(actorId) {
-    const actor = game.actors?.get(actorId);
-    const uid = actor ? _ownerUserId(actor) : null;
-    return uid ? uid === game.user?.id : isPrimaryGM();
+    return CAMP.MG?.isOwner?.(actorId) ?? false;
   }
 
-  // Owner → GM messages. A broadcast never echoes to its sender, so when the
-  // owner IS the primary GM the GM side runs here directly.
-  function send(type, payload) {
-    CAMP.Socket.emit(type, payload);
-    if (!isPrimaryGM()) return;
-    const M = CAMP.MSG, id = payload?.actorId;
-    if (type === M.FISHING_RESULT) CAMP.FishingUI.resolveRound(id, payload);
-    else if (type === M.FISHING_CONTINUE) CAMP.FishingUI.resolveContinue(id);
-    else if (type === M.FISHING_PROCEED) { CAMP.ActivityResolveUI?.noteProceed?.(id); CAMP.FishingUI.resolveProceed(id); }
-    else CAMP.FishingUI.touch(id);
-  }
+  // Owner → everyone, run locally too (CAMP.Socket.send). A GM owner reaches its
+  // own GM side through the router: RESULT (no `round`) / CONTINUE / PROCEED land
+  // in the primary-GM switch, every other FISHING_* handler touches the round
+  // timer and then skips the owner.
+  function send(type, payload) { CAMP.Socket.send(type, payload); }
   const lure = (ev, data = {}) => send(CAMP.MSG.FISHING_LURE, { actorId: st.actorId, ev, ...data });
+
+  // The result window's item tooltip lives on document.body: hide it whenever
+  // the window under it goes away, or it sticks (mouseleave never fires).
+  const tipHide = () => { try { globalThis.ONI?.TreasureRoulette?.UIKit?.tooltip?.hide(); } catch {} };
+  const dropVeil = () => { tipHide(); q("#f2-veil")?.remove(); };
 
   // ── styles + fonts ────────────────────────────────────────────────────────
   function _injectStyles() {
@@ -245,7 +244,7 @@
   }
 
   function _teardown() {
-    try { globalThis.ONI?.TreasureRoulette?.UIKit?.tooltip?.hide(); } catch {}
+    tipHide();
     timers.forEach(clearTimeout); timers.clear();
     rafs.forEach(cancelAnimationFrame); rafs.clear(); cancelAnimationFrame(raf); raf = 0;
     held = false; stop(reelLoop); stop(waitLoop); stop(ambience); reelLoop = waitLoop = ambience = null;
@@ -322,10 +321,17 @@
   }
   const focusedItem = () => focusRow === 0 ? rod() : bait();
   const helpLine = () => { if (st.phase === "tackle" && !picker) { const o = focusedItem(); msg(`<b>${esc(o.name)}</b> · ${esc(o.desc)}`); } };
+  // Spectators mirror the Tackle menu read-only: the owner sends its rod/bait
+  // lists with "open", then every cursor action; the spectator replays it through
+  // the same render functions and sounds, with pointer events off (specTackle).
+  const tackleState = () => ({ rodI, baitI, focusRow, picker, round: st.round });
+  const tackleLists = () => ({ rods: rods.map(o => ({ ...o })), baits: baits.map(o => ({ ...o })) });
+  const tackleSum   = () => ({ rod: rod().name, rodCol: rod().col, rodSvg: thumb(rod()), bait: bait().name, baitThumb: thumb(bait()) });
+  const tackleEv    = (act, data = {}) => { if (st.owner) lure("tackle", { act, ...tackleState(), ...data }); };
   function openTackle() {
-    st.phase = "tackle"; q("#f2-veil")?.remove();
+    st.phase = "tackle"; dropVeil();
     const v = document.createElement("div"); v.className = "f2-veil"; v.id = "f2-veil"; root.appendChild(v);
-    renderTackle(); lure("tackle");
+    renderTackle(); tackleEv("open", tackleLists());
   }
   function renderTackle() {
     const v = $("f2-veil"); if (!v) return;
@@ -341,6 +347,7 @@
       r.addEventListener("wheel", e => { e.preventDefault(); e.stopPropagation(); const now = performance.now(); if (now - lastWheel < 150) return; const d = Math.sign(e.deltaY || e.deltaX); if (!d) return; lastWheel = now; setFocus(n); step(kind, d); }, { passive: false }); });
     const c = $("f2-cast"); c.onclick = startCast; c.onmouseenter = () => sfx("hover", .5);
     bindTips();
+    if (!st.owner) v.style.pointerEvents = "none";   // spectator mirror: look, never touch
     requestAnimationFrame(() => updateChart()); helpLine();
   }
   function bindTips() {
@@ -355,7 +362,7 @@
       row.onmouseleave = () => tp.classList.remove("on");
     });
   }
-  function setFocus(n) { if (n === focusRow) return; focusRow = n; root?.querySelectorAll(".f2-col").forEach(r => r.classList.toggle("focus", (r.dataset.row === "rod" ? 0 : 1) === n)); sfx("hover", .5); helpLine(); }
+  function setFocus(n) { if (n === focusRow) return; focusRow = n; root?.querySelectorAll(".f2-col").forEach(r => r.classList.toggle("focus", (r.dataset.row === "rod" ? 0 : 1) === n)); sfx("hover", .5); helpLine(); tackleEv("focus"); }
   function animateRow(kind, d) {
     const list = kind === "rod" ? rods : baits, i = kind === "rod" ? rodI : baitI, track = $("f2-track-" + kind), nm = $("f2-name-" + kind);
     if (!track) return;
@@ -368,16 +375,45 @@
   }
   function step(kind, d) {
     if (kind === "rod") rodI = (rodI + d + rods.length) % rods.length; else baitI = (baitI + d + baits.length) % baits.length;
-    sfx("tab", .6); renderMini(); animateRow(kind, d); updateChart(); helpLine(); lure("tackle");
+    sfx("tab", .6); renderMini(); animateRow(kind, d); updateChart(); helpLine(); tackleEv("step", { kind, d });
   }
-  function openPicker(kind) {
-    sfx("click", .6); picker = kind; const list = kind === "rod" ? rods : baits, cur = kind === "rod" ? rodI : baitI;
+  function openPicker(kind, quiet = false) {
+    if (!quiet) sfx("click", .6); picker = kind; const list = kind === "rod" ? rods : baits, cur = kind === "rod" ? rodI : baitI;
     const v = $("f2-veil"); v.innerHTML = `<div class="f2-win f2-picker wg"><span class="plate f2-wt">${kind === "rod" ? "Rods" : "Bait"}</span>
       <div class="f2-grid">${list.map((o, i) => `<button class="f2-cell ${i === cur ? "sel" : ""}" data-i="${i}" type="button"><span class="f2-circ">${thumb(o)}</span><span>${esc(o.name)}${kind === "bait" ? ` ×${o.q}` : ""}</span></button>`).join("")}</div>
       <div class="f2-foot"><span class="f2-keys">Click to choose · <span class="key">ESC</span> back</span><button class="btn ghost" id="f2-back" type="button">BACK</button></div></div>`;
-    v.querySelectorAll(".f2-cell").forEach(b => { b.onmouseenter = () => { sfx("hover", .5); const o = list[+b.dataset.i]; msg(`<b>${esc(o.name)}</b> · ${esc(o.desc)}`); };
-      b.onclick = () => { if (kind === "rod") rodI = +b.dataset.i; else baitI = +b.dataset.i; sfx("click", .6); picker = null; renderMini(); renderTackle(); lure("tackle"); }; });
-    $("f2-back").onclick = () => { sfx("back", .6); picker = null; renderTackle(); };
+    v.querySelectorAll(".f2-cell").forEach(b => { b.onmouseenter = () => { sfx("hover", .5); const o = list[+b.dataset.i]; msg(`<b>${esc(o.name)}</b> · ${esc(o.desc)}`); tackleEv("hov", { i: +b.dataset.i }); };
+      b.onclick = () => { if (kind === "rod") rodI = +b.dataset.i; else baitI = +b.dataset.i; sfx("click", .6); picker = null; renderMini(); renderTackle(); tackleEv("pick"); }; });
+    $("f2-back").onclick = () => { sfx("back", .6); picker = null; renderTackle(); tackleEv("back"); };
+    if (!st.owner) v.style.pointerEvents = "none";
+    else if (!quiet) tackleEv("picker", { kind });
+  }
+  // Spectator: replay one Tackle action from the owner (see tackleEv).
+  function specTackle(p) {
+    if (p.rods && p.baits) { rods = p.rods; baits = p.baits; st.tkLists = true; }
+    // The owner may open the next round's Tackle before NEXT_ROUND reaches us.
+    if (st.phase === "result" && (p.round ?? 0) > (st.round ?? 0)) { if (p.rods) st.tkPending = p; return; }
+    if (st.phase !== "tackle") return;
+    if (!st.tkLists) { msg(`${esc(st.actorName)} is choosing tackle…`); return; }
+    rodI = p.rodI ?? rodI; baitI = p.baitI ?? baitI; st.tackle = tackleSum();
+    if (p.act === "open" || !q("#f2-veil")) {
+      focusRow = p.focusRow ?? 0; picker = null; openTackle(); renderMini();
+      if (p.picker) openPicker(p.picker, true);
+      return;
+    }
+    switch (p.act) {
+      case "step":   sfx("tab", .6); renderMini(); animateRow(p.kind, p.d); updateChart(); helpLine(); break;
+      case "focus":  setFocus(p.focusRow ?? focusRow); break;
+      case "picker": openPicker(p.kind); break;
+      case "hov": {
+        sfx("hover", .5); const list = picker === "rod" ? rods : baits, o = list[p.i];
+        if (o) msg(`<b>${esc(o.name)}</b> · ${esc(o.desc)}`);
+        root?.querySelectorAll(".f2-cell").forEach(c => { c.style.background = +c.dataset.i === p.i ? "rgba(183,147,90,.2)" : ""; });
+        break;
+      }
+      case "pick":   sfx("click", .6); picker = null; renderMini(); renderTackle(); break;
+      case "back":   sfx("back", .6); picker = null; renderTackle(); break;
+    }
   }
 
   // ── input ─────────────────────────────────────────────────────────────────
@@ -391,7 +427,7 @@
       const eat = () => { e.preventDefault(); e.stopImmediatePropagation(); };
       if (st.phase === "tackle") {
         eat(); if (!down) return;
-        if (picker) { if (k === "Escape") { sfx("back", .6); picker = null; renderTackle(); } return; }
+        if (picker) { if (k === "Escape") { sfx("back", .6); picker = null; renderTackle(); tackleEv("back"); } return; }
         if (k === "ArrowLeft" || k === "ArrowRight") step(focusRow === 0 ? "rod" : "bait", k === "ArrowLeft" ? -1 : 1);
         else if (k === "ArrowUp" || k === "ArrowDown") setFocus(1 - focusRow);
         else if (k === "Space" || k === "Enter") startCast();
@@ -422,16 +458,26 @@
     return `<div class="f2-gauge w"><div class="f2-gtrack"><div class="f2-gsweet"></div><div class="f2-gfill" id="f2-gfill"></div></div></div><div class="f2-gnum" id="f2-gnum">0</div>
       ${marks.map(([v, l]) => `<span class="f2-tick" style="left:250px;top:${21 + (100 - v) / 100 * 226}px"><i>${l}</i> ${Math.round(v)}</span>`).join("")}`;
   }
-  function runGauge(speed) {
-    let v = 0, dir = 1, last = performance.now();
-    const f = ts => { const dt = Math.min(50, ts - last) / 1000; last = ts; v += dir * speed * dt; if (v >= 100) { v = 100; dir = -1; } if (v <= 0) { v = 0; dir = 1; }
-      const gf = $("f2-gfill"), gn = $("f2-gnum"); if (gf) { gf.style.height = v.toFixed(1) + "%"; gf.classList.toggle("perfect", v >= 97); } if (gn) { gn.textContent = Math.round(v); gn.classList.toggle("perfect", v >= 97); }
+  // The gauge state lives in st.gauge so spectators can re-anchor it from the
+  // owner's 10 Hz "g" beat (value + direction) instead of free-running.
+  function runGauge(speed, v0 = 0, dir0 = 1) {
+    const g = st.gauge = { v: v0, dir: dir0 }; let last = performance.now();
+    const f = ts => { const dt = Math.min(50, ts - last) / 1000; last = ts; g.v += g.dir * speed * dt; if (g.v >= 100) { g.v = 100; g.dir = -1; } if (g.v <= 0) { g.v = 0; g.dir = 1; }
+      const v = g.v, gf = $("f2-gfill"), gn = $("f2-gnum"); if (gf) { gf.style.height = v.toFixed(1) + "%"; gf.classList.toggle("perfect", v >= 97); } if (gn) { gn.textContent = Math.round(v); gn.classList.toggle("perfect", v >= 97); }
       st.gv = v; raf = requestAnimationFrame(f); };
     raf = requestAnimationFrame(f);
   }
+  function _startGaugeBeat() {
+    const beat = () => {
+      if (!root || st.phase !== "cast" || !st.gauge) return;
+      lure("g", { v: +st.gauge.v.toFixed(1), dir: st.gauge.dir });
+      later(beat, 100);
+    };
+    later(beat, 100);
+  }
   function startCast() {
     if (st.phase !== "tackle") return;
-    sfx("click", .6); $("f2-veil")?.remove(); picker = null; st.phase = "cast";
+    sfx("click", .6); dropVeil(); picker = null; st.phase = "cast";
     if (bait().id !== "none" && !(bait().q > 0)) baitI = 0;   // ran out on the last cast
     lastPick[st.actorId] = { rod: rod().name, bait: bait().name };
     const d = T().derive(st.stats, rod().attr); st.d = d; st.bait = bait(); st.rod = rod();
@@ -442,9 +488,10 @@
     const hb = q("#f2-hold"); hb.hidden = false; hb.textContent = "CAST";
     renderMini();
     msg(`Press <span class="f2-key">SPACE</span> to cast. Higher means farther, and bigger fish.`);
-    send(CAMP.MSG.FISHING_BEGIN, { actorId: st.actorId, round: st.round, gaugeSpeed: d.gaugeSpeed, marks,
-      tackle: { rod: rod().name, rodCol: rod().col, rodSvg: thumb(rod()), bait: bait().name, baitThumb: thumb(bait()) } });
+    st._begin = { actorId: st.actorId, round: st.round, gaugeSpeed: d.gaugeSpeed, marks, tackle: tackleSum() };
+    send(CAMP.MSG.FISHING_BEGIN, st._begin);
     runGauge(d.gaugeSpeed);
+    _startGaugeBeat();
   }
   function lockCast() {
     if (st.phase !== "cast") return; cancelAnimationFrame(raf); raf = 0; st.phase = "flying";
@@ -542,7 +589,7 @@
   }
   function beginWait() {
     const hookY = SURF + 70 + Math.random() * 60;
-    st.v = null;
+    st.v = null; st.hookImg = hookSrc(st.bait);
     waitVisual(hookY, hookSrc(st.bait), st.lureLimit);
     const hb = q("#f2-hold"); hb.hidden = false; hb.textContent = "STRIKE";
     lure("wait", { hookY, lim: st.lureLimit, img: hookSrc(st.bait) });
@@ -598,7 +645,7 @@
   }
   function reelIn() {   // unlimited lure only: pull the line in and cast again
     if (st.lureEnd) return; const v = st.v; if (v && v.state !== "gone") swimOff(v, 500);
-    st.lureId++; sfx("back", .6); clearLure();
+    st.lureId++; sfx("back", .6); clearLure(); lure("reel");
     st.phase = "tackle"; startCast();
   }
   function visit() {
@@ -677,10 +724,14 @@
     }
     if (v && (v.state === "come" || v.state === "near")) {  // too soon: the fish bolts, the lure goes on
       v.state = "leaving"; sfx("back", .5); bubbles(v.x, v.y, 4); q("#f2-bob").className = "f2-bob on float";
+      lure("bolt", { x: Math.round(v.x), y: Math.round(v.y) });
       swimOff(v, 420); after(v); return;
     }
     // nothing there: a small twitch of the line, no penalty
-    const bob = q("#f2-bob"); bob.className = "f2-bob on dip"; later(() => { if (st.phase === "lure") bob.className = "f2-bob on float"; }, 350);
+    twitch(); lure("twitch");
+  }
+  function twitch() {
+    const bob = q("#f2-bob"); if (!bob) return; bob.className = "f2-bob on dip"; later(() => { if (st.phase === "lure") bob.className = "f2-bob on float"; }, 350);
   }
 
   // ════════════════════════════ FIGHT ═══════════════════════════════════════
@@ -769,7 +820,7 @@
   function tick(ts) {
     if (!root || st.phase !== "battle") return; const d = st.d, H = T().H, dt = Math.min(50, ts - st.last) / 1000; st.last = ts;
     if (st.burstEnd > 0) { st.y += st.vel * dt; if (ts >= st.burstEnd) { st.burstEnd = 0; st.vel = Math.sign(st.vel) * st.cruise; st.next = ts + st.bmin + Math.random() * (st.bmax - st.bmin); } }
-    else { st.y += st.vel * dt; if (ts >= st.next) { st.burstEnd = ts + T().BURST_MS; st.vel = (Math.random() < .5 ? 1 : -1) * (st.burst + st.hp / 100 * 30); st.dir = Math.random() < .5 ? 1 : -1; bubbles(st.lx, LANE_TOP + st.y * LANE_H / H, 4); } }
+    else { st.y += st.vel * dt; if (ts >= st.next) { st.burstEnd = ts + T().BURST_MS; st.vel = (Math.random() < .5 ? 1 : -1) * (st.burst + st.hp / 100 * 30); st.dir = Math.random() < .5 ? 1 : -1; bubbles(st.lx, LANE_TOP + st.y * LANE_H / H, 4); st.burstFx = true; } }
     if (st.y < 14) { st.y = 14; st.vel = Math.abs(st.vel); } if (st.y > H - 14) { st.y = H - 14; st.vel = -Math.abs(st.vel); }
     if (held) { st.heldMs += dt * 1000; const r = d.ramp > 0 ? Math.min(1, st.heldMs / d.ramp) : 1; st.barY -= d.up * r * dt; } else { st.barY += d.down * dt; st.heldMs = 0; }
     st.barY = Math.max(0, Math.min(H - d.barH, st.barY));
@@ -803,7 +854,13 @@
     const s = { y: st.y, vel: st.vel, dir: st.dir, barY: st.barY, inZone, hp: st.hp, rem, timeout: d.timeout, crankA: st.crankA, spoolA: st.spoolA, running, held,
       chestOn: st.chestOn, chestY: st.chestY, chestP: st.chestP, chestGot: st.chestGot };
     drawFight(ts, s);
-    if (ts - st.lastBeat >= 50) { st.lastBeat = ts; send(CAMP.MSG.FISHING_HIT, { actorId: st.actorId, ...s, barH: d.barH, tier: st.tier, len: st.len, sh: st.fish?.sh, lx: st.lx, adv: st.adv?.key ?? null }); }
+    if (ts - st.lastBeat >= 50) {
+      st.lastBeat = ts;
+      // burst: a burst began since the last beat → spectators puff the same bubbles.
+      st._lastHit = { actorId: st.actorId, ...s, barH: d.barH, tier: st.tier, len: st.len, sh: st.fish?.sh, lx: st.lx, adv: st.adv?.key ?? null, burst: !!st.burstFx };
+      st.burstFx = false;
+      send(CAMP.MSG.FISHING_HIT, st._lastHit);
+    }
     if (st.hp >= 100) { end(true); return; } if (st.hp <= 0 || rem <= 0) { end(false); return; }
     raf = requestAnimationFrame(tick);
   }
@@ -863,11 +920,14 @@
   // ════════════════════════════ RESULT ══════════════════════════════════════
   function bindItemTip(el, detail) {
     const kit = globalThis.ONI?.TreasureRoulette?.UIKit; if (!el || !detail || !kit?.tooltip) return; el.classList.add("f2-hastip");
-    el.addEventListener("mouseenter", () => kit.tooltip.show(el, detail)); el.addEventListener("mouseleave", () => kit.tooltip.hide());
+    // No new tooltip while the overlay fades out: it would outlive the window.
+    el.addEventListener("mouseenter", () => { if (!el.isConnected || !ovl || ovl.classList.contains("f2-out")) return; kit.tooltip.show(el, detail); });
+    el.addEventListener("mouseleave", () => kit.tooltip.hide());
   }
   function showResult(round, fishName, catches, x) {
     if (!root) return; st.phase = "result"; cancelAnimationFrame(raf); raf = 0;
-    q("#f2-veil")?.remove(); clearLure(); q("#f2-gwrap")?.remove();
+    st._lastResult = { round, fishName, catches, x };   // late-join snapshot
+    dropVeil(); clearLure(); q("#f2-gwrap")?.remove();
     ["#f2-lane", "#f2-meter", "#f2-hud", "#f2-chesthud", "#f2-reel"].forEach(s => q(s)?.remove());
     if (st.fe?.isConnected) st.fe.remove();
     const v = document.createElement("div"); v.className = "f2-veil"; v.id = "f2-veil";
@@ -910,26 +970,68 @@
   }
 
   // ════════════════════════════ SPECTATORS ══════════════════════════════════
-  function specBegin(p) {
-    st.phase = "cast"; q("#f2-veil")?.remove(); clearLure(); q("#f2-gwrap")?.remove();
+  function specBegin(p, { quiet = false, v0 = 0, dir0 = 1 } = {}) {
+    if (!quiet) sfx("click", .6);   // the owner's CAST LINE click
+    st.phase = "cast"; dropVeil(); clearLure(); q("#f2-gwrap")?.remove();
     if (p?.tackle) { st.tackle = p.tackle; renderMini(); }
     const g = document.createElement("div"); g.id = "f2-gwrap"; g.innerHTML = gaugeHTML(p?.marks ?? []); q("#f2-fx").appendChild(g);
     msg(`${esc(st.actorName)} is casting…`);
-    cancelAnimationFrame(raf); runGauge(Number(p?.gaugeSpeed) || 120);
+    cancelAnimationFrame(raf); runGauge(Number(p?.gaugeSpeed) || 120, v0, dir0);
+  }
+  // Spectator visitor: the owner's 10 Hz "v" beat is a target; this loop glides
+  // the fish to it every frame and adds the owner's high-frequency motions
+  // (nibble nudge, hooked shake) locally so they don't alias at 10 Hz.
+  function _specVisitorLoop() {
+    const id = st.lureId; let last = performance.now();
+    const f = ts => {
+      if (!lureOk(id)) return;
+      const dt = Math.min(100, ts - last) / 1000; last = ts;
+      const v = st.v;
+      if (v?.e?.isConnected && v.tgt && !v.bolt) {
+        const k = Math.min(1, dt * 12), t = v.tgt;
+        v.x += (t.x - v.x) * k; v.y += (t.y - v.y) * k; v.tilt += (t.tilt - v.tilt) * k; v.op += (t.op - v.op) * k;
+        let x = v.x, y = v.y, tilt = v.tilt;
+        if (ts < (v.nudgeUntil ?? 0)) x += (v.dir || 1) * 5;
+        if (v.shakeT0) {
+          const kk = (ts - v.shakeT0) / T().HOOK_WIN;
+          if (kk < 1) { x += Math.sin(kk * 40) * 3; y += Math.sin(kk * 31) * 2; tilt = Math.sin(kk * 47) * 12; } else v.shakeT0 = 0;
+        }
+        place(v.e, x, y, v.len, v.dir, tilt); v.e.style.opacity = String(.82 * v.op);
+      }
+      frame(f);
+    };
+    frame(f);
   }
   function specLure(p) {
     switch (p.ev) {
-      case "tackle": if (st.phase !== "tackle" && st.phase !== "result") break;
-        if (st.phase === "tackle") msg(`${esc(st.actorName)} is choosing tackle…`); break;
-      case "wait": st.lx ??= 500; waitVisual(Number(p.hookY) || SURF + 100, p.img, Number(p.lim) || 0); break;
+      case "tackle": specTackle(p); break;
+      case "g": if (st.phase === "cast" && st.gauge) { st.gauge.v = Number(p.v) || 0; st.gauge.dir = p.dir < 0 ? -1 : 1; } break;
+      case "reel":   // map spot: the owner reeled in for a fresh cast (BEGIN follows)
+        sfx("back", .6); st.lureId = (st.lureId || 0) + 1; clearLure(); st.phase = "tackle"; break;
+      case "wait": st.lx ??= 500; waitVisual(Number(p.hookY) || SURF + 100, p.img, Number(p.lim) || 0); _specVisitorLoop(); break;
       case "v": {
-        if (!st.v?.e?.isConnected || st.v.sh !== p.sh || st.v.len !== p.len) { st.v?.e?.remove(); st.v = { e: fishEl(p.sh, p.len, p.legend), sh: p.sh, len: p.len }; st.v.e.classList.add("spec"); }
-        place(st.v.e, p.x, p.y, p.len, p.dir, p.tilt || 0); st.v.e.style.opacity = String(.82 * (p.op ?? 1)); st.v.x = p.x; st.v.y = p.y; st.v.dir = p.dir; break;
+        if (st.v?.bolt) break;   // fleeing locally after a too-soon strike, until the owner's v0
+        if (!st.v?.e?.isConnected || st.v.sh !== p.sh || st.v.len !== p.len) {
+          st.v?.e?.remove();
+          st.v = { e: fishEl(p.sh, p.len, p.legend), sh: p.sh, len: p.len, x: p.x, y: p.y, tilt: p.tilt || 0, op: p.op ?? 1, dir: p.dir };
+          st.v.e.classList.add("spec");
+          place(st.v.e, p.x, p.y, p.len, p.dir, p.tilt || 0); st.v.e.style.opacity = String(.82 * (p.op ?? 1));
+        }
+        st.v.dir = p.dir; st.v.tgt = { x: p.x, y: p.y, tilt: p.tilt || 0, op: p.op ?? 1 };
+        break;
       }
       case "v0": st.v?.e?.remove(); st.v = null; break;
-      case "nib": nibbleVisual(); break;
-      case "hook": bangVisual(); break;
-      case "unhook": $("f2-bang")?.remove(); { const b = q("#f2-bob"); if (b) b.className = "f2-bob on float"; } break;
+      case "nib": nibbleVisual(); if (st.v) st.v.nudgeUntil = performance.now() + 160; break;
+      case "hook": bangVisual(); if (st.v) st.v.shakeT0 = performance.now(); break;
+      case "unhook": $("f2-bang")?.remove(); { const b = q("#f2-bob"); if (b) b.className = "f2-bob on float"; } if (st.v) st.v.shakeT0 = 0; break;
+      case "bolt": {   // too-soon strike: the fish bolts, the lure goes on
+        sfx("back", .5); bubbles(Number(p.x) || st.lx, Number(p.y) || st.hookY, 4);
+        { const b = q("#f2-bob"); if (b) b.className = "f2-bob on float"; }
+        const v = st.v;
+        if (v?.e?.isConnected) { v.bolt = true; v.x = Number(p.x) || v.x; v.y = Number(p.y) || v.y; swimOff(v, 420); }
+        break;
+      }
+      case "twitch": twitch(); break;
       case "strike": {
         const adv = p.adv ? T().TIMING.find(t => t.key === p.adv) : null;
         preload(p.img);
@@ -942,6 +1044,7 @@
   }
   let _spec = null;
   function specHit(p) {
+    if (p.burst) bubbles(Number(p.lx) || st.lx, LANE_TOP + (Number(p.y) || 0) * LANE_H / T().H, 4);
     if (st.phase !== "battle") {
       st.phase = "battle"; st.lx = Number(p.lx) || st.lx || 500; st.len = Number(p.len) || st.len || 40; st.tier = Number(p.tier) || 0;
       if (!st.fe?.isConnected) st.fe = fishEl(p.sh, st.len, st.tier === 3);
@@ -1002,11 +1105,16 @@
     beginRound(actorId, round, totalRounds) {
       if (!root || actorId !== st.actorId) return;
       st.round = round ?? st.round + 1; st.totalRounds = totalRounds ?? st.totalRounds;
-      q("#f2-veil")?.remove(); clearLure(); renderPips();
+      dropVeil(); clearLure(); renderPips();
       st.fe?.remove(); st.fe = null; st.fish = null; st.adv = null; st.chestGot = false;
       spawnAmbient();
       if (st.owner) { _loadTackle(game.actors?.get(actorId)); renderMini(); openTackle(); }
-      else { st.phase = "tackle"; msg(`${esc(st.actorName)} is choosing tackle…`); }
+      else {
+        st.phase = "tackle"; msg(`${esc(st.actorName)} is choosing tackle…`);
+        // The owner's Tackle "open" beat us here: show it now.
+        const tk = st.tkPending; st.tkPending = null;
+        if (tk && (tk.round ?? 0) <= st.round) specTackle(tk);
+      }
     },
 
     onCast(payload) {
@@ -1059,7 +1167,72 @@
       _teardown();
       if (!o) return;
       o.classList.add("f2-out");
-      setTimeout(() => { o.remove(); if (ovl === o) { ovl = null; root = null; st = {}; } }, 320);
+      setTimeout(() => { o.remove(); tipHide(); if (ovl === o) { ovl = null; root = null; st = {}; } }, 320);
+    },
+  });
+
+  // ── Late join (camp-minigame-sync.js) ─────────────────────────────────────
+  // Fishing also runs on map spots and dungeon tiles, where no GM replay exists,
+  // so the owner shares the whole live round: tackle menu, gauge, lure + visitor,
+  // fight beat, or the result window. "end" (≈1 s yank/splash) shares nothing.
+  CAMP.MG?.registerGame?.("FISHING", {
+    isOpen: () => !!document.getElementById(OVL_ID) && !!root,
+    snapshot() {
+      if (!st.owner || !root || !st.actorId) return null;
+      const base = { actorId: st.actorId, round: st.round, totalRounds: st.totalRounds, phase: st.phase, begin: st._begin ?? null, lx: st.lx ?? null };
+      switch (st.phase) {
+        case "tackle": return { ...base, tk: { act: "open", ...tackleState(), ...tackleLists() } };
+        case "cast":   return { ...base, gauge: { v: st.gauge?.v ?? 0, dir: st.gauge?.dir ?? 1 } };
+        case "flying": return base;
+        case "lure": {
+          const v = st.v, live = v && v.state !== "gone" && v.state !== "leaving" && v.e?.isConnected;
+          return { ...base,
+            lure: { hookY: st.hookY, img: st.hookImg, lim: st.lureLim, remMs: st.lureEnd ? Math.max(0, st.lureEnd - performance.now()) : 0 },
+            v: live ? { x: Math.round(v.x), y: Math.round(v.y), len: v.len, dir: v.dir, sh: v.fish?.sh, legend: v.tier === 3, tilt: 0, op: Number(v.e.style.opacity || 1) } : null,
+            hooked: !!q("#f2-bang") };
+        }
+        case "bite": case "battle": return { ...base, hit: st._lastHit ?? null };
+        case "result": return st._lastResult ? { ...base, result: st._lastResult } : null;
+        default: return null;
+      }
+    },
+    apply(snap) {
+      if (!snap || st.owner || !root || snap.actorId !== st.actorId) return;
+      st.round = snap.round ?? st.round; st.totalRounds = snap.totalRounds ?? st.totalRounds; renderPips();
+      if (snap.begin?.tackle) { st.tackle = snap.begin.tackle; renderMini(); }
+      if (snap.lx != null) st.lx = snap.lx;
+      switch (snap.phase) {
+        case "tackle":
+          if (st.phase === "result") { st.fe?.remove(); st.fe = null; }
+          dropVeil(); clearLure(); st.phase = "tackle";
+          if (snap.tk) specTackle(snap.tk);
+          break;
+        case "cast":
+          if (snap.begin) specBegin(snap.begin, { quiet: true, v0: Number(snap.gauge?.v) || 0, dir0: snap.gauge?.dir < 0 ? -1 : 1 });
+          break;
+        case "flying":
+          dropVeil(); q("#f2-gwrap")?.remove(); st.phase = "flying"; msg(`${esc(st.actorName)} cast the line.`);
+          break;
+        case "lure": {
+          const L = snap.lure; if (!L) break;
+          dropVeil(); q("#f2-gwrap")?.remove(); clearLure();
+          const bob = q("#f2-bob"); if (bob) { bob.className = "f2-bob on float"; bob.style.left = (st.lx ?? 500) + "px"; }
+          waitVisual(Number(L.hookY) || SURF + 100, L.img, Number(L.lim) || 0);
+          if (L.lim) st.lureEnd = performance.now() + (Number(L.remMs) || 0);
+          _specVisitorLoop();
+          if (snap.v) specLure({ ev: "v", ...snap.v });
+          if (snap.hooked) specLure({ ev: "hook" });
+          break;
+        }
+        case "bite": case "battle":
+          dropVeil(); q("#f2-gwrap")?.remove(); clearLure();
+          if (snap.hit) specHit({ ...snap.hit, burst: false }); else st.phase = "bite";
+          break;
+        case "result": {
+          const r = snap.result; if (r) showResult(r.round, r.fishName, r.catches ?? [], r.x ?? {});
+          break;
+        }
+      }
     },
   });
 
