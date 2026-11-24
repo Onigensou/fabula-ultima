@@ -72,6 +72,8 @@
   let _endTimer     = null;
   let _spaceHandler = null;
   let _resultShown  = false;
+  let _gameStartMs  = 0;       // performance.now() at GO (spectators re-align it from owner anchors)
+  let _anchorTimer  = null;    // owner: periodic pointer anchor for spectators
 
   // Cached DOM refs
   const _els = {
@@ -87,6 +89,7 @@
   function _clearState() {
     if (_rafId !== null)    { cancelAnimationFrame(_rafId); _rafId = null; }
     if (_endTimer !== null) { clearTimeout(_endTimer); _endTimer = null; }
+    if (_anchorTimer !== null) { clearInterval(_anchorTimer); _anchorTimer = null; }
     if (_spaceHandler) {
       document.removeEventListener("keydown", _spaceHandler, { capture: true });
       _spaceHandler = null;
@@ -105,30 +108,16 @@
   // ---------------------------------------------------------------------------
   // Ownership
   // ---------------------------------------------------------------------------
-  function _getOwnerUserId(actor) {
-    return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const user = game.users?.get(id);
-      return lvl === 3 && user && !user.isGM;
-    })?.[0] ?? null;
-  }
-
+  // Shared minigame owner rule (camp-minigame-sync.js).
   function _checkIsOwner(actorId) {
-    const actor = game.actors?.get(actorId);
-    if (!actor) return game.user?.isGM ?? false;
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return CAMP.MG?.isOwner(actorId) ?? (game.user?.isGM ?? false);
   }
 
   // ---------------------------------------------------------------------------
   // Audio
   // ---------------------------------------------------------------------------
   function _playSound(src, volume = 0.7) {
-    try {
-      AudioHelper.play({ src, volume, autoplay: true, loop: false }, false);
-    } catch {
-      try { const a = new Audio(src); a.volume = volume; a.play().catch(() => {}); } catch {}
-    }
+    CAMP.MG?.sfx(src, volume);
   }
 
   // ---------------------------------------------------------------------------
@@ -420,10 +409,10 @@
         </div>
         <div class="oni-tr-float-layer" id="oni-tr-float-layer"></div>
       </div>
-      ${interactive ? `
       <div class="oni-tr-timer-wrap" style="margin-top:14px;">
         <div class="oni-tr-timer-bar" id="oni-tr-timer-bar" style="width:100%;"></div>
       </div>
+      ${interactive ? `
       <div class="oni-tr-hint">
         <span class="oni-tr-key">SPACE</span> — stop the pointer
       </div>
@@ -449,6 +438,8 @@
   function _runCountdown(count, onDone) {
     const stage = document.getElementById("oni-tr-stage");
     if (!stage) return;
+    // Spectator: an owner anchor/snapshot already started the game here.
+    if (_gameActive) return;
 
     stage.innerHTML = `<div class="oni-tr-countdown"><span id="oni-tr-count" class="oni-tr-countdown-num">${count}</span></div>`;
     _playSound(SFX.COUNTDOWN, 0.8);
@@ -468,10 +459,13 @@
   // ---------------------------------------------------------------------------
   // rAF game loop
   // ---------------------------------------------------------------------------
-  function _startGameLoop() {
+  // Runs on the owner AND on spectators (same motion); spectators re-anchor
+  // _pointerPx/_direction/_speed/_gameStartMs from the owner's messages.
+  function _startGameLoop(remainingMs = GAME_DURATION_MS) {
+    if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
     _gameActive  = true;
     _lastFrameMs = performance.now();
-    const startMs = performance.now();
+    _gameStartMs = performance.now() - (GAME_DURATION_MS - remainingMs);
 
     function _frame(ts) {
       if (!_gameActive) return;
@@ -486,9 +480,9 @@
 
       if (_els.pointer) _els.pointer.style.left = `${_pointerPx.toFixed(1)}px`;
 
-      // Update timer bar (owner only — spectators don't have it)
+      // Update timer bar
       if (_els.timerBar) {
-        const elapsed = ts - startMs;
+        const elapsed = ts - _gameStartMs;
         const pct = Math.max(0, 1 - elapsed / GAME_DURATION_MS);
         _els.timerBar.style.width = `${(pct * 100).toFixed(2)}%`;
 
@@ -498,6 +492,9 @@
           const sec = Math.ceil(pct * GAME_DURATION_MS / 1000);
           label.textContent = `${sec}s`;
         }
+        // Spectators have no end timer: freeze when the clock runs out and
+        // wait for the GM's RESULT.
+        if (!_isOwnerFlag && pct <= 0) { _gameActive = false; _rafId = null; return; }
       }
 
       _rafId = requestAnimationFrame(_frame);
@@ -547,7 +544,7 @@
         _showFloat("Miss", "oni-tr-miss", _sweetSpotPx);
         _flashZone("oni-tr-miss-flash");
         _playSound(SFX.MISS, 0.7);
-        _broadcastHit(actorId, { miss: true, pointerPx: 0, sweetSpotPx: _sweetSpotPx, combo: 0, score: _score });
+        _broadcastHit(actorId, { miss: true, pointerPx: 0, direction: 1, sweetSpotPx: _sweetSpotPx, combo: 0, score: _score });
       }
 
       _updateHUD();
@@ -572,14 +569,60 @@
     _broadcastHit(actorId, {
       [kind]: true,
       pointerPx:   _pointerPx,
+      direction:   _direction,
       sweetSpotPx: _sweetSpotPx,
       combo:       _combo,
       score:       _score,
     });
   }
 
+  function _remainingMs() {
+    return Math.max(0, GAME_DURATION_MS - (performance.now() - _gameStartMs));
+  }
+
+  // send(): the local echo reaches onHit, which ignores the owner.
   function _broadcastHit(actorId, data) {
-    CAMP.Socket.emit(CAMP.MSG.TRAINING_HIT, { actorId, ...data });
+    CAMP.Socket.send(CAMP.MSG.TRAINING_HIT, { actorId, ...data, speed: _speed, remainingMs: _remainingMs() });
+  }
+
+  // Low-rate pointer anchor so spectator drift stays bounded between hits.
+  function _sendAnchor(actorId) {
+    if (!_gameActive) return;
+    CAMP.MG?.event("TRAINING", actorId, "anchor", {
+      actorId,
+      pointerPx: _pointerPx, direction: _direction, speed: _speed,
+      sweetSpotPx: _sweetSpotPx, combo: _combo, score: _score,
+      remainingMs: _remainingMs(),
+    });
+  }
+
+  // Spectator: take the owner's pointer state.
+  function _applyAnchor(d) {
+    if (d.sweetSpotPx != null) {
+      _sweetSpotPx = d.sweetSpotPx;
+      if (_els.sweetZone) _els.sweetZone.style.left = `${_sweetSpotPx}px`;
+      if (_els.dummy)     _els.dummy.style.left     = `${_sweetSpotPx}px`;
+    }
+    if (d.pointerPx != null) {
+      _pointerPx = d.pointerPx;
+      if (_els.pointer) _els.pointer.style.left = `${_pointerPx.toFixed(1)}px`;
+    }
+    if (d.direction != null) _direction = d.direction >= 0 ? 1 : -1;
+    if (d.speed != null) _speed = d.speed;
+    else if (d.combo != null) _speed = Math.min(BASE_SPEED + d.combo * SPEED_PER_COMBO, SPEED_CAP);
+    if (d.combo != null) _combo = d.combo;
+    if (d.score != null) _score = d.score;
+    if (d.remainingMs != null) _gameStartMs = performance.now() - (GAME_DURATION_MS - d.remainingMs);
+  }
+
+  // Spectator: build the running game area (after BEGIN's countdown, or on a late join).
+  function _spectateStartGame(remainingMs = GAME_DURATION_MS) {
+    const stage = document.getElementById("oni-tr-stage");
+    if (!stage) return;
+    stage.innerHTML = _buildGameArea(false);
+    _cacheEls();
+    _updateHUD();
+    _startGameLoop(remainingMs);
   }
 
   function _setComboDisplay(el, combo) {
@@ -727,8 +770,10 @@
     const scorePercent = Math.round(Math.min(_score / MAX_PTS, 1) * 100);
     console.debug(TAG, `Game over. Raw pts: ${_score}, Score: ${scorePercent}%`);
 
-    // Submit score to GM
-    CAMP.Socket.emit(CAMP.MSG.TRAINING_RESULT, { actorId, score: scorePercent });
+    if (_anchorTimer !== null) { clearInterval(_anchorTimer); _anchorTimer = null; }
+
+    // Submit score to GM (send(): a GM owner reaches its own resolver)
+    CAMP.Socket.send(CAMP.MSG.TRAINING_RESULT, { actorId, score: scorePercent });
   }
 
   // ---------------------------------------------------------------------------
@@ -770,11 +815,7 @@
       if (btn) {
         btn.style.display = "block";
         btn.onclick = () => {
-          if (game.user?.isGM) {
-            CAMP.TrainingUI?.resolveProceed(actorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.TRAINING_PROCEED, { actorId });
-          }
+          CAMP.Socket.send(CAMP.MSG.TRAINING_PROCEED, { actorId });
           btn.disabled = true;
         };
       }
@@ -805,7 +846,7 @@
         if (beginBtn) {
           beginBtn.onclick = () => {
             beginBtn.disabled = true;
-            CAMP.Socket.emit(CAMP.MSG.TRAINING_BEGIN, { actorId });
+            CAMP.Socket.send(CAMP.MSG.TRAINING_BEGIN, { actorId });
             _startOwnerCountdown(actorId);
           };
         }
@@ -817,9 +858,11 @@
       const stage = document.getElementById("oni-tr-stage");
       if (!stage) return;
       _runCountdown(3, () => {
-        stage.innerHTML = _buildGameArea(false);
-        _cacheEls();
-        // Spectator sees pointer position updates via onHit
+        // A late-join snapshot or an early anchor may already have started it.
+        if (_gameActive || _resultShown) return;
+        // Same pointer loop as the owner; the anchor sent at GO brings the
+        // real sweet spot.
+        _spectateStartGame();
       });
     },
 
@@ -829,18 +872,12 @@
 
       const { miss, perfect, hit, pointerPx, sweetSpotPx, combo, score } = payload ?? {};
 
-      // Update sweet spot & dummy position
-      if (sweetSpotPx != null) {
-        _sweetSpotPx = sweetSpotPx;
-        if (_els.sweetZone) _els.sweetZone.style.left = `${sweetSpotPx}px`;
-        if (_els.dummy)     _els.dummy.style.left     = `${sweetSpotPx}px`;
-      }
+      // Hit arrived before the countdown finished here: start the loop now.
+      if (!_gameActive && !_resultShown && !_els.pointer) _spectateStartGame(payload?.remainingMs ?? GAME_DURATION_MS);
 
-      // Snap pointer
-      if (pointerPx != null) {
-        _pointerPx = pointerPx;
-        if (_els.pointer) _els.pointer.style.left = `${pointerPx}px`;
-      }
+      // Re-anchor pointer (position + direction + speed), sweet spot, clock.
+      // A miss resets the owner's pointer to 0 moving right at base speed.
+      _applyAnchor(miss ? { ...payload, pointerPx: 0, direction: 1, speed: BASE_SPEED } : (payload ?? {}));
 
       // HUD
       if (score != null && _els.scoreVal) _els.scoreVal.textContent = `${Math.round(Math.min(score / MAX_PTS, 1) * 100)}%`;
@@ -852,13 +889,16 @@
         _showFloat("Perfect!", "oni-tr-perfect", hitX);
         _flashZone("oni-tr-perfect-flash");
         _spawnParticles(hitX, true);
+        _playSound(SFX.PERFECT, 0.45);
       } else if (hit) {
         _showFloat("Hit!", "oni-tr-hit", hitX);
         _flashZone("oni-tr-hit-flash");
         _spawnParticles(hitX, false);
+        _playSound(SFX.HIT, 0.7);
       } else if (miss) {
         _showFloat("Miss", "oni-tr-miss", sweetSpotPx ?? _sweetSpotPx);
         _flashZone("oni-tr-miss-flash");
+        _playSound(SFX.MISS, 0.7);
       }
     },
 
@@ -934,9 +974,46 @@
       _startGameLoop();
       _setupSpacebar(actorId);
 
+      // Spectators: the first anchor carries the random sweet spot, then one
+      // every 500 ms bounds pointer/clock drift between hits.
+      _sendAnchor(actorId);
+      _anchorTimer = setInterval(() => _sendAnchor(actorId), 500);
+
       _endTimer = setTimeout(() => _endGame(actorId), GAME_DURATION_MS);
     });
   }
+
+  // ---------------------------------------------------------------------------
+  // Spectator live channel + late join (camp-minigame-sync.js)
+  // ---------------------------------------------------------------------------
+  CAMP.MG?.on("TRAINING", (kind, data) => {
+    if (kind !== "anchor" || _isOwnerFlag) return;
+    if (!document.getElementById(OVL_ID) || _resultShown) return;
+    if (data.actorId && _actorId && data.actorId !== _actorId) return;
+    if (!_gameActive && !_els.pointer) _spectateStartGame(data.remainingMs ?? GAME_DURATION_MS);
+    _applyAnchor(data);
+    if (_els.scoreVal) _els.scoreVal.textContent = `${Math.round(Math.min(_score / MAX_PTS, 1) * 100)}%`;
+  });
+
+  CAMP.MG?.registerGame("TRAINING", {
+    snapshot() {
+      if (!_isOwnerFlag || !_gameActive || !document.getElementById(OVL_ID)) return null;
+      return {
+        actorId: _actorId,
+        pointerPx: _pointerPx, direction: _direction, speed: _speed,
+        sweetSpotPx: _sweetSpotPx, combo: _combo, score: _score,
+        remainingMs: _remainingMs(),
+      };
+    },
+    apply(snap) {
+      if (!snap || _isOwnerFlag || !document.getElementById(OVL_ID)) return;
+      if (snap.actorId && _actorId && snap.actorId !== _actorId) return;
+      if (!_gameActive) _spectateStartGame(snap.remainingMs ?? GAME_DURATION_MS);
+      _applyAnchor(snap);
+      _updateHUD();
+    },
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 
   console.debug("[CampSystem][TrainingUI]", "Training UI loaded.");
 })();
