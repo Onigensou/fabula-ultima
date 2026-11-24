@@ -36,18 +36,56 @@
 
   // ── Ownership helpers ─────────────────────────────────────────────────────
 
+  // Shared minigame owner rule (camp-minigame-sync.js).
   function _getOwnerUserId(actor) {
-    const hit = Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const user = game.users?.get(id);
-      return lvl === 3 && user && !user.isGM;
-    });
-    return hit?.[0] ?? null;
+    return actor ? (CAMP.MG?.ownerUserId?.(actor) ?? null) : null;
   }
 
   function _isOwner(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return actor ? !!CAMP.MG?.isOwner?.(actor) : false;
+  }
+
+  // ── Spectator mirror of the owner's cursor (MG.event "MAGIC_LESSON") ──────
+  //   hover {sel, key|null}  sel = "ally" | "spell"; key = target id / spell uuid
+  //   pick  {sel, key}
+  //   scroll {top}           spell list scroll position
+  const _CARD_SEL = { ally: [".oni-ml-ally-card", "targetId"], spell: [".oni-ml-spell-btn", "uuid"] };
+
+  function _markRemote(sel, key, cls) {
+    const ovl = document.getElementById(OVL_ID);
+    const def = _CARD_SEL[sel];
+    if (!ovl || !def) return;
+    ovl.querySelectorAll(def[0]).forEach(el => {
+      el.classList.toggle(cls, key != null && el.dataset[def[1]] === key);
+    });
+  }
+
+  function _wireOwnerMirror(ovl, actorId, sel) {
+    const def = _CARD_SEL[sel];
+    let picked = false;
+    ovl.querySelectorAll(def[0]).forEach(el => {
+      el.addEventListener("mouseenter", () => {
+        if (!picked) CAMP.MG?.event?.("MAGIC_LESSON", actorId, "hover", { sel, key: el.dataset[def[1]] ?? null });
+      });
+      el.addEventListener("mouseleave", () => {
+        if (!picked) CAMP.MG?.event?.("MAGIC_LESSON", actorId, "hover", { sel, key: null });
+      });
+      el.addEventListener("click", () => {
+        if (picked) return;
+        picked = true;
+        CAMP.MG?.event?.("MAGIC_LESSON", actorId, "pick", { sel, key: el.dataset[def[1]] ?? null });
+      });
+    });
+    if (sel === "spell") {
+      const grid = ovl.querySelector(".oni-ml-spell-grid");
+      let last = 0, pend = null;
+      grid?.addEventListener("scroll", () => {
+        const fire = () => { last = Date.now(); pend = null; CAMP.MG?.event?.("MAGIC_LESSON", actorId, "scroll", { top: grid.scrollTop }); };
+        const wait = 80 - (Date.now() - last);   // ≤ ~12 Hz
+        if (wait <= 0) fire();
+        else if (!pend) pend = setTimeout(fire, wait);
+      });
+    }
   }
 
   // ── Token image ───────────────────────────────────────────────────────────
@@ -143,6 +181,16 @@
       .oni-ml-ally-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
       .oni-ml-ally-card img  { width:64px; height:64px; border:none; border-radius:0; background:transparent; object-fit:contain; }
       .oni-ml-ally-card span { font-size:.82rem; font-weight:700; color:#5a3010; text-align:center; }
+      /* Spectator: same cards/spells, read-only; the owner's hover/pick is mirrored */
+      .oni-ml-spectate .oni-ml-ally-card, .oni-ml-spectate .oni-ml-spell-btn { cursor: default; }
+      .oni-ml-spectate .oni-ml-ally-card:hover:not(.oni-ml-remote-hover) { transform: none; box-shadow: none; }
+      .oni-ml-spectate .oni-ml-spell-btn:hover:not(.oni-ml-remote-hover) { filter: none; transform: none; }
+      .oni-ml-ally-card.oni-ml-remote-hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+      .oni-ml-spell-btn.oni-ml-remote-hover { filter: brightness(1.05); transform: translateX(2px); }
+      .oni-ml-ally-card.oni-ml-remote-pick, .oni-ml-spell-btn.oni-ml-remote-pick {
+        border-color: #9a78e0;
+        box-shadow: 0 0 0 3px rgba(154,120,224,.55);
+      }
 
       /* ── Stage 2: spell grid ── */
       .oni-ml-spell-grid {
@@ -271,14 +319,14 @@
       const ovl = document.createElement("div");
       ovl.id = OVL_ID;
 
-      if (isOwner) {
-        const allyCards = (allies ?? []).map(a => `
+      const allyCards = (allies ?? []).map(a => `
           <div class="oni-ml-ally-card" data-target-id="${a.id}">
             <img src="${a.img}" alt="${a.name}">
             <span>${a.name}</span>
           </div>
         `).join("");
 
+      if (isOwner) {
         ovl.innerHTML = `
           <div class="oni-ml-card">
             <div class="oni-ml-card-title">
@@ -289,25 +337,25 @@
           </div>
         `;
 
+        _wireOwnerMirror(ovl, actorId, "ally");
         ovl.querySelectorAll(".oni-ml-ally-card").forEach(card => {
           card.addEventListener("click", () => {
             const targetId = card.dataset.targetId;
             if (!targetId) return;
-            if (game.user?.isGM) {
-              CAMP.MagicLessonUI.resolveTarget(actorId, targetId);
-            } else {
-              CAMP.Socket.emit(CAMP.MSG.MAGIC_LESSON_TARGET, { actorId, targetActorId: targetId });
-            }
+            // send(): a GM-owner reaches its own resolver through the router.
+            CAMP.Socket.send(CAMP.MSG.MAGIC_LESSON_TARGET, { actorId, targetActorId: targetId });
           }, { once: true });
         });
       } else {
         const ownerUid  = _getOwnerUserId(teacherActor);
         const ownerName = ownerUid ? (game.users?.get(ownerUid)?.name ?? "teacher") : "teacher";
         ovl.innerHTML = `
-          <div class="oni-ml-card">
+          <div class="oni-ml-card oni-ml-spectate">
             <div class="oni-ml-card-title">
               <img src="${LESSON_ICON}" alt=""> Magic Lesson
             </div>
+            <div class="oni-ml-card-sub">Who will you teach?</div>
+            <div class="oni-ml-ally-grid">${allyCards}</div>
             <div class="oni-ml-waiting-txt">Waiting for ${ownerName} to choose a target…</div>
           </div>
         `;
@@ -341,8 +389,7 @@
       const ovl = document.createElement("div");
       ovl.id = OVL_ID;
 
-      if (isOwner) {
-        const spellRows = (spells ?? []).map(s => `
+      const spellRows = (spells ?? []).map(s => `
           <button class="oni-ml-spell-btn"
                   data-uuid="${s.uuid}"
                   data-name="${s.name.replace(/"/g, '&quot;')}"
@@ -352,6 +399,7 @@
           </button>
         `).join("");
 
+      if (isOwner) {
         ovl.innerHTML = `
           <div class="oni-ml-card">
             <div class="oni-ml-card-title">
@@ -362,30 +410,32 @@
           </div>
         `;
 
+        _wireOwnerMirror(ovl, actorId, "spell");
         ovl.querySelectorAll(".oni-ml-spell-btn").forEach(btn => {
           btn.addEventListener("click", () => {
             const spellUuid = btn.dataset.uuid;
             const spellName = btn.dataset.name;
             const spellImg  = btn.dataset.img;
             if (!spellUuid) return;
-            if (game.user?.isGM) {
-              CAMP.MagicLessonUI.resolveSpell(actorId, spellUuid, spellName, spellImg);
-            } else {
-              CAMP.Socket.emit(CAMP.MSG.MAGIC_LESSON_SPELL, { actorId, spellUuid, spellName, spellImg });
-            }
+            // send(): a GM-owner reaches its own resolver through the router.
+            CAMP.Socket.send(CAMP.MSG.MAGIC_LESSON_SPELL, { actorId, spellUuid, spellName, spellImg });
           }, { once: true });
         });
       } else {
         const ownerUid  = _getOwnerUserId(teacherActor);
         const ownerName = ownerUid ? (game.users?.get(ownerUid)?.name ?? "teacher") : "teacher";
         ovl.innerHTML = `
-          <div class="oni-ml-card">
+          <div class="oni-ml-card oni-ml-spectate">
             <div class="oni-ml-card-title">
               <img src="${LESSON_ICON}" alt=""> Magic Lesson
             </div>
+            <div class="oni-ml-card-sub">Which spell will you teach ${targetName}?</div>
+            <div class="oni-ml-spell-grid">${spellRows}</div>
             <div class="oni-ml-waiting-txt">Waiting for ${ownerName} to choose a spell…</div>
           </div>
         `;
+        // Read-only: the buttons only mirror the owner's cursor.
+        ovl.querySelectorAll(".oni-ml-spell-btn").forEach(b => { b.tabIndex = -1; b.addEventListener("click", e => e.preventDefault()); });
       }
 
       document.body.appendChild(ovl);
@@ -517,11 +567,7 @@
             proceedBtn.style.display = "";
             proceedBtn.addEventListener("click", () => {
               proceedBtn.disabled = true;
-              if (game.user?.isGM) {
-                CAMP.MagicLessonUI.resolveProceed(_currentTeacherActorId);
-              } else {
-                CAMP.Socket.emit(CAMP.MSG.MAGIC_LESSON_PROCEED, { actorId: _currentTeacherActorId });
-              }
+              CAMP.Socket.send(CAMP.MSG.MAGIC_LESSON_PROCEED, { actorId: _currentTeacherActorId });
             }, { once: true });
           }
         }
@@ -546,6 +592,19 @@
       el.addEventListener("animationend", () => el.remove(), { once: true });
     },
   };
+
+  // ── Spectator: owner's target / spell cursor ──────────────────────────────
+  CAMP.MG?.on?.("MAGIC_LESSON", (kind, data, msg) => {
+    if (!msg?.a || msg.a !== _currentTeacherActorId) return;
+    if (kind === "hover") _markRemote(data.sel, data.key ?? null, "oni-ml-remote-hover");
+    else if (kind === "pick") {
+      _markRemote(data.sel, null, "oni-ml-remote-hover");
+      _markRemote(data.sel, data.key ?? null, "oni-ml-remote-pick");
+    } else if (kind === "scroll") {
+      const grid = document.querySelector(`#${OVL_ID} .oni-ml-spectate .oni-ml-spell-grid`);
+      if (grid) grid.scrollTop = Number(data.top) || 0;
+    }
+  });
 
   console.debug(TAG, "Magic Lesson UI loaded.");
 })();
