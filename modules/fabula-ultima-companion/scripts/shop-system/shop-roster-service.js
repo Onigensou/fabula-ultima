@@ -154,13 +154,22 @@ export async function buildCandidates(actor, state = getState(actor)) {
 
 // V12 can list an embedded Item the server no longer has; deleting it throws
 // "does not exist" on a real server (not in the snapshot runner). Skip those.
+// Foundry also raises an error toast for it, so that one message is filtered
+// while we delete (same pattern as the Chapter 4 restock migration).
 async function safeDelete(actor, ids) {
-  for (const id of ids) {
-    if (!actor.items.get(id)) continue;
-    try { await actor.deleteEmbeddedDocuments("Item", [id]); }
-    catch (e) { if (!/does not exist/i.test(String(e?.message ?? e))) throw e; }
-  }
+  const n = ui?.notifications;
+  const orig = n?.error?.bind(n);
+  if (n) n.error = (msg, ...rest) => (typeof msg === "string" && /does not exist/i.test(msg) ? null : orig?.(msg, ...rest));
+  try {
+    for (const id of ids) {
+      if (!actor.items.get(id)) continue;
+      try { await actor.deleteEmbeddedDocuments("Item", [id]); }
+      catch (e) { if (!/does not exist/i.test(String(e?.message ?? e))) throw e; }
+    }
+  } finally { if (n) n.error = orig; }
 }
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function subtreeIds(actor, rootId) {
   const out = [];
@@ -176,34 +185,92 @@ function worldSubtree(rootId) {
   return out;
 }
 
+const equipmentListings = (actor) => actor.items.filter((i) => !i.system?.container && EQUIP_TYPES.includes(itemType(i)));
+
+/** The world item a listing was copied from (flag first; older listings by name). */
+function listingSource(it) {
+  const id = it.flags?.[M]?.rosterSource;
+  if (id && game.items.get(id)) return id;
+  const key = normalizeName(it.name);
+  return game.items.find((w) => !w.system?.container && w.folder?.name !== EMBED_FOLDER && normalizeName(w.name) === key)?.id ?? null;
+}
+
+async function deleteListing(actor, it) {
+  const kids = subtreeIds(actor, it.id);
+  await safeDelete(actor, [it.id]);
+  // CSB cascades the contained items itself. Give that a moment to land on
+  // this client before sweeping, or we race it (real server: "does not exist").
+  for (let i = 0; i < 20 && kids.some((id) => actor.items.get(id)); i++) await wait(100);
+  await safeDelete(actor, kids.reverse());
+}
+
+async function createListing(actor, { id, price }) {
+  const src = game.items.get(id);
+  if (!src) { console.warn(TAG, `world item ${id} missing, listing skipped`); return false; }
+  const data = src.toObject(); delete data._id;
+  data.system.container = null;
+  data.system.props = { ...data.system.props, item_cost: String(price), item_quantity: "1" };
+  foundry.utils.setProperty(data, `flags.${M}.rosterSource`, src.id);
+  const [parent] = await actor.createEmbeddedDocuments("Item", [data]);
+  const map = new Map([[src.id, parent.id]]);
+  for (const child of worldSubtree(src.id)) {
+    const cd = child.toObject(); delete cd._id;
+    cd.system.container = map.get(child.system.container) ?? parent.id;
+    const [c] = await actor.createEmbeddedDocuments("Item", [cd]);
+    map.set(child.id, c.id);
+  }
+  return true;
+}
+
 /** Replace every equipment listing with `entries` ([{id, price}]). */
 async function writeEquipment(actor, entries) {
-  const old = actor.items.filter((i) => !i.system?.container && EQUIP_TYPES.includes(itemType(i)));
-  for (const it of old) {
-    const kids = subtreeIds(actor, it.id);
-    await safeDelete(actor, [it.id]);
-    await safeDelete(actor, kids.reverse());   // CSB usually cascades; sweep what's left
-  }
+  for (const it of equipmentListings(actor)) await deleteListing(actor, it);
   let made = 0;
-  for (const { id, price } of entries) {
-    const src = game.items.get(id);
-    if (!src) { console.warn(TAG, `world item ${id} missing, listing skipped`); continue; }
-    const data = src.toObject(); delete data._id;
-    data.system.container = null;
-    data.system.props = { ...data.system.props, item_cost: String(price), item_quantity: "1" };
-    foundry.utils.setProperty(data, `flags.${M}.rosterSource`, src.id);
-    const [parent] = await actor.createEmbeddedDocuments("Item", [data]);
-    const map = new Map([[src.id, parent.id]]);
-    for (const child of worldSubtree(src.id)) {
-      const cd = child.toObject(); delete cd._id;
-      cd.system.container = map.get(child.system.container) ?? parent.id;
-      const [c] = await actor.createEmbeddedDocuments("Item", [cd]);
-      map.set(child.id, c.id);
-    }
-    made++;
-  }
+  for (const e of entries) if (await createListing(actor, e)) made++;
   return made;
 }
+
+/**
+ * Make the equipment listings match state.current without touching listings
+ * that already match (their sold-out state is kept). Used after a save load:
+ * the save system keeps shop stock that differs from its world master, so a
+ * load would otherwise leave the newer roll's listings on sale next to the
+ * restored ones.
+ */
+export async function syncToState(actor) {
+  const state = getState(actor);
+  if (!state?.enabled) return { removed: 0, added: 0 };
+  const want = new Map((state.current ?? []).map((e) => [e.id, e]));
+  const seen = new Set();
+  let removed = 0, added = 0;
+  for (const it of equipmentListings(actor)) {
+    const src = listingSource(it);
+    if (src && want.has(src) && !seen.has(src)) { seen.add(src); continue; }
+    await deleteListing(actor, it);
+    removed++;
+  }
+  for (const [id, e] of want) if (!seen.has(id) && await createListing(actor, e)) added++;
+  if (removed || added) console.log(TAG, `${actor.name}: synced to saved roster (−${removed} +${added})`);
+  return { removed, added };
+}
+
+// Save system: after shop stock is restored (phase 0), line roster shops up
+// with their restored roster record. Nothing is stored (the record lives in
+// the shop actor's flags, which the shop extractor already saves).
+Hooks.once("init", () => {
+  const SS = globalThis.SaveSystem;
+  if (!SS?.registerExtractor) { console.warn(TAG, "save system not found; roster/load sync off"); return; }
+  SS.registerExtractor({
+    key: "shopRosterSync",
+    label: "Shop roster sync",
+    phase: 2,
+    extract: async () => null,
+    async apply() {
+      if (!game.user?.isGM) return;
+      for (const actor of rosterShops()) await syncToState(actor);
+    },
+  });
+});
 
 /** Consumable listings with a baseQty go back to it. Returns refilled names. */
 async function refillConsumables(actor) {
@@ -420,4 +487,4 @@ Hooks.once("init", () => {
 Hooks.on("renderChatMessage", bindCard);
 
 globalThis.FUCompanion ??= {};
-globalThis.FUCompanion.shopRoster = { onRest, reroll, undo, setLocked, patchState, inspect, buildCandidates, getState, isRosterShop };
+globalThis.FUCompanion.shopRoster = { onRest, reroll, undo, setLocked, patchState, inspect, buildCandidates, getState, isRosterShop, syncToState };
