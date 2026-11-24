@@ -127,7 +127,7 @@ export function portraitStrip(entries, selectedId, action, info = "") {
   return `<div class="pm-win pm-who pm-strip"><div class="pm-chips">${ends[0]}${chips}${ends[1]}</div><div class="pm-who-body pm-stripinfo">${info}</div></div>`;
 }
 
-const KEY_LABEL = { Enter: "Enter", Delete: "Del", Escape: "Esc", Tab: "Tab", u: "U", q: "Q", e: "E" };
+const KEY_LABEL = { Enter: "Enter", Delete: "Del", Escape: "Esc", Tab: "Tab", u: "U", q: "Q", e: "E", g: "G" };
 /** A small key cap, for showing which key does what beside the thing it does. */
 export const kbd = (k) => `<kbd class="pm-kbd">${esc(KEY_LABEL[k] ?? k)}</kbd>`;
 
