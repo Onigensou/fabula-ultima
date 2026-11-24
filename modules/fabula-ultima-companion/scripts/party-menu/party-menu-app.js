@@ -28,7 +28,7 @@ import {
 } from "./party-menu-core.js";
 import { COMMAND_DEFS, canUseCommand } from "./party-menu-access.js";
 import { conflictLive } from "./party-menu-core.js";
-import { SND, play, STAT, esc, safeHtml, bar, gridStep as gridStepIn, navBar, overlayFoot, kbd } from "./party-menu-ui.js";
+import { SND, play, STAT, esc, safeHtml, bar, gridStep as gridStepIn, navBar, overlayFoot, kbd, zenitIcon } from "./party-menu-ui.js";
 import { itemView } from "./party-menu-view-item.js";
 import { equipView, statusView, who } from "./party-menu-view-gear.js";
 import { setupView } from "./party-menu-view-setup.js";
@@ -461,7 +461,7 @@ function renderMain() {
           <div class="pm-info-row pm-loc">${esc(r.location || "—")}</div>
           <div class="pm-zsep"></div>
           <div class="pm-zline is-stash pm-hit" data-action="stash">
-            <span class="pm-label"><i class="fas fa-coins"></i>Party Total</span>
+            <span class="pm-label">${zenitIcon()}Party Total</span>
             <span class="pm-zval"><span class="pm-zenit">${Number(r.zenit || 0).toLocaleString("en-US")}</span><em>z</em></span>
             <div class="pm-ztip" role="tooltip">
               <div class="pm-ztip-row"><i class="fas fa-sack-dollar"></i><span>Party Stash</span><b>${Number(r.stash || 0).toLocaleString("en-US")}</b><em>z</em></div>
@@ -1703,6 +1703,10 @@ function ensureStyles() {
 #${ROOT_ID} .pm-zline { display: flex; flex-direction: column; gap: 0; border-radius: 8px; padding: 2px 6px; margin: 0 -6px; }
 #${ROOT_ID} .pm-zline .pm-label { font-size: 12px; display: flex; align-items: center; gap: 6px; }
 #${ROOT_ID} .pm-zline .pm-label i { color: var(--gold-3); }
+/* the game's zenit icon (GP.png), in text and on the nav button */
+#${ROOT_ID} .pm-zicon { width: 1.35em; height: 1.35em; object-fit: contain; vertical-align: -.3em; border: 0; flex: 0 0 auto; }
+#${ROOT_ID} .pm-zline .pm-label .pm-zicon { width: 18px; height: 18px; }
+#${ROOT_ID} .pm-navimg { width: 18px; height: 18px; object-fit: contain; vertical-align: -4px; margin-right: 5px; border: 0; }
 #${ROOT_ID} .pm-zline .pm-zval { align-self: flex-end; display: flex; align-items: baseline; }
 #${ROOT_ID} .pm-zline.is-stash { cursor: pointer; position: relative; }
 #${ROOT_ID} .pm-zline.is-stash:hover { background: linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.12) 70%); box-shadow: inset 0 0 0 1px rgba(154,122,43,.45); }

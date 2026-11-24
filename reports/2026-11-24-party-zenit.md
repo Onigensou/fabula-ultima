@@ -7,7 +7,7 @@ number as the stash. That number was the stored `total_zenit` roll-up, and it wa
 sandbox. Mockup, with the decisions recorded on the page: https://claude.ai/artifact/5J7MVprV87fBkELxpB1zdR
 
 ## What players see
-- **Main menu:** the coin box now reads **Party Total** (everyone's zenit + the stash), summed live each time
+- **Main menu:** the coin box now reads **Party Total** (with the game's zenit icon, GP.png, also on the bag line and the Zenit button) (everyone's zenit + the stash), summed live each time
   the menu draws. Hovering it shows a tooltip with the **Party Stash** amount. Clicking it opens Item → Party
   Bag with the Zenit box already open.
 - **Item view:** the Party Bag line shows the stash ("Shared by the party · 6,919 z · 82 shown"). On the

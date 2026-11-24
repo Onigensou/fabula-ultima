@@ -10,7 +10,7 @@ import {
   bagsOf, moveRefusal, moveItem, useRefusal, useItem, orbmentOf,
   zenitMembersOf, zenitRefusal, moveZenit, conflictLive,
 } from "./party-menu-inventory.js";
-import { esc, safeHtml, play, SND, img, gridStep, portraitStrip, overlayFoot, kbd } from "./party-menu-ui.js";
+import { esc, safeHtml, play, SND, img, gridStep, portraitStrip, overlayFoot, kbd, zenitIcon, ZENIT_ICON } from "./party-menu-ui.js";
 import { setBonusHTML } from "../linked-text/lt-setbonus.js";
 
 const REASONS = {
@@ -292,7 +292,7 @@ export const itemView = {
     }
     if ((v.focus === "list" || v.focus === "zenit") && zenitHere(ctx)) {
       const why = conflictLive() ? moveReason("in-combat-zenit") : "";
-      actions.push({ key: "g", label: "Zenit", icon: "fa-coins", disabled: !!why, title: why || "Put zenit in the Party Stash or take it out" });
+      actions.push({ key: "g", label: "Zenit", img: ZENIT_ICON, disabled: !!why, title: why || "Put zenit in the Party Stash or take it out" });
     }
     if (v.focus === "list") actions.push({ key: "o", label: _orbPips ? "Hide Orbment" : "Show Orbment", icon: "fa-gem" });
     return { crumbs, actions };
@@ -339,8 +339,8 @@ export const itemView = {
     const zHere = zenitHere(ctx);
     const flash = v.zflash && Date.now() - v.zflash < Z.FLASH_MS ? "is-flash" : "";
     const zAmt = zHere
-      ? `<span class="pm-subz pm-hit ${flash}" data-action="it-zenit" title="Open the Zenit box"><i class="fas fa-coins"></i> <b>${fmtZ(zOf(bag))}</b> z</span>`
-      : `<i class="fas fa-coins"></i> ${fmtZ(zOf(bag))} z`;
+      ? `<span class="pm-subz pm-hit ${flash}" data-action="it-zenit" title="Open the Zenit box">${zenitIcon()} <b>${fmtZ(zOf(bag))}</b> z</span>`
+      : `${zenitIcon()} ${fmtZ(zOf(bag))} z`;
     const sub = isParty
       ? `Shared by the party · ${zAmt} · ${items.length} shown`
       : `${game.user.isGM ? "Bag" : bag.isOwner ? "Your bag" : "Teammate's bag"} · ${zAmt}`;

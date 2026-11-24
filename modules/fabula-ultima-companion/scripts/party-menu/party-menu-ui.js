@@ -74,6 +74,10 @@ export function bar(cur, max, cls) {
   return `<div class="pm-bar ${cls}"><i style="width:${pct.toFixed(1)}%"></i></div>`;
 }
 
+// The game's zenit icon (battle results, crafting, character creation use it too).
+export const ZENIT_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png";
+export const zenitIcon = () => `<img class="pm-zicon" src="${ZENIT_ICON}" alt="">`;
+
 export const img = (src, cls = "") =>
   `<img ${cls ? `class="${cls}" ` : ""}src="${esc(src)}" alt="" onerror="this.style.visibility='hidden'">`;
 
@@ -147,7 +151,7 @@ export function navBar(crumbs, actions = []) {
     .join(`<i class="fas fa-chevron-right pm-crumbsep"></i>`);
   const acts = actions.map((a) => `<button type="button" class="pm-btn pm-navact pm-hit" data-action="nav-key" data-key="${esc(a.key)}"`
     + `${a.disabled ? " disabled" : ""}${a.title ? ` title="${esc(a.title)}"` : ""}>`
-    + `${a.icon ? `<i class="fas ${esc(a.icon)}"></i>` : ""}${esc(a.label)}${kbd(a.key)}</button>`).join("");
+    + `${a.img ? `<img class="pm-navimg" src="${esc(a.img)}" alt="">` : a.icon ? `<i class="fas ${esc(a.icon)}"></i>` : ""}${esc(a.label)}${kbd(a.key)}</button>`).join("");
   return `<div class="pm-win pm-nav">
     <button type="button" class="pm-btn pm-navback pm-hit" data-action="nav-back" title="Back (X, Esc or right-click)"><i class="fas fa-chevron-left"></i>Back</button>
     <div class="pm-crumbs">${path}</div>
