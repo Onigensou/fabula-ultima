@@ -8553,6 +8553,9 @@ async function applyApplyAeEffect(row, ctx) {
         const chKey = String(ch.key ?? "");
         if (/^(?:system\.props\.)?affinity_\d+$/.test(chKey)) continue;
         if (/^(?:system\.props\.)?condition_[a-z0-9_]+$/i.test(chKey)) continue;
+        // `attribute` (the creature's element) carries the same kind of all-caps
+        // code (LIGHT, DARK, FIRE…): baked, "LIGHT" became "0". Deva's form AEs.
+        if (/^(?:system\.props\.)?attribute$/.test(chKey)) continue;
         // Conditional-change-gate directives (aeWhen / aeAffinityFloor / …) are
         // CSB syntax evaluated at DERIVATION by syntaxExtender-conditionalChangeGate.
         // They are function calls, so `looksLikeNumericFormula` says yes and the

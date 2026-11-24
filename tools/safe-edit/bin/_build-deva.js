@@ -7,7 +7,8 @@
 //
 // NUMBERS UPDATED 2026-11-21 (Valley trio tuning, dossiers/deva.md): HP 1400, attacks check +6, damage
 // Vajra/Mudra 52, Slap 36, Slam 45, Fury 42, Focus 18, Surya 78, Kala 38; Surya + Kala players-only;
-// Detonate victim pool "party". The WORLD is the source of truth — diff against it before any --apply.
+// Detonate victim pool "party". 2026-11-24 (_deva-affinity-ef.js): HP 1550, form-bound Light/Dark
+// affinity + attribute on the form AEs, EF spear 150 / brawling 50. The WORLD is the source of truth — diff against it before any --apply.
 //
 // THE ROUND CLOCK. The action pattern's `round` condition reads 0 inside a BD
 // battle (BD creates no Foundry Combat), and the pattern has no formula
@@ -111,8 +112,13 @@ function ae(item, id, name, { tags = [], hidden = false, changes = [], blurb = "
     flags: { [NS]: { crossScene: false, charges: 1, lifetimeMode: "persistent_counter", ...(hidden ? { hidden: true } : {}), ...flags } },
   }, `NEW AE — ${name}`];
 }
-const FORM_STRIKE = { tags: ["deva_offense"], blurb: "Fury: her arms burn red.", flags: { poseArt: FURY_IDLE } };
-const FORM_MAGIC = { tags: ["deva_offense"], blurb: "Focus: her arms burn blue.", flags: { poseArt: FOCUS_IDLE } };
+// Form-bound affinities (2026-11-24, _deva-affinity-ef.js): holding the form AE IS the affinity; Guard rounds
+// clear it (deva_offense), so she is Neutral with no attribute there. 4 = dark, 8 = light.
+const formCh = (key, value) => ({ key, mode: 5, priority: 3, value });
+const FORM_STRIKE = { tags: ["deva_offense"], blurb: "Fury: her arms burn red. Resists Light. Vulnerable to Dark.", flags: { poseArt: FURY_IDLE },
+  changes: [formCh("affinity_8", 'aeAffinityFloor("RS")'), formCh("affinity_4", 'aeAffinityFloor("VU")'), formCh("attribute", "LIGHT")] };
+const FORM_MAGIC = { tags: ["deva_offense"], blurb: "Focus: her arms burn blue. Resists Dark. Vulnerable to Light.", flags: { poseArt: FOCUS_IDLE },
+  changes: [formCh("affinity_8", 'aeAffinityFloor("VU")'), formCh("affinity_4", 'aeAffinityFloor("RS")'), formCh("attribute", "DARK")] };
 const MARK = (tag) => ({ tags: [tag], hidden: true });
 
 // ── row helpers ────────────────────────────────────────────────────────────
@@ -364,7 +370,9 @@ run(async ({ changes }) => {
     traits: "Arrogant · Devoted to Fafnir · Respects strength · Reads how you fight",
     dex_base: "10", ins_base: "10", mig_base: "10", wlp_base: "8",
     def_mod: "+2", mdef_mod: "+2", defense: 12, magic_defense: 12,
-    max_hp: "1400", current_hp: "1400", max_mp: "100", current_mp: "100",
+    max_hp: "1550", current_hp: "1550", max_mp: "100", current_mp: "100",
+    spear_ef: "150", brawling_ef: "50",          // 2026-11-24: reach beats a brawler; fists catch fists
+
     init: "12", max_zero: "6", ultima_points: "3", zenit_reward_min: "1400", zenit_reward_max: "1400",
     study_text: STUDY,
     // the rule for every solo elite (Charm), plus the design's own three; Provoked is the passive's job
