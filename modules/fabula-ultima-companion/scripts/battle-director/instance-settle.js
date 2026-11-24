@@ -57,6 +57,11 @@ const LEDGER_FAMILY = new Set([
   // deal_damage rows (the Burn tick + trigger_status replays); listeners scope by
   // status via reaction_status_filter. Subject = the afflicted creature.
   "creature_status_triggered",
+  // creature_completes_item fans out observer-aware — an ONLOOKER reacts to
+  // ANOTHER creature using an item (Copycat: "when someone other than you uses a
+  // Consumable, use a copy of it"). Subject = the item user. No authored row used
+  // this trigger before (2026-11-25), so nothing over-fires.
+  "creature_completes_item",
 ]);
 
 export function registerBuiltinReactor(fn) {

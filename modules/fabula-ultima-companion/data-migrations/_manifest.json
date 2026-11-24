@@ -784,6 +784,10 @@
     {
       "key": "2026-11-25-hako-shop-roster",
       "path": "data-migrations/2026-11-25-hako-shop-roster.js"
+    },
+    {
+      "key": "2026-11-25-legacy-gear-authoring",
+      "path": "data-migrations/2026-11-25-legacy-gear-authoring.js"
     }
   ]
 }

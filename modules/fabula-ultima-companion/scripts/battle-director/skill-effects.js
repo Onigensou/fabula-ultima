@@ -11522,8 +11522,26 @@ async function applyFreeActionEffect(row, ctx) {
   const ref = String(row.action_ref ?? "").trim();
   let presetItem = null;
   let enabledLabels = [];
+  let copiedItem = false;
   if (ref.toLowerCase() === "self") {
     presetItem = ctx.skill ?? null;
+  } else if (ref.toLowerCase() === "trigger_item") {
+    // Copycat (2026-11-25): perform the consumable the TRIGGER's Item action used,
+    // as a copy — "create" mode at 0 IP, so nothing is taken from anyone's bag.
+    // The used carrier may already be gone (last one consumed), so fall back to
+    // the world item of the same name.
+    const p = ctx.payload ?? {};
+    let src = null;
+    try { src = p.sourceItemUuid ? await fromUuid(p.sourceItemUuid) : null; } catch { src = null; }
+    if (!src && p.sourceItemName) {
+      const want = String(p.sourceItemName).trim().toLowerCase();
+      src = game.items?.find?.((i) => !i.system?.container
+        && String(i.name ?? "").trim().toLowerCase() === want
+        && String(i.system?.props?.item_type ?? "").toLowerCase() === "consumable") ?? null;
+    }
+    presetItem = src;
+    copiedItem = !!src;
+    if (!src) warn(`skill-effects.free_action: action_ref "trigger_item" — the used item could not be found (${p.sourceItemName ?? p.sourceItemUuid ?? "no item on the trigger"})`);
   } else if (ref.toLowerCase().startsWith("merged_arcanum:")) {
     // Dynamic preset: perform a child of the performer's CURRENTLY-MERGED Arcanum, by
     // arcanum_role. `merged_arcanum:dismiss` stages that Arcanum's Dismiss child; general
@@ -11589,7 +11607,10 @@ async function applyFreeActionEffect(row, ctx) {
       kind = getRuntimeActionView(presetItem).kind || "Skill";
     } catch (e) { warn(`skill-effects.free_action: getRuntimeActionView threw for ${presetItem.name}`, e); }
     const targetUuids = presetTargetTokenUuids ?? undefined;
-    if (kind === "Attack") {
+    if (copiedItem) {
+      preset = { command: "Item", skillUuid: presetItem.uuid, sourceItemUuid: presetItem.uuid,
+        itemMode: "create", itemCost: 0, targetUuids };
+    } else if (kind === "Attack") {
       preset = { command: "Attack", attackMode: "npc", npcAttackItemUuid: presetItem.uuid, targetUuids };
     } else if (kind === "Spell") {
       preset = { command: "Spell", skillUuid: presetItem.uuid, sourceItemUuid: presetItem.uuid, targetUuids };

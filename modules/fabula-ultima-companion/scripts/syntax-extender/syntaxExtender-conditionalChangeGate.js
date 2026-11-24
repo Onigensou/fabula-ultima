@@ -69,7 +69,7 @@
   const TRACE_TAG = "[ONI][AE-Gate][TRACE]";
   const VERSION = "6.5.0-skill-level-bonus-2026-11-23";
 
-  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor", "aeAffinityStep", "aeAffinityCap"];
+  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor", "aeAffinityStep", "aeAffinityCap", "aeSceneSpellWhen", "aeClassCount"];
 
   const PATCH_FLAGS = {
     actorPatched: "__oniAeConditionalGateActorPatched",
@@ -278,7 +278,7 @@
 
   function hasGateSyntax(value) {
     return typeof value === "string"
-      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep|aeAffinityCap)\s*\(/i.test(value);
+      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep|aeAffinityCap|aeSceneSpellWhen|aeClassCount)\s*\(/i.test(value);
   }
 
   // Does the actor have any equipped item matching the requested type
@@ -926,7 +926,7 @@ function hasEffectStatus(actor, statusId, currentEffect = null) {
     // is active (i.e. current affinity isn't IM/AB); the affinity step takes
     // the signed rung count, quotes optional (aeAffinityStep(-1) parses too).
     const match1 = text.match(
-      /^\s*(?:\$\{\s*)?(aeAffinityFloor|aeAffinityStep|aeAffinityCap)\s*\(\s*(?:(['"])(.*?)\2|([-+]?\d+))\s*\)\s*(?:\}\$)?\s*$/i
+      /^\s*(?:\$\{\s*)?(aeAffinityFloor|aeAffinityStep|aeAffinityCap|aeSceneSpellWhen|aeClassCount)\s*\(\s*(?:(['"])(.*?)\2|([-+]?\d+(?:\.\d+)?))\s*\)\s*(?:\}\$)?\s*$/i
     );
 
     if (match1) {
@@ -942,6 +942,38 @@ function hasEffectStatus(actor, statusId, currentEffect = null) {
 
     return { ok: false, reason: "not_gate_syntax", rawValue };
   }
+
+// Distinct classes on the bearer (class_list rows, case-insensitive) — same
+// read as skill-formulas countDistinctClasses (CLASS_COUNT).
+function countDistinctClasses(actor) {
+  const list = actor?.system?.props?.class_list;
+  if (!list || typeof list !== "object") return 0;
+  const seen = new Set();
+  for (const row of Object.values(list)) {
+    if (!row || row.$deleted) continue;
+    const name = String(row.class_name ?? "").trim().toLowerCase();
+    if (name) seen.add(name);
+  }
+  return seen.size;
+}
+
+// Does the bearer carry an effect applied by a Spell whose duration is Scene?
+// Duration rank mirrors skill-formulas actionDurationRank ("scene"/"rest"/"session").
+function hasSceneSpellEffect(actor) {
+  const effects = actor?.effects?.contents ?? Array.from(actor?.effects ?? []);
+  for (const ae of effects) {
+    if (!ae || ae.disabled) continue;
+    const uuid = ae.flags?.[MODULE_ID]?.directorAppliedBy?.skillUuid;
+    if (!uuid) continue;
+    let skill = null;
+    try { skill = fromUuidSync(uuid); } catch (_) { skill = null; }
+    const p = skill?.system?.props ?? {};
+    if (String(p.skill_type ?? "").trim().toLowerCase() !== "spell") continue;
+    const d = String(p.duration ?? "").toLowerCase();
+    if (d.includes("scene") || d.includes("rest") || d.includes("session")) return true;
+  }
+  return false;
+}
 
 function evaluateGate(rawValue, actor, effect = null, change = null) {
   const parsed = parseGateSyntax(rawValue);
@@ -1030,6 +1062,16 @@ if (helperNorm === "aewhen") {
   const cap = ladder.indexOf(String(parsed.trueValue ?? "").trim().toUpperCase());
   active = true;
   computedValue = (cap >= 0 && (cur < 0 ? 1 : cur) > cap) ? ladder[cap] : (cur >= 0 ? currentVal : "NA");
+} else if (helperNorm === "aescenespellwhen") {
+  // Fairy Tunic: active while the bearer carries an effect a SPELL with a
+  // "Scene" duration applied (the director stamps directorAppliedBy.skillUuid
+  // on every effect it applies). False → the ADD identity like every gate.
+  active = hasSceneSpellEffect(actor);
+} else if (helperNorm === "aeclasscount") {
+  // Ring of Onions: value × the bearer's distinct classes (class_list rows).
+  const n = Number(parsed.trueValue);
+  active = true;
+  computedValue = String((Number.isFinite(n) ? n : 0) * countDistinctClasses(actor));
 }
 
   const result = {

@@ -4445,8 +4445,21 @@ export function rowIgnoresUndead(row) {
 export function shouldReverseHeal(actor, { resource = "hp", amount = 0, row = null } = {}) {
   if (String(resource ?? "").toLowerCase() !== "hp") return false;
   if (!(Number(amount) > 0)) return false;
+  // False Idol's field (an effect change `heal_reversed_all` > 0) reverses EVERY
+  // HP gain, including rows that opt out of the Undead rule.
+  if (isRecoveryReversedByEffect(actor, "hp")) return true;
   if (rowIgnoresUndead(row)) return false;
   return isHealReversedActor(actor);
+}
+
+// False Idol (2026-11-25): "Whenever an effect would cause a creature to gain HP
+// or MP, they lose that much instead." Carried as effect changes on the creature:
+// `heal_reversed_all` (HP: the heal lands as damage through shouldReverseHeal, the
+// Undead path) and `mp_reversed_all` (MP: applyMpReceiving returns the loss as a
+// negative restore). Revives are not touched (isReviveKillTarget stays species-only).
+export function isRecoveryReversedByEffect(actor, resource = "hp") {
+  const key = String(resource ?? "").toLowerCase() === "mp" ? "mp_reversed_all" : "heal_reversed_all";
+  return sumAeChangeKey(actor, key) > 0;
 }
 
 // The MP twin of applyHealReceiving — recipient-side adjustment on a positive MP
@@ -4468,6 +4481,8 @@ export function shouldReverseHeal(actor, { resource = "hp", amount = 0, row = nu
 export function applyMpReceiving(targetActor, amount) {
   const base = Number(amount) || 0;
   if (!targetActor || base <= 0) return base;
+  // False Idol: the gain becomes a loss of the same (unscaled) amount.
+  if (isRecoveryReversedByEffect(targetActor, "mp")) return -base;
   const mult = Math.max(0, 1 + sumAeChangeKey(targetActor, "mp_receiving_mod_all"));
   const flat = sumAeChangeKey(targetActor, "mp_receiving_flat_all");
   const scaled = mult === 1 ? base : Math.floor(base * mult);

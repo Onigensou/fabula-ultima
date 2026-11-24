@@ -1029,7 +1029,10 @@ async function applyCheckRerollMutation(ctx, cand, row) {
   if (baked) return baked;
   const roll = ctx.ar?.roll;
   if (!roll) { warn("check_reroll: no accuracy roll on this action — skipping"); return "failed"; }
-  if (roll.isCrit || roll.isFumble) { log("check_reroll: roll is a Critical/Fumble — cannot reroll (RAW)"); return "failed"; }
+  // `allow_fumble` (row opt-in): gear whose text rerolls a Fumble (Gambler's Dice,
+  // 2026-11-25). A Critical is still never rerolled.
+  const allowFumble = row?.allow_fumble === true || String(row?.allow_fumble ?? "").toLowerCase() === "true";
+  if (roll.isCrit || (roll.isFumble && !allowFumble)) { log("check_reroll: roll is a Critical/Fumble — cannot reroll (RAW)"); return "failed"; }
 
   // The action-taker owns the dice being rerolled (fumble threshold etc.).
   const attackerUuid = ctx.ar?.attackerActorRef ?? ctx.ar?.attacker?.actorUuid ?? null;

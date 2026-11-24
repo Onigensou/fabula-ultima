@@ -1273,6 +1273,12 @@ async function resolveAction(director, ar, opts = {}) {
     // actionKind already carried on the pre-resolve creature_targeted_by_action
     // payload. Item-use reactions read this off creature_completes_item (§8b).
     actionKind: ar.kind ?? null,
+    // The consumable an Item action used (the carrier, not its linked skill) and
+    // its name — the carrier may already be used up when a post-resolve reaction
+    // reads this, so free_action's `trigger_item` falls back to the world item by
+    // name (Copycat, 2026-11-25).
+    sourceItemUuid: ar.sourceItemUuid ?? null,
+    sourceItemName: ar.kind === "Item" ? (ar.skillName ?? null) : null,
     // The casting item's skill_type + skill_tags — the same two facts CONFIRM's
     // actionBase carries. Spells are stamped ar.kind:"Skill", so without
     // actionSkillType ACTION_IS_SPELL read 0 on EVERY post-resolve trigger built
