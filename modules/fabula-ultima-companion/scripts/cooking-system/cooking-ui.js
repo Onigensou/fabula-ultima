@@ -384,6 +384,7 @@
       this._slots = {};
       this._hover = {};
       this._mine = {};                       // actorId → { itemImg, itemName } picked on THIS client
+      this._lockedHere = new Set();          // actorIds locked from THIS client's picker (it already played CONFIRM)
       this._tastes = Object.fromEntries(TASTES.map(t => [t, 0]));
       this._displayedTv = Object.fromEntries(TASTES.map(t => [t, 0]));
       this._chartAnimId = null;
@@ -496,7 +497,12 @@
       if (this.mode === "dark" || this._busy) return false;
       return Object.values(this._slots).every(s => !s.locked);
     }
-    _isCook() { return game.user?.isGM || (this.cookerUserId && game.user?.id === this.cookerUserId) || !!game.actors?.get(this.cookerActorId)?.isOwner; }
+    // same rule as the GM-side check (no stream Spectator, even with owner rights)
+    _isCook() {
+      const fn = globalThis.FUCompanion?.api?.cooking?.isCookUser;
+      if (fn) return fn(game.user, this.cookerActorId, this.cookerUserId);
+      return game.user?.isGM || (this.cookerUserId && game.user?.id === this.cookerUserId);
+    }
     _renderModeSlot() {
       const el = this.$(".oni-cook-mode-slot"); if (!el) return;
       if (this.mode === "dark") { el.innerHTML = `<span class="oni-cook-mode-pill">🌑 Yaminabe</span>`; return; }
@@ -1102,6 +1108,7 @@
     _submit(itemId) {
       const choice = this.choices.find(c => c.id === itemId);
       globalThis.CookingUI?._rememberMine(this.actorId, choice ? { itemImg: choice.img, itemName: choice.name } : null);
+      globalThis.CookingUI?.getMain?.()?._lockedHere?.add(this.actorId);
       const cb = this._onSubmit; this.close(); cb?.(itemId);
     }
     _cleanup() {
@@ -1147,10 +1154,27 @@
         CookingUI._picker = p; p.render();
       });
     },
-    applyState(sessionId, slots, tasteValues) {
+    // A slot that turns locked plays the picker's CONFIRM for everyone watching.
+    // Skipped on the client that locked it (its picker already played it) and on
+    // `silent` (late-join restore of locks that happened earlier).
+    applyState(sessionId, slots, tasteValues, { silent = false } = {}) {
       if (!_ok(sessionId)) return;
-      for (const [id, s] of Object.entries(slots ?? {})) _main.setSlot(id, s.itemImg || null, s.itemName || null, !!s.locked);
+      let confirm = false;
+      for (const [id, s] of Object.entries(slots ?? {})) {
+        if (!silent && s.locked && !_main._slots[id]?.locked && !_main._lockedHere.has(id)) confirm = true;
+        _main.setSlot(id, s.itemImg || null, s.itemName || null, !!s.locked);
+      }
       if (tasteValues) _main.setTastes(tasteValues);
+      if (confirm) _sfx("CONFIRM");
+    },
+    // Late join while the pot is already cooking: freeze the board like
+    // runAnimation does; the next RESOLVE/RESULTS message carries on from there.
+    resumeBusy(sessionId, phase = "animate") {
+      if (!_ok(sessionId)) return;
+      _main._busy = true; _main._renderModeSlot(); _main._renderPreviewBadge();
+      // runAnimation turns the lights out in Yaminabe; runResolve turns them back on
+      if (_main.mode === "dark" && phase === "animate") _main.$(".oni-cook-main-panel")?.classList.add("lights-out");
+      _main._status("🍲 The pot is bubbling…");
     },
     async setMode(sessionId, mode, opts) { if (_ok(sessionId)) await _main.setMode(mode, opts); },
     async runAnimation(sessionId, contributions, mode) { if (_ok(sessionId)) await _main.runAnimation(contributions, mode); },

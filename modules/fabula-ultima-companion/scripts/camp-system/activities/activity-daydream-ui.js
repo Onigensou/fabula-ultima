@@ -111,6 +111,7 @@
   let _spaceHandler  = null;
   let _endTimer      = null;
   let _resultShown   = false;
+  let _running       = false;  // owner: between GO and score submit (late-join snapshot window)
 
   function _clearState() {
     if (_rafId !== null)   { cancelAnimationFrame(_rafId); _rafId = null; }
@@ -129,6 +130,7 @@
     _physicsObjs  = [];
     _lastFrameMs  = 0;
     _resultShown  = false;
+    _running      = false;
   }
 
   // ---------------------------------------------------------------------------
@@ -206,25 +208,16 @@
   // Helpers
   // ---------------------------------------------------------------------------
   function _playSound(src, volume = 0.7) {
-    try {
-      AudioHelper.play({ src, volume, autoplay: true, loop: false }, false);
-    } catch {
-      try { const a = new Audio(src); a.volume = volume; a.play().catch(() => {}); } catch {}
-    }
+    CAMP.MG?.sfx(src, volume);
   }
 
+  // Shared minigame owner rule (camp-minigame-sync.js).
   function _getOwnerUserId(actor) {
-    const hit = Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const user = game.users?.get(id);
-      return lvl === 3 && user && !user.isGM;
-    });
-    return hit?.[0] ?? null;
+    return CAMP.MG?.ownerUserId(actor) ?? null;
   }
 
   function _isActorOwner(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return CAMP.MG?.isOwner(actor) ?? (game.user?.isGM ?? false);
   }
 
   function _getTokenImg(actor) {
@@ -580,8 +573,9 @@
 
     _physicsObjs.push(obj);
 
-    // Hit-zone indicator (owner only, for all scoreable physics types)
-    if (_isOwner) {
+    // Hit-zone indicator (all scoreable physics types; the schedule is
+    // deterministic, so spectators show the same rings)
+    {
       const win = HIT_WINDOWS[type === "group" ? "normal" : type];
       if (win) {
         // Zone positioned at apex: apex_bottom - 22px (half 44px zone height)
@@ -675,8 +669,10 @@
   // ---------------------------------------------------------------------------
   // rAF game loop (runs on owner AND spectators)
   // ---------------------------------------------------------------------------
-  function _startGameLoop(isOwnerLoop) {
-    _scheduleIdx  = 0;
+  // startIdx > 0: late join — skip sheep that already went by.
+  function _startGameLoop(isOwnerLoop, startIdx = 0) {
+    if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+    _scheduleIdx  = startIdx;
     _activeEvents = [];
     _physicsObjs  = [];
     _lastFrameMs  = Date.now();
@@ -705,8 +701,8 @@
       const expireMs = Math.max(JUMP_MS, FAKE_MS, APPROACH_MS, APPROACH_STOP_MS, SUPER_SLOW_MS) + 200;
       _activeEvents = _activeEvents.filter(ev => (now - ev.startMs) <= expireMs);
 
-      // Update timer bar (owner view only)
-      if (isOwnerLoop) {
+      // Update timer bar (owner and spectators)
+      {
         const bar = document.getElementById("oni-dd-timer-bar");
         if (bar) {
           const pct = Math.max(0, 1 - elapsed / GAME_DURATION_MS);
@@ -732,11 +728,7 @@
       const now = Date.now();
 
       // Flash key visual
-      const keyEl = document.getElementById("oni-dd-key");
-      if (keyEl) {
-        keyEl.classList.add("pressed");
-        setTimeout(() => keyEl.classList.remove("pressed"), 120);
-      }
+      _flashKey();
 
       const trapTypes = new Set(["fake", "approach_stop"]);
 
@@ -774,12 +766,18 @@
         _flashFail();
       }
 
-      // Broadcast hit/miss so spectators see the flash too
+      // Broadcast hit/miss so spectators see the flash + hear the sound too.
+      // send(): the local echo reaches onHit, which ignores the owner.
       if (scored) {
-        CAMP.Socket.emit(CAMP.MSG.DAYDREAM_HIT, { actorId: _actorId, success: true });
+        CAMP.Socket.send(CAMP.MSG.DAYDREAM_HIT, { actorId: _actorId, success: true });
       } else if (!scored && trapped) {
-        CAMP.Socket.emit(CAMP.MSG.DAYDREAM_HIT, { actorId: _actorId, success: false });
+        CAMP.Socket.send(CAMP.MSG.DAYDREAM_HIT, { actorId: _actorId, success: false });
       }
+      // Every press: spectator SPACE-key flash, score check and clock re-align
+      // (the router hands onHit only `success`, so this rides MG.event).
+      CAMP.MG?.event("DAYDREAM", _actorId, "press", {
+        actorId: _actorId, elapsed: now - _gameStartMs, score: _score,
+      });
     };
 
     document.addEventListener("keydown", _spaceHandler, { capture: true });
@@ -789,28 +787,38 @@
   // Game end — submit score and remove spacebar handler
   // ---------------------------------------------------------------------------
   function _endGame(actorId) {
+    _running = false;
     if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
     if (_spaceHandler) {
       document.removeEventListener("keydown", _spaceHandler, { capture: true });
       _spaceHandler = null;
     }
 
-    const actor = game.actors?.get(actorId);
-    if (actor && _isActorOwner(actor)) {
-      if (game.user?.isGM) {
-        CAMP.DaydreamUI.resolveScore(actorId, _score);
-      } else {
-        CAMP.Socket.emit(CAMP.MSG.DAYDREAM_RESULT, { actorId, score: _score });
-      }
+    // send(): a GM owner reaches its own resolver through the local router.
+    if (_isOwner) CAMP.Socket.send(CAMP.MSG.DAYDREAM_RESULT, { actorId, score: _score });
+  }
+
+  function _flashKey() {
+    const keyEl = document.getElementById("oni-dd-key");
+    if (keyEl) {
+      keyEl.classList.add("pressed");
+      setTimeout(() => keyEl.classList.remove("pressed"), 120);
     }
+  }
+
+  function _setScoreEl() {
+    const scoreEl = document.getElementById("oni-dd-score-val");
+    if (scoreEl) scoreEl.textContent = _score;
   }
 
   // ---------------------------------------------------------------------------
   // Start minigame panel (called after countdown finishes)
   // ---------------------------------------------------------------------------
-  function _startMinigame(actorId, actor) {
+  function _startMinigame(actorId, actor, lateElapsedMs = null) {
     const ovl = document.getElementById(OVL_ID);
     if (!ovl) return;
+    // Spectator: a late-join snapshot already started the game here.
+    if (!_isOwner && _gameStartMs !== null) return;
 
     const tokenImg    = actor ? _getTokenImg(actor) : "icons/svg/mystery-man.svg";
     const displayName = actor?.name ?? "?";
@@ -851,11 +859,12 @@
       `;
 
       _gameStartMs = Date.now();
+      _running     = true;
       _setupSpacebar(actorId);
       _startGameLoop(true);
       _endTimer = setTimeout(() => _endGame(actorId), GAME_DURATION_MS + 150);
     } else {
-      // Spectator view — sheep animation plays but no interaction
+      // Spectator view — same game (score, timer, rings, SPACE key), no input
       ovl.innerHTML = `
         <div class="oni-dd-game">
           <div class="oni-dd-actor-area">
@@ -863,7 +872,13 @@
             <div class="oni-dd-token"><img src="${tokenImg}" alt="${displayName}"></div>
             <div class="oni-dd-actor-name">${displayName}</div>
           </div>
-          <div class="oni-dd-waiting">${ownerName ?? displayName} is counting sheep…</div>
+          <div class="oni-dd-info-row">
+            <div class="oni-dd-score-display">Score: <span id="oni-dd-score-val">${_score}</span> / ${MAX_SCORE}</div>
+            <div>${ownerName ?? displayName} is counting sheep…</div>
+          </div>
+          <div class="oni-dd-timer-wrap">
+            <div class="oni-dd-timer-bar" id="oni-dd-timer-bar"></div>
+          </div>
           <div class="oni-dd-stage" id="oni-dd-stage">
             <div class="oni-dd-ground"></div>
             <div class="oni-dd-fence">
@@ -872,15 +887,23 @@
               <div class="oni-dd-fence-rail2"></div>
             </div>
           </div>
+          <div class="oni-dd-key-hint">
+            <span id="oni-dd-key" class="oni-dd-key">SPACE</span>
+            press at the apex of each jump!
+          </div>
         </div>
       `;
 
-      _gameStartMs = Date.now();
-      _startGameLoop(false);
+      const elapsed0 = Math.max(0, lateElapsedMs ?? 0);
+      _gameStartMs = Date.now() - elapsed0;
+      // Late join: sheep already past are skipped (their arcs started before we arrived).
+      const startIdx = elapsed0 > 0 ? SCHEDULE.findIndex(ev => ev.t > elapsed0) : 0;
+      _startGameLoop(false, startIdx < 0 ? SCHEDULE.length : startIdx);
       // Auto-stop spectator loop after game duration
+      if (_endTimer !== null) clearTimeout(_endTimer);
       _endTimer = setTimeout(() => {
         if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
-      }, GAME_DURATION_MS + 500);
+      }, Math.max(0, GAME_DURATION_MS - elapsed0) + 500);
     }
   }
 
@@ -909,6 +932,8 @@
   // Countdown helper
   // ---------------------------------------------------------------------------
   function _runCountdown(actorId, actor, count, onDone) {
+    // Spectator: a late-join snapshot already started the game here.
+    if (!_isOwner && _gameStartMs !== null) return;
     const el = document.getElementById("oni-dd-count");
     if (el) {
       el.textContent = count;
@@ -975,11 +1000,8 @@
         document.body.appendChild(ovl);
         document.getElementById("oni-dd-begin").addEventListener("click", () => {
           // Notify spectators to start watching the countdown + game
-          if (game.user?.isGM) {
-            CAMP.Socket.broadcast(CAMP.MSG.DAYDREAM_BEGIN, { actorId });
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.DAYDREAM_BEGIN, { actorId });
-          }
+          // (send(): the local echo hits spectateBegin, which ignores the owner)
+          CAMP.Socket.send(CAMP.MSG.DAYDREAM_BEGIN, { actorId });
           _showCountdownPanel(actorId, actor, tokenImg, displayName);
         }, { once: true });
       } else {
@@ -1033,11 +1055,7 @@
         const btn = document.getElementById("oni-dd-proceed");
         btn?.addEventListener("click", () => {
           btn.disabled = true;
-          if (game.user?.isGM) {
-            CAMP.DaydreamUI.resolveProceed(actorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.DAYDREAM_PROCEED, { actorId });
-          }
+          CAMP.Socket.send(CAMP.MSG.DAYDREAM_PROCEED, { actorId });
         }, { once: true });
       }
     },
@@ -1065,9 +1083,16 @@
     // --------------------------------------------------------------------
     onHit(success) {
       if (_isOwner) return;
-      if (!document.getElementById(OVL_ID)) return;
-      if (success) _flashSuccess();
-      else _flashFail();
+      if (!document.getElementById(OVL_ID) || _resultShown) return;
+      if (success) {
+        _score++;
+        _setScoreEl();
+        _playSound(SFX.SUCCESS, 0.8);
+        _flashSuccess();
+      } else {
+        _playSound(SFX.FAIL, 0.7);
+        _flashFail();
+      }
     },
 
     // --------------------------------------------------------------------
@@ -1098,6 +1123,47 @@
       el.addEventListener("animationend", () => el.remove(), { once: true });
     },
   };
+
+  // ---------------------------------------------------------------------------
+  // Spectator live channel + late join (camp-minigame-sync.js)
+  // ---------------------------------------------------------------------------
+  // Allowed clock drift before a spectator re-aligns to the owner's elapsed.
+  const DRIFT_MS = 40;
+
+  CAMP.MG?.on("DAYDREAM", (kind, data) => {
+    if (kind !== "press" || _isOwner || _resultShown) return;
+    if (!document.getElementById(OVL_ID)) return;
+    if (data.actorId && _actorId && data.actorId !== _actorId) return;
+    _flashKey();
+    // HIT already counted the point; the owner's total wins if they disagree.
+    if (data.score != null && data.score !== _score) { _score = data.score; _setScoreEl(); }
+    // Re-align the schedule clock (BEGIN latency, countdown timer drift).
+    if (_gameStartMs !== null && data.elapsed != null) {
+      const mine = Date.now() - _gameStartMs;
+      if (Math.abs(mine - data.elapsed) > DRIFT_MS) _gameStartMs = Date.now() - data.elapsed;
+    }
+  });
+
+  CAMP.MG?.registerGame("DAYDREAM", {
+    snapshot() {
+      if (!_isOwner || !_running || _gameStartMs === null) return null;
+      return { actorId: _actorId, elapsedMs: Date.now() - _gameStartMs, score: _score };
+    },
+    apply(snap) {
+      if (!snap || _isOwner || _resultShown) return;
+      if (!document.getElementById(OVL_ID)) return;
+      if (snap.actorId && _actorId && snap.actorId !== _actorId) return;
+      _score = snap.score ?? 0;
+      if (_gameStartMs === null) {
+        const actor = game.actors?.get(snap.actorId ?? _actorId);
+        _startMinigame(snap.actorId ?? _actorId, actor, snap.elapsedMs ?? 0);
+      } else {
+        _gameStartMs = Date.now() - (snap.elapsedMs ?? 0);
+      }
+      _setScoreEl();
+    },
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 
   console.debug(TAG, "Daydream UI loaded.");
 })();

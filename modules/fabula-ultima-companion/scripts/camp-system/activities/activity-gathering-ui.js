@@ -18,6 +18,15 @@
 //   0-3  standard  → 2 ingredients, random tastes
 //   4-7  good      → 3 ingredients, random tastes
 //   8+   exceptional→ 3 ingredients, player's choice of taste
+//
+// Spectators (everyone but the owner) watch the same board: the owner sends
+// GATHERING_GAME_STATE on every move, spawn, telegraph and expiry (coalesced
+// to one per frame), with `elapsed` (timer re-anchor), `moved` and
+// `collected` {id,col,row,type,pts} so spectators replay the move/collect/
+// poison sounds, pops and flashes. Ingredients are diffed by owner id so they
+// pop in and fade out like on the owner's screen. The Exceptional-haul taste
+// picker is mirrored read-only via CAMP.MG.event("GATHERING", …, "taste").
+// Late join: CAMP.MG.registerGame("GATHERING").
 // ============================================================================
 (() => {
   const CAMP      = globalThis.CampSystem ??= {};
@@ -78,6 +87,10 @@
   let _resultShown  = false;
   let _keyHandler   = null;
   let _lastLabelSec = -1;
+  let _stage        = "idle";   // idle | waiting | countdown | playing | over | taste | result
+  let _stateDirty   = false;    // owner: board changed since the last GAME_STATE
+  let _pendingState = null;     // spectator: state that arrived before our arena existed
+  let _tastePicked  = null;     // taste chosen on the Exceptional picker (owner + mirror)
 
   // ── Web Audio (movement sound) ─────────────────────────────────────────────
   let _audioCtx   = null;
@@ -108,6 +121,10 @@
     _gameOver     = false;
     _resultShown  = false;
     _lastLabelSec = -1;
+    _stage        = "idle";
+    _stateDirty   = false;
+    _pendingState = null;
+    _tastePicked  = null;
 
     for (const k of Object.keys(_els)) _els[k] = null;
   }
@@ -541,6 +558,7 @@
     const ing = { id, col, row, emoji, type, double: isDouble, spawnMs: Date.now(), lifespanMs: lifespan, el: null };
     ing.el = _renderIngredient(ing);
     if (ing.el) _ingredients.set(id, ing);
+    _stateDirty = true;
   }
 
   function _spawnTelegraphed(col, row, type, isDouble) {
@@ -552,6 +570,7 @@
     };
     pending.previewEl = _renderTelegraph(pending);
     _pendingSpawns.set(id, pending);
+    _stateDirty = true;
   }
 
   function _trySpawnIngredient() {
@@ -605,6 +624,7 @@
           { duration: 150, fill: "forwards" }
         ).finished.then(() => ing.el?.remove()).catch(() => ing.el?.remove());
         _ingredients.delete(id);
+        _stateDirty = true;
       } else if (remaining < TELEGRAPH_MS) {
         ing.el?.classList.add("oni-gt-expiring");
       }
@@ -619,19 +639,25 @@
     ).finished.then(() => ing.el?.remove()).catch(() => ing.el?.remove());
     _ingredients.delete(ing.id);
 
-    if (ing.type === "poison") {
-      _score = Math.max(0, _score - pts);
-      _playSound(SFX.POISON, 0.7);
-      _spawnScorePop(`-${pts}`, true,  ing.col, ing.row);
-      _flashCell(ing.col, ing.row, "oni-gt-flash-bad");
-    } else {
-      _score += pts;
-      _playSound(SFX.COLLECT, 0.6);
-      _spawnScorePop(`+${pts}`, false, ing.col, ing.row);
-      _flashCell(ing.col, ing.row, "oni-gt-flash-good");
-    }
+    if (ing.type === "poison") _score = Math.max(0, _score - pts);
+    else                       _score += pts;
+    _collectFx(ing.type, pts, ing.col, ing.row);
 
     if (_els.scoreLabel) _els.scoreLabel.textContent = `Score: ${_score}`;
+    return { id: ing.id, col: ing.col, row: ing.row, type: ing.type, pts };
+  }
+
+  // Sound + pop + cell flash of a pickup — same call on owner and spectators.
+  function _collectFx(type, pts, col, row) {
+    if (type === "poison") {
+      _playSound(SFX.POISON, 0.7);
+      _spawnScorePop(`-${pts}`, true,  col, row);
+      _flashCell(col, row, "oni-gt-flash-bad");
+    } else {
+      _playSound(SFX.COLLECT, 0.6);
+      _spawnScorePop(`+${pts}`, false, col, row);
+      _flashCell(col, row, "oni-gt-flash-good");
+    }
   }
 
   // ===========================================================================
@@ -673,7 +699,13 @@
       bar.style.width = `${(frac * 100).toFixed(2)}%`;
       const sec = Math.ceil(frac * GAME_MS / 1000);
       if (sec !== _lastLabelSec) { _lastLabelSec = sec; lbl.textContent = `${sec}s`; }
-      if (_isOwner) _checkIngredients(Date.now());
+      if (_isOwner) {
+        _checkIngredients(Date.now());
+        // Spawns / telegraphs / expiries reach spectators even while the player stands still.
+        if (_stateDirty && !_gameOver) _emitGameState();
+      } else {
+        _specBlink(Date.now());
+      }
       _rafId = requestAnimationFrame(_frame);
     }
     _rafId = requestAnimationFrame(_frame);
@@ -715,19 +747,25 @@
     _movePlayerTo(nc, nr);
 
     const hit = Array.from(_ingredients.values()).find(i => i.col === nc && i.row === nr);
-    if (hit) _collectIngredient(hit);
+    const collected = hit ? _collectIngredient(hit) : null;
 
-    _emitGameState();
+    _emitGameState({ moved: true, collected });
   }
 
   // ===========================================================================
   // State broadcast to spectators
   // ===========================================================================
 
-  function _emitGameState() {
+  function _emitGameState(extra = {}) {
+    _stateDirty = false;
+    CAMP.Socket.emit(CAMP.MSG.GATHERING_GAME_STATE, { ..._stateSnapshot(), ...extra });
+  }
+
+  function _stateSnapshot() {
     const now = Date.now();
-    CAMP.Socket.emit(CAMP.MSG.GATHERING_GAME_STATE, {
+    return {
       actorId:   _actorId,
+      elapsed:   _gameStartMs ? now - _gameStartMs : 0,
       playerPos: { ..._playerPos },
       ingredients: Array.from(_ingredients.values()).map(ing => ({
         id: ing.id, col: ing.col, row: ing.row,
@@ -740,7 +778,97 @@
         remaining: p.materialesAt - now,
       })),
       score: _score,
-    });
+    };
+  }
+
+  // ===========================================================================
+  // Spectator rendering — diff the owner's board by ingredient id so items pop
+  // in / fade out exactly like on the owner's screen.
+  // ===========================================================================
+
+  function _fadeOut(el, scaleTo = 0.5, ms = 150) {
+    if (!el) return;
+    el.animate(
+      [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: `scale(${scaleTo})` }],
+      { duration: ms, fill: "forwards" }
+    ).finished.then(() => el.remove()).catch(() => el.remove());
+  }
+
+  function _applyState(st, { quiet = false } = {}) {
+    if (!st || !_els.grid) return;
+    const now = Date.now();
+
+    // Timer re-anchor (owner's clock started a few ms earlier/later than ours).
+    if (st.elapsed != null && !_gameOver) {
+      const start = now - st.elapsed;
+      if (Math.abs(start - (_gameStartMs ?? start)) > 120) {
+        _gameStartMs = start;
+        if (_endTimer !== null) clearTimeout(_endTimer);
+        _endTimer = setTimeout(() => _onGameEnd(), Math.max(0, GAME_MS - st.elapsed));
+      }
+    }
+
+    // Pickup first — the collected item is already gone from st.ingredients and
+    // must pop (scale 1.5) rather than fade like an expiry.
+    const c = st.collected;
+    if (c) {
+      const ing = _ingredients.get(c.id);
+      if (ing) { _fadeOut(ing.el, 1.5); _ingredients.delete(c.id); }
+      if (!quiet) _collectFx(c.type, c.pts, c.col, c.row);
+    }
+
+    // Player token
+    const pp = st.playerPos;
+    if (pp) {
+      const hasToken = !!_getCellEl(_playerPos.col, _playerPos.row)?.querySelector(".oni-gt-player");
+      if (!hasToken || pp.col !== _playerPos.col || pp.row !== _playerPos.row) {
+        if (st.moved && !quiet) _playSound(SFX.MOVE, 0.6);
+        _els.grid.querySelectorAll(".oni-gt-player").forEach(el => el.remove());
+        _movePlayerTo(pp.col, pp.row);
+      }
+    }
+
+    // Ingredients
+    const seen = new Set();
+    for (const s of (st.ingredients ?? [])) {
+      seen.add(s.id);
+      if (_ingredients.has(s.id)) continue;
+      const ing = { id: s.id, col: s.col, row: s.row, emoji: s.emoji, type: s.type, double: s.double,
+                    spawnMs: now, lifespanMs: s.remaining, el: null };
+      ing.el = _renderIngredient(ing);
+      if (ing.el) _ingredients.set(s.id, ing);
+    }
+    for (const [id, ing] of _ingredients) {
+      if (seen.has(id)) continue;
+      _fadeOut(ing.el);
+      _ingredients.delete(id);
+    }
+
+    // Telegraph rings
+    const seenP = new Set();
+    for (const s of (st.pending ?? [])) {
+      seenP.add(s.id);
+      if (_pendingSpawns.has(s.id)) continue;
+      const p = { id: s.id, col: s.col, row: s.row, type: s.type, double: s.double,
+                  materialesAt: now + (s.remaining ?? 0), previewEl: null };
+      p.previewEl = _renderTelegraph(p);
+      _pendingSpawns.set(s.id, p);
+    }
+    for (const [id, p] of _pendingSpawns) {
+      if (seenP.has(id)) continue;
+      _fadeOut(p.previewEl, 0.5, 140);
+      _pendingSpawns.delete(id);
+    }
+
+    _score = st.score ?? _score;
+    if (_els.scoreLabel) _els.scoreLabel.textContent = `Score: ${_score}`;
+  }
+
+  // Spectator: the expiry blink runs locally from the remaining time we were sent.
+  function _specBlink(now) {
+    for (const ing of _ingredients.values()) {
+      if (ing.lifespanMs - (now - ing.spawnMs) < TELEGRAPH_MS) ing.el?.classList.add("oni-gt-expiring");
+    }
   }
 
   // ===========================================================================
@@ -748,6 +876,8 @@
   // ===========================================================================
 
   function _runCountdown(count, onDone) {
+    // A late-join apply can skip us straight into play — stop counting then.
+    if (_stage !== "countdown") return;
     const el = document.getElementById("oni-gt-count");
     if (el) {
       el.textContent = count;
@@ -759,10 +889,11 @@
       setTimeout(() => _runCountdown(count - 1, onDone), 1000);
     } else {
       setTimeout(() => {
+        if (_stage !== "countdown") return;
         const el2 = document.getElementById("oni-gt-count");
         if (el2) { el2.className = "oni-gt-go-text"; el2.textContent = "GO!"; }
         _playSound(SFX.GO, 0.9);
-        setTimeout(onDone, 700);
+        setTimeout(() => { if (_stage === "countdown") onDone(); }, 700);
       }, 1000);
     }
   }
@@ -775,10 +906,12 @@
     const ovl = document.getElementById(OVL_ID);
     if (!ovl) return;
 
+    _stage = "playing";
     ovl.innerHTML = _buildArenaHTML();
     _cacheEls();
 
-    if (_isOwner) _renderPlayer();
+    // Everyone starts with the token on the start cell (spectators too).
+    _renderPlayer();
 
     _gameStartMs  = Date.now();
     _lastLabelSec = -1;
@@ -792,6 +925,10 @@
       // Capture phase — fires before Foundry's bubble-phase handlers
       _keyHandler = _buildKeyHandler();
       window.addEventListener("keydown", _keyHandler, true);
+      _emitGameState();   // start beat: timer anchor + token position for spectators
+    } else if (_pendingState) {
+      const st = _pendingState; _pendingState = null;
+      _applyState(st, { quiet: true });
     }
   }
 
@@ -800,7 +937,10 @@
   // ===========================================================================
 
   function _onGameEnd() {
+    if (_gameOver) return;
     _gameOver = true;
+    _stage    = "over";
+    if (_endTimer !== null) { clearTimeout(_endTimer); _endTimer = null; }
     if (_rafId      !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
     if (_spawnTimer !== null) { clearTimeout(_spawnTimer);    _spawnTimer = null; }
     if (_keyHandler)          { window.removeEventListener("keydown", _keyHandler, true); _keyHandler = null; }
@@ -827,20 +967,14 @@
   function _showTastePickerOrSubmit() {
     if (_score >= 8) {
       // Exceptional — player picks a taste
-      const ovl = document.getElementById(OVL_ID);
+      const ovl = _renderTastePicker();
       if (!ovl) return;
-      ovl.innerHTML = `
-        <div class="oni-gt-panel">
-          <div class="oni-gt-title">🌿 Exceptional Haul!</div>
-          <div class="oni-gt-sub">You gathered so much!<br>Choose a taste for your ingredients:</div>
-          <div class="oni-gt-taste-grid">
-            ${TASTES.map(t => `<button class="oni-gt-taste-btn" data-taste="${t}">${t}</button>`).join("")}
-          </div>
-        </div>
-      `;
+      CAMP.MG?.event?.("GATHERING", _actorId, "taste", { open: true });
       ovl.querySelectorAll(".oni-gt-taste-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           ovl.querySelectorAll(".oni-gt-taste-btn").forEach(b => { b.disabled = true; });
+          _tastePicked = btn.dataset.taste;
+          CAMP.MG?.event?.("GATHERING", _actorId, "taste", { pick: _tastePicked });
           _submitScore(btn.dataset.taste);
         }, { once: true });
       });
@@ -849,30 +983,60 @@
     }
   }
 
-  function _submitScore(taste) {
-    if (game.user?.isGM) {
-      CAMP.GatheringUI.resolveScore(_actorId, { score: _score, taste });
-    } else {
-      CAMP.Socket.emit(CAMP.MSG.GATHERING_RESULT, { actorId: _actorId, score: _score, taste });
+  // Taste picker panel. Spectators get the same panel read-only (no clicks),
+  // with the owner's pick highlighted when it arrives.
+  function _renderTastePicker() {
+    const ovl = document.getElementById(OVL_ID);
+    if (!ovl) return null;
+    _stage = "taste";
+    let sub = "You gathered so much!<br>Choose a taste for your ingredients:";
+    if (!_isOwner) {
+      const name = game.actors?.get(_actorId)?.name ?? "The gatherer";
+      sub = `${name} gathered so much!<br>Choosing a taste for the ingredients…`;
     }
+    ovl.innerHTML = `
+      <div class="oni-gt-panel">
+        <div class="oni-gt-title">🌿 Exceptional Haul!</div>
+        <div class="oni-gt-sub">${sub}</div>
+        <div class="oni-gt-taste-grid"${_isOwner ? "" : ` style="pointer-events:none;"`}>
+          ${TASTES.map(t => `<button class="oni-gt-taste-btn" data-taste="${t}"${_isOwner ? "" : ` tabindex="-1"`}>${t}</button>`).join("")}
+        </div>
+      </div>
+    `;
+    return ovl;
+  }
+
+  function _markTastePick(taste) {
+    const ovl = document.getElementById(OVL_ID);
+    if (!ovl || !taste) return;
+    ovl.querySelectorAll(".oni-gt-taste-btn").forEach(b => {
+      if (b.dataset.taste === taste) {
+        b.style.background = "#e8d2a0";
+        b.style.transform  = "translateY(-2px)";
+        b.style.boxShadow  = "0 0 0 2px #c8a84b";
+      } else {
+        b.disabled = true;
+      }
+    });
+  }
+
+  function _submitScore(taste) {
+    // send() runs locally too, so a GM owner reaches its own resolver (no
+    // `grade` → skips the all-clients branch, lands in the primary-GM switch).
+    CAMP.Socket.send(CAMP.MSG.GATHERING_RESULT, { actorId: _actorId, score: _score, taste });
   }
 
   // ===========================================================================
   // Helpers
   // ===========================================================================
 
+  // Shared owner rule (camp-minigame-sync.js): Spectator decider, else primary GM.
   function _getOwnerUserId(actor) {
-    const hit = Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const user = game.users?.get(id);
-      return lvl === 3 && user && !user.isGM;
-    });
-    return hit?.[0] ?? null;
+    return CAMP.MG?.ownerUserId?.(actor) ?? null;
   }
 
   function _isActorOwner(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return CAMP.MG?.isOwner?.(actor) ?? false;
   }
 
   function _getTokenImg(actor) {
@@ -904,6 +1068,7 @@
 
       const ovl = document.createElement("div");
       ovl.id    = OVL_ID;
+      _stage    = "waiting";
 
       if (_isOwner) {
         ovl.innerHTML = `
@@ -924,7 +1089,8 @@
 
         document.getElementById("oni-gt-begin-btn")?.addEventListener("click", () => {
           CAMP.GatheringUI.spectateBegin(_actorId);
-          CAMP.Socket.emit(CAMP.MSG.GATHERING_BEGIN, { actorId: _actorId });
+          // send(): the local echo is a no-op (spectateBegin's stage guard).
+          CAMP.Socket.send(CAMP.MSG.GATHERING_BEGIN, { actorId: _actorId });
         }, { once: true });
 
       } else {
@@ -944,6 +1110,11 @@
     spectateBegin(actorId) {
       const ovl = document.getElementById(OVL_ID);
       if (!ovl) return;
+      // Once per game: the owner calls this directly and also gets its own
+      // BEGIN echo; a replayed BEGIN must not restart a running game either.
+      if (actorId && _actorId && actorId !== _actorId) return;
+      if (_stage !== "waiting") return;
+      _stage = "countdown";
 
       const actor = game.actors?.get(actorId ?? _actorId);
       const pImg  = actor ? _getTokenImg(actor) : _playerImg;
@@ -964,54 +1135,25 @@
     },
 
     // ── Spectator live update ──────────────────────────────────────────────────
-    onGameState({ playerPos, ingredients, pending, score } = {}) {
+    onGameState(payload = {}) {
       if (_isOwner) return;
-      if (!_els.grid) return;
-
-      // Player token
-      _els.grid.querySelectorAll(".oni-gt-player").forEach(el => el.remove());
-      const pCell = _getCellEl(playerPos.col, playerPos.row);
-      if (pCell) {
-        const img = document.createElement("img");
-        img.className = "oni-gt-player";
-        img.src = _playerImg;
-        pCell.appendChild(img);
-      }
-
-      // Ingredients
-      _els.grid.querySelectorAll(".oni-gt-ingredient").forEach(el => el.remove());
-      for (const ing of (ingredients ?? [])) {
-        const cell = _getCellEl(ing.col, ing.row);
-        if (!cell) continue;
-        const el = document.createElement("div");
-        el.className  = `oni-gt-ingredient ${ing.type}${ing.double ? " double" : ""}${ing.remaining < TELEGRAPH_MS ? " oni-gt-expiring" : ""}`;
-        el.textContent = ing.emoji;
-        if (ing.double) {
-          const badge = document.createElement("span");
-          badge.className   = "oni-gt-double-badge";
-          badge.textContent = "×2";
-          el.appendChild(badge);
-        }
-        cell.appendChild(el);
-      }
-
-      // Telegraph previews
-      _els.grid.querySelectorAll(".oni-gt-telegraph").forEach(el => el.remove());
-      for (const p of (pending ?? [])) {
-        const cell = _getCellEl(p.col, p.row);
-        if (!cell) continue;
-        const el = document.createElement("div");
-        el.className = `oni-gt-telegraph ${p.type}`;
-        cell.appendChild(el);
-      }
-
-      if (_els.scoreLabel) _els.scoreLabel.textContent = `Score: ${score}`;
+      if (!document.getElementById(OVL_ID)) return;
+      if (payload.actorId && payload.actorId !== _actorId) return;
+      if (_gameOver) return;
+      // Our countdown can still be running when the owner's first beats arrive.
+      if (!_els.grid) { _pendingState = payload; return; }
+      _applyState(payload);
     },
 
     // ── Stage 3 — Result reveal ────────────────────────────────────────────────
     applyResult(actorId, grade, taste) {
       if (_resultShown) return;
       _resultShown = true;
+      _stage = "result";
+      // A spectator whose timer lags the owner's: stop the board loop first.
+      if (_rafId      !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+      if (_endTimer   !== null) { clearTimeout(_endTimer);      _endTimer = null; }
+      _gameOver = true;
 
       _playSound(grade !== "standard" ? SFX.RESULT_GOOD : SFX.RESULT_BAD, 0.8);
 
@@ -1057,11 +1199,7 @@
       if (isOwnerNow) {
         document.getElementById("oni-gt-proceed")?.addEventListener("click", () => {
           document.getElementById("oni-gt-proceed").disabled = true;
-          if (game.user?.isGM) {
-            CAMP.GatheringUI.resolveProceed(actorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.GATHERING_PROCEED, { actorId });
-          }
+          CAMP.Socket.send(CAMP.MSG.GATHERING_PROCEED, { actorId });
         }, { once: true });
       }
     },
@@ -1090,6 +1228,53 @@
       el.addEventListener("animationend", () => el.remove(), { once: true });
     },
   };
+
+  // ===========================================================================
+  // Spectator mirror of the taste picker + late join
+  // ===========================================================================
+
+  // kind "taste": { open:true } → owner opened the picker; { pick } → owner chose.
+  CAMP.MG?.on?.("GATHERING", (kind, data, msg) => {
+    if (kind !== "taste" || _isOwner) return;
+    if (!document.getElementById(OVL_ID) || msg?.a !== _actorId || _resultShown) return;
+    if (_stage !== "taste") {
+      if (!_gameOver) _onGameEnd();   // owner's clock ran out first
+      _renderTastePicker();
+    }
+    if (data?.pick) { _tastePicked = data.pick; _markTastePick(data.pick); }
+  });
+
+  CAMP.MG?.registerGame?.("GATHERING", {
+    isOpen: () => !!document.getElementById(OVL_ID),
+    snapshot() {
+      if (!_isOwner || !document.getElementById(OVL_ID) || _resultShown) return null;
+      if (_stage === "playing" && !_gameOver) return { ..._stateSnapshot(), phase: "playing" };
+      if (_stage === "taste") return { actorId: _actorId, phase: "taste", pick: _tastePicked };
+      if (_stage === "countdown") return { actorId: _actorId, phase: "countdown" };
+      return null;
+    },
+    apply(snap) {
+      if (!snap || _isOwner || snap.actorId !== _actorId) return;
+      if (!document.getElementById(OVL_ID) || _resultShown) return;
+      if (snap.phase === "countdown") {
+        if (_stage === "waiting") CAMP.GatheringUI.spectateBegin(_actorId);
+        return;
+      }
+      if (snap.phase === "taste") {
+        if (_stage !== "taste") {
+          if (_stage === "playing" && !_gameOver) _onGameEnd();
+          _gameOver = true;
+          _renderTastePicker();
+        }
+        if (snap.pick) { _tastePicked = snap.pick; _markTastePick(snap.pick); }
+        return;
+      }
+      if (snap.phase !== "playing") return;
+      // Skip any countdown still running here (it stops on the stage change).
+      if (_stage === "waiting" || _stage === "countdown") _showArena();
+      if (_stage === "playing") _applyState(snap, { quiet: true });
+    },
+  });
 
   console.debug(TAG, "Gathering UI loaded.");
 })();

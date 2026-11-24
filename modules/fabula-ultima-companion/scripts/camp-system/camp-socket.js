@@ -30,7 +30,22 @@
     broadcast(type, payload = {}) {
       if (!game.user?.isGM) return;
       CAMP.ActivityResolveUI?.noteBroadcast?.(type, payload);
+      CAMP.MG?.noteMessage?.(type, payload);
       game.socket.emit(CAMP.SOCKET_CH, { type, payload });
+    },
+
+    // ── Send from ANY client to everyone, INCLUDING this one ─────────────
+    // A socket emit never comes back to its sender, so a GM playing a
+    // minigame (an actor no player owns) used to submit its score to
+    // nobody. send() emits and then runs the same router locally on the
+    // next microtask; owner-guards in the UI handlers (`if (_isOwner)
+    // return`) keep the local echo harmless for spectator-only messages.
+    send(type, payload = {}) {
+      game.socket.emit(CAMP.SOCKET_CH, { type, payload });
+      queueMicrotask(() => {
+        Promise.resolve(this._dispatch?.({ type, payload }))
+          .catch(e => console.error("[CampSystem][Socket] local dispatch failed:", type, e));
+      });
     },
 
     // ── Lobby Ready: ask for one player's state in the current phase ─────
@@ -67,6 +82,13 @@
         if (!type?.startsWith?.("CAMP_")) return; // not our message
 
         if (type.endsWith("_PROCEED") && isPrimaryGM()) CAMP.ActivityResolveUI?.noteProceed?.(payload?.actorId);
+        CAMP.MG?.noteMessage?.(type, payload);
+
+        // ── Minigame spectator channel (camp-minigame-sync.js) ───────────
+        if (type === CAMP.MSG.MG_EVENT || type === CAMP.MSG.MG_SYNC_REQ || type === CAMP.MSG.MG_SYNC) {
+          await CAMP.MG?.onSocket?.(type, payload);
+          return;
+        }
 
         // ── A reloaded client catching up on the running activity ────────
         if (type === CAMP.MSG.RESOLVE_REPLAY) {
@@ -449,11 +471,12 @@
 
         // ── Fishing minigame (two-phase: Cast + Battle) ───────────────────
         if (type === CAMP.MSG.FISHING_START) {
-          // A camp fishing spot plays to the angler and the GMs only; everyone
-          // else keeps roaming (the later FISHING_* messages find no overlay
-          // on their screen and do nothing).
+          // A camp fishing spot plays to the angler, the GMs and the stream
+          // Spectator account; other players keep roaming (the later FISHING_*
+          // messages find no overlay on their screen and do nothing).
           const audience = Array.isArray(payload?.audience) ? payload.audience : null;
-          if (audience && !game.user?.isGM && !audience.includes(game.user?.id)) return;
+          if (audience && !game.user?.isGM && !audience.includes(game.user?.id)
+              && !CAMP.MG?.isStreamSpectator?.()) return;
           CAMP.FishingUI?.show(payload?.actorId, payload?.actorName, payload?.stats, payload ?? {});
           return;
         }
@@ -751,6 +774,8 @@
       };
 
       game.socket.on(CAMP.SOCKET_CH, onMessage);
+      // send() and the late-join snapshot run messages through this router locally.
+      this._dispatch = onMessage;
 
       console.debug(TAG, "Socket listener installed.");
     },

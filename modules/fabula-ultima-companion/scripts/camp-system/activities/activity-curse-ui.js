@@ -22,6 +22,10 @@
   const WIN_GOOD     = 0.033;   // ±xFrac for a Good hit
   const WIN_PERFECT  = 0.012;   // ±xFrac for a Perfect hit (subset of GOOD)
   const TICK_MS      = 16;      // ~60fps rAF throttle
+  const CD_STEP_MS   = 750;     // countdown step (3 → 2 → 1 → GO!)
+  const CD_TOTAL_MS  = CD_STEP_MS * 4;
+  const MG_KEY       = "CURSE";
+  const RESYNC_MS    = 100;     // spectator sweep re-anchors when off by more
 
   const DOLL_IMG     = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Polka.png";
   const HIT_URLS     = [
@@ -84,20 +88,14 @@
   let _audioCtx     = null;
   let _hitBuffers   = [];
   let _captureKeyFn = null;    // stored for removeEventListener
+  let _pins         = [];      // owner: [[rx, ry, perfect]] for the late-join snapshot
+  let _cdStartMs    = null;    // performance.now() when the countdown began
+  let _cdGen        = 0;       // a newer countdown cancels an older one
 
   // ── Ownership helpers ──────────────────────────────────────────────────────
-  function _getOwnerUserId(actor) {
-    return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      const user = game.users?.get(id);
-      return id !== "default" && lvl === 3 && user && !user.isGM;
-    })?.[0] ?? null;
-  }
-
+  // One owner rule for every minigame (CAMP.MG, camp-minigame-sync.js).
   function _checkIsOwner(actorId) {
-    const actor = game.actors?.get(actorId);
-    if (!actor) return game.user?.isGM ?? false;
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return CAMP.MG?.isOwner?.(actorId) ?? false;
   }
 
   // ── Seeded PRNG (mulberry32) ───────────────────────────────────────────────
@@ -145,6 +143,10 @@
 
   // ── Audio ──────────────────────────────────────────────────────────────────
   async function _initWebAudio() {
+    // One context per page: show() runs every game, and each new context
+    // used to be left open (browsers cap live AudioContexts).
+    if (_audioCtx && _audioCtx.state !== "closed" && _hitBuffers.length) return;
+    try { _audioCtx?.close?.(); } catch (_) {}
     try {
       _audioCtx  = new (window.AudioContext ?? window.webkitAudioContext)();
       _hitBuffers = await Promise.all(
@@ -160,10 +162,12 @@
     }
   }
 
-  function _playHitSound() {
+  // idx = which of the HIT_URLS to play; the owner picks it and sends it so
+  // spectators hear the same variant.
+  function _playHitSound(idx) {
     if (!_audioCtx || !_hitBuffers.length) return;
     if (_audioCtx.state === "suspended") _audioCtx.resume();
-    const buf = _hitBuffers[Math.floor(Math.random() * _hitBuffers.length)];
+    const buf = _hitBuffers[idx ?? Math.floor(Math.random() * _hitBuffers.length)] ?? _hitBuffers[0];
     const src = _audioCtx.createBufferSource();
     src.buffer = buf;
     src.connect(_audioCtx.destination);
@@ -524,6 +528,9 @@
     _stopping      = false;
     _gameStartMs   = 0;
     _lastFrameMs   = 0;
+    _pins          = [];
+    _cdStartMs     = null;
+    _cdGen++;
     // Don't tear down audioCtx — keep decoded buffers across calls
   }
 
@@ -534,15 +541,22 @@
   }
 
   // ── Countdown helper ───────────────────────────────────────────────────────
-  function _runCountdown(callback) {
+  // skipMs > 0 joins a countdown already in progress (late join).
+  function _runCountdown(callback, skipMs = 0) {
+    const gen = ++_cdGen;
+    _cdStartMs = performance.now() - skipMs;
     const el = document.getElementById("oni-curse-countdown");
     if (!el) return callback();
     el.style.display = "block";
     const steps = ["3", "2", "1", "GO!"];
-    let i = 0;
+    let i = Math.min(steps.length, Math.floor(skipMs / CD_STEP_MS));
+    let firstWait = CD_STEP_MS - (skipMs % CD_STEP_MS);
+    let silent = skipMs % CD_STEP_MS > 0;   // joined mid-step: its sound already played
     function next() {
+      if (gen !== _cdGen) return;            // superseded / cleared
       if (i >= steps.length) {
         el.style.display = "none";
+        _cdStartMs = null;
         return callback();
       }
       const step = steps[i++];
@@ -554,9 +568,14 @@
       void el.offsetWidth;
       el.style.animation = "";
       // Sound: tick for numbers, GO stinger for "GO!"
-      if (step === "GO!") _playSound(SFX.GO, 0.9);
-      else                _playSound(SFX.COUNTDOWN, 0.8);
-      setTimeout(next, 750);
+      if (!silent) {
+        if (step === "GO!") _playSound(SFX.GO, 0.9);
+        else                _playSound(SFX.COUNTDOWN, 0.8);
+      }
+      silent = false;
+      const wait = firstWait ?? CD_STEP_MS;
+      firstWait = null;
+      setTimeout(next, wait);
     }
     next();
   }
@@ -655,6 +674,10 @@
     const lb      = _labels[targetIdx];
     const perfect = minDelta <= WIN_PERFECT;
 
+    // Spectator sync goes through CAMP.MG.event "hit" (not CURSE_HIT): the
+    // router hands onHit() only success/perfect, and spectators also need the
+    // label index, pin position, sound variant, score and the owner's clock.
+    const t = Math.round(performance.now() - _gameStartMs);
     if (pressed === lb.key) {
       // ── Correct key ────────────────────────────────────────────────────
       lb.state = "hit";
@@ -664,13 +687,19 @@
       const node = document.getElementById(`oni-curse-lbl-${targetIdx}`);
       if (node) node.classList.add("hit");
 
-      _doHitFeedback(perfect);
+      const rx  = Math.round((10 + Math.random() * 80) * 10) / 10;   // % within doll
+      const ry  = Math.round((10 + Math.random() * 80) * 10) / 10;
+      const snd = Math.floor(Math.random() * HIT_URLS.length);
+      _pins.push([rx, ry, perfect]);
+
+      _doHitFeedback(perfect, rx, ry);
       _updateDamageState();
       _updateScoreHUD();
-      _playHitSound();
+      _playHitSound(snd);
 
-      // Sync spectators
-      CAMP.Socket.emit(CAMP.MSG.CURSE_HIT, { actorId: _actorId, success: true, perfect });
+      CAMP.MG?.event?.(MG_KEY, _actorId, "hit", {
+        i: targetIdx, ok: true, perfect, rx, ry, snd, score: _score, hits: _hitCount, t,
+      });
     } else {
       // ── Wrong key ──────────────────────────────────────────────────────
       lb.state = "miss";
@@ -678,17 +707,19 @@
       if (node) node.classList.add("miss");
 
       _doMissFeedback();
-      CAMP.Socket.emit(CAMP.MSG.CURSE_HIT, { actorId: _actorId, success: false, perfect: false });
+      CAMP.MG?.event?.(MG_KEY, _actorId, "hit", {
+        i: targetIdx, ok: false, perfect: false, score: _score, hits: _hitCount, t,
+      });
     }
   }
 
   // ── Hit / Miss VFX ────────────────────────────────────────────────────────
-  function _doHitFeedback(perfect) {
+  function _doHitFeedback(perfect, rx, ry) {
     const wrap = document.getElementById("oni-curse-doll-wrap");
     if (!wrap) return;
 
-    const rx = 10 + Math.random() * 80;   // % within doll
-    const ry = 10 + Math.random() * 80;
+    rx ??= 10 + Math.random() * 80;   // % within doll
+    ry ??= 10 + Math.random() * 80;
 
     // Impact splat
     const impact = document.createElement("div");
@@ -786,7 +817,8 @@
   }
 
   // ── Start game (after countdown) ──────────────────────────────────────────
-  function _startGame() {
+  // offsetMs > 0 = late join: the sweep starts that far in.
+  function _startGame(offsetMs = 0) {
     const confirm  = document.getElementById("oni-curse-confirm");
     const arena    = document.getElementById("oni-curse-arena");
     if (confirm) confirm.style.display = "none";
@@ -799,7 +831,7 @@
       _startKeyCapture();
     }
 
-    _gameStartMs  = performance.now();
+    _gameStartMs  = performance.now() - offsetMs;
     _lastFrameMs  = 0;
     _stopping     = false;
     _rafId        = requestAnimationFrame(_frame);
@@ -820,10 +852,66 @@
     _resultShown = true;
 
     if (_isOwner) {
-      // Owner submits score → GM resolveScore
-      CAMP.Socket.emit(CAMP.MSG.CURSE_RESULT, { actorId: _actorId, score: _score });
+      // Owner submits score → GM resolveScore. send(), not emit(): a GM
+      // owner must reach its own resolver (emit never returns to the sender
+      // → 60 s timeout, score 0). No tier → router's primary-GM case.
+      CAMP.Socket.send(CAMP.MSG.CURSE_RESULT, { actorId: _actorId, score: _score });
     }
     // Result reveal happens via applyResult() when GM broadcasts back
+  }
+
+  // ── Spectator: mirror one owner key press (CAMP.MG.event "hit") ───────────
+  function _applyRemoteHit(d) {
+    if (_isOwner || !document.getElementById(OVL_ID)) return;
+
+    // Keep the sweep on the owner's clock: t = owner ms since sweep start.
+    if (!_stopping && _gameStartMs && d.t != null) {
+      const local = performance.now() - _gameStartMs;
+      if (Math.abs(local - d.t) > RESYNC_MS) _gameStartMs = performance.now() - d.t;
+    }
+
+    const lb = _labels[d.i];
+    if (lb) {
+      lb.state = d.ok ? "hit" : "miss";
+      const node = document.getElementById(`oni-curse-lbl-${d.i}`);
+      // Our own sweep may already have expired it — the owner's call wins.
+      if (node) { node.classList.remove("expired", "hit", "miss"); node.classList.add(lb.state); }
+    }
+
+    if (d.ok) {
+      _doHitFeedback(!!d.perfect, d.rx, d.ry);
+      _playHitSound(d.snd);
+    } else {
+      _doMissFeedback();
+    }
+    if (d.hits  != null) _hitCount = d.hits; else if (d.ok) _hitCount++;
+    if (d.score != null) _score    = d.score;
+    _updateDamageState();
+    _updateScoreHUD();
+  }
+
+  // Late join: put the pins and label states back without the hit effects.
+  function _restoreSnapshot(snap) {
+    (snap.states ?? []).forEach((st, i) => {
+      const lb = _labels[i];
+      if (!lb || st === "pending") return;
+      lb.state = st;
+      document.getElementById(`oni-curse-lbl-${i}`)?.classList.add(st);
+    });
+    const layer = document.getElementById("oni-curse-hit-layer");
+    for (const [rx, ry, perfect] of snap.pins ?? []) {
+      const pin = document.createElement("div");
+      pin.className   = "oni-curse-pin";
+      pin.textContent = perfect ? "★" : "✕";
+      pin.style.left  = `${rx}%`;
+      pin.style.top   = `${ry}%`;
+      pin.style.color = perfect ? "#ffe066" : "#cc3030";
+      layer?.appendChild(pin);
+    }
+    _hitCount = snap.hits  ?? 0;
+    _score    = snap.score ?? 0;
+    _updateDamageState();
+    _updateScoreHUD();
   }
 
   // ── Public API ─────────────────────────────────────────────────────────────
@@ -855,8 +943,8 @@
           beginBtn.style.display = "inline-block";
           beginBtn.addEventListener("click", () => {
             beginBtn.disabled = true;
-            // Emit BEGIN so spectators transition
-            CAMP.Socket.emit(CAMP.MSG.CURSE_BEGIN, { actorId: _actorId });
+            // BEGIN so spectators transition (spectateBegin ignores the owner's echo)
+            CAMP.Socket.send(CAMP.MSG.CURSE_BEGIN, { actorId: _actorId });
             // Owner starts countdown locally
             if (confirm) confirm.style.display = "none";
             _runCountdown(_startGame);
@@ -874,12 +962,14 @@
       if (_isOwner) return;                              // owner sees it locally
       if (actorId !== _actorId) return;
       if (!document.getElementById(OVL_ID)) return;
+      if (_cdStartMs != null || _gameStartMs) return;   // already counting / playing (replayed BEGIN)
       const confirm = document.getElementById("oni-curse-confirm");
       if (confirm) confirm.style.display = "none";
       _runCountdown(_startGame);
     },
 
-    // ── onHit() — spectators receive per-key-press feedback ───────────────
+    // ── onHit() — legacy CURSE_HIT path (owners no longer send it; live
+    //    hits arrive as CAMP.MG.event "hit" → _applyRemoteHit) ────────────
     onHit(success, perfect) {
       if (_isOwner) return;                              // owner sees it locally
       if (!document.getElementById(OVL_ID)) return;
@@ -926,11 +1016,8 @@
         proceedBtn.style.display = "inline-block";
         proceedBtn.addEventListener("click", () => {
           proceedBtn.disabled = true;
-          if (game.user?.isGM) {
-            CAMP.CurseUI.resolveProceed(actorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.CURSE_PROCEED, { actorId });
-          }
+          // send() reaches the primary GM whether that is us or another client.
+          CAMP.Socket.send(CAMP.MSG.CURSE_PROCEED, { actorId });
         });
       }
     },
@@ -949,4 +1036,52 @@
       document.getElementById(OVL_ID)?.remove();
     },
   };
+
+  // ── Spectator live channel + late join ─────────────────────────────────────
+  CAMP.MG?.on?.(MG_KEY, (kind, data, msg) => {
+    if (msg?.a && msg.a !== _actorId) return;
+    if (kind === "hit") _applyRemoteHit(data);
+  });
+
+  CAMP.MG?.registerGame?.(MG_KEY, {
+    // Owner only, between BEGIN and the end of the sweep.
+    snapshot() {
+      if (!_isOwner || _resultShown || !document.getElementById(OVL_ID)) return null;
+      const now = performance.now();
+      let joinMs;
+      if (_gameStartMs && !_stopping) joinMs = CD_TOTAL_MS + (now - _gameStartMs);
+      else if (_cdStartMs != null)    joinMs = now - _cdStartMs;
+      else return null;
+      return {
+        actorId: _actorId,
+        joinMs:  Math.round(joinMs),        // ms since BEGIN on the owner's clock
+        score:   _score,
+        hits:    _hitCount,
+        states:  _labels.map(l => l.state === "expired" ? "pending" : l.state),
+        pins:    _pins,
+      };
+    },
+
+    // Restart the spectator run at the owner's point (cancels a countdown or
+    // sweep a replayed BEGIN may have started from zero).
+    apply(snap) {
+      if (!snap || _isOwner || !document.getElementById(OVL_ID)) return;
+      _stopping = true;
+      if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+      _cdGen++;
+      document.getElementById("oni-curse-hit-layer")?.replaceChildren();
+      document.getElementById("oni-curse-confirm")?.style.setProperty("display", "none");
+      const joinMs = snap.joinMs ?? 0;
+      const go = () => { _startGame(Math.max(0, joinMs - CD_TOTAL_MS)); _restoreSnapshot(snap); };
+      if (joinMs < CD_TOTAL_MS) _runCountdown(go, joinMs);
+      else {
+        const cd = document.getElementById("oni-curse-countdown");
+        if (cd) cd.style.display = "none";
+        _cdStartMs = null;
+        go();
+      }
+    },
+
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 })();

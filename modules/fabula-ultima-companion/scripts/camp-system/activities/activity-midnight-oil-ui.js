@@ -125,6 +125,11 @@
   let _ringTimeout2         = null;
   let _audioCtx             = null;
   let _tickBuffer           = null;
+  let _running              = false; // owner: between GO and score submit (late-join snapshot window)
+
+  // Spectator clock re-align threshold vs the owner's elapsed time in STATE.
+  const DRIFT_MS = 40;
+  const RELIGHT_MS_BY_TYPE = { perfect: RELIGHT_PERFECT_MS, normal: RELIGHT_NORMAL_MS, emergency: RELIGHT_EMERGENCY_MS };
 
   // ── Escalating timing helpers ─────────────────────────────────────────────
   function _brightDuration() {
@@ -161,6 +166,7 @@
     _gameStartMs          = null;
     _lastFrameMs          = 0;
     _resultShown          = false;
+    _running              = false;
     if (_audioCtx) { _audioCtx.close().catch(() => {}); _audioCtx = null; }
     _tickBuffer = null;
   }
@@ -177,17 +183,12 @@
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
+  // Shared minigame owner rule (camp-minigame-sync.js).
   function _getOwnerUserId(actor) {
-    const hit = Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const user = game.users?.get(id);
-      return lvl === 3 && user && !user.isGM;
-    });
-    return hit?.[0] ?? null;
+    return CAMP.MG?.ownerUserId(actor) ?? null;
   }
   function _isActorOwner(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return CAMP.MG?.isOwner(actor) ?? (game.user?.isGM ?? false);
   }
   function _getTokenImg(actor) {
     const std   = String(actor?.system?.props?.sprite_standard ?? "").trim();
@@ -197,8 +198,7 @@
   }
 
   function _playSound(src, volume = 0.7) {
-    try { AudioHelper.play({ src, volume, autoplay: true, loop: false }, false); }
-    catch { try { const a = new Audio(src); a.volume = volume; a.play().catch(() => {}); } catch {} }
+    CAMP.MG?.sfx(src, volume);
   }
   async function _initWebAudio() {
     try {
@@ -628,13 +628,14 @@
     if (gameEl) gameEl.dataset.lamp = state;
     _updateVignette(state);
 
-    // Timing rings — owner, flickering only
+    // Timing rings — flickering only (spectators get the owner's flicker
+    // start via STATE.stateAge, so the window lines up)
     clearTimeout(_ringTimeout1); _ringTimeout1 = null;
     clearTimeout(_ringTimeout2); _ringTimeout2 = null;
     const ring = document.getElementById("oni-mo-timing-ring");
     if (ring) ring.className = "oni-mo-timing-ring";
 
-    if (state === "flickering" && _isOwner) {
+    if (state === "flickering") {
       if (ring) ring.className = "oni-mo-timing-ring early";
       const now = Date.now();
       _ringTimeout1 = setTimeout(() => {
@@ -711,17 +712,12 @@
     _playSound(SFX.GUST, 0.75);
 
     let nextState = null;
+    let blownOut  = false;
 
     if (_lampState === "bright") {
       // Gust snuffs from bright → flickering immediately (no bright-timer grace)
       nextState = "flickering";
       _setLampState("flickering");
-      // Emit state for spectators
-      if (_isOwner) {
-        CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_STATE, {
-          actorId: _actorId, lampState: "flickering", score: Math.round(_score),
-        });
-      }
     } else if (_lampState === "flickering" || _lampState === "relighting") {
       // Gust extinguishes
       _lampEverExtinguished = true;
@@ -730,13 +726,109 @@
       nextState = "extinguished";
       _setLampState("extinguished");
       _spawnPopup("💨 Blown Out!", "#80b0ff");
-      if (_isOwner) {
-        CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_STATE, {
-          actorId: _actorId, lampState: "extinguished", score: Math.round(_score),
-        });
-      }
+      blownOut = true;
     }
-    // Already extinguished: no additional effect (lamp is already out)
+    // Already extinguished: no state change, but spectators still see/hear the gust
+    _sendState("gust", { blownOut });
+  }
+
+  // ── Spectator sync ────────────────────────────────────────────────────────
+  // Owner → everyone: lamp state + what just happened (`ev`) so spectators
+  // replay the same popup/flash/sound. stateAge/elapsed let spectators use the
+  // owner's clock; scoreRaw re-syncs their locally accrued score.
+  // send(): the local echo reaches onLampState, which ignores the owner.
+  function _sendState(ev, extra = {}) {
+    if (!_isOwner || _gameStartMs === null) return;
+    const now = Date.now();
+    CAMP.Socket.send(CAMP.MSG.MIDNIGHT_OIL_STATE, {
+      actorId:              _actorId,
+      lampState:            _lampState,
+      score:                Math.round(Math.max(0, _score)),
+      scoreRaw:             _score,
+      ev,
+      elapsed:              now - _gameStartMs,
+      stateAge:             now - _stateStartMs,
+      cycle:                _cycleCount,
+      relightType:          _relightType,
+      perfectRelights:      _perfectRelights,
+      lampEverExtinguished: _lampEverExtinguished,
+      ...extra,
+    });
+  }
+
+  // Spectator: replay the feedback of an owner event.
+  function _playStateEvent(ev, p) {
+    switch (ev) {
+      case "gust":
+        _showGustHit();
+        _playSound(SFX.GUST, 0.75);
+        if (p.blownOut) _spawnPopup("💨 Blown Out!", "#80b0ff");
+        break;
+      case "out":
+        _spawnPopup("💨 Lamp Out!", "#ff7050");
+        _playSound(SFX.FAIL, 0.6);
+        break;
+      case "relight":
+        _playTick(0.5);
+        break;
+      case "perfect":
+        _spawnPopup("✨ Perfect Relight!", "#70ff90");
+        _playSound(SFX.SUCCESS, 0.8);
+        break;
+      case "safe":
+        _spawnPopup("Safe Relight", "#f4d488");
+        _playTick(0.45);
+        break;
+      case "relit":
+        _spawnPopup("Relit!", "#e8c080");
+        _playTick(0.45);
+        break;
+      case "misfire":
+        _showMisfireFx();
+        break;
+    }
+  }
+
+  function _showRelightGauge() {
+    const gw = document.getElementById("oni-mo-gauge-wrap");
+    if (gw) {
+      gw.classList.add("visible");
+      const fill = document.getElementById("oni-mo-gauge");
+      if (fill) fill.classList.toggle("perfect", _relightType === "perfect");
+    }
+  }
+
+  // Spectator: take the owner's state (from STATE or a late-join snapshot).
+  function _applyOwnerState(p) {
+    const now = Date.now();
+    if (p.elapsed != null && _gameStartMs !== null &&
+        Math.abs((now - _gameStartMs) - p.elapsed) > DRIFT_MS) {
+      _gameStartMs = now - p.elapsed;
+    }
+    if (p.cycle != null)                _cycleCount           = p.cycle;
+    if (p.perfectRelights != null)      _perfectRelights      = p.perfectRelights;
+    if (p.lampEverExtinguished != null) _lampEverExtinguished = p.lampEverExtinguished;
+
+    const startMs = p.stateAge != null ? now - p.stateAge : null;
+    if (p.lampState === "relighting") {
+      _relightType       = p.relightType ?? "normal";
+      _relightDurationMs = RELIGHT_MS_BY_TYPE[_relightType] ?? RELIGHT_NORMAL_MS;
+      if (_lampState !== "relighting") _setLampState("relighting", startMs);
+      else if (startMs !== null) _stateStartMs = startMs;
+      _showRelightGauge();
+    } else if (p.lampState && p.lampState !== _lampState) {
+      _relightType = null;
+      _setLampState(p.lampState, startMs);
+    } else if (p.lampState && startMs !== null) {
+      _stateStartMs = startMs;
+    }
+
+    const sc = p.scoreRaw ?? p.score;
+    if (sc != null) {
+      _score = Math.max(0, Number(sc) || 0);
+      const el = document.getElementById("oni-mo-score");
+      if (el) el.textContent = Math.floor(_score);
+    }
   }
 
   // Schedule gust visuals for ALL clients (warning animation is deterministic)
@@ -789,21 +881,11 @@
 
     _setLampState("relighting");
 
-    const gw = document.getElementById("oni-mo-gauge-wrap");
-    if (gw) {
-      gw.classList.add("visible");
-      const fill = document.getElementById("oni-mo-gauge");
-      if (fill) fill.classList.toggle("perfect", _relightType === "perfect");
-    }
+    _showRelightGauge();
 
     _playTick(0.5);
 
-    if (_isOwner) {
-      CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_STATE, {
-        actorId: _actorId, lampState: "relighting",
-        relightType: _relightType, score: Math.round(_score),
-      });
-    }
+    _sendState("relight");
   }
 
   function _cancelRelighting() {
@@ -817,13 +899,18 @@
         _setLampState("extinguished");
         _spawnPopup("💨 Lamp Out!", "#ff7050");
         _playSound(SFX.FAIL, 0.6);
-        if (_isOwner) CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_STATE, { actorId: _actorId, lampState: "extinguished", score: Math.round(_score) });
+        _relightType = null;
+        _sendState("out");
       } else {
         _setLampState("flickering", _preRelightStateStart);
-        if (_isOwner) CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_STATE, { actorId: _actorId, lampState: "flickering", score: Math.round(_score) });
+        _relightType = null;
+        _sendState("cancel");
       }
     } else {
       _setLampState("extinguished", _preRelightStateStart);
+      // Emergency relight released early — spectators were left on "relighting".
+      _relightType = null;
+      _sendState("cancel");
     }
 
     _relightType = null;
@@ -849,17 +936,22 @@
 
     _setLampState("bright");
 
-    if (_isOwner) {
-      CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_STATE, {
-        actorId: _actorId, lampState: "bright",
-        perfectRelights: _perfectRelights, score: Math.round(_score),
-      });
-    }
+    _sendState(wasType === "perfect" ? "perfect" : wasType === "normal" ? "safe" : "relit");
   }
 
   // ── Misfire penalty (pressing SPACE while lamp is bright) ─────────────────
   function _applyMisfire() {
     _score = Math.max(0, _score - MISFIRE_COST);
+    _showMisfireFx();
+
+    const scoreEl = document.getElementById("oni-mo-score");
+    if (scoreEl) scoreEl.textContent = Math.floor(Math.max(0, _score));
+
+    _sendState("misfire");
+  }
+
+  // Popup + sound + red flash (owner and spectators)
+  function _showMisfireFx() {
     _spawnPopup(`✗ Not yet! −${MISFIRE_COST}`, "#ff5050");
     _playSound(SFX.PENALTY, 0.75);
 
@@ -874,15 +966,12 @@
       scene.appendChild(fl);
       setTimeout(() => fl.remove(), 420);
     }
+  }
 
-    const scoreEl = document.getElementById("oni-mo-score");
-    if (scoreEl) scoreEl.textContent = Math.floor(Math.max(0, _score));
-
-    if (_isOwner) {
-      CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_STATE, {
-        actorId: _actorId, lampState: _lampState, score: Math.round(Math.max(0, _score)),
-      });
-    }
+  // SPACE key look for spectators (MG.event, not a socket message per game)
+  function _setKeyPressed(down) {
+    const k = document.getElementById("oni-mo-key");
+    if (k) k.classList.toggle("pressed", !!down);
   }
 
   // ── Input ─────────────────────────────────────────────────────────────────
@@ -893,6 +982,7 @@
       if (!e.repeat) {
         const k = document.getElementById("oni-mo-key");
         if (k) k.classList.add("pressed");
+        CAMP.MG?.event("MIDNIGHT_OIL", _actorId, "key", { actorId: _actorId, down: true });
         if (_lampState === "bright") _applyMisfire();
         else _startRelighting();
       }
@@ -901,6 +991,7 @@
       if (e.code !== "Space") return;
       const k = document.getElementById("oni-mo-key");
       if (k) k.classList.remove("pressed");
+      CAMP.MG?.event("MIDNIGHT_OIL", _actorId, "key", { actorId: _actorId, down: false });
       _cancelRelighting();
     };
     document.addEventListener("keydown", _keyDownHandler, { capture: true });
@@ -944,10 +1035,7 @@
         if (now - _stateStartMs >= _brightDuration()) {
           _cycleCount++;
           _setLampState("flickering");
-          CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_STATE, {
-            actorId: _actorId, lampState: "flickering",
-            cycle: _cycleCount, score: Math.round(_score),
-          });
+          _sendState("flicker");
         }
       } else if (_lampState === "flickering") {
         if (now - _stateStartMs >= _flickerDuration()) {
@@ -955,9 +1043,7 @@
           _setLampState("extinguished");
           _spawnPopup("💨 Lamp Out!", "#ff7050");
           _playSound(SFX.FAIL, 0.6);
-          CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_STATE, {
-            actorId: _actorId, lampState: "extinguished", score: Math.round(_score),
-          });
+          _sendState("out");
         }
       } else if (_lampState === "relighting") {
         const progress = Math.min(1, (now - _stateStartMs) / _relightDurationMs);
@@ -981,11 +1067,25 @@
       if (barEl)   barEl.style.width   = `${pct}%`;
 
     } else {
-      // Spectator: drive timer display only (lamp state comes from sockets)
-      const timeEl = document.getElementById("oni-mo-time");
-      const barEl  = document.getElementById("oni-mo-timer-bar");
-      if (timeEl) timeEl.textContent = Math.max(0, (GAME_DURATION_MS - elapsed) / 1000).toFixed(1);
-      if (barEl)  barEl.style.width  = `${Math.max(0, (1 - elapsed / GAME_DURATION_MS) * 100)}%`;
+      // Spectator: lamp state comes from the owner's STATE; between messages
+      // the relight gauge and the score run locally at the owner's rates.
+      if (_lampState === "relighting" && _relightDurationMs > 0) {
+        const progress = Math.min(1, (now - _stateStartMs) / _relightDurationMs);
+        const fill = document.getElementById("oni-mo-gauge");
+        if (fill) fill.style.strokeDashoffset = String((1 - progress) * GAUGE_CIRCUMFERENCE);
+      }
+      if (elapsed < GAME_DURATION_MS + 150) {
+        const mult = elapsed >= FINAL_FOCUS_START_MS ? FINAL_FOCUS_MULT : 1.0;
+        if (_lampState === "bright")          _score += SCORE_BRIGHT  * dt * mult;
+        else if (_lampState === "flickering") _score += SCORE_FLICKER * dt * mult;
+      }
+
+      const timeEl  = document.getElementById("oni-mo-time");
+      const scoreEl = document.getElementById("oni-mo-score");
+      const barEl   = document.getElementById("oni-mo-timer-bar");
+      if (timeEl)  timeEl.textContent  = Math.max(0, (GAME_DURATION_MS - elapsed) / 1000).toFixed(1);
+      if (scoreEl) scoreEl.textContent = Math.floor(_score);
+      if (barEl)   barEl.style.width   = `${Math.max(0, (1 - elapsed / GAME_DURATION_MS) * 100)}%`;
     }
 
     _rafId = requestAnimationFrame(_frame);
@@ -993,6 +1093,7 @@
 
   // ── End game ──────────────────────────────────────────────────────────────
   function _endGame(actorId) {
+    _running = false;
     if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
     _teardownInput();
     clearTimeout(_ringTimeout1); _ringTimeout1 = null;
@@ -1003,22 +1104,20 @@
     const finalScore = Math.round(_score);
     console.debug(TAG, `Game over — score ${finalScore}, perfectRelights ${_perfectRelights}, extinguished ${_lampEverExtinguished}, cycles ${_cycleCount}`);
 
-    const actor = game.actors?.get(actorId);
-    if (actor && _isActorOwner(actor)) {
-      const data = {
-        score: finalScore, perfectRelights: _perfectRelights,
+    // send(): a GM owner reaches its own resolver through the local router
+    // (no `label`, so the echo skips the all-clients RESULT branch).
+    if (_isOwner) {
+      CAMP.Socket.send(CAMP.MSG.MIDNIGHT_OIL_RESULT, {
+        actorId, score: finalScore, perfectRelights: _perfectRelights,
         lampEverExtinguished: _lampEverExtinguished,
-      };
-      if (game.user?.isGM) {
-        CAMP.MidnightOilUI.resolveScore(actorId, data);
-      } else {
-        CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_RESULT, { actorId, ...data });
-      }
+      });
     }
   }
 
   // ── Countdown ─────────────────────────────────────────────────────────────
   function _runCountdown(actorId, actor, count, onDone) {
+    // Spectator: a late-join snapshot already started the game here.
+    if (!_isOwner && _gameStartMs !== null) return;
     const el = document.getElementById("oni-mo-count");
     if (el) { el.textContent = count; el.className = "oni-mo-countdown-num"; void el.offsetWidth; }
     _playSound(SFX.COUNTDOWN, 0.8);
@@ -1057,7 +1156,10 @@
            <span class="oni-mo-key" id="oni-mo-key">SPACE</span>
            hold to relight the lamp
          </div>`
-      : `<div class="oni-mo-key-hint">${displayName} is studying late at night…</div>`;
+      : `<div class="oni-mo-key-hint">
+           <span class="oni-mo-key" id="oni-mo-key">SPACE</span>
+           ${displayName} is studying late at night…
+         </div>`;
     return `
       <div class="oni-mo-game" data-lamp="bright" data-gust="" id="oni-mo-game">
         <div class="oni-mo-vignette" id="oni-mo-vignette"></div>
@@ -1101,17 +1203,20 @@
   }
 
   // ── Start minigame ────────────────────────────────────────────────────────
-  function _startMinigame(actorId, actor) {
+  function _startMinigame(actorId, actor, lateElapsedMs = null) {
     const ovl = document.getElementById(OVL_ID);
     if (!ovl) return;
+    // Spectator: a late-join snapshot already started the game here.
+    if (!_isOwner && _gameStartMs !== null) return;
+    const elapsed0 = Math.max(0, lateElapsedMs ?? 0);
 
     const tokenImg    = actor ? _getTokenImg(actor) : "icons/svg/mystery-man.svg";
     const displayName = actor?.name ?? "?";
 
     ovl.innerHTML = _buildGameHTML(tokenImg, displayName);
 
-    _gameStartMs  = Date.now();
-    _lastFrameMs  = _gameStartMs;
+    _gameStartMs  = Date.now() - elapsed0;
+    _lastFrameMs  = Date.now();
     _setLampState("bright", _gameStartMs);
     _score        = 0;
     _cycleCount   = 0;
@@ -1125,12 +1230,14 @@
     _updateVignette("bright");
 
     if (_isOwner) {
+      _running = true;
       _setupInput();
       _endTimer = setTimeout(() => _endGame(actorId), GAME_DURATION_MS + 150);
     } else {
+      if (_endTimer !== null) clearTimeout(_endTimer);
       _endTimer = setTimeout(() => {
         if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
-      }, GAME_DURATION_MS + 500);
+      }, Math.max(0, GAME_DURATION_MS - elapsed0) + 500);
     }
 
     _rafId = requestAnimationFrame(_frame);
@@ -1174,7 +1281,10 @@
         document.body.appendChild(ovl);
         document.getElementById("oni-mo-begin").addEventListener("click", () => {
           _pendingGustSchedule = _generateGustSchedule();
-          CAMP.Socket.broadcast(CAMP.MSG.MIDNIGHT_OIL_BEGIN, { actorId, gustSchedule: _pendingGustSchedule });
+          // send(), not broadcast(): broadcast is a GM-only no-op, so a player
+          // owner left every spectator on "Waiting…". The local echo hits
+          // spectateBegin, which ignores the owner.
+          CAMP.Socket.send(CAMP.MSG.MIDNIGHT_OIL_BEGIN, { actorId, gustSchedule: _pendingGustSchedule });
           _showCountdownPanel(actorId, actor, tokenImg, displayName);
         }, { once: true });
       } else {
@@ -1210,13 +1320,11 @@
 
     onLampState(payload) {
       if (_isOwner) return;
-      if (!document.getElementById(OVL_ID)) return;
-      const { lampState, score } = payload ?? {};
-      if (lampState && lampState !== _lampState) _setLampState(lampState);
-      if (score != null) {
-        const el = document.getElementById("oni-mo-score");
-        if (el) el.textContent = score;
-      }
+      if (!document.getElementById(OVL_ID) || _resultShown) return;
+      if (_gameStartMs === null) return; // still counting down here
+      const p = payload ?? {};
+      _applyOwnerState(p);
+      _playStateEvent(p.ev, p);
     },
 
     applyResult(actorId, score, perfectRelights, lampEverExtinguished) {
@@ -1264,11 +1372,7 @@
 
       if (isOwnerNow) {
         document.getElementById("oni-mo-proceed")?.addEventListener("click", () => {
-          if (game.user?.isGM) {
-            CAMP.MidnightOilUI.resolveProceed(actorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.MIDNIGHT_OIL_PROCEED, { actorId });
-          }
+          CAMP.Socket.send(CAMP.MSG.MIDNIGHT_OIL_PROCEED, { actorId });
         }, { once: true });
       }
     },
@@ -1295,6 +1399,44 @@
       el.addEventListener("animationend", () => el.remove(), { once: true });
     },
   };
+
+  // ── Spectator live channel + late join (camp-minigame-sync.js) ───────────
+  CAMP.MG?.on("MIDNIGHT_OIL", (kind, data) => {
+    if (kind !== "key" || _isOwner) return;
+    if (data.actorId && _actorId && data.actorId !== _actorId) return;
+    _setKeyPressed(data.down);
+  });
+
+  CAMP.MG?.registerGame("MIDNIGHT_OIL", {
+    snapshot() {
+      if (!_isOwner || !_running || _gameStartMs === null) return null;
+      const now = Date.now();
+      return {
+        actorId:              _actorId,
+        elapsed:              now - _gameStartMs,
+        lampState:            _lampState,
+        stateAge:             now - _stateStartMs,
+        relightType:          _relightType,
+        scoreRaw:             _score,
+        perfectRelights:      _perfectRelights,
+        lampEverExtinguished: _lampEverExtinguished,
+        cycle:                _cycleCount,
+        gustSchedule:         _gusts.map(g => ({ hitAt: g.hitAt, warnAt: g.warnAt })),
+      };
+    },
+    apply(snap) {
+      if (!snap || _isOwner || _resultShown) return;
+      if (!document.getElementById(OVL_ID)) return;
+      if (snap.actorId && _actorId && snap.actorId !== _actorId) return;
+      if (_gameStartMs === null) {
+        if (snap.gustSchedule) _pendingGustSchedule = snap.gustSchedule;
+        const actor = game.actors?.get(snap.actorId ?? _actorId);
+        _startMinigame(snap.actorId ?? _actorId, actor, snap.elapsed ?? 0);
+      }
+      _applyOwnerState(snap);
+    },
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 
   console.debug(TAG, "Midnight Oil UI loaded.");
 })();

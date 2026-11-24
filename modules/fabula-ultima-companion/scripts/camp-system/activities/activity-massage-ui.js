@@ -67,6 +67,11 @@
   let _endTimer     = null;
   let _resultShown  = false;
   let _gameActive   = false;
+  // Spectator sync / late join
+  let _phase        = null;   // null | "countdown" | "play"
+  let _cellState    = {};     // cell idx → proximity currently shown
+  let _bubbleEmoji  = "🤔";
+  let _lastHoverCell = null;
 
   // Web Audio — pre-decoded buffers for high-frequency click sounds
   let _audioCtx     = null;
@@ -83,6 +88,10 @@
     _gameStartMs = null;
     _resultShown = false;
     _gameActive  = false;
+    _phase       = null;
+    _cellState   = {};
+    _bubbleEmoji = "🤔";
+    _lastHoverCell = null;
   }
 
   // ---------------------------------------------------------------------------
@@ -158,18 +167,20 @@
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
+  // Shared minigame owner rule (camp-minigame-sync.js).
   function _getOwnerUserId(actor) {
-    const hit = Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const user = game.users?.get(id);
-      return lvl === 3 && user && !user.isGM;
-    });
-    return hit?.[0] ?? null;
+    return actor ? (CAMP.MG?.ownerUserId?.(actor) ?? null) : null;
   }
 
   function _isActorOwner(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return actor ? !!CAMP.MG?.isOwner?.(actor) : false;
+  }
+
+  // Spectator: mirror a class onto one element of a list (owner's hover).
+  function _markRemote(selector, attr, key, cls) {
+    document.querySelectorAll(`#${OVL_ID} ${selector}`).forEach(el => {
+      el.classList.toggle(cls, key != null && String(el.dataset[attr]) === String(key));
+    });
   }
 
   function _getTokenImg(actor) {
@@ -332,6 +343,20 @@
       }
       .oni-ms-cell.disabled {
         pointer-events:none;
+      }
+      /* Spectator: the owner's cursor (MG.event "hover") */
+      .oni-ms-cell.oni-ms-remote-hover {
+        background:rgba(255,255,255,.18);
+        border-color:rgba(255,255,255,.5);
+        transform:scale(1.04);
+      }
+      .oni-ms-spectate .oni-ms-ally-card { cursor:default; }
+      .oni-ms-spectate .oni-ms-ally-card:hover:not(.oni-ms-remote-hover) {
+        background:rgba(255,255,255,.25); border-color:rgba(141,95,56,.5); transform:none;
+      }
+      .oni-ms-ally-card.oni-ms-remote-hover, .oni-ms-ally-card.oni-ms-remote-pick {
+        background:rgba(200,168,75,.25);
+        border-color:#c8a84b;transform:translateY(-2px);
       }
       /* Proximity: emoji fills the cell; subtle glow border replaces solid bg */
       .oni-ms-cell[data-proximity="perfect"] { border-color:#e74c3c; box-shadow:0 0 14px rgba(192,57,43,.7); background:rgba(192,57,43,.18); }
@@ -556,14 +581,16 @@
       }, 200);
     }
 
-    // Broadcast to spectators
-    CAMP.Socket.emit(CAMP.MSG.MASSAGE_HIT, {
+    // Broadcast to spectators (send(): the local echo is a no-op — onHit
+    // returns for the owner). `elapsed` re-anchors the spectator's timer.
+    CAMP.Socket.send(CAMP.MSG.MASSAGE_HIT, {
       actorId:      _actorId,
       targetActorId: _targetId,
       cell:         cellIdx,
       proximity:    prox,
       score:        _score,
       newSpot,
+      elapsed:      _gameStartMs != null ? Date.now() - _gameStartMs : null,
     });
   }
 
@@ -577,6 +604,7 @@
     if (!cell) return;
     cell.setAttribute("data-proximity", prox);
     cell.textContent = PROXIMITY_CFG[prox]?.emoji ?? "";
+    _cellState[cellIdx] = prox;
   }
 
   function _clearAllCells() {
@@ -586,6 +614,7 @@
       c.removeAttribute("data-proximity");
       c.textContent = "";
     });
+    _cellState = {};
   }
 
   // ---------------------------------------------------------------------------
@@ -594,6 +623,7 @@
   function _updateBubble(emoji) {
     const bubble = document.getElementById("oni-ms-bubble");
     if (!bubble) return;
+    _bubbleEmoji = emoji;
     bubble.textContent = emoji;
     // Re-trigger bump animation
     bubble.style.animation = "none";
@@ -644,6 +674,9 @@
 
     _gameStartMs = Date.now();
     _gameActive  = true;
+    _phase       = "play";
+    _cellState   = {};
+    _bubbleEmoji = "🤔";
 
     if (_isOwner) {
       // Pick first hidden spot
@@ -655,6 +688,17 @@
         const cell = e.target.closest("[data-cell]");
         if (cell) _handleCellClick(parseInt(cell.dataset.cell));
       });
+      // Mirror the cursor cell to spectators (only on change: ≤ a few Hz).
+      const sendHover = (cellIdx) => {
+        if (cellIdx === _lastHoverCell || !_gameActive) return;
+        _lastHoverCell = cellIdx;
+        CAMP.MG?.event?.("MASSAGE", actorId, "hover", { cell: cellIdx });
+      };
+      grid?.addEventListener("mouseover", e => {
+        const cell = e.target.closest("[data-cell]");
+        sendHover(cell ? parseInt(cell.dataset.cell) : null);
+      });
+      grid?.addEventListener("mouseleave", () => sendHover(null));
 
       // Timer bar rAF
       _startTimerLoop();
@@ -681,6 +725,7 @@
 
     const ovl = document.getElementById(OVL_ID);
     if (!ovl) return;
+    _phase = "countdown";
     ovl.innerHTML = _buildCountdownPanel(targetImg, targetName);
     _runCountdown(3, () => _startGame(actorId, targetActorId));
   }
@@ -692,13 +737,14 @@
     _gameActive = false;
     if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
 
+    _phase = null;
+    CAMP.MG?.event?.("MASSAGE", actorId, "hover", { cell: null });
+
     const actor = game.actors?.get(actorId);
     if (actor && _isActorOwner(actor)) {
-      if (game.user?.isGM) {
-        CAMP.MassageUI.resolveScore(actorId, _score);
-      } else {
-        CAMP.Socket.emit(CAMP.MSG.MASSAGE_RESULT, { actorId, score: _score });
-      }
+      // send(): no `reduction` field, so the router hands it to the GM resolver
+      // (a GM-owner included).
+      CAMP.Socket.send(CAMP.MSG.MASSAGE_RESULT, { actorId, score: _score });
     }
   }
 
@@ -727,14 +773,14 @@
       const ovl = document.createElement("div");
       ovl.id = OVL_ID;
 
-      if (_isOwner) {
-        const allyCards = (allies ?? []).map(a => `
+      const allyCards = (allies ?? []).map(a => `
           <div class="oni-ms-ally-card" data-ally-id="${a.id}">
             <img src="${a.img}" alt="${a.name}">
             <div class="oni-ms-ally-card-name">${a.name}</div>
           </div>
         `).join("");
 
+      if (_isOwner) {
         ovl.innerHTML = `
           <div class="oni-ms-panel">
             <div class="oni-ms-title">🧖 Massage</div>
@@ -744,20 +790,30 @@
         `;
         document.body.appendChild(ovl);
 
+        let picked = false;
         ovl.querySelectorAll(".oni-ms-ally-card").forEach(card => {
+          card.addEventListener("mouseenter", () => {
+            if (!picked) CAMP.MG?.event?.("MASSAGE", actorId, "ally", { targetId: card.dataset.allyId });
+          });
+          card.addEventListener("mouseleave", () => {
+            if (!picked) CAMP.MG?.event?.("MASSAGE", actorId, "ally", { targetId: null });
+          });
           card.addEventListener("click", () => {
             const targetActorId = card.dataset.allyId;
-            if (game.user?.isGM) {
-              CAMP.MassageUI.resolveTarget(actorId, targetActorId);
-            } else {
-              CAMP.Socket.emit(CAMP.MSG.MASSAGE_TARGET, { actorId, targetActorId });
-            }
+            if (!targetActorId || picked) return;
+            picked = true;
+            CAMP.MG?.event?.("MASSAGE", actorId, "pickAlly", { targetId: targetActorId });
+            // send(): a GM-owner reaches its own resolver through the router.
+            CAMP.Socket.send(CAMP.MSG.MASSAGE_TARGET, { actorId, targetActorId });
           }, { once: true });
         });
       } else {
+        // Spectators see the same list (read-only) with the owner's cursor mirrored.
         ovl.innerHTML = `
-          <div class="oni-ms-panel">
+          <div class="oni-ms-panel oni-ms-spectate">
             <div class="oni-ms-title">🧖 Massage</div>
+            <div style="font-size:.85rem;color:#6b3a1f;font-weight:700;">Choose an ally to massage:</div>
+            <div class="oni-ms-ally-list">${allyCards}</div>
             <div class="oni-ms-waiting">Waiting for ${ownerName} to choose an ally…</div>
           </div>
         `;
@@ -782,9 +838,11 @@
       const ovl = document.getElementById(OVL_ID);
       if (!ovl) return;
 
+      // Pre-decode click sounds while the begin screen is up — spectators
+      // play the same buffers at the same gains in onHit().
+      _initWebAudio();
+
       if (_isOwner) {
-        // Pre-decode click sounds while user reads the begin screen
-        _initWebAudio();
 
         ovl.innerHTML = `
           <div class="oni-ms-panel">
@@ -803,11 +861,8 @@
         `;
 
         document.getElementById("oni-ms-begin").addEventListener("click", () => {
-          if (game.user?.isGM) {
-            CAMP.Socket.broadcast(CAMP.MSG.MASSAGE_BEGIN, { actorId, targetActorId });
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.MASSAGE_BEGIN, { actorId, targetActorId });
-          }
+          // send(): spectateBegin() returns for the owner, so the echo is a no-op.
+          CAMP.Socket.send(CAMP.MSG.MASSAGE_BEGIN, { actorId, targetActorId });
           _showCountdownThenGame(actorId, targetActorId);
         }, { once: true });
       } else {
@@ -834,7 +889,17 @@
       if (_isOwner) return;
       if (!document.getElementById(OVL_ID)) return;
 
-      const { cell, proximity, score, newSpot } = payload ?? {};
+      const { cell, proximity, score, newSpot, elapsed } = payload ?? {};
+
+      // Re-anchor the timer bar on the owner's clock.
+      if (_gameActive && typeof elapsed === "number") {
+        _gameStartMs = Date.now() - elapsed;
+        if (_endTimer !== null) clearTimeout(_endTimer);
+        _endTimer = setTimeout(() => {
+          _gameActive = false;
+          if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+        }, Math.max(0, GAME_DURATION_MS - elapsed) + 500);
+      }
 
       // Update score HUD
       const scoreEl = document.getElementById("oni-ms-score");
@@ -850,8 +915,8 @@
       // Pop
       if (cell != null && cfg?.pts > 0) _spawnCellPop(cell, cfg.pts);
 
-      // Play sound
-      if (proximity) _playSound(SFX[proximity.toUpperCase()], 0.7);
+      // Play sound — same buffers and per-key gains as the owner
+      if (proximity && SFX[proximity.toUpperCase()]) _playWebAudio(proximity.toUpperCase());
 
       // New spot: clear cell colors
       if (newSpot) {
@@ -864,6 +929,7 @@
       if (_resultShown) return;
       _resultShown = true;
       _gameActive  = false;
+      _phase       = null;
       if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
 
       _playSound(SFX.RESULT, 0.85);
@@ -891,11 +957,7 @@
         const btn = document.getElementById("oni-ms-proceed");
         btn?.addEventListener("click", () => {
           btn.disabled = true;
-          if (game.user?.isGM) {
-            CAMP.MassageUI.resolveProceed(actorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.MASSAGE_PROCEED, { actorId });
-          }
+          CAMP.Socket.send(CAMP.MSG.MASSAGE_PROCEED, { actorId });
         }, { once: true });
       }
     },
@@ -931,6 +993,73 @@
       el.addEventListener("animationend", () => el.remove(), { once: true });
     },
   };
+
+  // ---------------------------------------------------------------------------
+  // Spectator side of the MG channel
+  //   ally {targetId|null} / pickAlly {targetId}   ally-list cursor
+  //   hover {cell|null}                            grid cursor
+  // ---------------------------------------------------------------------------
+  CAMP.MG?.on?.("MASSAGE", (kind, data, msg) => {
+    if (_isOwner || !msg?.a || msg.a !== _actorId) return;
+    if (kind === "ally") {
+      _markRemote(".oni-ms-spectate .oni-ms-ally-card", "allyId", data.targetId ?? null, "oni-ms-remote-hover");
+    } else if (kind === "pickAlly") {
+      _markRemote(".oni-ms-spectate .oni-ms-ally-card", "allyId", null, "oni-ms-remote-hover");
+      _markRemote(".oni-ms-spectate .oni-ms-ally-card", "allyId", data.targetId ?? null, "oni-ms-remote-pick");
+    } else if (kind === "hover") {
+      _markRemote(".oni-ms-cell", "cell", _gameActive ? (data.cell ?? null) : null, "oni-ms-remote-hover");
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // Late join — the owner's page answers with the live round
+  // ---------------------------------------------------------------------------
+  CAMP.MG?.registerGame?.("MASSAGE", {
+    snapshot() {
+      if (!_isOwner || !_actorId || !_phase || _resultShown) return null;
+      if (!document.getElementById(OVL_ID)) return null;
+      return {
+        actorId:       _actorId,
+        targetActorId: _targetId,
+        phase:         _phase,
+        elapsedMs:     _phase === "play" && _gameStartMs != null ? Date.now() - _gameStartMs : 0,
+        score:         _score,
+        cells:         { ..._cellState },
+        bubble:        _bubbleEmoji,
+      };
+    },
+    apply(snap) {
+      if (!snap?.actorId || _isOwner || _resultShown) return;
+      if (_actorId && _actorId !== snap.actorId) return;
+      if (!document.getElementById(OVL_ID)) return;
+      _actorId  = snap.actorId;
+      _targetId = snap.targetActorId ?? _targetId;
+      _initWebAudio();
+
+      if (snap.phase === "countdown") {
+        if (!_phase) _showCountdownThenGame(_actorId, _targetId);   // a HIT re-anchors the timer
+        return;
+      }
+      if (snap.phase !== "play") return;
+
+      const remaining = GAME_DURATION_MS - (snap.elapsedMs ?? 0);
+      if (remaining <= 0) return;
+      if (_phase !== "play") _startGame(_actorId, _targetId);   // builds the grid + timer loop
+      _gameStartMs = Date.now() - (snap.elapsedMs ?? 0);
+      if (_endTimer !== null) clearTimeout(_endTimer);
+      _endTimer = setTimeout(() => {
+        _gameActive = false;
+        if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+      }, remaining + 500);
+
+      const scoreEl = document.getElementById("oni-ms-score");
+      if (scoreEl) scoreEl.textContent = snap.score ?? 0;
+      for (const [idx, prox] of Object.entries(snap.cells ?? {})) _applyProximityToCell(parseInt(idx), prox);
+      const bubble = document.getElementById("oni-ms-bubble");
+      if (bubble && snap.bubble) { bubble.textContent = snap.bubble; _bubbleEmoji = snap.bubble; }
+    },
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 
   console.debug(TAG, "Massage UI loaded.");
 })();

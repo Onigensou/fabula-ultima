@@ -25,6 +25,9 @@
 //   GM → ALL:     COOKING_CLOSE       { sessionId }
 //   GM → ALL:     COOKING_SFX         { sessionId, sfx }
 //   PLAYER → GM:  COOKING_PROCEED     { sessionId, userId }
+//   ANY → GM:     COOKING_SYNC_REQ    { userId }                 (sent on ready: late join / reload)
+//   GM → ALL:     COOKING_SYNC        { sessionId, toUserId, entries, cookerActorId, cookerUserId, mode, view,
+//                                       phase, slots, tasteValues, results, pickActorId }   (only toUserId acts)
 // ============================================================================
 (() => {
   const MODULE_ID = "fabula-ultima-companion";
@@ -478,8 +481,7 @@
     if (!state) return;
     if (state.mode === "dark") return;
     const user = game.users?.get(userId);
-    const isCook = !!user && (user.isGM || userId === state.cookerUserId || game.actors?.get(state.cookerId)?.testUserPermission?.(user, "OWNER"));
-    if (!isCook) return deny("Only the cook can turn off the lights.");
+    if (!_isCookUser(user, state.cookerId, state.cookerUserId)) return deny("Only the cook can turn off the lights.");
     if (state.closedForMode || Object.values(state.slots).some(s => s.locked)) return deny("Too late — someone already locked in an ingredient.");
     state.mode = "dark";
     const byName = game.actors?.get(state.cookerId)?.name ?? "The cook";
@@ -493,6 +495,21 @@
   }
 
   // ── Misc helpers ───────────────────────────────────────────────────────────
+  // Who may act as the cook (Yaminabe switch). Plain OWNER is not enough: a
+  // `default: OWNER` cooker would make the stream Spectator account a cook too.
+  // GM, the session's cook user, or the Spectator decider for the cooker.
+  function _isCookUser(user, cookerId, cookerUserId) {
+    if (!user) return false;
+    if (user.isGM) return true;
+    if (cookerUserId && user.id === cookerUserId) return true;
+    const Sp = globalThis.FUCompanion?.api?.Spectator;
+    if (Sp?.isSpectator?.(user)) return false;
+    const cooker = game.actors?.get(cookerId);
+    if (!cooker) return false;
+    if (Sp?.deciderUserIdForActor) return Sp.deciderUserIdForActor(cooker, { requireActive: false }) === user.id;
+    return !!cooker.testUserPermission?.(user, "OWNER");
+  }
+
   function _ownerUserId(actor) {
     const assigned = game.users?.find(u => !u.isGM && u.character?.id === actor?.id);
     if (assigned) return assigned.id;
@@ -628,12 +645,14 @@
     const sessionId = foundry.utils.randomID();
     const cooker = game.actors.get(cookerId);
     const cookerEntry = entries.find(e => e.actorId === cookerId);
-    const state = { entries, slots: {}, mode: "open", cookerId, cookerUserId: cookerEntry?.userId ?? null, broadcast };
+    // phase/view/results are kept for late join (COOKING_SYNC_REQ → COOKING_SYNC)
+    const state = { entries, slots: {}, mode: "open", cookerId, cookerUserId: cookerEntry?.userId ?? null, broadcast, phase: "pick", view: null, results: null };
     _sessionStates.set(sessionId, state);
     const emit = msg => { if (broadcast) game.socket.emit(SOCKET_CH, { ...msg, sessionId }); };
 
     const panelEntries = entries.map(e => ({ actorId: e.actorId, userId: e.userId, actorName: e.actor.name, portraitUrl: e.actor.img || "icons/svg/mystery-man.svg" }));
     const view = { cookbook: _cookbookView(cfg), kinds: cfg.ingredientKinds ?? {}, tasted: cfg.tasted ?? [] };
+    state.view = view; state.panelEntries = panelEntries;
     globalThis.CookingUI?.openMainPanel(sessionId, panelEntries, cookerId, { mode: "open", cookerUserId: state.cookerUserId, view });
     emit({ type: "COOKING_PANEL_OPEN", entries: panelEntries, cookerActorId: cookerId, cookerUserId: state.cookerUserId, mode: "open", view });
 
@@ -694,6 +713,7 @@
       itemImg: p.item.img || "icons/svg/item-bag.svg", itemName: p.item.name,
       taste: TASTES.includes(descs[i].taste) ? descs[i].taste : null, rarity: descs[i].rarity, kind: descs[i].kind,
     }));
+    state.phase = "animate";
     emit({ type: "COOKING_ANIMATE", contributions, mode });
     await (globalThis.CookingUI?.runAnimation(sessionId, contributions, mode) ?? new Promise(r => setTimeout(r, 1600)));
     await new Promise(r => setTimeout(r, 1500));
@@ -727,6 +747,7 @@
         return { ...s, name: seen ? s.name : "???", img: seen ? (dish?.img ?? null) : null };
       }),
     } : null;
+    state.phase = "resolve";
     emit({ type: "COOKING_RESOLVE", contributions, mode, wheel });
     await (globalThis.CookingUI?.runResolve?.(sessionId, contributions, mode, wheel) ?? Promise.resolve());
 
@@ -738,6 +759,7 @@
     const book = await _markCookbook(outcome, cfg, picks.map(p => p.item.name));
     const resultsPayload = _buildResultsPayload({ outcome, applied, cfg, picks, cookerCheck, book });
     resultsPayload.cookbook = _cookbookView(getConfig());
+    state.phase = "results"; state.results = resultsPayload;
     emit({ type: "COOKING_RESULTS", outcome: resultsPayload });
     globalThis.CookingUI?.showResults(sessionId, resultsPayload);
 
@@ -814,8 +836,59 @@
       label: "🍲 Cooking (Dev Sim)", devTag: `⚙️ DEV SIM — ingredients ${opts.consume === true ? "consumed" : "NOT consumed"}` });
   }
 
+  // ── Late join ──────────────────────────────────────────────────────────────
+  // A page that loads mid-session asks (COOKING_SYNC_REQ); the GM running the
+  // session (the only client holding _sessionStates) answers with everything
+  // needed to rebuild the panel. Foundry relays module sockets to everyone, so
+  // the reply is addressed by `toUserId` and only carries public data (the
+  // redacted Yaminabe slots, never anyone's secret pick).
+  function _syncReply(userId) {
+    if (!userId || userId === game.user?.id) return;
+    for (const [sessionId, state] of _sessionStates) {
+      if (!state.broadcast || !state.panelEntries) continue;
+      // reopen the requester's picker only if the GM is still waiting on their lock
+      const mine = state.panelEntries.find(e => e.userId === userId);
+      const pickActorId = state.phase === "pick" && mine && !state.slots[mine.actorId]?.locked
+        && _pendingLocks.has(`${sessionId}:${mine.actorId}`) ? mine.actorId : null;
+      game.socket.emit(SOCKET_CH, {
+        type: "COOKING_SYNC", sessionId, toUserId: userId,
+        entries: state.panelEntries, cookerActorId: state.cookerId, cookerUserId: state.cookerUserId,
+        mode: state.mode, view: state.view, phase: state.phase,
+        slots: _publicSlots(state), tasteValues: _computeTastes(sessionId, getConfig()),
+        results: state.phase === "results" ? state.results : null,
+        pickActorId,
+      });
+    }
+  }
+
+  // Player side of a pick: open the docked picker, then send the lock to the GM.
+  async function _pickAndLock(sessionId, actorId) {
+    const actor = game.actors?.get(actorId);
+    const choices = _materialChoices(actor);
+    const itemId = await globalThis.CookingUI?.openPicker(sessionId, actorId, choices) ?? null;
+    const item = actor?.items?.get(itemId);
+    game.socket.emit(SOCKET_CH, { type: "COOKING_LOCK", sessionId, actorId, itemId: itemId ?? null, itemImg: item?.img ?? null, itemName: item?.name ?? null });
+  }
+
+  async function _applySync(msg) {
+    const UI = globalThis.CookingUI; if (!UI) return;
+    const { sessionId } = msg;
+    const cur = UI.getMain?.();
+    if (!(cur?.rendered && cur.sessionId === sessionId)) {
+      UI.openMainPanel(sessionId, msg.entries, msg.cookerActorId, { mode: msg.mode, cookerUserId: msg.cookerUserId, view: msg.view });
+    }
+    UI.applyState(sessionId, msg.slots, msg.tasteValues, { silent: true });   // no lock sounds for old locks
+    if (msg.phase === "results" && msg.results) { UI.showResults(sessionId, msg.results); return; }
+    if (msg.phase === "animate" || msg.phase === "resolve") { UI.resumeBusy?.(sessionId, msg.phase); return; }
+    if (msg.pickActorId && !UI._picker?.rendered) await _pickAndLock(sessionId, msg.pickActorId);
+  }
+
   // ── Socket handler ─────────────────────────────────────────────────────────
   Hooks.once("ready", () => {
+    // Ask whether a hot-pot is already running (reload / late join). Delayed so
+    // the GM's socket handler and this page's UI are both up.
+    setTimeout(() => { try { game.socket?.emit(SOCKET_CH, { type: "COOKING_SYNC_REQ", userId: game.user?.id }); } catch {} }, 1500);
+
     game.socket?.on(SOCKET_CH, async (msg) => {
       if (!msg || typeof msg !== "object") return;
       const { type, sessionId } = msg;
@@ -834,19 +907,16 @@
         }
         if (type === "COOKING_PROCEED") { _pendingProceed.get(sessionId)?.(msg.userId ?? null); return; }
         if (type === "COOKING_MODE_REQ") { _modeRequest(sessionId, msg.userId); return; }
+        if (type === "COOKING_SYNC_REQ") { _syncReply(msg.userId); return; }
       }
 
       // All clients
-      if (type === "COOKING_PANEL_OPEN") {
+      if (type === "COOKING_SYNC") {
+        if (msg.toUserId === game.user?.id) await _applySync(msg);
+      } else if (type === "COOKING_PANEL_OPEN") {
         globalThis.CookingUI?.openMainPanel(sessionId, msg.entries, msg.cookerActorId, { mode: msg.mode, cookerUserId: msg.cookerUserId, view: msg.view });
         const myEntry = msg.entries?.find(e => e.userId === game.user?.id);
-        if (myEntry && !game.user?.isGM) {
-          const actor = game.actors?.get(myEntry.actorId);
-          const choices = _materialChoices(actor);
-          const itemId = await globalThis.CookingUI?.openPicker(sessionId, myEntry.actorId, choices) ?? null;
-          const item = actor?.items?.get(itemId);
-          game.socket.emit(SOCKET_CH, { type: "COOKING_LOCK", sessionId, actorId: myEntry.actorId, itemId: itemId ?? null, itemImg: item?.img ?? null, itemName: item?.name ?? null });
-        }
+        if (myEntry && !game.user?.isGM) await _pickAndLock(sessionId, myEntry.actorId);
       } else if (type === "COOKING_SFX") {
         globalThis.CookingUI?.playSfx?.(msg.sfx);
       } else if (type === "COOKING_HOVER") {
@@ -875,6 +945,7 @@
   globalThis.FUCompanion.api ??= {};
   globalThis.FUCompanion.api.cooking = {
     getConfig, resolve, applyDish, start, describeItem, proceed, devSim, requestYaminabe,
+    isCookUser: _isCookUser,
     _internals: { rel, TASTES, STYLES, TASTE_LABEL, TASTE_ADJ, _cookbookView },
   };
 })();

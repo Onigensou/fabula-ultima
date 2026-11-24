@@ -107,7 +107,10 @@
         // 7 — Run 3 questions
         let totalScore = 0;
         for (let q = 0; q < 3; q++) {
-          const topic = topics[q];
+          // A/B/C order is shuffled ONCE here and rides inside `topic`
+          // (`order` = choice indices in display order), so the owner and
+          // every spectator see the same letters on the same answers.
+          const topic = { ...topics[q], order: _shuffledOrder(topics[q]?.choices?.length ?? 0) };
 
           // Broadcast question to all; GM shows directly
           CAMP.Socket.broadcast(CAMP.MSG.PEP_TALK_QUESTION, {
@@ -326,6 +329,15 @@
     const token = String(actor.getActiveTokens?.(true, true)?.[0]?.document?.texture?.src ?? "").trim();
     const proto = String(actor?.prototypeToken?.texture?.src ?? "").trim();
     return std || token || proto || actor.img || "icons/svg/mystery-man.svg";
+  }
+
+  function _shuffledOrder(n) {
+    const order = Array.from({ length: n }, (_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    return order;
   }
 
   function _getOwnerUserId(actor) {
