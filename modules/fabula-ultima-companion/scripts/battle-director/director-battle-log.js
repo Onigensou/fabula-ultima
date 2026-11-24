@@ -45,13 +45,16 @@ const PENDING_SETTING = "battleLogPending";
 // truly over, and clearPendingBattleLog (battle-start clear) empties it too.
 // RECORD_MAX is only a runaway guard: ~150 bytes a row.
 const RECORD_MAX = 2000;
-function _toRecord(row, entry) {
+function _toRecord(row, entry, g = null) {
   if (!row) return null;
   const rec = {
     attacker: row.attacker, attack_target: row.attack_target,
     apply_mode: row.apply_mode, value_type: row.value_type, value: row.value,
     affinity: row.affinity, efficiency: row.efficiency,
   };
+  // One appendBattleLog call = one action's rows: the Battle Grade MVP counts
+  // an exploit once per action by this id.
+  if (g) rec._g = g;
   if (entry?.chain) rec._chain = entry.chain;
   return rec;
 }
@@ -157,7 +160,8 @@ export async function appendBattleLog(records) {
   pending.entries.push(...entries);
   pending.rows.push(...rows);
   // A record pairs its row with its own entry (the Chain counts ride the entry).
-  for (const r of records) { const rec = _toRecord(r?.row, r?.entry); if (rec) pending.record.push(rec); }
+  const g = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  for (const r of records) { const rec = _toRecord(r?.row, r?.entry, g); if (rec) pending.record.push(rec); }
   try {
     await game.settings.set(NS, PENDING_SETTING, {
       entries: pending.entries.slice(-MAX),

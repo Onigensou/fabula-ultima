@@ -270,10 +270,17 @@ export async function runBattleEndRank(endCtx) {
     try {
       const api = (globalThis.FUCompanion.api.battleGrade ??= {});
       api.last = { at: Date.now(), rounds: endCtx.totalRounds, roster: tally.roster, events: tally.events,
-        rows: rows.map((r) => ({ attacker: r.attacker, apply_mode: r.apply_mode, value_type: r.value_type, affinity: r.affinity, efficiency: r.efficiency, _chain: r._chain })),
+        rows: rows.map((r) => ({ attacker: r.attacker, apply_mode: r.apply_mode, value_type: r.value_type, affinity: r.affinity, efficiency: r.efficiency, _chain: r._chain, _g: r._g })),
         grade: { letter: grade.letter, score: grade.score, gauges: grade.gauges, threat: grade.threat, par: grade.par, stats: grade.stats } };
     } catch { /* debug aid only */ }
-    endCtx.rank = { isBoss: endCtx.isBoss, score: grade.score, letter: grade.letter, legacy };
+    // The session's fight log (re-scoring against real play): inputs + result.
+    try {
+      const { recordFight } = await import("../battle-grade/grade-state.js");
+      const last = globalThis.FUCompanion.api.battleGrade.last;
+      const nameOf = (k) => tally.roster?.[k]?.name ?? k;
+      await recordFight({ ...last, grade: { ...last.grade, mvp: nameOf(grade.mvp), mvpScores: Object.fromEntries(Object.entries(grade.mvpScores ?? {}).map(([k, v]) => [nameOf(k), v])), titles: grade.titles } });
+    } catch (e) { warn("[BattleEnd:Rank] session fight log failed", e); }
+    endCtx.rank ={ isBoss: endCtx.isBoss, score: grade.score, letter: grade.letter, legacy };
     log(`[BattleEnd:Rank] v2 ${grade.letter} (${grade.score}) threat=${grade.threat} par=${grade.par} rounds=${grade.rounds} gauges=${JSON.stringify(grade.gauges)} board${grade.boardDelta >= 0 ? "+" : ""}${grade.boardDelta} mvp=${grade.mvp}`);
   } catch (e) {
     warn("[BattleEnd:Rank] v2 grade threw — keeping the legacy rank", e);

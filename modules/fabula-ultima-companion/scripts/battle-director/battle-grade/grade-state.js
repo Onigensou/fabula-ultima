@@ -124,6 +124,36 @@ async function payPrize(kind, mvp, db, endCtx) {
   return null;
 }
 
+// ── Session fight log ────────────────────────────────────────────────────────
+// Every graded fight's inputs + result for the current session, so the rank /
+// MVP weights can be re-scored against real play (to-do #17: the 11-21 session
+// left only its last fight). World setting, GM-written; a new ledger session
+// starts it empty; capped so the settings store stays small.
+const LOG_SETTING = "battleGradeSessionLog";
+const LOG_MAX = 20;
+
+Hooks.once("init", () => {
+  try {
+    game.settings.register(NS, LOG_SETTING, { scope: "world", config: false, type: Object, default: { sessionId: null, fights: [] } });
+  } catch (e) { warn("grade-state: session log registration failed", e); }
+});
+
+export function readSessionFights() {
+  try { return foundry.utils.deepClone(game.settings.get(NS, LOG_SETTING) ?? { sessionId: null, fights: [] }); }
+  catch { return { sessionId: null, fights: [] }; }
+}
+
+export async function recordFight(entry) {
+  if (!game.user?.isGM || !entry) return;
+  try {
+    const cur = readSessionFights();
+    const sid = ledgerSessionId();
+    const fights = (sid && cur.sessionId !== sid) ? [] : (Array.isArray(cur.fights) ? cur.fights : []);
+    fights.push(entry);
+    await game.settings.set(NS, LOG_SETTING, { sessionId: sid ?? cur.sessionId ?? null, fights: fights.slice(-LOG_MAX) });
+  } catch (e) { warn("grade-state: session log write failed", e); }
+}
+
 /** A wipe or fleeing clears the board. */
 export async function clearBoardOnLoss(outcome) {
   if (outcome !== "escaped" && outcome !== "defeat") return;
@@ -138,5 +168,5 @@ export async function clearBoardOnLoss(outcome) {
 Hooks.once("ready", () => {
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
-  globalThis.FUCompanion.api.battleGrade = Object.assign(globalThis.FUCompanion.api.battleGrade ?? {}, { readBoard, boardExpMultiplier });
+  globalThis.FUCompanion.api.battleGrade = Object.assign(globalThis.FUCompanion.api.battleGrade ?? {}, { readBoard, boardExpMultiplier, readSessionFights });
 });

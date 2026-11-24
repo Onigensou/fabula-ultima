@@ -78,6 +78,16 @@ async function recipientOf(c) {
   } catch { return c?.side === "party"; }
 }
 
+// Summoner actor uuid: token flag `summonedBy` (phantasms, Create summons) or
+// the persistent-summon actor flag `summonOwnerActorUuid`.
+function ownerOf(c) {
+  try {
+    const td = c?.tokenDoc ?? (c?.tokenUuid ? fromUuidSync(c.tokenUuid) : null);
+    const own = td?.flags?.[NS]?.summonedBy ?? (c?.actorDoc ?? td?.actor)?.flags?.[NS]?.summonOwnerActorUuid ?? null;
+    return own ? String(own) : null;
+  } catch { return null; }
+}
+
 async function syncRoster(d) {
   const t = load();
   const list = d?.dCombat?.combatants ?? [];
@@ -94,6 +104,8 @@ async function syncRoster(d) {
       activation: Math.max(1, num(prop(a, "activation"), 1)),
       maxHp: num(prop(a, "max_hp")),
       recipient: await recipientOf(c),
+      // A summon's MVP lanes go to its summoner (grade-core computeMvp).
+      owner: ownerOf(c),
     };
     added = true;
   }
