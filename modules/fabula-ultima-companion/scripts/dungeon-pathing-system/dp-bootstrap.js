@@ -25,6 +25,8 @@
   }
   const TAG     = "[DungeonPathing][Bootstrap]";
   const GLOBAL  = "__ONI_DUNGEON_PATHING__";
+  // Broadcast by the mover when a step is confirmed (watchers lift the fog then).
+  const FOG_COMMIT_MSG = "oni.dp.fogCommit";
 
   if (globalThis[GLOBAL]?.state?.installed) return;
 
@@ -61,6 +63,7 @@
     currentNode:  null,
     neighborIds:  new Set(),
     forcedNodeId: null,
+    fogHoldNodeId: null,   // watchers: fog stays here while a step awaits Confirm
     clickHandler: null,
     hoverHandler: null,
     hoverTimer:   null,
@@ -288,7 +291,12 @@
     const dtNeighbors = performance.now() - tNeighbors;
 
     // ── 6. Fog overlay — reveal tiles adjacent to current node ──────────────
-    DP.Fog?.refresh?.(graph, currentNode, allNeighbors);
+    // While another client's step waits for Confirm / Go Back, the fog stays
+    // anchored on the tile the party came from (fogHoldNodeId), so watchers
+    // don't see past a step that may be taken back.
+    const fogNode = (state.fogHoldNodeId && graph.nodeMap.get(state.fogHoldNodeId)) || currentNode;
+    const fogNeighbors = fogNode === currentNode ? allNeighbors : DP.Graph.getNeighbors(fogNode.nodeId, graph);
+    DP.Fog?.refresh?.(graph, fogNode, fogNeighbors);
 
     state.lastHoveredNodeId = null; // reset hover tracking after rebuild
     DP.Overlay.clearHover?.();
@@ -708,7 +716,12 @@
       perf(`turn | pre-anim setup: ${(performance.now()-tTurnStart).toFixed(1)}ms`);
       const tAnim = performance.now();
       state.forcedNodeId = clicked.nodeId;
-      const moved = await DP.Movement.moveToNode(token, clicked);
+      // Will this step show Confirm / Go Back? Same rule as skipConfirm below.
+      // If so, watchers keep the fog until we broadcast the confirm.
+      const _destDoc  = scene.tiles.get(clicked.nodeId) ?? null;
+      const _skipFlag = _destDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
+      const fogHold   = !(_skipFlag === true || _skipFlag === "true" || (DP.Vertigo?.isActive?.() ?? false));
+      const moved = await DP.Movement.moveToNode(token, clicked, { fogHold });
       if (!moved) { state.forcedNodeId = null; state.pendingUse = _pendingBefore; return; }
       perf(`turn | animation: ${(performance.now()-tAnim).toFixed(1)}ms`);
 
@@ -769,6 +782,12 @@
         perf(`turn | revert: ${(performance.now()-tRevert).toFixed(1)}ms`);
         return; // finally block handles rebuild and clears busy
       }
+
+      // Step confirmed: the watchers can lift the fog around it now. Sent
+      // whatever skipConfirm says, so a missed hold can't stick.
+      try {
+        game.socket?.emit?.("module.fabula-ultima-companion", { type: FOG_COMMIT_MSG, sceneId: scene.id, nodeId: clicked.nodeId });
+      } catch (e) { console.warn(TAG, "fog commit broadcast failed", e); }
 
       // Landed with Confirm on a Usable tile: remember it, so a click on the
       // tile the party stands on can still offer Use (free, no new turn).
@@ -921,6 +940,7 @@
     state.currentNode = null;
     state.neighborIds.clear();
     state.forcedNodeId = null;
+    state.fogHoldNodeId = null;
     state.pendingUse  = null;
     removeClickListener();
     removeHoverHandler();
@@ -1078,13 +1098,33 @@
     // Sync currentNode across all clients when the party token moves.
     // The local client has state.busy = true during its own turn loop,
     // so this only triggers a rebuild on OTHER clients (GM / spectators).
-    const hUpdateToken = Hooks.on("updateToken", async (tokenDoc) => {
+    const hUpdateToken = Hooks.on("updateToken", async (tokenDoc, change, options) => {
       if (!state.active || state.busy) return;
       // If we know the party token, only rebuild for that token's moves.
       if (state.partyToken && state.partyToken.document?.id !== tokenDoc.id) return;
+      // A step that still waits for Confirm keeps the fog on the tile the
+      // party came from; any other move (Go Back, a shove, the next step) drops it.
+      if (change && ("x" in change || "y" in change)) {
+        state.fogHoldNodeId = options?.dpFogHold
+          ? (state.fogHoldNodeId ?? state.currentNode?.nodeId ?? null)
+          : null;
+      }
       await rebuild();
     });
     state.hookIds.push(["updateToken", hUpdateToken]);
+
+    // The mover confirmed the step: lift the fog around the tile the party is on.
+    if (!window.__ONI_DP_FOG_COMMIT_SOCKET__ && game.socket) {
+      window.__ONI_DP_FOG_COMMIT_SOCKET__ = true;
+      game.socket.on("module.fabula-ultima-companion", (msg) => {
+        if (msg?.type !== FOG_COMMIT_MSG || msg.sceneId !== canvas?.scene?.id) return;
+        if (!state.fogHoldNodeId) return;
+        state.fogHoldNodeId = null;
+        const node = state.currentNode;
+        if (!state.active || !state.graph || !node) return;
+        DP.Fog?.refresh?.(state.graph, node, DP.Graph.getNeighbors(node.nodeId, state.graph));
+      });
+    }
 
     // socketlib fires "socketlib.ready" from its own `init` hook, long before
     // this ready-time install — so a Hooks.once("socketlib.ready") here never

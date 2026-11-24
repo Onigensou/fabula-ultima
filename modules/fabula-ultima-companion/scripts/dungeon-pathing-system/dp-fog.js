@@ -153,13 +153,49 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Animation: fade OUT (reveal)
+  // Disc animation — one animator per disc, toward shown (1) or lifted (0).
+  //
+  // Each disc remembers what it should end as (_want). A newer call takes over
+  // from the disc's current alpha, so a lift that is still running can turn
+  // back into fog. Before 2026-11-24 a lift could not be stopped: if the party
+  // stepped away within its 600 ms (a quick Go Back), refresh() skipped the
+  // tile as "animating", the lift finished anyway and the tile stayed revealed
+  // on that client until the next move (to-do #10, Valley_Map006).
   // ---------------------------------------------------------------------------
-  function _animateReveal(tileId, fogMode) {
-    if (_animating.has(tileId)) return;
-    _animating.add(tileId);
+  const _ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-    if (fogMode === "shroud") {
+  function _animateDisc(tileId, show, ms) {
+    const c = _fogContainers.get(tileId);
+    if (!c || c.destroyed) { _fogContainers.delete(tileId); _animating.delete(tileId); return; }
+    c._want = show ? 1 : 0;
+    const runId = c._runId = (c._runId ?? 0) + 1;
+    const from  = c.alpha;
+    _animating.add(tileId);
+    const start = performance.now();
+    function tick() {
+      if (c.destroyed) {
+        if (_fogContainers.get(tileId) === c) { _fogContainers.delete(tileId); _animating.delete(tileId); }
+        return;
+      }
+      if (c._runId !== runId) return;               // a newer animation owns this disc
+      const t = Math.min((performance.now() - start) / ms, 1);
+      const a = from + (c._want - from) * _ease(t);
+      c.alpha = a;
+      _artAlpha(tileId, 1 - a);
+      if (t < 1) { requestAnimationFrame(tick); return; }
+      _animating.delete(tileId);
+      if (c._want === 0) destroyContainer(tileId);  // lifted: the art is back at alpha 1
+      else { c.alpha = 1; _artAlpha(tileId, 0); }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /** Lift the disc (party adjacent). A shroud is marked revealed for good the first time. */
+  function _lift(tileId, fogMode) {
+    const c = _fogContainers.get(tileId);
+    if (!c || c.destroyed || c._want === 0) return;
+    if (fogMode === "shroud" && !c._marked) {
+      c._marked = true;
       _localShroudRevealed.add(tileId);
       const scene = canvas?.scene;
       if (scene) {
@@ -167,70 +203,14 @@
           ?.catch(e => console.warn(TAG, "markFogRevealed failed:", e));
       }
     }
-
-    const container = _fogContainers.get(tileId);
-    if (!container || container.destroyed) {
-      _animating.delete(tileId);
-      _fogContainers.delete(tileId);
-      return;
-    }
-
-    const start = performance.now();
-    function tick() {
-      if (container.destroyed) {
-        _animating.delete(tileId);
-        _fogContainers.delete(tileId);
-        return;
-      }
-      const t    = Math.min((performance.now() - start) / REVEAL_MS, 1);
-      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      container.alpha = 1 - ease;
-      _artAlpha(tileId, ease);
-      if (t < 1) {
-        requestAnimationFrame(tick);
-      } else {
-        _artAlpha(tileId, 1);
-        container.parent?.removeChild(container);
-        container.destroy({ children: true });
-        _fogContainers.delete(tileId);
-        _animating.delete(tileId);
-        DP.LinkLayer?.redraw?.();
-      }
-    }
-    requestAnimationFrame(tick);
+    _animateDisc(tileId, false, REVEAL_MS);
   }
 
-  // ---------------------------------------------------------------------------
-  // Animation: fade IN (re-fog, fog mode only)
-  // ---------------------------------------------------------------------------
-  function _animateFadeIn(tileId) {
-    if (_animating.has(tileId)) return;
-    const container = _fogContainers.get(tileId);
-    if (!container || container.destroyed) return;
-
-    _animating.add(tileId);
-    container.alpha = 0;
-    _artAlpha(tileId, 1);
-
-    const start = performance.now();
-    function tick() {
-      if (container.destroyed) {
-        _animating.delete(tileId);
-        return;
-      }
-      const t    = Math.min((performance.now() - start) / REFOG_MS, 1);
-      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      container.alpha = ease;
-      _artAlpha(tileId, 1 - ease);
-      if (t < 1) {
-        requestAnimationFrame(tick);
-      } else {
-        container.alpha = 1;
-        _artAlpha(tileId, 0);
-        _animating.delete(tileId);
-      }
-    }
-    requestAnimationFrame(tick);
+  /** Bring the fog back (party no longer adjacent), from wherever the disc is now. */
+  function _cover(tileId) {
+    const c = _fogContainers.get(tileId);
+    if (!c || c.destroyed || c._want === 1) return;
+    _animateDisc(tileId, true, REFOG_MS);
   }
 
   // ---------------------------------------------------------------------------
@@ -472,22 +452,30 @@
           && !_fogContainers.get(tileId)?.destroyed;
 
         if (isAdjacent) {
-          if (hasContainer && !_animating.has(tileId)) {
-            _animateReveal(tileId, fogMode);
+          if (hasContainer) _lift(tileId, fogMode);
+        } else if (!hasContainer) {
+          const container = buildContainer(node, fogMode);
+          canvas.stage.addChild(container);
+          _fogContainers.set(tileId, container);
+          DP.LinkLayer?.redraw?.();
+
+          if (wasAdjacent && _initialized && fogMode === "fog") {
+            container.alpha = 0;
+            _artAlpha(tileId, 1);
+            _animateDisc(tileId, true, REFOG_MS);
+          } else {
+            container.alpha = 1;
+            container._want = 1;
+            _artAlpha(tileId, 0);
           }
         } else {
-          if (!hasContainer && !_animating.has(tileId)) {
-            const container = buildContainer(node, fogMode);
-            canvas.stage.addChild(container);
-            _fogContainers.set(tileId, container);
-            DP.LinkLayer?.redraw?.();
-
-            if (wasAdjacent && _initialized && fogMode === "fog") {
-              _animateFadeIn(tileId);
-            } else {
-              container.alpha = 1;
-              _artAlpha(tileId, 0);
-            }
+          const c = _fogContainers.get(tileId);
+          if (c._want === 0) {
+            // Still lifting, but the party has moved on: fog comes back. A shroud
+            // that started to part is already revealed for good — let it finish.
+            if (fogMode === "fog") _cover(tileId);
+          } else if (!_animating.has(tileId)) {
+            _artAlpha(tileId, 0);   // Foundry's tile refresh resets mesh.alpha
           }
         }
       }
@@ -568,9 +556,20 @@
       _fogContainers.set(tileId, container);
       DP.LinkLayer?.redraw?.();
       container.alpha = 1;
+      container._want = 1;
       _artAlpha(tileId, 0);
     },
   };
+
+  // Foundry v12 Tile#_refreshState sets mesh.alpha from the document (and a
+  // redraw makes a new mesh at alpha 1), which un-hides the art under a disc.
+  // Put the disc's art alpha back after every tile refresh.
+  Hooks.on("refreshTile", (tile) => {
+    const c = _fogContainers.get(tile?.id);
+    if (!c || c.destroyed || !c._artFade) return;
+    const m = tile.mesh;
+    if (m && !m.destroyed) m.alpha = 1 - c.alpha;
+  });
 
   // ---------------------------------------------------------------------------
   // Multi-client sync
