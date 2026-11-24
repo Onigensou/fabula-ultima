@@ -12,7 +12,10 @@
 // Sync flow:
 //   GM broadcasts CARTOGRAPHY_START → all call show()        (GM direct too)
 //   Owner clicks Begin → emits CARTOGRAPHY_BEGIN → all call spectateBegin()
-//   [15 s game; owner emits CARTOGRAPHY_TICK every 300 ms for spectators]
+//   [15 s game; owner emits CARTOGRAPHY_TICK every step (100 ms) with the full
+//    board + that step's events (pickup / hit) so spectators see the same snake,
+//    float text and red flash and hear the same sounds]
+//   Late join: CAMP.MG.registerGame("CARTOGRAPHY") snapshot of the running board
 //   Owner emits CARTOGRAPHY_RESULT { score, hits } → GM calls resolveScore()
 //   GM broadcasts CARTOGRAPHY_RESULT { score, hits, charges } → all call applyResult()
 //   Owner clicks Proceed → emits CARTOGRAPHY_PROCEED → GM calls resolveProceed()
@@ -31,7 +34,6 @@
   const CELL_PX           = 32;
   const TICK_MS           = 100;           // 10 fps game loop
   const GAME_DURATION_MS  = 15_000;
-  const SPECTATOR_SYNC_MS = 300;           // send full state to spectators every 300 ms
   const INVINCIBLE_MS     = 600;           // grace period after a hit
   const HAZARD_LIFETIME_MS = 4_000;        // how long each hazard stays on board
   const INIT_TRAIL_LEN    = 3;             // snake starts 3 cells long
@@ -88,7 +90,14 @@
   // rAF (owner only)
   let _rafId       = null;
   let _lastTickMs  = 0;
-  let _lastSyncMs  = 0;
+  let _tickEvents  = [];      // owner: pickup/hit events of the current step
+
+  // Spectator side: a tick that arrived during the countdown (the owner's
+  // countdown can finish first) is kept, and the timer runs locally between
+  // ticks from an anchor so it doesn't step.
+  let _pendingTick = null;
+  let _specRafId   = null;
+  let _specAnchor  = null;    // { timeLeft, at }
 
   // Result idempotency — owner shows result immediately; GM broadcast must not double-render
   let _resultShown = false;
@@ -121,6 +130,7 @@
     // Called on all clients when GM broadcasts DONE
     hide() {
       _stopLoop();
+      _stopSpecLoop();
       _clearState();
       const ovl = document.getElementById(OVL_ID);
       if (!ovl) return;
@@ -136,6 +146,7 @@
       _resultShown = true;
       _phase = "result";
       _stopLoop();
+      _stopSpecLoop();
       _sfx(SFX_RESULT);
       _showResultPanel(actorId, score, hits, charges);
     },
@@ -168,8 +179,10 @@
     onTick(payload) {
       if (payload?.actorId !== _actorId) return;
       if (_isOwner) return;
+      // Ticks that beat this client's own countdown are kept, not dropped.
+      if (_phase === "waiting" || _phase === "countdown") { _pendingTick = payload; return; }
       if (_phase !== "playing") return;
-      _renderSpectatorState(payload);
+      _applySpectatorTick(payload);
     },
   };
 
@@ -178,7 +191,7 @@
     document.getElementById("oni-carto-begin-btn")?.remove();
     document.getElementById("oni-carto-waiting-label")
       ?.style.setProperty("display", "none");
-    CAMP.Socket.emit(CAMP.MSG.CARTOGRAPHY_BEGIN, { actorId: _actorId });
+    CAMP.Socket.send(CAMP.MSG.CARTOGRAPHY_BEGIN, { actorId: _actorId });   // local echo: spectateBegin owner-guard
     _startCountdown();
   }
 
@@ -218,7 +231,6 @@
     _phase        = "playing";
     _gameStartTs  = performance.now();
     _lastTickMs   = _gameStartTs;
-    _lastSyncMs   = _gameStartTs;
     _score        = 0;
     _hits         = 0;
     _timeLeft     = GAME_DURATION_MS;
@@ -251,7 +263,12 @@
       _render();
       _rafId = requestAnimationFrame(_frame);
     }
-    // Spectators wait passively for CARTOGRAPHY_TICK events
+    else {
+      // Spectators render from CARTOGRAPHY_TICK; the timer runs locally between ticks.
+      _specAnchor ??= { timeLeft: GAME_DURATION_MS, at: performance.now() };   // late-join apply may have set it
+      if (_pendingTick) { const t = _pendingTick; _pendingTick = null; _applySpectatorTick(t); }
+      _startSpecLoop();
+    }
   }
 
   // ── Owner game loop ────────────────────────────────────────────────────────
@@ -270,11 +287,7 @@
     if (ts - _lastTickMs >= TICK_MS) {
       _lastTickMs = ts;
       _gameTick();
-    }
-
-    if (ts - _lastSyncMs >= SPECTATOR_SYNC_MS) {
-      _lastSyncMs = ts;
-      _emitTick();
+      _emitTick();   // every step (10 Hz) so spectators move cell by cell like the owner
     }
 
     _rafId = requestAnimationFrame(_frame);
@@ -305,6 +318,7 @@
       _treasure    = _randomEmpty();
       _floatText("+10", _head.x, _head.y, "gain");
       _sfx(SFX_PICKUP, 0.65);
+      _tickEvents.push({ t: "pickup", x: _head.x, y: _head.y });
     }
 
     const now = performance.now();
@@ -338,7 +352,11 @@
     _invincibleUntil = performance.now() + INVINCIBLE_MS;
     _floatText("-5", _head.x, _head.y, "loss");
     _sfx(SFX_HIT, 0.7);
+    _tickEvents.push({ t: "hit", x: _head.x, y: _head.y });
+    _flashRed();
+  }
 
+  function _flashRed() {
     const grid = document.getElementById("oni-carto-grid");
     if (grid) {
       grid.classList.add("oni-carto-flash-red");
@@ -374,16 +392,14 @@
     const localCharges = _calcChargesLocal(_score, _hits);
     CAMP.CartographyUI.applyResult(_actorId, _score, _hits, localCharges);
 
-    // Send score to GM so execute() can create the AE and broadcast official result
-    CAMP.Socket.emit(CAMP.MSG.CARTOGRAPHY_RESULT, {
+    // Send score to GM so execute() can create the AE and broadcast official result.
+    // send() also runs locally, so a GM owner reaches its own resolver (no
+    // `charges` → skips the all-clients branch, lands in the primary-GM switch).
+    CAMP.Socket.send(CAMP.MSG.CARTOGRAPHY_RESULT, {
       actorId: _actorId,
       score:   _score,
       hits:    _hits,
     });
-    // emit has no self-echo — GM owner must resolve directly
-    if (game.user?.isGM) {
-      CAMP.CartographyUI.resolveScore(_actorId, _score, _hits);
-    }
   }
 
   // ── Rendering ─────────────────────────────────────────────────────────────
@@ -486,8 +502,42 @@
     }
   }
 
-  function _emitTick() {
-    CAMP.Socket.emit(CAMP.MSG.CARTOGRAPHY_TICK, {
+  // Spectator: render a tick, replay its events, re-anchor the timer.
+  function _applySpectatorTick(payload) {
+    _renderSpectatorState(payload);
+    _specAnchor = { timeLeft: payload?.timeLeft ?? 0, at: performance.now() };
+    for (const ev of (payload?.events ?? [])) {
+      if (ev.t === "pickup") {
+        _floatText("+10", ev.x, ev.y, "gain");
+        _sfx(SFX_PICKUP, 0.65);
+      } else if (ev.t === "hit") {
+        _floatText("-5", ev.x, ev.y, "loss");
+        _sfx(SFX_HIT, 0.7);
+        _flashRed();
+      }
+    }
+  }
+
+  function _startSpecLoop() {
+    _stopSpecLoop();
+    const step = () => {
+      if (_phase !== "playing" || !document.getElementById(OVL_ID)) { _specRafId = null; return; }
+      const t = document.getElementById("oni-carto-timer");
+      if (t && _specAnchor) {
+        const left = Math.max(0, _specAnchor.timeLeft - (performance.now() - _specAnchor.at));
+        t.textContent = (left / 1000).toFixed(1) + "s";
+      }
+      _specRafId = requestAnimationFrame(step);
+    };
+    _specRafId = requestAnimationFrame(step);
+  }
+
+  function _stopSpecLoop() {
+    if (_specRafId) { cancelAnimationFrame(_specRafId); _specRafId = null; }
+  }
+
+  function _boardState() {
+    return {
       actorId:  _actorId,
       head:     { ..._head },
       trail:    _trail.map(t => ({ x: t.x, y: t.y })),
@@ -496,7 +546,13 @@
       score:    _score,
       hits:     _hits,
       timeLeft: _timeLeft,
-    });
+    };
+  }
+
+  function _emitTick() {
+    const events = _tickEvents;
+    _tickEvents = [];
+    CAMP.Socket.emit(CAMP.MSG.CARTOGRAPHY_TICK, { ..._boardState(), events });
   }
 
   // ── Result panel ───────────────────────────────────────────────────────────
@@ -561,11 +617,7 @@
 
     if (isOwner) {
       document.getElementById("oni-carto-proceed-btn")?.addEventListener("click", () => {
-        if (game.user?.isGM) {
-          CAMP.CartographyUI.resolveProceed(actorId);
-        } else {
-          CAMP.Socket.emit(CAMP.MSG.CARTOGRAPHY_PROCEED, { actorId });
-        }
+        CAMP.Socket.send(CAMP.MSG.CARTOGRAPHY_PROCEED, { actorId });
       });
     }
   }
@@ -636,18 +688,47 @@
     _growPending = 0; _score = 0; _hits = 0; _invincibleUntil = 0;
     _treasure = null; _hazards = [];
     _gameStartTs = 0; _timeLeft = GAME_DURATION_MS;
-    _rafId = null; _lastTickMs = 0; _lastSyncMs = 0;
+    _rafId = null; _lastTickMs = 0; _tickEvents = [];
+    _pendingTick = null; _specAnchor = null; _stopSpecLoop();
     _resultShown = false;
   }
 
+  // Shared owner rule (camp-minigame-sync.js): Spectator decider, else primary GM.
   function _checkIsOwner(actorId) {
-    const actor = game.actors?.get(actorId);
-    const uid   = Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      const user = game.users?.get(id);
-      return id !== "default" && lvl === 3 && user && !user.isGM;
-    })?.[0] ?? null;
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return CAMP.MG?.isOwner?.(actorId) ?? false;
   }
+
+  // ── Late join ─────────────────────────────────────────────────────────────
+  // Owner answers with the running board; the reloaded page skips its own
+  // countdown and drops straight into the game with the remaining time.
+  CAMP.MG?.registerGame?.("CARTOGRAPHY", {
+    isOpen: () => !!document.getElementById(OVL_ID),
+    snapshot() {
+      if (!_isOwner || !document.getElementById(OVL_ID)) return null;
+      if (_phase !== "countdown" && _phase !== "playing") return null;
+      return { ..._boardState(), phase: _phase };
+    },
+    apply(snap) {
+      if (!snap || snap.actorId !== _actorId || _isOwner) return;
+      if (!document.getElementById(OVL_ID) || _phase === "result") return;
+      if (snap.phase !== "playing") {
+        // Owner still counting down: run our own countdown (BEGIN may not have reached us).
+        if (_phase === "waiting") _startCountdown();
+        return;
+      }
+      if (_phase !== "playing") {
+        // Skip straight into play. A countdown already running here still ends in
+        // _startGame(), which only re-shows the same grid; the next tick re-anchors.
+        document.getElementById("oni-carto-pre-game")?.style.setProperty("display", "none");
+        document.getElementById("oni-carto-countdown")?.style.setProperty("display", "none");
+        _phase = "playing";
+        document.getElementById("oni-carto-grid")?.style.setProperty("display", "grid");
+        document.getElementById("oni-carto-hud")?.style.setProperty("display", "flex");
+        _startSpecLoop();
+      }
+      _applySpectatorTick({ ...snap, events: [] });
+    },
+  });
 
   // ── Overlay builder ────────────────────────────────────────────────────────
   function _buildOverlay(actorName) {
