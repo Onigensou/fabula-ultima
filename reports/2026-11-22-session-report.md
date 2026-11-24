@@ -56,11 +56,13 @@ Before Saturday:
 - [x] Keren re-equips "+7 Psychic Dagger": done in `d4c53fff` (main_hand fixed, dagger equipped).
 - [ ] The usual pre-session checkup (slot 1 vs fresh save) + re-bless.
 
-Progress (updated 2026-11-24): **all 6 critical items done.** High: 7 (Gacha QoL) done; 8 partly done (the Royal Shield part). Nothing in Medium or Minor is done yet.
+Progress (updated 2026-11-24): **all 6 critical and all 4 high items done.** Medium: 12, 13, 14, 16 and 17 done; 11 partly done (3 fixes, the cause is still unpinned). Minor: 18 done. Still open: 11 (long-term), 15, 19, 20 (+ idea 21).
 
 Owed before Saturday 11-28 from this week's pushes:
-- [ ] A GM boot so the v1.0.663 Hako vendor migration runs, and a Data/ pull. (The Spell Fencer migrations already ran on a real GM boot in `517617cf`.)
-- [ ] A look at the real table: Blade Adept vs a flyer, Warning Shot's "choose up to 2", Royal Shield levels, Spell Fencer (Resonance, Rhapsody), Hako's Gachapon.
+- [ ] A GM boot so the v1.0.669 Soul Steal migration runs.
+- [x] A real GM boot ran the 11-24 migrations (Oathsworn Paladin set, Gravedigger shovel text, Hako gacha vendor): 3 ran, 0 failed. The migrated world was pushed in `77ef5962..6abe3e82`. (The Spell Fencer migrations ran earlier, in `517617cf`.)
+- [ ] At session start, run `node session-mode/perf-watch.mjs` on the GM host (to-do #11).
+- [ ] A look at the real table: the Party Stash zenit box and Party Total, Victory MVP picks, Blade Adept vs a flyer, Warning Shot's "choose up to 2", Royal Shield levels, Spell Fencer (Resonance, Rhapsody), Hako's Gachapon, the Paladin set (2 Protects per round; Protect while KO for 1 FP), stash items no longer applying effects, the unknown-tile fog, and minigames on the spectator (sights + sounds). On the stream PC, check the first line of `session-mode/spectator-audio-watch.log`.
 
 ### 🔴 Critical: a player can't do what they should be able to
 
@@ -77,30 +79,30 @@ Owed before Saturday 11-28 from this week's pushes:
 - [x] **7. Gacha QoL:** DONE in v1.0.663 (`647f6945..648defc4`, plan + mockup v3): walk-up Gachapon access from Hako (the overlay opens anywhere, with no scene change), a watch party, a one-line pity readout, a 50/50 guarantee pill and Wish History. Sandbox-verified. Owed: a GM boot (Hako vendor migration) and a look at the real table. Was:
   - (a) **Show pity on screen.** It was removed on purpose in `f8fd9574`; the party shares pity per banner (5★ guaranteed by 30 wishes, 4★ by 10). Mock up the placement first.
   - (b) **A Gacha button on Hako** (Shop + Gacha). No NPC opens the gacha today; it's a scene (`TtaYOziufAG0pZuT`).
-- [ ] **8. Oathsworn Paladin set** (Blanche now owns pieces). Partly done: the Royal Shield skill levels are fixed (critical #3). Still open:
+- [x] **8. Oathsworn Paladin set:** DONE v1.0.664 (`f3322b24`). The set bonus was already written on the pieces, and that's what got built: a set definition; 2 pieces "Oath of Vigilance" = Protect one extra time per round; 3 pieces "Unbroken Oath" = spend 1 FP to Protect while KO (new reaction-row option `reaction_works_while_ko`). Paladin Armor's free spell on Cover/Protect was already automated (v1.0.568). The Royal Shield levels are critical #3. Not yet tested: the 0 FP case and a KO'd player's prompt. Was:
   - Automate the **full set**: a set definition + 2/3-piece bonuses via `set_bonus_table` and the bonus skills. Options proposed: 2 pieces A "Oathbound Aegis" (+2 DEF/MDEF after Protect) or B "Sworn Bulwark" (−3 damage taken); 3 pieces "Radiant Oath" (Guard → an ally recovers 10 HP). User pick pending.
   - Paladin Armor's "free spell on Cover/Protect": a reaction prompt, or keep it as GM-run text.
   - Playtest Save the Queen's +5 vs Dark (already done).
-- [ ] **9. Looted items keep their transfer AEs enabled in the party stash.** A Gravedigger Shovel put "Cursed" on the party token; Happy Feet still leaks. Unequipping disables them, but a fresh loot never goes through that.
-- [ ] **10. Unknown tile seen from 2 tiles away** on Keren's client (Valley_Map006). Spoils exploration.
+- [x] **9. Looted items keep their transfer AEs enabled in the party stash.** DONE v1.0.665 (`d2af4a7f`): item effects on the party stash actor never apply, and newly looted, unworn gear gets its equip effects switched off. The Gravedigger Shovel's curse now reads "While equipped" (user ruling; migration on 5 copies). Was: A Gravedigger Shovel put "Cursed" on the party token; Happy Feet still leaks. Unequipping disables them, but a fresh loot never goes through that.
+- [x] **10. Unknown tile seen from 2 tiles away** on Keren's client (Valley_Map006). DONE v1.0.666 (`3e4bb657`). Cause: a fog fade-out that couldn't be cancelled. When two moves landed less than 600 ms apart (e.g. a fast Go Back), the tile stayed revealed. Also, watchers lifted the fog while the mover's Confirm / Go Back panel was still open. Now the fade is reversible, and watchers lift the fog only after Confirm.
 
 ### 🟡 Medium
 
-- [ ] **11. GM host performance in battle:** ~30 fps with ~100 ms hitches (p95), main thread ~96% busy; the spectator is smooth. Take a CPU profile.
-- [ ] **12. Spectator: the dungeon Party Status HUD disappears.** Suspect: `hide()` removes the panel after 350 ms, and a `show()` inside that window gets deleted.
-- [ ] **13. Spectator: missing API/minigame SFX** (local-only sounds don't reach the stream).
-- [ ] **14. Party zenit UX** (players complained mid-session):
+- [ ] **11. GM host performance in battle:** partly done, long-term. Three fixes in v1.0.670 (`68495b91`): the Gryphon fast-travel video no longer loops invisibly all session on every client; a battle ending in the first ~1.5 s of a round no longer leaves the "ROUND N" banner and its videos running; and a Foundry 12 sidebar leak (a new observer every render, never cleaned up) is closed. The GM still slows down over the night on every scene, cause not yet pinned; run `session-mode/perf-watch.mjs` at the 11-28 session. Was: ~30 fps with ~100 ms hitches (p95), main thread ~96% busy; the spectator is smooth. Take a CPU profile.
+- [x] **12. Spectator: the dungeon Party Status HUD disappears.** DONE v1.0.667 (generation counter, so a late hide no longer removes a re-shown panel). Was: Suspect: `hide()` removes the panel after 350 ms, and a `show()` inside that window gets deleted.
+- [x] **13. Spectator: missing API/minigame SFX.** DONE v1.0.667 (`e22f2572`): every camp minigame + fishing + cooking now shows the spectator the same live game and plays the same sounds, with late-join catch-up. Also fixed: a few hangs and lost scores when the GM plays. A Foundry quirk kept the stream's audio muted after any reload until someone clicked; a watcher in the session-mode launcher (outside the game) now unmutes it.
+- [x] **14. Party zenit UX:** DONE v1.0.668 (`6e4cf00b`), see [2026-11-24-party-zenit.md](2026-11-24-party-zenit.md). The menu coin box now reads **Party Total**, summed live, and hovering it shows the Party Stash. A **Zenit** box (Put in / Take out) moves zenit between your wallet and the Party Stash, and everyone gets a System Message line. Owed: a real-table look. Was (players complained mid-session):
   - No way to move zenit between the **central party stash** and their **own wallets**; only the GM could.
   - No clear way to **see the stash** amount.
   - Players read the HUD's **total zenit** as the stash. It's the roll-up (members + stash), and it was also stale (16,178 shown vs 21,043 real).
   - To do: a player-facing stash view + deposit/withdraw (via `oni.ItemTransferCore.transferZenit`), clear "Party stash" vs "Party total" labels, and a roll-up that recalculates. Mock up first.
 - [ ] **15. Deva has no affinities** (all neutral, no attribute, Strike/Magic neutral). The elite rule asks for at least 1 VU.
-- [ ] **16. Soul Steal limit:** per stealer or per monster (expected: per monster).
-- [ ] **17. Victory MVP scoring:** Zarg won it every fight. Review the weights.
+- [x] **16. Soul Steal limit:** per stealer or per monster (expected: per monster). DONE v1.0.669 (`e5a8b981`), see [2026-11-24-soul-steal-lock.md](2026-11-24-soul-steal-lock.md). Once a creature has been stolen from, nobody in the party can steal from it again (the picker greys it out as "Nothing to Steal"), and Soul Steal now targets enemies only. Owed: a GM boot so its migration runs, and a real-table look.
+- [x] **17. Victory MVP scoring:** Zarg won it every fight. DONE v1.0.671 (`47539fec`): a Multi attack no longer scores twice (exploits and debuffs count once per action, extra targets get half damage credit); the protect and support lanes get fixed weights, so tanks and supporters can win; summons count for their owner. Each fight's grades are kept in a session log for tuning. 10-fight sandbox: Zarg 9 / Keren 1 → Zarg 7 / Keren 3. Zarg still wins most short fights because his kit gives him about 3 actions a round. Owed: a real-table look.
 
 ### 🟢 Minor
 
-- [ ] **18. Fishing:** an item tooltip gets stuck when the panel hides while the pointer is over the item.
+- [x] **18. Fishing:** an item tooltip gets stuck when the panel hides while the pointer is over the item. DONE in v1.0.667 (`47c877cf`).
 - [ ] **19. Zarg's Wildlife Expert** (Passive, SL 1): GM questions while resting in the wilderness. Narration only, no automation needed.
 - [ ] **20. Blanche has 2 unspent skill points.** Check again after she spends them.
 - [x] Zarg refunded Lockdown (as intended). Hina's Defensive Mastery SL 1 → 3 is already automated and scales with SL.
