@@ -48,6 +48,13 @@
   const SPAWN_R  = ARENA_R - 8; // objects appear just inside the edge
   const FOOD_SPEED = 90;         // px/s for all food (faster = fewer visible at once)
 
+  // Spectator sync
+  const STEP_MS      = 1000 / 120;  // fixed physics step: positions depend only on
+                                    // seed + elapsed time, never on a client's frame rate
+  const CD_TOTAL_MS  = 850 * 3 + 700;   // 3 → 2 → 1 → GO! (see _runCountdown)
+  const HOLD_MAX_MS  = 1500;        // spectator drops a held object if no REACH/HIT came
+  const MG_KEY       = "SLEEP_SOUNDLY";
+
   // ---------------------------------------------------------------------------
   // Object definitions
   // ---------------------------------------------------------------------------
@@ -103,6 +110,10 @@
   let _resultShown    = false;
   let _currentActorId = null;
   let _seed           = 0;
+  let _simMs          = 0;          // physics time simulated so far (fixed steps)
+  let _goneIds        = new Set();  // clicked/reached ids (owner: snapshot; spectator: skip)
+  let _cdStartMs      = null;
+  let _cdGen          = 0;
 
   // Web Audio
   let _audioCtx = null;
@@ -220,16 +231,9 @@
   // ---------------------------------------------------------------------------
   // Ownership helpers
   // ---------------------------------------------------------------------------
-  function _getOwnerUserId(actor) {
-    return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      const user = game.users?.get(id);
-      return id !== "default" && lvl === 3 && user && !user.isGM;
-    })?.[0] ?? null;
-  }
-
+  // One owner rule for every minigame (CAMP.MG, camp-minigame-sync.js).
   function _isOwnerOf(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return CAMP.MG?.isOwner?.(actor) ?? false;
   }
 
   // ---------------------------------------------------------------------------
@@ -238,6 +242,14 @@
   function _clearState() {
     if (_rafId !== null)    { cancelAnimationFrame(_rafId); _rafId = null; }
     if (_endTimer !== null) { clearTimeout(_endTimer); _endTimer = null; }
+    // Close, don't just drop: one AudioContext leaked per game otherwise.
+    try { _audioCtx?.close?.(); } catch (_) {}
+    _audioCtx       = null;
+    _buffers        = {};
+    _simMs          = 0;
+    _goneIds        = new Set();
+    _cdStartMs      = null;
+    _cdGen++;
     _actorId        = null;
     _actorName      = null;
     _isOwner        = false;
@@ -562,7 +574,10 @@
   // ---------------------------------------------------------------------------
   // Countdown → callback
   // ---------------------------------------------------------------------------
-  async function _runCountdown(onDone) {
+  // skipMs > 0 joins a countdown already in progress (late join).
+  async function _runCountdown(onDone, skipMs = 0) {
+    const gen  = ++_cdGen;
+    _cdStartMs = performance.now() - skipMs;
     const beginPanel = document.getElementById("oni-ss-begin-panel");
     const cdDiv      = document.getElementById("oni-ss-countdown");
     const cdNum      = document.getElementById("oni-ss-cd-num");
@@ -570,15 +585,21 @@
     if (!cdDiv || !cdNum) { onDone(); return; }
     cdDiv.style.display = "flex";
 
+    let skip = skipMs;
     for (const label of ["3", "2", "1", "GO!"]) {
-      _playSfx(label === "GO!" ? SFX.GO : SFX.COUNTDOWN);
+      const dur = label === "GO!" ? 700 : 850;
+      if (skip >= dur) { skip -= dur; continue; }
+      if (skip <= 0) _playSfx(label === "GO!" ? SFX.GO : SFX.COUNTDOWN);
       cdNum.textContent = label;
       cdNum.style.animation = "none";
       cdNum.offsetHeight; // reflow to re-trigger animation
       cdNum.style.animation = "";
-      await new Promise(r => setTimeout(r, label === "GO!" ? 700 : 850));
+      await new Promise(r => setTimeout(r, dur - Math.max(0, skip)));
+      skip = 0;
+      if (gen !== _cdGen || !document.getElementById(OVL_ID)) return;   // superseded / hidden
     }
     cdDiv.style.display = "none";
+    _cdStartMs = null;
     onDone();
   }
 
@@ -589,7 +610,10 @@
     const arena = document.getElementById("oni-ss-arena");
     if (!arena) return;
 
+    // Id = schedule index (spawn order is fixed by the seed), so every client
+    // and a late joiner name the same object the same way.
     const id  = `ss-obj-${_nextId++}`;
+    if (_goneIds.has(id)) return;   // late join: already clicked/reached on the owner
     const ang = entry.spawnAngle;
     const x   = Math.round(ARENA_R + Math.cos(ang) * SPAWN_R);
     const y   = Math.round(ARENA_R + Math.sin(ang) * SPAWN_R);
@@ -625,24 +649,56 @@
   // ---------------------------------------------------------------------------
   // rAF physics loop
   // ---------------------------------------------------------------------------
-  function _startPhysics() {
-    _gameStartMs = performance.now();
+  // Fixed-step physics. The old loop integrated each client's own frame dt,
+  // so a spectator's ghosts drifted from the owner's (and could reach the
+  // sleeper first). Stepping a fixed STEP_MS up to the elapsed time makes
+  // every position a function of seed + elapsed only; the owner's messages
+  // carry its elapsed time `t` so spectators can re-anchor their clock.
+  // offsetMs > 0 = late join (the catch-up steps run on the first frame).
+  function _startPhysics(offsetMs = 0) {
+    _gameStartMs = performance.now() - offsetMs;
     _lastFrameMs = _gameStartMs;
+    _simMs       = 0;
 
     function frame(now) {
-      const dt      = Math.min((now - _lastFrameMs) / 1000, 0.08); // s, capped
       _lastFrameMs  = now;
       const elapsed = now - _gameStartMs;
 
+      // Timer HUD
+      const timerEl = document.getElementById("oni-ss-timer");
+      if (timerEl) timerEl.textContent = Math.max(0, Math.ceil((GAME_MS - elapsed) / 1000));
+
+      const simEnd = Math.min(elapsed, GAME_MS + 500);
+      while (_simMs + STEP_MS <= simEnd) {
+        _simMs += STEP_MS;
+        _stepPhysics(_simMs, STEP_MS / 1000);
+      }
+
+      // Spectator: drop a held object nobody resolved (lost message).
+      if (!_isOwner) {
+        for (const obj of [..._objects]) {
+          if (obj.heldAt != null && now - obj.heldAt > HOLD_MAX_MS) _removeObject(obj);
+        }
+      }
+
+      for (const obj of _objects) {
+        obj.el.style.left = obj.x + "px";
+        obj.el.style.top  = obj.y + "px";
+      }
+
+      if (_gameActive) _rafId = requestAnimationFrame(frame);
+    }
+
+    _rafId = requestAnimationFrame(frame);
+  }
+
+  // One physics step at game time `elapsed` (ms), dt in seconds.
+  function _stepPhysics(elapsed, dt) {
       // Spawn due objects
       while (_schedIdx < _schedule.length && _schedule[_schedIdx].tMs <= elapsed) {
         _spawnObject(_schedule[_schedIdx], elapsed);
         _schedIdx++;
       }
-
-      // Timer HUD
-      const timerEl = document.getElementById("oni-ss-timer");
-      if (timerEl) timerEl.textContent = Math.max(0, Math.ceil((GAME_MS - elapsed) / 1000));
 
       // Move objects
       const cx = ARENA_R;
@@ -650,13 +706,21 @@
       const toRemove = [];
 
       for (const obj of _objects) {
+        if (obj.heldAt != null) continue;   // spectator: waiting at the sleeper for the owner's call
         const dx   = cx - obj.x;
         const dy   = cy - obj.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < REACH_R) {
-          toRemove.push(obj);
-          _onObjectReach(obj);
+          // The owner decides every reach (score, sound, effects) and tells
+          // spectators via MG.event "reach"; a spectator just parks the
+          // object here so it never shows a penalty the owner didn't get.
+          if (_isOwner) {
+            toRemove.push(obj);
+            _onObjectReach(obj);
+          } else {
+            obj.heldAt = performance.now();
+          }
           continue;
         }
 
@@ -698,16 +762,9 @@
         const step = obj.speed * dt;
         obj.x += Math.cos(moveAngle) * step;
         obj.y += Math.sin(moveAngle) * step;
-        obj.el.style.left = obj.x + "px";
-        obj.el.style.top  = obj.y + "px";
       }
 
       for (const obj of toRemove) _removeObject(obj);
-
-      if (_gameActive) _rafId = requestAnimationFrame(frame);
-    }
-
-    _rafId = requestAnimationFrame(frame);
   }
 
   function _removeObject(obj) {
@@ -719,24 +776,59 @@
   // ---------------------------------------------------------------------------
   // Object reached center
   // ---------------------------------------------------------------------------
+  // Owner: from its own physics. Spectator: from the owner's "reach" event
+  // (obj = the parked/moving local copy, or a stand-in at the owner's x/y).
   function _onObjectReach(obj) {
     const arena = document.getElementById("oni-ss-arena");
     if (!arena) return;
 
+    if (_isOwner) {
+      _goneIds.add(obj.id);
+      if (obj.kind === "food") _score += obj.score;
+      else                     _score -= obj.penalty;
+      CAMP.MG?.event?.(MG_KEY, _actorId, "reach", {
+        id: obj.id, kind: obj.kind, x: Math.round(obj.x), y: Math.round(obj.y),
+        score: _score, t: Math.round(_simMs),
+      });
+    }
+
     if (obj.kind === "food") {
-      if (_isOwner) _score += obj.score;
       _updateScoreHud();
       _playSfx(SFX.FOOD_REACH);
       _showPop(arena, obj.x, obj.y, `+${obj.score}`, "positive");
       _showSparkle(arena, obj.x, obj.y);
     } else {
-      if (_isOwner) _score -= obj.penalty;
       _updateScoreHud();
       _playSfx(SFX.GHOST_REACH);
       _showPop(arena, obj.x, obj.y, `-${obj.penalty}`, "negative");
       _flashArenaRed(arena);
       _showShiver();
     }
+  }
+
+  // Spectator: keep our game clock on the owner's (t = owner elapsed ms).
+  // Only ever moves forward — fixed-step physics can't rewind.
+  function _reanchor(t) {
+    if (_isOwner || t == null || _gameStartMs == null || !_gameActive) return;
+    const local = performance.now() - _gameStartMs;
+    if (t > local + 30) _gameStartMs -= (t - local);
+  }
+
+  function _onRemoteReach(d) {
+    if (_isOwner || !document.getElementById(OVL_ID)) return;
+    _reanchor(d.t);
+    _goneIds.add(d.id);
+    const local = _objects.find(o => o.id === d.id);
+    if (local) _removeObject(local);
+    // Not spawned/visible here yet (clock behind): stand-in from the schedule.
+    const idx   = Number(String(d.id).replace("ss-obj-", ""));
+    const entry = local ?? _schedule[idx] ?? {};
+    _onObjectReach({
+      id: d.id, kind: d.kind,
+      score: entry.score ?? 0, penalty: entry.penalty ?? 0,
+      x: d.x ?? local?.x ?? ARENA_R, y: d.y ?? local?.y ?? ARENA_R,
+    });
+    if (d.score != null) { _score = d.score; _updateScoreHud(); }
   }
 
   // ---------------------------------------------------------------------------
@@ -754,6 +846,7 @@
     if (!obj) return;
 
     _removeObject(obj);
+    _goneIds.add(objId);
 
     if (hitType === "ghost") {
       _playSfx(SFX.GHOST_CLICK);
@@ -763,10 +856,16 @@
       _showFoodFade(el);
     }
 
-    CAMP.Socket.emit(CAMP.MSG.SLEEP_SOUNDLY_HIT, {
+    // send(): router → onHit(), which returns on the owner's own echo.
+    // x/y/t/score let spectators place the poof and keep clock + HUD in step.
+    CAMP.Socket.send(CAMP.MSG.SLEEP_SOUNDLY_HIT, {
       actorId: _actorId,
       objId,
       hitType,
+      x:     Math.round(obj.x),
+      y:     Math.round(obj.y),
+      t:     Math.round(_simMs),
+      score: _score,
     });
   }
 
@@ -846,7 +945,10 @@
 
     if (!_isOwner) return;
 
-    CAMP.Socket.emit(CAMP.MSG.SLEEP_SOUNDLY_RESULT, {
+    // send(), not emit(): a GM owner must reach its own resolver (emit never
+    // returns to the sender → 90 s timeout, score 0). No charges → router's
+    // primary-GM resolveScore case.
+    CAMP.Socket.send(CAMP.MSG.SLEEP_SOUNDLY_RESULT, {
       actorId: _actorId,
       score:   _score,
     });
@@ -923,7 +1025,7 @@
       _schedule = _buildSchedule(_mkRng(seed));
       _schedIdx = 0;
 
-      CAMP.Socket.emit(CAMP.MSG.SLEEP_SOUNDLY_BEGIN, { actorId: _actorId, seed });
+      CAMP.Socket.send(CAMP.MSG.SLEEP_SOUNDLY_BEGIN, { actorId: _actorId, seed });
 
       _runCountdown(() => {
         _gameActive = true;
@@ -934,38 +1036,50 @@
       });
     },
 
-    spectateBegin(payload) {
+    // joinMs = ms since the owner's BEGIN (late join; 0 for a live BEGIN).
+    spectateBegin(payload, joinMs = 0) {
       if (_isOwner) return;
       if (!document.getElementById(OVL_ID)) return;
+      if (_seed && _seed === payload.seed) return;   // already running (replayed BEGIN)
       _seed = payload.seed;
       _schedule = _buildSchedule(_mkRng(_seed));
       _schedIdx = 0;
+      _nextId   = 0;
+      const cdSkip   = Math.min(joinMs, CD_TOTAL_MS);
+      const gameSkip = Math.max(0, joinMs - CD_TOTAL_MS);
       _runCountdown(() => {
         _gameActive = true;
-        _startPhysics();
+        _updateScoreHud();
+        _startPhysics(gameSkip);
         _endTimer = setTimeout(() => {
           _gameActive = false;
           if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
           for (const obj of [..._objects]) obj.el.remove();
           _objects = [];
-        }, GAME_MS + 500);
-      });
+        }, Math.max(0, GAME_MS + 500 - gameSkip));
+      }, cdSkip);
     },
 
     onHit(payload) {
       if (_isOwner) return;
       if (!document.getElementById(OVL_ID)) return;
+      _reanchor(payload.t);
+      _goneIds.add(payload.objId);
+      if (payload.score != null) { _score = payload.score; _updateScoreHud(); }
       const obj = _objects.find(o => o.id === payload.objId);
-      if (!obj) return;
-      _removeObject(obj);
       const arena = document.getElementById("oni-ss-arena");
+      // Sound plays even if our copy is already gone/not yet spawned.
       if (payload.hitType === "ghost") {
         _playSfx(SFX.GHOST_CLICK);
-        _showPoof(arena, obj.x, obj.y);
+        _showPoof(arena, payload.x ?? obj?.x ?? ARENA_R, payload.y ?? obj?.y ?? ARENA_R);
       } else {
         _playSfx(SFX.FOOD_CLICK);
-        _showFoodFade(obj.el);
       }
+      if (!obj) return;
+      _removeObject(obj);
+      // Same as the owner's click: the element is already removed, so the
+      // food fade is effectively an instant vanish on both screens.
+      if (payload.hitType !== "ghost") _showFoodFade(obj.el);
     },
 
     applyResult(actorId, score, charges) {
@@ -983,11 +1097,8 @@
           btn.style.display = "";
           btn.addEventListener("click", () => {
             btn.disabled = true;
-            if (game.user?.isGM) {
-              this.resolveProceed(actorId);
-            } else {
-              CAMP.Socket.emit(CAMP.MSG.SLEEP_SOUNDLY_PROCEED, { actorId });
-            }
+            // send() reaches the primary GM whether that is us or another client.
+            CAMP.Socket.send(CAMP.MSG.SLEEP_SOUNDLY_PROCEED, { actorId });
           }, { once: true });
         }
       }
@@ -1013,4 +1124,52 @@
       _clearState();
     },
   };
+
+  // ---------------------------------------------------------------------------
+  // Spectator live channel + late join
+  // ---------------------------------------------------------------------------
+  CAMP.MG?.on?.(MG_KEY, (kind, data, msg) => {
+    if (msg?.a && msg.a !== _actorId) return;
+    if (kind === "reach") _onRemoteReach(data);
+  });
+
+  CAMP.MG?.registerGame?.(MG_KEY, {
+    // Owner only, between BEGIN and the end of play.
+    snapshot() {
+      if (!_isOwner || _resultShown || !document.getElementById(OVL_ID)) return null;
+      const now = performance.now();
+      let joinMs;
+      if (_gameActive && _gameStartMs != null) joinMs = CD_TOTAL_MS + (now - _gameStartMs);
+      else if (_cdStartMs != null)             joinMs = now - _cdStartMs;
+      else return null;
+      return {
+        actorId: _actorId,
+        seed:    _seed,
+        joinMs:  Math.round(joinMs),   // ms since BEGIN on the owner's clock
+        score:   _score,
+        gone:    [..._goneIds],        // clicked or reached: never spawn these
+      };
+    },
+
+    // Restart the spectator run at the owner's point (cancels a countdown or
+    // run a replayed BEGIN may have started from zero). Physics is a pure
+    // function of seed + time, so fast-forwarding lands on the owner's state.
+    apply(snap) {
+      if (!snap || _isOwner || !document.getElementById(OVL_ID)) return;
+      if (_rafId !== null)    { cancelAnimationFrame(_rafId); _rafId = null; }
+      if (_endTimer !== null) { clearTimeout(_endTimer); _endTimer = null; }
+      _cdGen++;
+      _gameActive = false;
+      for (const obj of [..._objects]) obj.el.remove();
+      _objects = [];
+      _seed    = 0;
+      _goneIds = new Set(snap.gone ?? []);
+      _score   = snap.score ?? 0;
+      _updateScoreHud();
+      document.getElementById("oni-ss-countdown")?.style.setProperty("display", "none");
+      CAMP.SleepSoundlyUI.spectateBegin({ seed: snap.seed }, snap.joinMs ?? 0);
+    },
+
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 })();
