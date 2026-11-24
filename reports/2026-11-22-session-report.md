@@ -56,13 +56,13 @@ Before Saturday:
 - [x] Keren re-equips "+7 Psychic Dagger": done in `d4c53fff` (main_hand fixed, dagger equipped).
 - [ ] The usual pre-session checkup (slot 1 vs fresh save) + re-bless.
 
-Progress (updated 2026-11-24): **all 6 critical and all 4 high items done.** Medium: 12, 13, 14, 16 and 17 done; 11 partly done (3 fixes, the cause is still unpinned). Minor: 18 done. Still open: 11 (long-term), 15, 19, 20 (+ idea 21).
+Progress (updated 2026-11-25): **all 6 critical and all 4 high items done.** Medium: 12, 13, 14, 15, 16 and 17 done; 11 partly done (3 fixes, the cause is still unpinned). Minor: 18 done. Still open: 11 (long-term), 19, 20 (+ idea 21).
 
 Owed before Saturday 11-28 from this week's pushes:
 - [ ] A GM boot so the v1.0.669 Soul Steal migration runs.
 - [x] A real GM boot ran the 11-24 migrations (Oathsworn Paladin set, Gravedigger shovel text, Hako gacha vendor): 3 ran, 0 failed. The migrated world was pushed in `77ef5962..6abe3e82`. (The Spell Fencer migrations ran earlier, in `517617cf`.)
 - [ ] At session start, run `node session-mode/perf-watch.mjs` on the GM host (to-do #11).
-- [ ] A look at the real table: the Party Stash zenit box and Party Total, Victory MVP picks, Blade Adept vs a flyer, Warning Shot's "choose up to 2", Royal Shield levels, Spell Fencer (Resonance, Rhapsody), Hako's Gachapon, the Paladin set (2 Protects per round; Protect while KO for 1 FP), stash items no longer applying effects, the unknown-tile fog, and minigames on the spectator (sights + sounds). On the stream PC, check the first line of `session-mode/spectator-audio-watch.log`.
+- [ ] A look at the real table: the party zenit box and Party Total, Victory MVP picks, Deva's form-bound weakness, Blade Adept vs a flyer, Warning Shot's "choose up to 2", Royal Shield levels, Spell Fencer (Resonance, Rhapsody), Hako's Gachapon, the Paladin set (2 Protects per round; Protect while KO for 1 FP), stash items no longer applying effects, the unknown-tile fog, and minigames on the spectator (sights + sounds). On the stream PC, check the first line of `session-mode/spectator-audio-watch.log`.
 
 ### 🔴 Critical: a player can't do what they should be able to
 
@@ -96,7 +96,7 @@ Owed before Saturday 11-28 from this week's pushes:
   - No clear way to **see the stash** amount.
   - Players read the HUD's **total zenit** as the stash. It's the roll-up (members + stash), and it was also stale (16,178 shown vs 21,043 real).
   - To do: a player-facing stash view + deposit/withdraw (via `oni.ItemTransferCore.transferZenit`), clear "Party stash" vs "Party total" labels, and a roll-up that recalculates. Mock up first.
-- [ ] **15. Deva has no affinities** (all neutral, no attribute, Strike/Magic neutral). The elite rule asks for at least 1 VU.
+- [x] **15. Deva has no affinities** (all neutral, no attribute, Strike/Magic neutral). The elite rule asks for at least 1 VU. DONE v1.0.672 (`150d586f`), see [2026-11-24-deva-affinities.md](2026-11-24-deva-affinities.md): her affinity follows her form. Fury (red arms) resists Light and is vulnerable to Dark; Focus (blue arms) is the reverse; Guard rounds are Neutral. Weapon efficiency: spear 150, brawling 50. HP 1400 → 1550 so the fight stays at 5–6 rounds. Engine fix: an effect that sets `attribute` no longer turns "LIGHT" into "0". Owed: a real-table look (does the table read the arm colour as the tell?).
 - [x] **16. Soul Steal limit:** per stealer or per monster (expected: per monster). DONE v1.0.669 (`e5a8b981`), see [2026-11-24-soul-steal-lock.md](2026-11-24-soul-steal-lock.md). Once a creature has been stolen from, nobody in the party can steal from it again (the picker greys it out as "Nothing to Steal"), and Soul Steal now targets enemies only. Owed: a GM boot so its migration runs, and a real-table look.
 - [x] **17. Victory MVP scoring:** Zarg won it every fight. DONE v1.0.671 (`47539fec`): a Multi attack no longer scores twice (exploits and debuffs count once per action, extra targets get half damage credit); the protect and support lanes get fixed weights, so tanks and supporters can win; summons count for their owner. Each fight's grades are kept in a session log for tuning. 10-fight sandbox: Zarg 9 / Keren 1 → Zarg 7 / Keren 3. Zarg still wins most short fights because his kit gives him about 3 actions a round. Owed: a real-table look.
 
