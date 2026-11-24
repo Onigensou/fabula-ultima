@@ -49,6 +49,9 @@
   const BOMB_RADIUS   = 26;
   const SLASH_SPEED   = 180;   // min pointer px/s to count as a slash
   const TRAIL_LIFE_MS = 200;   // ms slash trail lingers
+  const CD_TOTAL_MS   = 850 * 3 + 700;   // 3 → 2 → 1 → GO! (see _runCountdown)
+  const TRAIL_SEND_MS = 40;    // trail stream to spectators, ~25 Hz
+  const MG_KEY        = "MARTIAL_PRACTICE";
 
   // ---------------------------------------------------------------------------
   // Fruit pool
@@ -137,6 +140,12 @@
   let _endTimer        = null;
   let _resultShown     = false;
   let _seed            = 0;
+  let _cdStartMs       = null;   // performance.now() when the countdown began
+  let _slashedIds      = new Set();   // owner: ids already cut (late-join snapshot)
+
+  // Spectator trail stream (owner side)
+  let _trailOut        = [];     // [[x, y, t], …] not yet sent
+  let _trailFlushTimer = null;
 
   // Slash trail
   let _pointerHistory = [];  // [{ x, y, t }] rolling window
@@ -194,16 +203,9 @@
   // ---------------------------------------------------------------------------
   // Ownership helpers
   // ---------------------------------------------------------------------------
-  function _getOwnerUserId(actor) {
-    return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      const user = game.users?.get(id);
-      return id !== "default" && lvl === 3 && user && !user.isGM;
-    })?.[0] ?? null;
-  }
-
+  // One owner rule for every minigame (CAMP.MG, camp-minigame-sync.js).
   function _isOwnerOf(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return CAMP.MG?.isOwner?.(actor) ?? false;
   }
 
   // ---------------------------------------------------------------------------
@@ -212,6 +214,10 @@
   function _clearState() {
     if (_rafId !== null)    { cancelAnimationFrame(_rafId); _rafId = null; }
     if (_endTimer !== null) { clearTimeout(_endTimer); _endTimer = null; }
+    if (_trailFlushTimer !== null) { clearTimeout(_trailFlushTimer); _trailFlushTimer = null; }
+    // Close the context, not just drop it: browsers cap live AudioContexts and
+    // one leaked per game on every client added up over a session.
+    try { _audioCtx?.close?.(); } catch (_) {}
     _actorId        = null;
     _actorName      = null;
     _isOwner        = false;
@@ -224,6 +230,9 @@
     _lastFrameMs    = 0;
     _resultShown    = false;
     _seed           = 0;
+    _cdStartMs      = null;
+    _slashedIds     = new Set();
+    _trailOut       = [];
     _pointerHistory = [];
     _activeSlash    = [];
     _trailSegments  = [];
@@ -400,7 +409,12 @@
   // ---------------------------------------------------------------------------
   // Countdown
   // ---------------------------------------------------------------------------
-  async function _runCountdown(onDone) {
+  // skipMs > 0 joins a countdown already in progress (late join): steps that
+  // are fully over are skipped, the current one runs for what is left of it.
+  let _cdGen = 0;   // bumps on every countdown; a newer one cancels an older one
+  async function _runCountdown(onDone, skipMs = 0) {
+    const gen  = ++_cdGen;
+    _cdStartMs = performance.now() - skipMs;
     const beginPanel = document.getElementById("oni-mp-begin-panel");
     const cdDiv      = document.getElementById("oni-mp-countdown");
     const cdNum      = document.getElementById("oni-mp-cd-num");
@@ -408,15 +422,21 @@
     if (!cdDiv || !cdNum) { onDone(); return; }
     cdDiv.style.display = "flex";
 
+    let skip = skipMs;
     for (const label of ["3", "2", "1", "GO!"]) {
-      _playSfx(label === "GO!" ? SFX.GO : SFX.COUNTDOWN);
+      const dur = label === "GO!" ? 700 : 850;
+      if (skip >= dur) { skip -= dur; continue; }
+      if (skip <= 0) _playSfx(label === "GO!" ? SFX.GO : SFX.COUNTDOWN);
       cdNum.textContent = label;
       cdNum.style.animation = "none";
       cdNum.offsetHeight; // force reflow
       cdNum.style.animation = "";
-      await new Promise(r => setTimeout(r, label === "GO!" ? 700 : 850));
+      await new Promise(r => setTimeout(r, dur - Math.max(0, skip)));
+      skip = 0;
+      if (gen !== _cdGen || !document.getElementById(OVL_ID)) return;   // superseded / hidden
     }
     cdDiv.style.display = "none";
+    _cdStartMs = null;
     onDone();
   }
 
@@ -435,6 +455,7 @@
     // Always accumulate trail — no click required
     _activeSlash.push({ x, y, t: now });
     _activeSlash = _activeSlash.filter(p => p.t >= now - 250);
+    _queueTrailPoint(x, y, now);
 
     if (_pointerHistory.length >= 2) {
       const oldest = _pointerHistory[0];
@@ -450,6 +471,40 @@
 
   function _onPointerUp(e) {
     if (!_isOwner) return;
+    if (_activeSlash.length > 1) {
+      _trailSegments.push({ points: [..._activeSlash], birthMs: performance.now() });
+    }
+    _activeSlash = [];
+    if (_gameActive) { _flushTrail(); CAMP.MG?.event?.(MG_KEY, _actorId, "trailEnd", {}); }
+  }
+
+  // ── Trail stream (owner → spectators) ──────────────────────────────────────
+  // Pointer moves fire at 60–240 Hz; points are batched and sent ~25 Hz.
+  // t = ms on the owner's game clock, so the spectator can apply the same
+  // 250 ms rolling window the owner uses (relative to the newest point).
+  function _queueTrailPoint(x, y, now) {
+    _trailOut.push([Math.round(x), Math.round(y), Math.round(now - (_gameStartMs ?? now))]);
+    if (_trailFlushTimer === null) _trailFlushTimer = setTimeout(_flushTrail, TRAIL_SEND_MS);
+  }
+
+  function _flushTrail() {
+    if (_trailFlushTimer !== null) { clearTimeout(_trailFlushTimer); _trailFlushTimer = null; }
+    if (!_trailOut.length) return;
+    const p = _trailOut;
+    _trailOut = [];
+    CAMP.MG?.event?.(MG_KEY, _actorId, "trail", { p });
+  }
+
+  // Spectator: append the owner's points to the live slash, window as owner does.
+  function _onRemoteTrail(points) {
+    if (_isOwner || !_gameActive || !Array.isArray(points) || !points.length) return;
+    for (const [x, y, t] of points) _activeSlash.push({ x, y, t });
+    const newest = _activeSlash[_activeSlash.length - 1].t;
+    _activeSlash = _activeSlash.filter(p => p.t >= newest - 250);
+  }
+
+  function _onRemoteTrailEnd() {
+    if (_isOwner) return;
     if (_activeSlash.length > 1) {
       _trailSegments.push({ points: [..._activeSlash], birthMs: performance.now() });
     }
@@ -476,6 +531,7 @@
   // Test all live objects against the current slash segment
   function _testSlash(x1, y1, x2, y2) {
     const hit     = [];
+    const hitPos  = [];   // owner-screen positions, so spectator pops land on the same spot
     let   isBomb  = false;
     let   slashScore = 0;
 
@@ -484,6 +540,8 @@
       if (!_segmentIntersectsCircle(x1, y1, x2, y2, obj.x, obj.y, r)) continue;
 
       hit.push(obj.id);
+      hitPos.push([Math.round(obj.x), Math.round(obj.y)]);
+      _slashedIds.add(obj.id);
       _removeObject(obj);
 
       if (obj.kind === "bomb") {
@@ -511,17 +569,24 @@
     _updateScoreHud();
 
     // Multi-slash visual pop
+    let multi = null;
     if (hit.length >= 2 && !isBomb) {
       const cx = (x1 + x2) / 2;
       const cy = (y1 + y2) / 2 - 20;
       _spawnPopText(cx, cy, `✦ ${hit.length}× MULTI!`, "#fff080");
+      multi = [Math.round(cx), Math.round(cy)];
     }
 
-    CAMP.Socket.emit(CAMP.MSG.MARTIAL_PRACTICE_SLASH, {
+    // send(): the router's SLASH branch → onSlash(), which returns on the
+    // owner's own echo. pos/multi/score let spectators draw the same pops.
+    CAMP.Socket.send(CAMP.MSG.MARTIAL_PRACTICE_SLASH, {
       actorId: _actorId,
       hitIds:  hit,
       isBomb,
       slashScore,
+      pos:     hitPos,
+      multi,
+      score:   _score,
     });
   }
 
@@ -617,8 +682,10 @@
   // ---------------------------------------------------------------------------
   // Main rAF render loop
   // ---------------------------------------------------------------------------
-  function _startLoop() {
-    _gameStartMs = performance.now();
+  // offsetMs > 0 = late join: the game clock starts that far in (objects are
+  // positioned analytically from elapsed time, so they land where the owner's are).
+  function _startLoop(offsetMs = 0) {
+    _gameStartMs = performance.now() - offsetMs;
     _lastFrameMs = _gameStartMs;
 
     function frame(now) {
@@ -837,8 +904,13 @@
     _objects = [];
 
     if (!_isOwner) return;
+    _flushTrail();
 
-    CAMP.Socket.emit(CAMP.MSG.MARTIAL_PRACTICE_RESULT, {
+    // send(), not emit(): a GM playing an unowned actor must reach its own
+    // resolver (emit never comes back to the sender → 90 s timeout, score 0).
+    // No multiValue → the router skips the all-clients branch and lands in
+    // the primary-GM resolveScore case.
+    CAMP.Socket.send(CAMP.MSG.MARTIAL_PRACTICE_RESULT, {
       actorId: _actorId,
       score:   _score,
     });
@@ -911,7 +983,7 @@
       _seed      = seed;
       _schedule  = _buildSchedule(_mkRng(seed));
 
-      CAMP.Socket.emit(CAMP.MSG.MARTIAL_PRACTICE_BEGIN, { actorId: _actorId, seed });
+      CAMP.Socket.send(CAMP.MSG.MARTIAL_PRACTICE_BEGIN, { actorId: _actorId, seed });
 
       _runCountdown(() => {
         _prepareObjects();   // pre-bake trajectories right before game starts
@@ -923,39 +995,70 @@
       });
     },
 
-    spectateBegin(payload) {
+    spectateBegin(payload, joinMs = 0) {
       if (_isOwner) return;
       if (!document.getElementById(OVL_ID)) return;
+      if (_seed && _seed === payload.seed) return;   // already running (replayed BEGIN)
       _seed     = payload.seed;
       _schedule = _buildSchedule(_mkRng(_seed));
+      // joinMs = ms since the owner's BEGIN (late join): countdown first, then game.
+      const cdSkip   = Math.min(joinMs, CD_TOTAL_MS);
+      const gameSkip = Math.max(0, joinMs - CD_TOTAL_MS);
       _runCountdown(() => {
         _prepareObjects();   // pre-bake trajectories right before game starts
+        _pendingObjects = _pendingObjects.filter(o => !_slashedIds.has(o.id));
         _gameActive = true;
-        _startLoop();
+        _updateScoreHud();
+        _startLoop(gameSkip);
         _endTimer = setTimeout(() => {
           _gameActive = false;
           if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
           _objects = [];
-        }, GAME_MS + 500);
-      });
+          _activeSlash = [];
+        }, Math.max(0, GAME_MS + 500 - gameSkip));
+      }, cdSkip);
     },
 
-    // Spectators hear slash events and see objects vanish
+    // Spectators see and hear exactly what the owner's slash did: halves,
+    // particles, popups, MULTI banner, flash, sounds, score.
     onSlash(payload) {
       if (_isOwner) return;
       if (!document.getElementById(OVL_ID)) return;
-      for (const id of payload.hitIds ?? []) {
-        const obj = _objects.find(o => o.id === id);
-        if (!obj) continue;
-        _removeObject(obj);
-        if (payload.isBomb) {
-          _spawnBombParticles(obj.x, obj.y);
-          _flashAlpha = 0.35;
-        } else {
-          _spawnFruitParticles(obj.x, obj.y, obj.color);
-          _spawnFruitHalves(obj.x, obj.y, obj.emoji, obj.color);
+      const ids = payload.hitIds ?? [];
+      let anyFruit = false;
+      ids.forEach((id, i) => {
+        _slashedIds.add(id);
+        const obj   = _objects.find(o => o.id === id)
+                   ?? _pendingObjects.find(o => o.id === id);
+        const entry = obj ?? _schedule[Number(String(id).replace("mp-", ""))];
+        if (!entry) return;
+        if (obj) {
+          _removeObject(obj);
+          const pi = _pendingObjects.indexOf(obj);
+          if (pi >= 0) _pendingObjects.splice(pi, 1);
         }
+        // Owner's position first; fall back to ours if an older client sent none.
+        const [x, y] = payload.pos?.[i] ?? [obj?.x ?? CW / 2, obj?.y ?? CH / 2];
+        if (entry.kind === "bomb") {
+          _spawnBombParticles(x, y);
+          _flashAlpha = 0.45;
+          _playSfx(SFX.BOMB, 0.35);
+          _spawnPopText(x, y, `${entry.score}`, "#ff4444");
+        } else {
+          anyFruit = true;
+          _spawnFruitParticles(x, y, entry.color);
+          _spawnFruitHalves(x, y, entry.emoji, entry.color);
+          _playSfx(SFX.SLASH, 0.2);
+          _spawnPopText(x, y, `+${entry.score}`, "#ffd700");
+        }
+      });
+      if (anyFruit && Array.isArray(payload.multi)) {
+        _spawnPopText(payload.multi[0], payload.multi[1], `✦ ${ids.length}× MULTI!`, "#fff080");
       }
+      // Owner's running total is authoritative (a dropped message can't skew it).
+      if (payload.score != null) _score = payload.score;
+      else _score += payload.slashScore ?? 0;
+      _updateScoreHud();
     },
 
     applyResult(actorId, score, multiValue) {
@@ -973,11 +1076,8 @@
           btn.style.display = "";
           btn.addEventListener("click", () => {
             btn.disabled = true;
-            if (game.user?.isGM) {
-              this.resolveProceed(actorId);
-            } else {
-              CAMP.Socket.emit(CAMP.MSG.MARTIAL_PRACTICE_PROCEED, { actorId });
-            }
+            // send() reaches the primary GM whether that is us or another client.
+            CAMP.Socket.send(CAMP.MSG.MARTIAL_PRACTICE_PROCEED, { actorId });
           }, { once: true });
         }
       }
@@ -1009,6 +1109,54 @@
       _clearState();
     },
   };
+
+  // ---------------------------------------------------------------------------
+  // Spectator live channel + late join
+  // ---------------------------------------------------------------------------
+  CAMP.MG?.on?.(MG_KEY, (kind, data, msg) => {
+    if (msg?.a && msg.a !== _actorId) return;
+    if (kind === "trail")    _onRemoteTrail(data.p);
+    if (kind === "trailEnd") _onRemoteTrailEnd();
+  });
+
+  CAMP.MG?.registerGame?.(MG_KEY, {
+    // Owner only, only between BEGIN and the end of play.
+    snapshot() {
+      if (!_isOwner || _resultShown || !document.getElementById(OVL_ID)) return null;
+      const now = performance.now();
+      let joinMs;
+      if (_gameActive && _gameStartMs != null) joinMs = CD_TOTAL_MS + (now - _gameStartMs);
+      else if (_cdStartMs != null)             joinMs = now - _cdStartMs;
+      else return null;
+      return {
+        actorId: _actorId,
+        seed:    _seed,
+        joinMs:  Math.round(joinMs),   // ms since BEGIN on the owner's clock
+        score:   _score,
+        slashed: [..._slashedIds],
+      };
+    },
+
+    // Restart the spectator run at the owner's point, even if a replayed
+    // BEGIN already started one from zero (that one is cancelled).
+    apply(snap) {
+      if (!snap || _isOwner || !document.getElementById(OVL_ID)) return;
+      if (_rafId !== null)    { cancelAnimationFrame(_rafId); _rafId = null; }
+      if (_endTimer !== null) { clearTimeout(_endTimer); _endTimer = null; }
+      _cdGen++;
+      _gameActive  = false;
+      _objects     = [];
+      _activeSlash = [];
+      _seed        = 0;
+      _slashedIds  = new Set(snap.slashed ?? []);
+      _score       = snap.score ?? 0;
+      _updateScoreHud();
+      document.getElementById("oni-mp-countdown")?.style.setProperty("display", "none");
+      CAMP.MartialPracticeUI.spectateBegin({ seed: snap.seed }, snap.joinMs ?? 0);
+    },
+
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 
   console.debug(TAG, "Martial Practice UI loaded.");
 })();
