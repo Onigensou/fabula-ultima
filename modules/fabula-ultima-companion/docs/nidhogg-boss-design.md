@@ -255,6 +255,21 @@ Moves (in the order given):
 9. **Zero Power: Dragon King's Ascension** (given 2026-11-21). "The heroes succumb to the power of the dragon king.
    Now their soul is bound to their servitude, for eternity." The players **immediately lose the battle**.
    (Fires at 6 Zero Power; cut-in / defeat presentation not specified yet.)
+10. **Soul Confluence** (given 2026-11-24; name confirmed by the user 2026-11-24, replacing "Soul Siphon", which
+   two items already use). Skill. Uses his turn, no MP. Select the one Soul Fragment with the
+   **highest HP** and transfer the HP of **all other** Soul Fragments into it; it **can go above its Max HP**.
+   AI: only on his **1st turn of the round** (he has 4 activations), when the **total HP of all Soul Fragments is
+   200 or more**. Spec: `tools/handoffs/nidhogg-soul-confluence-spec.md`. Animation: a show is still to be made.
+   Ruled by the user 2026-11-24:
+   - The donor fragments are **destroyed**; their owners get their **Max HP back but no current HP** (the same
+     refund as Soul Devour, item 5).
+   - The overflow above Max HP **counts for the round-end Calling**: a 300/100 fragment steals 300 from its owner
+     (Max HP stops at 1, as always).
+   Lead calls (the user can overrule): it needs **2 or more** fragments, otherwise it does nothing and the AI never
+   picks it. A tie on the highest HP goes to the highest Max HP, then to party order. The permanent (Nox Servant)
+   fragment follows every normal rule: it can be the recipient, and as a donor it is destroyed like a devoured one
+   and returns at the end of the round (item 7). The Nox Priest's "Soul Siphon" trigger fires once per destroyed
+   donor, as written. A destroyed donor triggers no on-kill passive (a fragment is not a creature).
 
    Claw and Tail Stab are his **fallback moves**: used when no other move can be used (by the AI's rules or for lack
    of resources). Moves without a specific visual from the user get a simple animation; all of them get SFX.

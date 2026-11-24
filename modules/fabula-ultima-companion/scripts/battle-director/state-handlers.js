@@ -130,7 +130,8 @@ import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, bui
 import { volleyShotContext } from "./chain-strikes.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
 import { beginHitCounter, endHitCounter } from "./hit-counter.js";
-import { emitBattlerPose } from "./battler-pose.js";
+import { emitBattlerPose, emitFollowUpsPending } from "./battler-pose.js";
+import { openFollowUpCollector, closeFollowUpCollector, flushPendingFollowUpsFor, runCollectedFollowUps } from "./deferred-followups.js";
 import { actionPose } from "./battler-pose-rules.js";
 import { witnessNpcAbility, witnessFiredCandidate, witnessAffinityHits } from "./encyclopedia-witness.js";
 import { SimMode } from "./sim/sim-mode.js";
@@ -876,6 +877,23 @@ async function resolveAction(director, ar, opts = {}) {
   if (isDamagingAction && hits.length) {
     // Multi-pass label (Attack two-weapon / virtual): "(pass 2/2)".
     const passLabel = (ar.totalPasses ?? 1) > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
+    // Damage-reaction follow-ups (Life Charm's ~3.6 s fall-and-revive, Ninja
+    // Log's marker, Earthen Wire's redirect), collected per target by
+    // applyDamageToTarget instead of awaited inside this loop: inline, one
+    // target's cinematic held every LATER target's write and number. They run
+    // right after the loop, in target order, each chain serial, before the
+    // staggered-impact drain, the hit counter's close, step 6 and the
+    // post-resolve settle (Crisis / KO reactors must see the healed HP, and a
+    // consume_item must land before the next action).
+    // OPEN while this loop and its follow-ups run (deferred-followups.js): any
+    // damage or HP loss that reaches a creature with a pending chain (a
+    // post_damage rider, a redirect, this creature hit again) runs that
+    // creature's chain first, so a once-only save never fires twice.
+    const _deferredFollowUps = openFollowUpCollector();
+    // Every client keeps a lethal victim's hurt frame until its KO while these
+    // run (battler-pose.js): its KO waits for the chains (post-resolve queue).
+    let _followUpsPendingSent = false;
+    try {
     for (const r of hits) {
       // Chain: this target's strikes, already shown. A target no strike landed
       // on (all missed / blocked / lost) logs its whiff once and is done.
@@ -931,6 +949,14 @@ async function resolveAction(director, ar, opts = {}) {
         continue;
       }
       try {
+        // The same creature hit again in this action (or a creature an earlier
+        // target's rider already reached): its pending follow-ups (Ninja Log's
+        // once-per-conflict marker, Life Charm's consume) land first, as they did
+        // inline, before its snapshot, HP read and write below.
+        {
+          const _pending = flushPendingFollowUpsFor({ tokenUuid: r.tokenUuid, actorUuid: r.actorUuid });
+          if (_pending) await _pending;
+        }
         const targetActor = await fromUuid(r.actorUuid).catch(() => null);
         if (!targetActor) { warn("Skill resolve: target actor not found", r.actorUuid); continue; }
 
@@ -975,6 +1001,8 @@ async function resolveAction(director, ar, opts = {}) {
           // impact (null without offsets → shown now).
           deferPresentation: impactPresenter.forTarget(r.tokenUuid),
           skipIncomingAeNames: ct ? chainSpentBlockers(ar, r.tokenUuid, ct) : null,
+          // Follow-ups collected, run after the loop (see _deferredFollowUps).
+          deferFollowUps: _deferredFollowUps,
           actionHit: {
             causeTokenUuid: ar.attacker?.tokenUuid ?? null,
             causeActorUuid: ar.attackerActorRef ?? null,
@@ -1002,6 +1030,10 @@ async function resolveAction(director, ar, opts = {}) {
             ...(ct ? { chain: chainLogOf(chainPlan, ct) } : cs ? { chain: chainLogOf(chainSingle, cs) } : {}),
           },
         });
+        if (_deferredFollowUps.length && !_followUpsPendingSent) {
+          _followUpsPendingSent = true;
+          try { emitFollowUpsPending(true); } catch (e) { warn("Skill resolve: follow-ups pending broadcast threw", e); }
+        }
         const finalValue = dmgRes.finalValue;
         const valueType = dmgRes.resource;
         const valueDirection = dmgRes.valueDirection;
@@ -1164,6 +1196,17 @@ async function resolveAction(director, ar, opts = {}) {
         }
       } catch (e) {
         err("Skill resolve: damage application failed", r, e);
+      }
+    }
+    } finally {
+      // Every target's write is in (or the loop threw): run the collected
+      // follow-ups, then close the collector.
+      try { await runCollectedFollowUps(_deferredFollowUps); }
+      finally {
+        closeFollowUpCollector(_deferredFollowUps);
+        if (_followUpsPendingSent) {
+          try { emitFollowUpsPending(false); } catch (e) { warn("Skill resolve: follow-ups settled broadcast threw", e); }
+        }
       }
     }
   }

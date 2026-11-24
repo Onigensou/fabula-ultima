@@ -28,11 +28,15 @@ import { registerAnimation } from "./director-surfaces.js";
 import {
   ONE_SHOT, HOLD, LOOPING, poseSrc, declaredPoseSrcs, lastingPose, shownPose,
   statePoseSrc, poseScaleFix, poseAnchor,
+  createLethalHoldGate, SHOW_LETHAL_HURT_HOLD_MS,
 } from "./battler-pose-rules.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_DIRECTOR_SPAWNED = "directorSpawned";
 const ACTION_PLAY = "FU_BATTLER_POSE_PLAY";
+// GM -> every client: an action's deferred damage-reaction follow-ups started
+// / finished (deferred-followups.js). Lethal hurt holds wait for the KO while on.
+const ACTION_FOLLOWUPS_PENDING = "FU_BATTLER_POSE_FOLLOWUPS_PENDING";
 const VIDEO_RE = /\.(webm|mp4|m4v|ogv)(\?|#|$)/i;
 
 // A one-shot whose clip length is unknown (still image, metadata missing)
@@ -49,14 +53,16 @@ const ONE_SHOT_LOAD_WAIT_MS = 250;
 // Hurt-with-art shake (the art itself is the reaction; this adds the impact).
 const SHAKE_MS = { normal: 260, strong: 420 };
 const SHAKE_PX = { normal: 4, strong: 8 };
-// After a hurt clip on a hit that took HP to 0: how long to hold its last
-// frame waiting for the KO to take over before standing back up.
-const LETHAL_HURT_HOLD_MS = 1500;
-// Same bridge when the hurt was a SHOW hold (show-hurt.js): the KO can land
-// seconds after the number (real play: +3.4 s), and standing up early plays the
-// Crisis clip from frame 0 before the fall. Keep the frozen hurt frame until the
-// KO pose starts, capped here (from the hand-over), then end normally.
-const SHOW_LETHAL_HURT_HOLD_MS = 6000;
+// After a hurt clip on a hit that took HP to 0: hold its last frame waiting for
+// the KO to take over before standing back up (battler-pose-rules.js
+// createLethalHoldGate: 1500 ms, a SHOW hold 6000 ms -- the KO can land seconds
+// after the number -- and no fixed cap while the action's damage-reaction
+// follow-ups are pending, since the KO waits for them). Standing up early plays
+// the Crisis clip from frame 0 before the fall.
+const _lethal = createLethalHoldGate({
+  setTimer: (fn, ms) => setTimeout(fn, ms),
+  clearTimer: (id) => clearTimeout(id),
+});
 const STRONG_TINT = 0xff7a7a;
 
 let _socket = null;
@@ -91,6 +97,7 @@ export function initBattlerPose() {
     if (typeof socketlib !== "undefined" && game.modules.get("socketlib")?.active) {
       _socket = socketlib.registerModule(MODULE_ID);
       _socket.register(ACTION_PLAY, (payload) => playBattlerPoseLocal(payload));
+      _socket.register(ACTION_FOLLOWUPS_PENDING, (payload) => setFollowUpsPendingLocal(!!payload?.pending));
     } else {
       warn("battler-pose: socketlib unavailable — attack/cast poses stay local-only");
     }
@@ -123,6 +130,23 @@ export function emitBattlerPose(payload = {}) {
   catch (e) { warn("emitBattlerPose: local play threw", e); }
   try { _socket?.executeForOthers?.(ACTION_PLAY, payload); }
   catch (e) { warn("emitBattlerPose: broadcast failed", e); }
+}
+
+// GM side (state-handlers' RESOLVE hits loop): the action's damage-reaction
+// follow-ups are pending (true) / have all run (false). Every client.
+export function emitFollowUpsPending(pending) {
+  try { setFollowUpsPendingLocal(!!pending); }
+  catch (e) { warn("emitFollowUpsPending: local set threw", e); }
+  try { _socket?.executeForOthers?.(ACTION_FOLLOWUPS_PENDING, { pending: !!pending }); }
+  catch (e) { warn("emitFollowUpsPending: broadcast failed", e); }
+}
+
+export function setFollowUpsPendingLocal(pending) {
+  _lethal.setPending(!!pending);
+  if (globalThis.ONI_BATTLER_POSE_DEBUG) {
+    const buf = (globalThis.__battlerPoseTrace ??= []);
+    buf.push({ t: Math.round(performance.now()), token: null, what: pending ? "followups-pending" : "followups-settled" });
+  }
 }
 
 // Play a one-shot pose on this client. { tokenUuid, pose, hold? }
@@ -342,7 +366,7 @@ function onEffectChanged(effect) {
       entry.oneShot = null;
       dropShowHold(rec, "ko");
     }
-    if (next === "ko" && entry.lethalTimer) { clearTimeout(entry.lethalTimer); entry.lethalTimer = null; }
+    if (next === "ko") _lethal.cancel(token.id);
     // Entering KO plays the fall from the start; anything else just switches.
     render(token, { restart: next === "ko" });
   }
@@ -352,7 +376,7 @@ function forgetToken(tokenId) {
   if (!tokenId) return;
   const e = _tokens.get(tokenId);
   if (e?.oneShot?.timer) clearTimeout(e.oneShot.timer);
-  if (e?.lethalTimer) { clearTimeout(e.lethalTimer); e.lethalTimer = null; }
+  _lethal.cancel(tokenId);
   if (e?.oneShot?.show) dropShowHold(e.oneShot, "forget");
   if (e?.shake) e.shake.stop();
   _tokens.delete(tokenId);
@@ -361,6 +385,7 @@ function forgetToken(tokenId) {
 
 function forgetAll() {
   for (const id of [..._tokens.keys()]) forgetToken(id);
+  _lethal.reset();
   for (const key of [..._arts.keys()]) releaseArt(key);
   if (_stripTicker) { try { canvas.app.ticker.remove(_stripTicker); } catch {} _stripTicker = null; }
 }
@@ -379,7 +404,7 @@ function startOneShot(token, pose, { hold = false, art = null, extra = null } = 
     if (token.destroyed) return 0;
     const prev = entry.oneShot;
     if (prev?.timer) clearTimeout(prev.timer);
-    if (entry.lethalTimer) { clearTimeout(entry.lethalTimer); entry.lethalTimer = null; }
+    _lethal.cancel(token.id);
     entry.oneShot = { pose, hold, timer: null, ...(extra ?? {}) };
     // Another pose (a KO hold, a reaction's attack) replaced a show's hurt hold.
     if (prev?.show && prev !== entry.oneShot) dropShowHold(prev, "replaced");
@@ -430,16 +455,19 @@ function endOneShot(tokenId, pose, record = null) {
   if (pose === "hurt" && Number(propsOf(token).current_hp) <= 0) {
     const showLethal = !!record?.show;
     trace(token, "hold-hurt-until-ko", showLethal ? { show: true } : {});
-    if (entry.lethalTimer) clearTimeout(entry.lethalTimer);
-    entry.lethalTimer = setTimeout(() => {
-      const e = _tokens.get(tokenId);
-      if (e) e.lethalTimer = null;
-      const t = canvas?.tokens?.get?.(tokenId);
-      if (t && !t.destroyed && e && !e.oneShot && e.shown === "hurt") {
-        if (showLethal) { trace(t, "show-lethal-ko-never-came"); log(`battler-pose: ${t.name} show hold: no KO within ${SHOW_LETHAL_HURT_HOLD_MS} ms, standing up`); }
-        render(t, { restart: true });
-      }
-    }, showLethal ? SHOW_LETHAL_HURT_HOLD_MS : LETHAL_HURT_HOLD_MS);
+    _lethal.hold(tokenId, {
+      show: showLethal,
+      onExpire: () => {
+        const e = _tokens.get(tokenId);
+        const t = canvas?.tokens?.get?.(tokenId);
+        if (t && !t.destroyed && e && !e.oneShot && e.shown === "hurt") {
+          trace(t, "lethal-hold-expired", showLethal ? { show: true } : {});
+          if (showLethal) { trace(t, "show-lethal-ko-never-came"); log(`battler-pose: ${t.name} show hold: no KO within ${SHOW_LETHAL_HURT_HOLD_MS} ms (or the follow-ups' grace), standing up`); }
+          render(t, { restart: true });
+        }
+      },
+    });
+    trace(token, _lethal.isPending() ? "hold-hurt-until-ko-pending" : "hold-hurt-armed");
     return;
   }
   render(token, { restart: true });

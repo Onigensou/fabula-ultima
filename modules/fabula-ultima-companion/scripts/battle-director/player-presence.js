@@ -14,7 +14,8 @@
 // by themselves. It measures the machine, never the person.
 //
 // The rule built on this: the game never waits on a player who isn't there.
-// `isGone` turns true once a client has been unreachable for GRACE_MS.
+// `isGone` turns true once a client has been unreachable for GRACE_MS (offline,
+// silent) or LOADING_GRACE_MS (socket back, no hello yet: a reload in progress).
 //
 // 🩸 A connected, ready player is NEVER timed, however long they think. Nothing
 // here measures how long a menu has been open, and no player sees any of this.
@@ -29,6 +30,12 @@ import { SimMode } from "./sim/sim-mode.js";
 import { getIntentChannel } from "./intent-channel.js";
 
 export const GRACE_MS = 20_000;
+// A client whose socket is back but which has not said hello yet is RELOADING (an
+// F5, a late join): the live world needs 27-30 s to boot, longer on a slow PC, so
+// the 20 s rule passed that player's reaction while their page was still loading
+// (measured 2026-11-24, tools/handoffs/late-join-hunt-2026-11-24.md). Truly
+// offline (no socket) and silent (stopped answering) keep GRACE_MS.
+export const LOADING_GRACE_MS = 90_000;
 const PROBE_EVERY_MS = 5_000;
 const SILENT_AFTER_MS = 12_000;
 
@@ -124,7 +131,12 @@ export function isReady(userId) {
 export function isGone(userId) {
   if (!userId || !_seen.has(userId) || isReady(userId) || iStalled()) return false;
   const since = _awaySince.get(userId) ?? _lastHeard.get(userId);
-  return since != null && Date.now() - since >= GRACE_MS;
+  return since != null && Date.now() - since >= graceFor(presenceOf(userId));
+}
+
+/** How long a client in this presence state gets before it counts as gone. */
+export function graceFor(state) {
+  return state === "loading" ? LOADING_GRACE_MS : GRACE_MS;
 }
 
 /** Calls onGone once each time `userId` goes missing. Returns the stop function. */

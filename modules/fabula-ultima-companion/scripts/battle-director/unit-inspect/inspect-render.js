@@ -11,6 +11,7 @@ export const WORLD_ID = "fu-inspect-world";   // the spotlight + the unit, just 
 const STYLE_ID = "fu-inspect-style";
 
 import { renderLinkedText, safeHtml } from "../../linked-text/lt-render.js";
+import { overflowGradient } from "../hp-overflow.js";
 import { crestSVG, defenseSVG } from "./study-visuals.js";
 
 export const CARD_W = 820;
@@ -28,7 +29,7 @@ const kbd = (k) => `<kbd class="fui-kbd">${esc(k)}</kbd>`;
 function vitalRow(r, cls = "fui-vrow") {
   const body = r.kind === "pips"
     ? `<div class="fui-pips">${r.pips.map((on) => `<span class="fui-pip${on ? " on" : ""}"></span>`).join("")}</div>`
-    : `<div class="fui-bar"><i class="${esc(r.cls)}" style="width:${r.pct.toFixed(1)}%"></i></div>`;
+    : `<div class="fui-bar"><i class="${esc(r.cls)}" style="width:${r.pct.toFixed(1)}%"></i>${r.over > 0 ? `<i class="is-over" style="left:${r.pct.toFixed(1)}%;width:${r.over.toFixed(1)}%"></i>` : ""}</div>`;
   return `<div class="${cls}"><span class="fui-vk">${esc(r.k)}</span>${body}<span class="fui-vv">${esc(r.text)}</span></div>`
     + (r.sub && cls === "fui-vrow" ? `<div class="fui-zpn">${esc(r.sub)}</div>` : "");
 }
@@ -359,6 +360,7 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-bar{position:relative;height:9px;border-radius:5px;background:rgba(58,50,40,.14);overflow:hidden}
 #${ROOT_ID} .fui-bar>i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
 #${ROOT_ID} .is-hp{background:linear-gradient(90deg,#2fbf71,#6bd66b)}#${ROOT_ID} .is-crisis{background:linear-gradient(90deg,#d9822b,#ffb84a)}
+#${ROOT_ID} .fui-bar>i.is-over{background:${overflowGradient("90deg")};border-radius:0 5px 5px 0}
 #${ROOT_ID} .is-ko{background:#8a7d6a}#${ROOT_ID} .is-mp{background:linear-gradient(90deg,#2e7bd6,#5aa8ff)}#${ROOT_ID} .is-zp{background:linear-gradient(90deg,#ff9c2e,#ffd95a)}
 #${ROOT_ID} .fui-vrow{display:grid;grid-template-columns:28px minmax(0,1fr) 84px;align-items:center;gap:8px;margin:5px 0}
 #${ROOT_ID} .fui-vk{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--ink-soft)}

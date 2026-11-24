@@ -195,7 +195,20 @@ export function squareFragment({ hp, max, stolen, eaten } = {}) {
   const held = heldLoss({ stolen, eaten });
   const m = whole(max);
   if (whole(hp) <= 0 || held === m || held <= 0) return null;
+  // An overflowed fragment (HP above its Max, Soul Confluence) is never trimmed by a Max move.
+  if (whole(hp) > m) return { hp: whole(hp) + Math.max(0, held - m), max: held };
   return { hp: Math.max(1, Math.min(whole(hp) + (held - m), held)), max: held };
+}
+
+/**
+ * A wound (round-end lock, titheWound) grows a standing fragment: HP += wound, capped
+ * at the new Max. An overflow already standing (HP above the OLD Max) survives: the
+ * wound is added on top and nothing is trimmed. Otherwise identical to the old cap.
+ */
+export function woundedFragmentHp({ hp, oldMax, wound, max } = {}) {
+  const cur = whole(hp);
+  const next = cur + Math.max(0, whole(wound));
+  return cur > whole(oldMax) ? next : Math.min(next, whole(max));
 }
 
 /**
@@ -244,6 +257,25 @@ export function pickFragmentToEat(list, { pick = "largest", ownerUuids = null } 
  */
 export function eatFragment({ stolen, eaten, fragmentHp } = {}) {
   return { eaten: Math.max(whole(eaten), whole(stolen)), consumed: Math.max(0, whole(fragmentHp)) };
+}
+
+/**
+ * Soul Confluence (Nidhogg): who receives, who gives. Pure. `list` = standing fragments
+ * [{ id, hp, max, slot }]. Recipient = highest current HP, tie highest Max HP, tie lowest
+ * party slot (a missing slot sorts last). Fewer than 2 -> null (nothing to merge).
+ * `gain` = the donors' current HP summed; the recipient's HP is not clamped to Max.
+ */
+export function planConfluence(list = []) {
+  const live = (list ?? []).filter((f) => f && whole(f.hp) > 0);
+  if (live.length < 2) return null;
+  const slot = (f) => (Number.isFinite(f.slot) && f.slot >= 0 ? f.slot : Number.MAX_SAFE_INTEGER);
+  const sorted = [...live].sort((a, b) => whole(b.hp) - whole(a.hp) || whole(b.max) - whole(a.max) || slot(a) - slot(b));
+  const [recipient, ...donors] = sorted;
+  return {
+    recipientId: recipient.id,
+    donorIds: donors.map((d) => d.id),
+    gain: donors.reduce((n, d) => n + whole(d.hp), 0),
+  };
 }
 
 /**
@@ -1032,7 +1064,7 @@ async function runLock(ctx, round, { only = null, servant = null, tearDown = fal
     if (clampHp != null) await actor.update({ "system.props.current_hp": clampHp }, { diff: false });
     await touchActor(actor);
     const max = heldFrom(actor);
-    const hp = isNew ? max : Math.min(propNum(frag.actorDoc, "current_hp") + wound, max);
+    const hp = isNew ? max : woundedFragmentHp({ hp: propNum(frag.actorDoc, "current_hp"), oldMax: propNum(frag.actorDoc, "max_hp"), wound, max });
     await setFragmentHp(frag, hp, max);
     ctx.log(`${actor.name} locked — lost ${wound} Max HP, now ${propNum(actor, "current_hp")}/${propNum(actor, "max_hp")}`);
   }
@@ -1178,6 +1210,58 @@ async function destroyFragments(ctx, frags, { refund = REFUND.FULL, show: playSh
   await saveNow(ctx);
 }
 
+/**
+ * Soul Confluence's second half, and the F5 repair for it. Stamp order is donors first
+ * (`soulMergedInto`), recipient last (`soulMergeHp` = the planned total, `soulMergeApplied`).
+ * Per recipient:
+ *  - recipient unstamped: the merge never began; the donor stamps are cleared (no destroy, no HP write);
+ *  - recipient gone, at 0 HP, returned or eaten, and not yet applied: nothing is written, stamps cleared;
+ *  - stamped, not applied: the stamped donors' CURRENT HP is ADDED to the recipient's current HP
+ *    (damage dealt since the merge is kept), then `soulMergeApplied` is recorded - so the add runs once;
+ *  - then the stamped donors are destroyed (max_only) and the recipient's stamp cleared.
+ * Never a set from the stamp, never a pre-computed sum. Returns the number of donors it handled.
+ */
+async function finishMerges(ctx, { show = false } = {}) {
+  const byToken = new Map(fragmentCombatants(ctx).map((c) => [c.tokenDoc?.id, c]));
+  const donors = fragmentCombatants(ctx).filter((c) => markAe(c.actorDoc)?.flags?.[FLAG_NS]?.soulMergedInto != null);
+  if (!donors.length) return 0;
+  const groups = new Map();
+  for (const d of donors) {
+    const rid = markAe(d.actorDoc).flags[FLAG_NS].soulMergedInto;
+    if (!groups.has(rid)) groups.set(rid, []);
+    groups.get(rid).push(d);
+  }
+  const clearDonors = async (list) => { for (const d of list) await markAe(d.actorDoc)?.update({ [`flags.${FLAG_NS}.soulMergedInto`]: null }); };
+  const clearRec = async (rec) => {
+    await markAe(rec?.actorDoc)?.update({ [`flags.${FLAG_NS}.soulMergeHp`]: null, [`flags.${FLAG_NS}.soulMergeApplied`]: null });
+  };
+  const toDestroy = [];
+  const recs = [];
+  let handled = 0;
+  for (const [rid, list] of groups) {
+    const rec = byToken.get(rid) ?? null;
+    const rf = rec ? markAe(rec.actorDoc)?.flags?.[FLAG_NS] : null;
+    if (!rec || rf?.soulMergeHp == null) { await clearDonors(list); continue; }   // never started
+    const applied = rf.soulMergeApplied === true;
+    if (!applied) {
+      const hp = propNum(rec.actorDoc, "current_hp");
+      if (hp <= 0 || rf.soulReturned === true || rf.soulEatenAt != null) { await clearDonors(list); await clearRec(rec); continue; }
+      // Written already (an F5 between the write and its record): the HP is exactly the planned total.
+      if (hp !== whole(rf.soulMergeHp)) {
+        const gain = list.reduce((n, d) => n + Math.max(0, propNum(d.actorDoc, "current_hp")), 0);
+        await setFragmentHp(rec, hp + gain, propNum(rec.actorDoc, "max_hp"));
+      }
+      await markAe(rec.actorDoc)?.update({ [`flags.${FLAG_NS}.soulMergeApplied`]: true });
+    }
+    toDestroy.push(...list);
+    recs.push(rec);
+    handled += list.length;
+  }
+  await destroyFragments(ctx, toDestroy, { refund: REFUND.MAX_ONLY, show });
+  for (const rec of recs) await clearRec(rec);
+  return handled;
+}
+
 // ── The event ───────────────────────────────────────────────────────────────
 
 registerConflictEvent({
@@ -1211,7 +1295,9 @@ registerConflictEvent({
     if (!dc || dc.ended) return;
     const round = Number(dc.round) || 0;
     await adoptStrayFragments(ctx);
+    // Sweep first: a 0 HP recipient is paid out and gone before a half-done merge could lift it.
     await sweepDestroyed(ctx);
+    await finishMerges(ctx);
     await reconcileFragments(ctx);
     await runCallings(ctx, round);
     // After the Callings, before the normal lock: a Servant with no standing fragment (devoured,
@@ -1480,6 +1566,64 @@ registerConflictEvent({
     },
 
     /**
+     * Soul Confluence (Nidhogg): the standing fragment with the most current HP takes the
+     * current HP of every other one. Row (item skill, Self-targeted, no MP):
+     *   { effect_kind: "conflict_event_action", conflict_action: "mergeFragments show=none",
+     *     target_ref: "self" }
+     * The action picks the recipient itself (planConfluence: HP, then Max HP, then party
+     * slot). Its HP may pass its Max (never clamped; a Calling then steals all of it, down
+     * to the owner's Max 1). Donors are destroyed max_only: their owners get the Max HP back,
+     * no current HP (as Soul Devour). A permanent (Nox Servant) donor goes the same way and
+     * is re-torn at the round end. Fewer than 2 standing fragments: nothing is written and
+     * the row returns false. Stamps first (donors `soulMergedInto`, then the recipient `soulMergeHp`),
+     * so an F5 mid-merge is finished, not repeated, by the next merge or the round end.
+     * Leaves VAR_CONFLUENCE_HP (the recipient's new HP) on the chain.
+     */
+    async mergeFragments(ctx, { options = {}, effectCtx = null } = {}) {
+      const dc = ctx.dCombat;
+      if (!dc || dc.ended) return false;
+      const setVar = (v) => {
+        if (!effectCtx) return;
+        if (!effectCtx.payload) effectCtx.payload = {};
+        if (!effectCtx.payload._chainVars) effectCtx.payload._chainVars = {};
+        effectCtx.payload._chainVars.confluence_hp = v;
+      };
+      setVar(0);
+      await adoptStrayFragments(ctx);
+      // A merge an F5 cut short comes first: it is this action's own earlier run.
+      if (await finishMerges(ctx)) {
+        const rec = fragmentCombatants(ctx).filter((c) => propNum(c.actorDoc, "current_hp") > 0)
+          .sort((a, b) => propNum(b.actorDoc, "current_hp") - propNum(a.actorDoc, "current_hp"))[0];
+        setVar(rec ? propNum(rec.actorDoc, "current_hp") : 0);
+        return true;
+      }
+      await sweepDestroyed(ctx);
+      const pl = players(ctx);
+      const standing = fragmentCombatants(ctx).filter((c) => propNum(c.actorDoc, "current_hp") > 0
+        && markAe(c.actorDoc) && markAe(c.actorDoc).flags?.[FLAG_NS]?.soulReturned !== true
+        && markAe(c.actorDoc).flags?.[FLAG_NS]?.soulEatenAt == null);
+      const plan = planConfluence(standing.map((c) => ({
+        id: c.tokenDoc?.id, hp: propNum(c.actorDoc, "current_hp"), max: propNum(c.actorDoc, "max_hp"),
+        slot: pl.findIndex((p) => p.actorDoc?.uuid === ownerUuidOf(c)),
+      })));
+      if (!plan) { ctx.log(`mergeFragments: ${standing.length} standing fragment(s), nothing to merge`); return false; }
+      const rec = standing.find((c) => c.tokenDoc?.id === plan.recipientId);
+      const donors = standing.filter((c) => plan.donorIds.includes(c.tokenDoc?.id));
+      const hp = propNum(rec.actorDoc, "current_hp") + plan.gain;
+      const round = Number(dc.round) || 0;
+      // Donors first, the recipient last: a re-run that finds donors without a recipient stamp
+      // clears them (the merge never began); one that finds the recipient stamp finishes it.
+      for (const d of donors) await markAe(d.actorDoc)?.update({ [`flags.${FLAG_NS}.soulMergedInto`]: plan.recipientId });
+      await markAe(rec.actorDoc)?.update({ [`flags.${FLAG_NS}.soulMergeHp`]: hp, [`flags.${FLAG_NS}.soulMergeRound`]: round, [`flags.${FLAG_NS}.soulMergeApplied`]: false });
+      const playShow = String(options?.show ?? "").trim().toLowerCase() !== "none";
+      await finishMerges(ctx, { show: playShow });
+      setVar(propNum(rec.actorDoc, "current_hp"));
+      ctx.log(`mergeFragments: ${donors.length} fragment(s) into ${rec.actorDoc?.name} — ${hp} HP (Max ${propNum(rec.actorDoc, "max_hp")}, not clamped)`);
+      await saveNow(ctx);
+      return true;
+    },
+
+    /**
      * Soul Ripper (B3): the wound is locked at once. Effect row:
      *   { effect_kind: "conflict_event_action", conflict_action: "titheWound",
      *     conflict_amount: "HP_LOST", target_ref: <the player hit> }
@@ -1521,7 +1665,7 @@ registerConflictEvent({
         // Also the touch: the HUD, the banner and Crisis follow updateActor.
         await actor.update({ "system.props.current_hp": Math.min(ownerHp, ownerMax - wound) }, { diff: false });
         const max = heldFrom(actor);
-        const hp = isNew ? max : Math.min(propNum(frag.actorDoc, "current_hp") + wound, max);
+        const hp = isNew ? max : woundedFragmentHp({ hp: propNum(frag.actorDoc, "current_hp"), oldMax: propNum(frag.actorDoc, "max_hp"), wound, max });
         await setFragmentHp(frag, hp, max);
         any = true;
         ctx.log(`${actor.name} torn at once — lost ${wound} Max HP, fragment ${hp}/${max}`);

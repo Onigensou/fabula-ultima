@@ -266,6 +266,7 @@ try {
 }
 
 // ── 2. applyDamageToTarget lifted from skill-effects.js ──────────────────────
+const DF = await import("./deferred-followups.js");
 const SE_SRC = readFileSync(fileURLToPath(new URL("./skill-effects.js", import.meta.url)), "utf8").replace(/\r\n/g, "\n");
 function liftApplyDamage(stubs) {
   const start = SE_SRC.indexOf("export async function applyDamageToTarget(");
@@ -280,6 +281,7 @@ function makeHarness() {
   const events = [];
   const stubs = {
     log: () => {}, warn: () => {},
+    flushPendingFollowUpsFor: DF.flushPendingFollowUpsFor,
     readPropNum: (a, keys, dflt = 0) => { for (const k of keys) { const v = a.system.props[k]; if (v != null) return Number(v); } return dflt; },
     resolveDamageReactions: async ({ curHp, rawDamage }) => ({ newHp: Math.max(0, curHp - rawDamage), dealtDamage: rawDamage, consumedAeIds: [], fired: [], followUp: [] }),
     floorHp: (hp) => hp, actorHpFloor: () => null,
@@ -420,6 +422,7 @@ const SF = readFileSync(fileURLToPath(new URL("../../../../tools/anim-studio/nid
   // the real passive-anim fallback (imported by the lifted follow-up path) has no `game` here
   console.warn = (...a) => { if (!String(a[1] ?? a[0] ?? "").includes("PassiveAnim") && !String(a[0]).includes("PassiveAnim")) prevWarn4(...a); };
 
+  const { orderAcceptedForFire } = await import("./card-reaction-order.js");
   const SHn = SH.replace(/\r\n/g, "\n");
   const iA = SHn.indexOf('  const dmgResource = ar.damageResource ?? "hp";');
   const iB = SHn.indexOf("  // 6b. Post-damage passive trigger", iA);
@@ -432,6 +435,7 @@ const SF = readFileSync(fileURLToPath(new URL("../../../../tools/anim-studio/nid
     const at = (s) => ev.push(`${s}@${Math.round(performance.now() - t0)}`);
     const applyDamageToTarget = liftApplyDamage({
       log: () => {}, warn: () => {},
+      flushPendingFollowUpsFor: DF.flushPendingFollowUpsFor,
       readPropNum: (a, keys, dflt = 0) => { for (const k of keys) { const v = a.system.props[k]; if (v != null) return Number(v); } return dflt; },
       resolveDamageReactions: async ({ target, curHp, rawDamage }) => ({
         newHp: Math.max(0, curHp - rawDamage), dealtDamage: rawDamage, consumedAeIds: [], fired: [],
@@ -478,7 +482,10 @@ const SF = readFileSync(fileURLToPath(new URL("../../../../tools/anim-studio/nid
       buildMissRow: (x) => x, chainHitsView: () => [], chainTargetOf: () => null, chainLogOf: () => null,
       chainSpentBlockers: () => null, chainStrikeLines: () => [], chainCombinedLine: () => null,
       playMissVfx: (o) => at(`miss:${o.tokenUuid}`), playBlockVfx: (o) => at(`block:${o.tokenUuid}`),
-      createImpactPresenter, takeImpactOffsets, rememberImpactPresenter,
+      createImpactPresenter, takeImpactOffsets, rememberImpactPresenter, orderAcceptedForFire,
+      openFollowUpCollector: DF.openFollowUpCollector, closeFollowUpCollector: DF.closeFollowUpCollector,
+      flushPendingFollowUpsFor: DF.flushPendingFollowUpsFor, runCollectedFollowUps: DF.runCollectedFollowUps,
+      emitFollowUpsPending: () => {},
       endHitCounter: (o) => { at("hc-end"); HC.endHitCounter(o); },
       getSkillEffectsExtras: async () => ({ firePreAcceptedCandidate: async ({ candidate }) => { at(`reaction:${candidate.carrierName}`); } }),
       isActorDefeated: () => false, reactionChainActs: async () => true, skipCost: false, computeEffectiveCost: () => null,
@@ -515,8 +522,9 @@ const SF = readFileSync(fileURLToPath(new URL("../../../../tools/anim-studio/nid
     eq("4b staggered: counter still 3", r.hits, 3);
   }
   // no offsets = the old path, nothing held: writes back to back in target order,
-  // a follow-up right after its own write (before the next target's), the
-  // counter closed after the loop, step 6 last, no wait. (The numbers' exact
+  // a damage-reaction follow-up after EVERY write (collected out of the hits
+  // loop, deferred-followups.test.mjs), the counter closed after it, step 6
+  // last, no wait. (The numbers' exact
   // place in that order is the lazy import's latency, the same on HEAD; with
   // these instant stubs the last number can even render after the counter
   // closes. That is the pre-existing no-offset path and is not changed here.)
@@ -524,7 +532,7 @@ const SF = readFileSync(fileURLToPath(new URL("../../../../tools/anim-studio/nid
     const r = await runResolveTail({ offsets: null, followUpOn: "T2" });
     const order = r.ev.map((e) => e.split("@")[0]).filter((e) => !e.startsWith("num:"));
     eq("4 no offsets: write / follow-up / close / step-6 order", order,
-      ["write:T1", "write:T2", "followup:T2", "write:T3", "hc-end", "reaction:Counter"]);
+      ["write:T1", "write:T2", "write:T3", "followup:T2", "hc-end", "reaction:Counter"]);
     eq("4 no offsets: every number still shown", r.ev.filter((e) => e.startsWith("num:")).length, 3);
     ok(`4 no offsets: no hold (took ${r.t(/^reaction/)} ms)`, r.t(/^reaction/) < 40);
   }

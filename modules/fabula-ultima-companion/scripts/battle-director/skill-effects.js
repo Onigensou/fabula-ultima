@@ -31,7 +31,7 @@ import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
 import { promptNumberDialog } from "./number-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { emitLeaveExit } from "./leave-exit-fx.js";
-import { RESOURCE_REGISTRY } from "./resources.js";
+import { RESOURCE_REGISTRY, capAwareNext, mayExceedMax } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
 import { resolveAttackerWeapon, attrDieSize } from "./snapshot.js";
@@ -64,6 +64,7 @@ import { isMassiveJoinRowKey } from "./massive-keyword.js";
 import { actorHpFloor, floorHp } from "../shared/hp-floor.js";
 import { resolveWornSlots } from "../shared/equipped-gear.js";
 import { deferVfxTable } from "./impact-offsets.js";
+import { flushPendingFollowUpsFor } from "./deferred-followups.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -756,9 +757,27 @@ export async function applyDamageToTarget({
   // target's hit on its own impact. The WRITES are never deferred.
   // null (default) = present now, as before.
   deferPresentation = null,
+  // (array) Damage-reaction follow-ups (Life Charm's fall-and-revive, Ninja
+  // Log's marker, Earthen Wire's redirect) are COLLECTED here instead of run
+  // before this call returns: one `{ tokenUuid, targetName, aeNames, run }` per
+  // target, where `run()` waits for this target's own presentation and then
+  // runs its chains serially, exactly as the inline path does. The caller owns
+  // running them (in push order) before anything reads the result of the
+  // follow-ups. The RESOLVE hits loop passes one so a seconds-long chain on one
+  // target no longer holds the next target's write and number.
+  // null (default) = run them inline, before returning, as before.
+  deferFollowUps = null,
 } = {}) {
   const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
   if (!target) return empty;
+  // A damage-reaction chain still pending on this creature (deferred by the
+  // RESOLVE hits loop, deferred-followups.js) lands first: this write must
+  // read the creature after its own reaction, never fire a once-only save
+  // (Life Charm, Survivor's Crest) a second time. null = nothing pending.
+  {
+    const _pending = flushPendingFollowUpsFor({ tokenUuid, actorUuid: target.uuid ?? null });
+    if (_pending) await _pending;
+  }
   // Every presentation call below goes through these, so `silent` is one switch.
   const _vfxNow = silent ? null : {
     loss: fireResourceLossVfx, absorb: fireAbsorbVfx, bar: fireNpcHpBar,
@@ -815,7 +834,7 @@ export async function applyDamageToTarget({
     const healed = Math.max(0, damage);
     let newHp = curHp;
     if (healed > 0) {
-      newHp = Math.min(maxHp, curHp + healed);
+      newHp = capAwareNext(curHp, healed, maxHp, { allowOverflow: mayExceedMax(target) });
       await target.update({ "system.props.current_hp": newHp });
       log(`${prefix}absorbed ${healed} on ${targetName}: ${curHp} → ${newHp} (heal)${logSuffix}`);
       vfx?.absorb({ tokenUuid, amount: newHp - curHp });
@@ -911,36 +930,45 @@ export async function applyDamageToTarget({
     // The marker is a direct actor AE independent of the gear, so the once-per-
     // conflict gate survives unequip/re-equip.
     if (Array.isArray(followUp) && followUp.length) {
-      // Staggered impacts: this target's number / bar / BLOCK went to the
-      // presenter, so wait until they are shown. The follow-ups (and their
-      // passive fallback) answer a hit the table can already see. The writes
-      // above are done; only this target's own follow-ups wait. Without a
-      // deferral _shown is empty and nothing waits.
-      if (_shown.length) {
-        try { await Promise.all(_shown); }
-        catch (e) { warn("applyDamageToTarget: waiting for the deferred hit failed", e); }
-      }
-      const bdf = globalThis.FUCompanion?.api?.experimental?.battleDirector;
-      const dirf = bdf?.getActiveDirector?.() ?? null;
-      const tokf = target.getActiveTokens?.()?.[0]?.document ?? null;
-      for (const fu of followUp) {
-        // `runtimeEffectTable` is where target_ref looks up a labelled targeting
-        // row (skill-targeting.findTargetingRow) — without it a follow-up could
-        // only aim at reserved refs like "self" (Ninja Log), never at a pick made
-        // by an earlier step of the same chain (Earthen Wire's random enemy).
-        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, carrierImg: fu.carrierImg ?? null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, runtimeEffectTable: fu.effectTable, dCombat: dirf?.dCombat ?? null };
-        // Passive fallback (passive-anim.js): damage dealt by a damage-reaction
-        // follow-up is a redirect (Earthen Wire) — an arc from the wearer.
-        fctx.__passiveRec = { records: [] };
-        for (const frow of (fu.rows ?? [])) {
-          try { await applyEffectRow(frow, fctx); }
-          catch (e) { warn(`applyDamageToTarget: follow-up "${frow.effect_label}" failed`, e); }
+      const _runFollowUps = async () => {
+        // Staggered impacts: this target's number / bar / BLOCK went to the
+        // presenter, so wait until they are shown. The follow-ups (and their
+        // passive fallback) answer a hit the table can already see. The writes
+        // above are done; only this target's own follow-ups wait. Without a
+        // deferral _shown is empty and nothing waits.
+        if (_shown.length) {
+          try { await Promise.all(_shown); }
+          catch (e) { warn("applyDamageToTarget: waiting for the deferred hit failed", e); }
         }
-        if (!silent) {
-          import("./passive-anim.js")
-            .then((m) => m.playPassiveFallback({ ctx: fctx, carrierName: fu.aeName ?? "passive", redirect: true }))
-            .catch((e) => warn("applyDamageToTarget: passive fallback import failed", e));
+        const bdf = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+        const dirf = bdf?.getActiveDirector?.() ?? null;
+        const tokf = target.getActiveTokens?.()?.[0]?.document ?? null;
+        for (const fu of followUp) {
+          // `runtimeEffectTable` is where target_ref looks up a labelled targeting
+          // row (skill-targeting.findTargetingRow) — without it a follow-up could
+          // only aim at reserved refs like "self" (Ninja Log), never at a pick made
+          // by an earlier step of the same chain (Earthen Wire's random enemy).
+          const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, carrierImg: fu.carrierImg ?? null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, runtimeEffectTable: fu.effectTable, dCombat: dirf?.dCombat ?? null };
+          // Passive fallback (passive-anim.js): damage dealt by a damage-reaction
+          // follow-up is a redirect (Earthen Wire) — an arc from the wearer.
+          fctx.__passiveRec = { records: [] };
+          for (const frow of (fu.rows ?? [])) {
+            try { await applyEffectRow(frow, fctx); }
+            catch (e) { warn(`applyDamageToTarget: follow-up "${frow.effect_label}" failed`, e); }
+          }
+          if (!silent) {
+            import("./passive-anim.js")
+              .then((m) => m.playPassiveFallback({ ctx: fctx, carrierName: fu.aeName ?? "passive", redirect: true }))
+              .catch((e) => warn("applyDamageToTarget: passive fallback import failed", e));
+          }
         }
+      };
+      // Collected (the RESOLVE hits loop): the caller runs it after every
+      // target's write. Otherwise inline, before returning, as always.
+      if (Array.isArray(deferFollowUps)) {
+        deferFollowUps.push({ tokenUuid, actorUuid: target.uuid ?? null, targetName, aeNames: followUp.map((fu) => fu.aeName ?? null), run: _runFollowUps });
+      } else {
+        await _runFollowUps();
       }
     }
     return {
@@ -6654,6 +6682,11 @@ async function applyReversedHealDamage({ actor, token, amount, row, ctx, skipShi
   const battleLogSink = inheritedSink ?? [];
   const tokenUuid = token?.uuid ?? token?.document?.uuid ?? null;
   try {
+    // A pending damage-reaction chain on this creature lands before HP-before is read.
+    {
+      const _pending = flushPendingFollowUpsFor({ tokenUuid, actorUuid: actor.uuid ?? null });
+      if (_pending) await _pending;
+    }
     const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
     const subjectSnapshot = captureSubjectSnapshot(actor);
     const res = await applyDamageToTarget({
@@ -7137,6 +7170,12 @@ async function dealDamageApply(row, ctx, d) {
   for (const token of targetResult.tokens) {
     const actor = token.actor;
     if (!actor) continue;
+    // A damage-reaction chain still pending on this victim (deferred-followups.js)
+    // lands before its amount, affinity and HP-before are read.
+    {
+      const _pending = flushPendingFollowUpsFor({ tokenUuid: token.uuid ?? token.document?.uuid ?? null, actorUuid: actor.uuid ?? null });
+      if (_pending) await _pending;
+    }
     // Per-target resolver so MAX_HP / CUR_HP read the VICTIM's sheet.
     const resolver = buildSkillResolver({
       actor,
@@ -7613,6 +7652,12 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
     // cut a 3-IP rob to 2 and left the victim 1 IP.
     const isSpend = !ctx?.reactorActor || actor.uuid === ctx.reactorActor.uuid;
     const effAmount = (resource === "ip" && isSpend) ? ipReducedAmount(rowAmount, actor) : rowAmount;
+    // An HP loss on a creature whose damage-reaction chain is still pending
+    // (deferred-followups.js): the chain lands first, as it did inline.
+    if (resource === "hp") {
+      const _pending = flushPendingFollowUpsFor({ tokenUuid: token.uuid ?? token.document?.uuid ?? null, actorUuid: actor.uuid ?? null });
+      if (_pending) await _pending;
+    }
     const cur = Number(actor.system?.props?.[def.prop] ?? 0) || 0;
     if (cur < effAmount) {
       log(`skill-effects.consume_resource: ${actor.name} has ${cur} ${resource}, needs ${effAmount}; ${onEmpty}`);
@@ -7690,8 +7735,7 @@ async function writeResourceDelta(actor, resourceDef, delta) {
   const hardMin = Number.isFinite(resourceDef.hardMin) ? resourceDef.hardMin : 0;
   const hardMax = Number.isFinite(resourceDef.hardMax) ? resourceDef.hardMax : Infinity;
 
-  let next = cur + delta;
-  if (max != null) next = Math.min(max, next);
+  let next = capAwareNext(cur, delta, max, { allowOverflow: mayExceedMax(actor) });
   // hardMax caps a GAIN only, and never pulls a total that is already above it
   // back down (a character on 12 FP who spends 1 lands on 11, not 10).
   const ceiling = delta > 0 ? Math.max(cur, hardMax) : Infinity;
@@ -7794,7 +7838,8 @@ function aeBatchConflicts(batch, actorUuid, template) {
   }
   return false;
 }
-// Current HP/MP may not stay above their maximum. An AE that lowers a maximum
+// Current HP/MP of an ordinary creature may not stay above their maximum (a
+// Soul Fragment is exempt, see mayExceedMax). An AE that lowers a maximum
 // (Grave Toll) is the only thing that can open that gap from this side, and
 // nothing else closes it: heals clamp, but they only run when something heals,
 // and the excess carried into the next battle (98/85). Reads the maximum after
@@ -7811,6 +7856,7 @@ async function clampVitalsToMax(actor, aes) {
     }
   }
   if (!vitals.size || !actor) return;
+  if (mayExceedMax(actor)) return; // a Soul Fragment keeps its overflow
   const upd = {};
   for (const v of vitals) {
     const cur = readPropNum(actor, [`current_${v}`], NaN);

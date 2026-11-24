@@ -111,7 +111,8 @@ const CONDITION_ALIASES = Object.freeze({
 
   // A skill formula in the row's String column, evaluated against the performer
   // (the director's resolver, through the battle provider). Lets one row AND
-  // several facts: "ACTIVATION_NO == 1 && CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT == 0".
+  // several facts: "ACTIVATION_NO == 1 && CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT == 0"
+  // (CONFLICT_OBJECT_HP_<ID> sums current HP; both resolve in skill-formulas.js).
   formula: "formula"
 });
 

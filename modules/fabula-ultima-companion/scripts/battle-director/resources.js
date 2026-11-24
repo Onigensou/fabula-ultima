@@ -49,3 +49,25 @@ export function resolveResourceDef(key) {
 export function resourceLabel(key) {
   return resolveResourceDef(key)?.label ?? String(key ?? "").toUpperCase();
 }
+
+// Only a Soul Fragment may hold HP/MP above its Max (Soul Confluence overflow).
+// Same test as soul-tithe.js isFragmentActor (flags.<ns>.conflictObject ===
+// "soul-fragment"); that helper is module-private, so the flag read lives here.
+export function mayExceedMax(actor) {
+  try { return actor?.flags?.["fabula-ultima-companion"]?.conflictObject === "soul-fragment"; }
+  catch { return false; }
+}
+
+// Next value of a capped pool after a signed delta.
+// Ordinary actors: EXACTLY the old rule, Math.min(max, cur + delta) (a pool above
+// Max is trimmed back, on a loss too). With { allowOverflow } (a Soul Fragment):
+// a GAIN never raises the pool above Max and never LOWERS a pool already above it
+// (454/128 + heal 50 stays 454); a LOSS subtracts from the real current value
+// (454 - 30 = 424), not clamped by Max.
+export function capAwareNext(cur, delta, max, { allowOverflow = false } = {}) {
+  const next = cur + delta;
+  const capped = max != null && Number.isFinite(max);
+  if (!allowOverflow) return capped ? Math.min(max, next) : next;
+  if (delta > 0 && capped) return Math.min(Math.max(cur, max), next);
+  return next;
+}

@@ -44,6 +44,7 @@ import { playUiHoverSfx, playUiClickSfx, playUiOpenSfx, playUiBackSfx } from "./
 import { ensureDrawerStyles, escapeHtml as esc, pickDocked } from "./drawer-views.js";
 import { rightEdgeReserve, hudScale, readUnitInfo, hudCostPreview, soulStolenOf, syncSoul } from "./director-player-hud.js";
 import { publishDeskWatch } from "./ally-watch.js";
+import { hasOverflow, hpBarSegments, overflowColorCss, overflowGradient } from "./hp-overflow.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { TIER } from "./status-classifier.js";
 import { rowTier, rowTurns, rowSpent, sortRows, statusTipHTML, foldTipHTML } from "./status-tip.js";
@@ -120,6 +121,12 @@ export function deskEnabled() {
 
 // ── small helpers ─────────────────────────────────────────────────────────────
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+// A tile's HP bar: <span> + fill, plus the overflow segment when HP is above Max.
+function hpTileBar(hp) {
+  if (!hasOverflow(hp.v, hp.m)) return `<span><i class="hpf" style="width:${pctOf(hp.v, hp.m)}"></i></span>`;
+  const f = (hp.m / hp.v) * 100;
+  return `<span class="ovr"><i class="hpf" style="width:${f.toFixed(2)}%"></i><i class="hpo" style="width:${(100 - f).toFixed(2)}%"></i></span>`;
+}
 const pctOf = (v, m) => `${(clamp(m > 0 ? v / m : 0, 0, 1) * 100).toFixed(2)}%`;
 const isVideo = (u) => /\.(webm|mp4|m4v|ogv)(\?|$)/i.test(String(u ?? ""));
 function bump(layer) { D.z[layer] = ++D.seq; }
@@ -346,6 +353,7 @@ function ensureStyles() {
 .gmd-ur .bar i { position: absolute; left: 0; top: 0; bottom: 0; }
 .gmd-ur .bar .tr { background: #e2a24a; transition: width 900ms ease-in 350ms; }
 .gmd-ur .bar .fl { background: #2fbf71; transition: width 200ms ease-out; }
+.gmd-ur .bar .ov { background: ${overflowGradient("90deg")}; transition: width 200ms ease-out; }
 .gmd-ur .x2 { position: absolute; left: 176px; right: 6px; bottom: 3px; height: 12px; display: flex; align-items: center; gap: 8px; font: 700 9.5px "Signika", sans-serif; color: var(--tx-soft); line-height: 12px; overflow: hidden; }
 .gmd-ur .x2 .ipd { display: flex; gap: 2px; } .gmd-ur .x2 .ipd i { width: 6px; height: 6px; border-radius: 50%; background: rgba(58,50,40,.18); } .gmd-ur .x2 .ipd i.on { background: #e8a43a; }
 .gmd-ur .x2 .zp { color: #8a4a08; }
@@ -546,7 +554,7 @@ function ensureStyles() {
 .gmd-tile .tn small { font: 600 11px "Signika", sans-serif; color: var(--pc-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .gmd-tile .tn small.gm { color: var(--red); }
 .gmd-tile .bars { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 8px; row-gap: 3px; align-items: center; }
 .gmd-tile .bars span { height: 6px; border-radius: 3px; background: rgba(58,50,40,.15); overflow: hidden; } .gmd-tile .bars span i { display: block; height: 100%; }
-.gmd-tile .hpf { background: linear-gradient(90deg, #6bd66b, #2fbf71); } .gmd-tile .mpf { background: linear-gradient(90deg, #5aa8ff, #2e7bd6); }
+.gmd-tile .hpf { background: linear-gradient(90deg, #6bd66b, #2fbf71); } .gmd-tile .bars span.ovr, .gmd-tile .mrow span.ovr { display: flex; } .gmd-tile .hpo { background: ${overflowGradient("90deg")}; } .gmd-tile .mpf { background: linear-gradient(90deg, #5aa8ff, #2e7bd6); }
 .gmd-tile .bars em { font: 700 10.5px "Signika", sans-serif; font-style: normal; color: var(--tx-soft); font-variant-numeric: tabular-nums; }
 .gmd-tbtn { height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 10px; font: 700 12px "Signika", sans-serif; letter-spacing: .1em; text-transform: uppercase;
   color: var(--cta-ink); background: linear-gradient(180deg, var(--cta-a), var(--cta-b) 60%, var(--cta-c)); border: 2px solid var(--cta-rim); text-shadow: 0 1px 0 rgba(60,8,4,.6); box-shadow: 0 0 0 1px rgba(255,220,180,.35) inset; white-space: nowrap; overflow: hidden; }
@@ -1169,7 +1177,7 @@ function paintRoster() {
       el.className = "gmd-ur";
       el.dataset.uid = u.id;
       el.innerHTML = `<span class="st"></span><img class="face" alt=""><span class="nm"></span><span class="hp"></span><span class="mp"></span><span class="gmd-rxc"></span>`
-        + `<span class="bar"><i class="tr"></i><i class="fl"></i></span><span class="x2"></span><span class="stamp"></span>`;
+        + `<span class="bar"><i class="tr"></i><i class="ov"></i><i class="fl"></i></span><span class="x2"></span><span class="stamp"></span>`;
       r = { el, u, q: (s) => el.querySelector(s) };
       D.rows.set(u.id, r);
     }
@@ -1248,7 +1256,12 @@ function paintRow(r) {
     r.soul ??= { el: r.el, kind: "card", hpFill: fl };
     syncSoul(r.soul, hp, stolen, false);
   }
-  const w = hp ? pctOf(hp.v, hp.m + stolen) : "0%";
+  // HP above Max (hp-overflow.js): the bar spans the current HP; the fill covers Max/HP
+  // of it and the extra is the .ov segment behind the fill. Otherwise exactly as before.
+  const over = hp && hasOverflow(hp.v, hp.m);
+  const w = !hp ? "0%" : over ? `${(hp.m / hp.v * 100).toFixed(2)}%` : pctOf(hp.v, hp.m + stolen);
+  const ovW = over ? "100%" : "0%", ov = r.q(".bar .ov");
+  if (ov.style.width !== ovW) ov.style.width = ovW;
   if (fl.style.width !== w) fl.style.width = w;
   const prevW = parseFloat(tr.style.width || "0");
   // The trail drops slowly behind a loss and jumps up with a heal. Only on a change: the jump
@@ -1939,9 +1952,9 @@ function paintTake() {
     const presChip = pres.length ? `<span class="gmd-chip gmp">${esc(pres.join(", "))}</span>` : "";
     if (dens === "small") return `<div class="gmd-tile sm${on}${off}" data-ti="${i}">${presChip}<img src="${esc(face)}" alt=""><div class="tn"><b>${name}</b><small>${Math.round(hp.v)}/${Math.round(hp.m)} HP</small></div><span class="gmd-tbtn${ok ? "" : " off"}">▶${ok && k ? `<kbd>${k}</kbd>` : ""}</span></div>`;
     if (dens === "mid") return `<div class="gmd-tile md${on}${off}" data-ti="${i}">${presChip}<div class="l1"><img src="${esc(face)}" alt=""><div class="tn"><b>${name}</b><small class="${gm ? "gm" : ""}">${esc(sub)}</small></div></div>`
-      + `<div class="mrow"><span><i class="hpf" style="width:${pctOf(hp.v, hp.m)}"></i></span><em>${Math.round(hp.v)}/${Math.round(hp.m)}</em>${btn}</div></div>`;
+      + `<div class="mrow">${hpTileBar(hp)}<em>${Math.round(hp.v)}/${Math.round(hp.m)}</em>${btn}</div></div>`;
     return `<div class="gmd-tile${on}${off}" data-ti="${i}">${presChip}<div class="l1"><img src="${esc(face)}" alt=""><div class="tn"><b>${name}</b><small class="${gm ? "gm" : ""}">${esc(sub)}</small></div></div>`
-      + `<div class="bars"><span><i class="hpf" style="width:${pctOf(hp.v, hp.m)}"></i></span><em>${Math.round(hp.v)}/${Math.round(hp.m)}</em>`
+      + `<div class="bars">${hpTileBar(hp)}<em>${Math.round(hp.v)}/${Math.round(hp.m)}</em>`
       + (mp ? `<span><i class="mpf" style="width:${pctOf(mp.v, mp.m)}"></i></span><em>${Math.round(mp.v)}/${Math.round(mp.m)}</em>` : "") + `</div>${btn}</div>`;
   }).join("");
   const cur = t.entries[t.cur];

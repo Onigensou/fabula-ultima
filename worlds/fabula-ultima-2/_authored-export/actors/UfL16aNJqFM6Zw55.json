@@ -954,6 +954,88 @@
       "type": "equippableItem"
     },
     {
+      "_id": "QUqlYIl5koAHVWJT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795474397671,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Soul Confluence",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "",
+          "action_keywords": "",
+          "animation_preload_urls": "",
+          "animation_script": "",
+          "availability_formula": "CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT >= 2",
+          "availability_reason": "Needs 2 Soul Fragments on the field",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "mdef",
+          "description": "<p>Nidhogg draws the life of every other <strong>Soul Fragment</strong> into the <strong>strongest</strong> one, the fragment with the most HP. It takes in all of their <strong>current HP</strong> and may rise <strong>above its Max HP</strong>. Needs 2 or more Soul Fragments.</p><p>The drained fragments <strong>shatter</strong>. Their owners get their <strong>Max HP</strong> back, but <strong>not</strong> their current HP.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "conflict_action": "mergeFragments show=none",
+              "conflict_amount": "",
+              "consume_self": false,
+              "count": "",
+              "effect_kind": "conflict_event_action",
+              "effect_label": "cf_root",
+              "on_condition_fail": "",
+              "target_ref": "self"
+            }
+          },
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Soul Confluence",
+          "on_activate_effect_ref": "cf_root",
+          "post_damage_effect_ref": "",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_range": "",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "target_eligibility": "",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "QUqlYIl5koAHVWJT"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "whVYUQsml3QWatCY",
       "_stats": {
         "compendiumSource": null,
@@ -1510,6 +1592,20 @@
           "action_pattern_name": "Army of the Damned",
           "action_pattern_priority": "20",
           "action_pattern_string": "ACTIVATION_NO == 1 && CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT >= 3",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "",
+          "action_pattern_value_2": ""
+        },
+        "8": {
+          "$deleted": false,
+          "action_pattern_condition": "formula",
+          "action_pattern_cooldown": "2",
+          "action_pattern_focus_status": "",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Soul Confluence",
+          "action_pattern_priority": "23",
+          "action_pattern_string": "ACTIVATION_NO == 1 && CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT >= 2 && CONFLICT_OBJECT_HP_SOUL_FRAGMENT >= 200",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "",
           "action_pattern_value_2": ""

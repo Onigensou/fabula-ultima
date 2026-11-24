@@ -21,6 +21,7 @@
 
 import { effectRowsOf } from "../../party-menu/party-menu-effects.js";
 import { readUnitInfo } from "../director-player-hud.js";
+import { hasOverflow } from "../hp-overflow.js";
 import { resolveAffinity } from "../snapshot.js";
 import { lookupTerm } from "../keyword-registry.js";
 import { ATTR_ICON, ATTR_NAME, WEAPON_ICON, costChip, rankInfo, rankKeyOf } from "./study-visuals.js";
@@ -142,7 +143,9 @@ function vitalsOf(actor, { exact = true, showMp = true, crisisOnly = false, isPc
   const hp = info.hp;
   const crisis = !!hp && hp.v <= hp.m / 2;
   if (hp && !crisisOnly) {
-    rows.push({ k: "HP", kind: "bar", pct: pct(hp.v, hp.m), cls: hp.v <= 0 ? "is-ko" : crisis ? "is-crisis" : "is-hp", text: exact ? `${hp.v} / ${hp.m}` : (crisis ? "Crisis" : "") });
+    // HP above Max (hp-overflow.js): the bar spans the current HP, the extra is `over`.
+    const over = hasOverflow(hp.v, hp.m);
+    rows.push({ k: "HP", kind: "bar", pct: over ? (hp.m / hp.v) * 100 : pct(hp.v, hp.m), ...(over ? { over: 100 - (hp.m / hp.v) * 100 } : {}), cls: hp.v <= 0 ? "is-ko" : crisis ? "is-crisis" : "is-hp", text: exact ? `${hp.v} / ${hp.m}` : (crisis ? "Crisis" : "") });
   }
   if (info.mp && showMp && !crisisOnly) rows.push({ k: "MP", kind: "bar", pct: pct(info.mp.v, info.mp.m), cls: "is-mp", text: exact ? `${info.mp.v} / ${info.mp.m}` : "" });
   if (isPc && info.ip) rows.push({ k: "IP", kind: "pips", pips: Array.from({ length: info.ip.m }, (_, i) => i < info.ip.v), text: `${info.ip.v} / ${info.ip.m}` });

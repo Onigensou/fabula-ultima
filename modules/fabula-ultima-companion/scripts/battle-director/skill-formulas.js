@@ -500,11 +500,13 @@ function isConflictObjectOf(actor, rawId) {
   } catch { return false; }
 }
 
-function conflictObjectCount(rawId) {
+// The living conflict objects of kind `rawId` (HP above 0), deduped by token.
+// ONE gatherer: CONFLICT_OBJECT_COUNT_ and CONFLICT_OBJECT_HP_ both read it.
+function conflictObjectActors(rawId) {
   try {
     const norm = _normConflictObjectId;
     const want = norm(rawId);
-    if (!want) return 0;
+    if (!want) return [];
     const byToken = new Map();
     const add = (key, actor) => { if (actor && !byToken.has(key)) byToken.set(key, actor); };
     let dc = null;
@@ -519,14 +521,25 @@ function conflictObjectCount(rawId) {
     for (const c of (globalThis.game?.combat?.combatants ?? [])) add(c?.tokenId ?? c?.actor?.uuid, c?.actor);
     const scene = dc?.scene ?? globalThis.canvas?.scene ?? globalThis.game?.scenes?.active ?? null;
     for (const t of (scene?.tokens ?? [])) add(t.id, t.actor);
-    let n = 0;
+    const out = [];
     for (const a of byToken.values()) {
       if (norm(a.flags?.["fabula-ultima-companion"]?.conflictObject) !== want) continue;
       if (!(Number(a.system?.props?.current_hp) > 0)) continue;
-      n++;
+      out.push(a);
     }
-    return n;
-  } catch { return 0; }
+    return out;
+  } catch { return []; }
+}
+
+function conflictObjectCount(rawId) {
+  return conflictObjectActors(rawId).length;
+}
+
+// Sum of the CURRENT HP of the living objects (an overflowed fragment counts whole).
+function conflictObjectHp(rawId) {
+  let sum = 0;
+  for (const a of conflictObjectActors(rawId)) sum += Number(a.system?.props?.current_hp) || 0;
+  return sum;
 }
 
 
@@ -2552,6 +2565,13 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // for every creature.
         if (name.startsWith("CONFLICT_OBJECT_COUNT_")) {
           return conflictObjectCount(name.slice("CONFLICT_OBJECT_COUNT_".length));
+        }
+        // Dynamic CONFLICT_OBJECT_HP_<ID> — the SUM of current HP of the living conflict
+        // objects of one kind (same gatherer + <ID> grammar as CONFLICT_OBJECT_COUNT_).
+        // CONFLICT_OBJECT_HP_SOUL_FRAGMENT: Nidhogg's Soul Confluence gate. Write gates
+        // with >= : a typo after the prefix reads 0 and so never fires.
+        if (name.startsWith("CONFLICT_OBJECT_HP_")) {
+          return conflictObjectHp(name.slice("CONFLICT_OBJECT_HP_".length));
         }
         // Dynamic TARGET_IS_CONFLICT_OBJECT_<ID> — 1 when the trigger SUBJECT
         // (payload.subjectActorUuid; in a `target_eligibility` that is the candidate)

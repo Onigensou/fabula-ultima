@@ -55,6 +55,7 @@ import { registerAnimation } from "../director-surfaces.js";
 import { isBattlefieldObject } from "../battlefield-object.js";
 import { isOutOfPlay } from "../out-of-play.js";
 import { feetPoint } from "../unit-anchors.js";
+import { segmentsFromFractions, layerPercents, overflowGradient } from "../hp-overflow.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_HPBAR_PLAY";
@@ -176,8 +177,11 @@ function isStudiedMonster(tokenDoc, actor) {
   return false;
 }
 
+// Above Max (HP over its maximum, see hp-overflow.js) the fraction goes past 1;
+// capped so a runaway value can't make the bar's scale absurd. <= 1 is unchanged.
+const OVERFLOW_CAP = 8;
 function quantFrac(v) {
-  const f = Math.max(0, Math.min(1, Number(v) || 0));
+  const f = Math.max(0, Math.min(OVERFLOW_CAP, Number(v) || 0));
   return Math.round(f * QUANT_STEPS) / QUANT_STEPS;
 }
 
@@ -292,6 +296,18 @@ function ensureStyle() {
 .fud-hpbar--gain .fud-hpbar-shieldbar {
   transition: width ${GAIN_SLIDE_MS}ms cubic-bezier(.22, .9, .32, 1);
 }
+/* Overflow (HP above Max) — same family as the shield: a segment stacked to the
+   right of the fill, spanning [0 → current HP] so the part past the green edge
+   (Max) is what shows. Colour is the single token in hp-overflow.js. */
+.fud-hpbar-over {
+  position: absolute; top: 0; left: 0; bottom: 0; width: 0%;
+  border-radius: 999px 4px 4px 999px;
+  background: ${overflowGradient()};
+  transition: width ${GREEN_SLIDE_MS}ms cubic-bezier(.3, .8, .3, 1);
+}
+.fud-hpbar--gain .fud-hpbar-over {
+  transition: width ${GAIN_SLIDE_MS}ms cubic-bezier(.22, .9, .32, 1);
+}
 /* Current-HP fill. On damage it slides down FAST (much quicker than the red
    drain that follows); the condition color cross-fades on the drain clock, so
    a Crisis crossing reads as a gradual green→yellow shift. Heals override the
@@ -388,20 +404,23 @@ export function renderNpcHpBarLocal(payload = {}) {
     const token = canvasTokenFromUuid(tokenUuid);
     if (!token || token.destroyed) return;
 
-    const fromFrac = Math.max(0, Math.min(1, Number(payload.fromFrac) || 0));
-    const toFrac = Math.max(0, Math.min(1, Number(payload.toFrac) || 0));
-    // Effective totals: HP + shield, clamped to the track. The white shield
-    // segment is whatever of the total sticks out past the green edge; a
-    // shield bigger than the missing HP just truncates at the bar's end.
-    const fromE = Math.min(1, fromFrac + Math.max(0, Number(payload.fromShield) || 0));
-    const toE = Math.min(1, toFrac + Math.max(0, Number(payload.toShield) || 0));
+    const fromFrac = Math.max(0, Math.min(OVERFLOW_CAP, Number(payload.fromFrac) || 0));
+    const toFrac = Math.max(0, Math.min(OVERFLOW_CAP, Number(payload.toFrac) || 0));
+    // Segment layouts (hp-overflow.js, in Max units). Below Max: the white shield
+    // segment is whatever of HP+shield sticks out past the green edge, truncated
+    // at the bar's end. Above Max the bar spans the current HP (+ shield) and the
+    // part past Max is the overflow segment.
+    const segFrom = segmentsFromFractions(fromFrac, Number(payload.fromShield) || 0);
+    const segTo = segmentsFromFractions(toFrac, Number(payload.toShield) || 0);
+    const fromE = segFrom.total;
+    const toE = segTo.total;
     // Gain/loss is judged on the TOTAL: a pure shield application animates like
     // a heal (white sweeps up), a shield-eaten hit like damage (ghost + drain).
     const isGain = toE > fromE;
 
     const existing = _active.get(tokenUuid);
     if (existing?.root?.isConnected) {
-      retarget(existing, tokenUuid, { fromFrac, toFrac, fromE, toE, isGain });
+      retarget(existing, tokenUuid, { fromFrac, toFrac, fromE, toE, isGain, segFrom, segTo });
       return;
     }
     _active.delete(tokenUuid); // clear a stale (disconnected) entry
@@ -447,6 +466,9 @@ export function renderNpcHpBarLocal(payload = {}) {
     const shieldBar = document.createElement("div");
     shieldBar.className = "fud-hpbar-shieldbar";
     shieldBar.style.borderRadius = `${rad}px ${leadRad}px ${leadRad}px ${rad}px`;
+    const over = document.createElement("div");
+    over.className = "fud-hpbar-over";
+    over.style.borderRadius = `${rad}px ${leadRad}px ${leadRad}px ${rad}px`;
     const fill = document.createElement("div");
     fill.className = "fud-hpbar-fill";
     fill.style.borderRadius = `${rad}px ${leadRad}px ${leadRad}px ${rad}px`;
@@ -455,42 +477,44 @@ export function renderNpcHpBarLocal(payload = {}) {
     gloss.style.borderRadius = `${rad}px`;
     track.appendChild(ghost);
     track.appendChild(shieldBar);
+    track.appendChild(over);
     track.appendChild(fill);
     track.appendChild(gloss);
     root.appendChild(track);
     document.body.appendChild(root);
 
-    const entry = { root, track, fill, ghost, shieldBar, holdTimer: null, hideTimer: null, removeTimer: null };
+    const entry = { root, track, fill, ghost, shieldBar, over, len: 1, holdTimer: null, hideTimer: null, removeTimer: null };
     _active.set(tokenUuid, entry);
 
+    // Tween scale: a bar crossing Max keeps ONE common length for the hit (the
+    // larger of the two layouts) so the green edge, overflow edge and shield
+    // edge all slide on the same clock; it rescales to the final length after.
+    const len = Math.max(segFrom.len, segTo.len);
     if (isGain) {
       // Heal / shield application: no ghost; green and the white shield edge
       // sweep up from the old values together.
       ghost.style.width = "0%";
-      shieldBar.style.width = `${fromE * 100}%`;
-      fill.style.width = `${fromFrac * 100}%`;
+      setLayers(entry, segFrom, segFrom.len);
       paintFill(fill, fromFrac);
       void root.offsetWidth; // commit start values before animating
       poseIn(root);
-      shieldBar.style.width = `${toE * 100}%`;
-      fill.style.width = `${toFrac * 100}%`;
+      setLayers(entry, segTo, len);
       paintFill(fill, toFrac);
+      if (len !== segTo.len) entry.holdTimer = setTimeout(() => rescale(entry, segTo), GAIN_SLIDE_MS);
       entry.hideTimer = setTimeout(() => beginHide(tokenUuid), FADE_MS + GAIN_SLIDE_MS + LINGER_MS);
     } else {
       // Damage ghost: every layer starts at the PRE-hit value, then the green
-      // fill and the white shield edge slide down fast to their new values —
-      // revealing the red chunk just dealt (combined shield+HP damage) —
+      // fill and the white shield edge slide down fast to their new values --
+      // revealing the red chunk just dealt (combined shield+HP damage) --
       // hold, and the red drains slowly after (scheduleDrain). Color starts
       // at the PRE-hit condition; the crisis shift rides the drain.
-      ghost.style.width = `${fromE * 100}%`;
-      shieldBar.style.width = `${fromE * 100}%`;
-      fill.style.width = `${fromFrac * 100}%`;
+      ghost.style.width = `${layerPercents(segFrom, segFrom.len).total}%`;
+      setLayers(entry, segFrom, segFrom.len);
       paintFill(fill, fromFrac);
       void root.offsetWidth;
       poseIn(root);
-      shieldBar.style.width = `${toE * 100}%`;
-      fill.style.width = `${toFrac * 100}%`;
-      scheduleDrain(entry, tokenUuid, toFrac, toE);
+      setLayers(entry, segTo, len);
+      scheduleDrain(entry, tokenUuid, toFrac, segTo, len);
     }
 
     registerAnimation({
@@ -503,14 +527,44 @@ export function renderNpcHpBarLocal(payload = {}) {
   }
 }
 
+// Set the fill / overflow / shield layers for `seg` on a bar spanning `len`.
+function setLayers(entry, seg, len) {
+  const p = layerPercents(seg, len);
+  entry.fill.style.width = `${p.fill}%`;
+  // No overflow: the layer is parked at the FILL edge (p.over === p.fill) and
+  // hidden by opacity, so it travels with the other layers. Parking it at 0 let
+  // the shield edge run ahead of it and flash a shield-coloured stretch.
+  entry.over.style.width = `${p.over}%`;
+  entry.over.style.opacity = seg.over > seg.fill ? "1" : "0";
+  entry.shieldBar.style.width = `${p.total}%`;
+  // Once a bar has shown overflow, a layout with NO shield hides the shield layer:
+  // with no shield it equals the HP edge, but it travels a different distance than
+  // the fill when the bar rescales, so it would flash white past the green.
+  // Bars that never overflowed are untouched (opacity stays unset).
+  if (seg.over > seg.fill) entry.ovf = true;
+  entry.shieldBar.style.opacity = entry.ovf && !(seg.shield > 0) ? "0" : "";
+  entry.len = len;
+}
+
+// After a gain that crossed Max: every layer eases to the final scale together,
+// so the bar never rests in a stretched layout. A leftover ghost is covered.
+function rescale(entry, seg) {
+  try {
+    setLayers(entry, seg, seg.len);
+    if (parseFloat(entry.ghost.style.width) > 0) entry.ghost.style.width = `${layerPercents(seg, seg.len).total}%`;
+  } catch (_) {}
+}
+
 // Wait out the green slide + hold, then drain the red ghost down to the
 // remaining total's edge (white shield edge if any shield survives, green edge
-// otherwise) — shifting the fill's condition color (an HP read, shield doesn't
-// affect crisis) on the same clock — then linger and fade.
-function scheduleDrain(entry, tokenUuid, toFrac, toE = toFrac) {
+// otherwise) -- shifting the fill's condition color (an HP read, shield doesn't
+// affect crisis) on the same clock -- then linger and fade. If the hit changed
+// the bar's length (HP crossed Max) the layers rescale with the drain.
+function scheduleDrain(entry, tokenUuid, toFrac, segTo, len = segTo.len) {
   entry.holdTimer = setTimeout(() => {
     try {
-      entry.ghost.style.width = `${toE * 100}%`;
+      if (len !== segTo.len) setLayers(entry, segTo, segTo.len);
+      entry.ghost.style.width = `${layerPercents(segTo, segTo.len).total}%`;
       paintFill(entry.fill, toFrac);
     } catch (_) {}
   }, GREEN_SLIDE_MS + HOLD_MS);
@@ -521,7 +575,7 @@ function scheduleDrain(entry, tokenUuid, toFrac, toE = toFrac) {
 // ghost is frozen exactly where it's rendered (mid-drain safe) and extended to
 // keep covering the highest recent HP, and the hold/drain clock restarts.
 // Cancels any in-progress fade-out (opacity transitions back up smoothly).
-function retarget(entry, tokenUuid, { fromFrac, toFrac, fromE, toE, isGain }) {
+function retarget(entry, tokenUuid, { fromFrac, toFrac, fromE, toE, isGain, segFrom, segTo }) {
   clearTimeout(entry.holdTimer);
   clearTimeout(entry.hideTimer);
   clearTimeout(entry.removeTimer);
@@ -531,24 +585,27 @@ function retarget(entry, tokenUuid, { fromFrac, toFrac, fromE, toE, isGain }) {
   if (isGain) {
     // Heal / shield application mid-bar: sweep green + white edge up; whatever
     // ghost remains gets covered (and any later drain can only shrink it
-    // further — harmless underneath).
-    entry.shieldBar.style.width = `${toE * 100}%`;
-    entry.fill.style.width = `${toFrac * 100}%`;
+    // further -- harmless underneath).
+    const len = Math.max(entry.len, segTo.len);
+    setLayers(entry, segTo, len);
     paintFill(entry.fill, toFrac);
+    if (len !== segTo.len) entry.holdTimer = setTimeout(() => rescale(entry, segTo), GAIN_SLIDE_MS);
     entry.hideTimer = setTimeout(() => beginHide(tokenUuid), GAIN_SLIDE_MS + LINGER_MS);
     return;
   }
 
   // Freeze the ghost at its current rendered width (no transition), then make
   // sure it still covers at least the pre-hit TOTAL (HP+shield) of THIS hit.
-  const held = Math.max(renderedFrac(entry.ghost, entry.track), fromE, toE);
+  // Rendered widths are track fractions at the current length; held is in Max units.
+  const curLen = entry.len || 1;
+  const heldU = Math.max(renderedFrac(entry.ghost, entry.track) * curLen, fromE, toE);
+  const len = Math.max(curLen, heldU, segTo.len);
   entry.ghost.style.transition = "none";
-  entry.ghost.style.width = `${held * 100}%`;
-  entry.shieldBar.style.width = `${toE * 100}%`;
-  entry.fill.style.width = `${toFrac * 100}%`;
+  entry.ghost.style.width = `${(heldU / len) * 100}%`;
+  setLayers(entry, segTo, len);
   void entry.ghost.offsetWidth; // commit the freeze before re-enabling
   entry.ghost.style.transition = "";
-  scheduleDrain(entry, tokenUuid, toFrac, toE);
+  scheduleDrain(entry, tokenUuid, toFrac, segTo, len);
 }
 
 function beginHide(tokenUuid) {

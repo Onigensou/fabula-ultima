@@ -213,3 +213,89 @@ export function poseAnchor(idleAnchor, idle, pose) {
     y: 1 - (1 - idleAnchor.y) * idle.h / pose.h,
   };
 }
+
+// ── lethal hurt hold ────────────────────────────────────────────────────
+// A hurt clip that ends on a creature at 0 HP holds its last frame until the
+// KO takes over (whatever renders next replaces it), instead of standing back
+// up for the moment before the fall. If no KO comes, the creature stands up
+// after a cap:
+//   LETHAL_HURT_HOLD_MS       an ordinary hurt clip
+//   SHOW_LETHAL_HURT_HOLD_MS  a show's hurt hold (the KO can land seconds later)
+// While an action's damage-reaction follow-ups are PENDING (deferred-
+// followups.js: another target's Life Charm fall-and-revive still playing), the
+// victim's KO waits for them (it comes from the post-resolve queue), however
+// long they take, so no fixed cap applies: the hold lasts until the KO, or
+// until the follow-ups settle plus PENDING_FOLLOWUPS_GRACE_MS. A lost "settled"
+// signal can never freeze a token: PENDING_FOLLOWUPS_CEILING_MS after it began,
+// pending ends by itself. The settle never stands a creature up EARLIER than
+// its own cap would have: a hold released by the settle waits for the later of
+// (settle + grace) and (hold start + its cap), so a show hold that began while
+// follow-ups were pending still gets its full 6000 ms.
+export const LETHAL_HURT_HOLD_MS = 1500;
+export const SHOW_LETHAL_HURT_HOLD_MS = 6000;
+export const PENDING_FOLLOWUPS_GRACE_MS = 3000;
+export const PENDING_FOLLOWUPS_CEILING_MS = 30000;
+
+// Timers are injected (node tests drive them). One hold per id (a token id):
+//   hold(id, { show, onExpire })  start (or restart) a hold; onExpire() runs
+//                                 when its cap passes with no cancel(id)
+//   cancel(id)                    the KO (or another pose) took over
+//   setPending(on)                the GM's follow-ups-pending signal
+// `now()` is the clock a hold's start is read from (ms; injected for tests).
+export function createLethalHoldGate({ setTimer, clearTimer, now = () => Date.now() } = {}) {
+  const holds = new Map();      // id -> { show, onExpire, timer, startedAt }
+  let pending = false;
+  let ceiling = null;
+  const disarm = (h) => { if (h.timer != null) { clearTimer(h.timer); h.timer = null; } };
+  const arm = (id, h, ms) => {
+    disarm(h);
+    h.timer = setTimer(() => {
+      if (holds.get(id) !== h) return;
+      holds.delete(id);
+      h.timer = null;
+      h.onExpire?.();
+    }, ms);
+  };
+  const capOf = (h) => (h.show ? SHOW_LETHAL_HURT_HOLD_MS : LETHAL_HURT_HOLD_MS);
+  const gate = {
+    hold(id, { show = false, onExpire = null } = {}) {
+      gate.cancel(id);
+      const h = { show: !!show, onExpire, timer: null, startedAt: now() };
+      holds.set(id, h);
+      if (!pending) arm(id, h, capOf(h));
+      return pending ? null : capOf(h);
+    },
+    cancel(id) {
+      const h = holds.get(id);
+      if (!h) return false;
+      disarm(h);
+      holds.delete(id);
+      return true;
+    },
+    setPending(on) {
+      if (on) {
+        pending = true;
+        if (ceiling != null) clearTimer(ceiling);
+        ceiling = setTimer(() => { ceiling = null; gate.setPending(false); }, PENDING_FOLLOWUPS_CEILING_MS);
+        for (const h of holds.values()) disarm(h);
+        return;
+      }
+      if (ceiling != null) { clearTimer(ceiling); ceiling = null; }
+      if (!pending) return;
+      pending = false;
+      // The later of (settle + grace) and (hold start + cap): never earlier
+      // than the hold would have ended with nothing pending.
+      const t = now();
+      for (const [id, h] of holds) arm(id, h, Math.max(PENDING_FOLLOWUPS_GRACE_MS, capOf(h) - (t - h.startedAt)));
+    },
+    isPending: () => pending,
+    has: (id) => holds.has(id),
+    reset() {
+      for (const h of holds.values()) disarm(h);
+      holds.clear();
+      if (ceiling != null) { clearTimer(ceiling); ceiling = null; }
+      pending = false;
+    },
+  };
+  return gate;
+}

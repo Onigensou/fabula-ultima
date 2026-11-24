@@ -516,6 +516,8 @@
     }
 
     const props       = targetActor.system.props;
+    // same test as resources.js mayExceedMax (this file is a classic script: no import)
+    const _fragOverflow = targetActor?.flags?.["fabula-ultima-companion"]?.conflictObject === "soul-fragment";
     const startHP     = _num(props.current_hp);
     const startMP     = _num(props.current_mp);
     const startShield = _num(props.shield_value);
@@ -667,7 +669,9 @@
       }
       case "hpRecovery": {
         const amt = Math.abs(finalValue || resolvedBase);
-        postHP = Math.min(startHP + amt, _num(props.max_hp));
+        // Only a Soul Fragment may sit above Max (Soul Confluence); a heal never
+        // lowers it. Everyone else clamps to Max exactly as before.
+        postHP = Math.min(_fragOverflow ? Math.max(startHP, _num(props.max_hp)) : _num(props.max_hp), startHP + amt);
         if (!dryRun) await targetActor.update({ "system.props.current_hp": postHP }, _reactionDedupeOpts);
         break;
       }
@@ -678,7 +682,7 @@
       }
       case "mpRecovery": {
         const amt = Math.abs(finalValue || resolvedBase);
-        postMP = Math.min(startMP + amt, _num(props.max_mp));
+        postMP = Math.min(_fragOverflow ? Math.max(startMP, _num(props.max_mp)) : _num(props.max_mp), startMP + amt);
         if (!dryRun) await targetActor.update({ "system.props.current_mp": postMP });
         break;
       }

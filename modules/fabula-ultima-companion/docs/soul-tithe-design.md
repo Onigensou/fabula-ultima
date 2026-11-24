@@ -70,6 +70,14 @@ so a heal does nothing until they are hurt again.
 The invariant: a fragment's Max HP always equals what its owner has lost (less any
 eaten part, see Fragment Eater below).
 
+**Exception: Nidhogg's Soul Confluence (2026-11-24).** It moves the HP of every other
+fragment into the one with the most HP, which can then hold **more HP than its Max**
+(a 300/100 fragment). Max HP still equals what the owner has lost; only the HP overflows.
+The Calling steals the fragment's **current HP**, so it takes all 300 from its owner
+(stopped at Max HP 1), and the fragment ends at 600 HP / 400 Max. The overflow
+is not trimmed by any round-end step and is lost only by damage. Destroying that
+fragment refunds the owner by what they lost, not by its HP.
+
 ---
 
 ## Implementation

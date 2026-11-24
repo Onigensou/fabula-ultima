@@ -319,24 +319,38 @@ function resolvePerformerSnapshot(performer, dCombat, combat = null) {
       : null;
   }
 
-  const tokenId   = performer.tokenId   ?? performer.tokenDocument?.id   ?? performer.token?.id   ?? null;
-  const tokenUuid = performer.tokenUuid ?? performer.tokenDocument?.uuid ?? performer.token?.uuid ?? null;
+  // An unlinked token's synthetic actor knows its own token (Foundry: actor.isToken,
+  // actor.token) — the only identity that tells copies of one actor apart.
+  const ownTok    = performer.actor?.isToken ? (performer.actor.token ?? null) : null;
+  const tokenId   = performer.tokenId   ?? performer.tokenDocument?.id   ?? performer.token?.id   ?? ownTok?.id   ?? null;
+  const tokenUuid = performer.tokenUuid ?? performer.tokenDocument?.uuid ?? performer.token?.uuid ?? ownTok?.uuid ?? null;
   const actorId   = performer.actorId   ?? performer.actor?.id ?? null;
 
   // Token FIRST, actor only as a fallback — two passes, not one. Copies of one
-  // actor (Deva's two Missile Fists, any summon cast twice) share the actor id, so
-  // a single pass that accepted either matched the FIRST copy for every copy: the
-  // second fist's Self action (Hover / Detonate) then found no performer in its
-  // pool and the fist lost its turn (Valley trio playtest, 2026-11-21).
+  // actor (Deva's two Missile Fists, any summon cast twice, every Soul Fragment)
+  // share the actor id, so a single pass that accepted either matched the FIRST copy
+  // for every copy: the second fist's Self action (Hover / Detonate) then found no
+  // performer in its pool and the fist lost its turn (Valley trio playtest, 2026-11-21).
+  // The actor fallback is only trusted when it cannot pick the wrong copy: exactly
+  // one roster entry carries that actor id, and — if a token WAS named and missed —
+  // that entry is a linked actor (an unlinked token that missed is another creature).
   const byToken = (tokDoc) => Boolean((tokenUuid && tokDoc?.uuid === tokenUuid) || (tokenId && tokDoc?.id === tokenId));
   const byActor = (actDoc) => Boolean(actorId && actDoc?.id === actorId);
+  const actorFallback = (list, tokOf, actOf) => {
+    const hits = list.filter((c) => byActor(actOf(c)));
+    if (hits.length !== 1) return null;
+    if ((tokenId || tokenUuid) && tokOf(hits[0])?.actorLink !== true) return null;
+    return hits[0];
+  };
   const roster = dCombat?.combatants ?? [];
-  let combatant = roster.find((c) => byToken(c.tokenDoc)) ?? roster.find((c) => byActor(c.actorDoc)) ?? null;
+  let combatant = roster.find((c) => byToken(c.tokenDoc))
+    ?? actorFallback(roster, (c) => c.tokenDoc, (c) => c.actorDoc);
   // Legacy Foundry-combat roster (manual-attach). Searched too, or the refusal
   // below would reject every performer on that path.
   if (!combatant && combat?.combatants) {
     const legacy = Array.from(combat.combatants);
-    combatant = legacy.find((c) => byToken(c?.token)) ?? legacy.find((c) => byActor(c?.actor)) ?? null;
+    combatant = legacy.find((c) => byToken(c?.token))
+      ?? actorFallback(legacy, (c) => c?.token, (c) => c?.actor);
   }
 
   // Refuse on EITHER roster. The fabricated fallback below is only reachable when

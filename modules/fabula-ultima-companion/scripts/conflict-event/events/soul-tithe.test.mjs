@@ -1,6 +1,6 @@
 // Bare-Node harness for Soul Tithe's pure rules.
 //   node scripts/conflict-event/events/soul-tithe.test.mjs
-import { callingSteal, resolveCalling, lockWound, returnedHp, fragmentMayCall, fragmentName, MAX_HP_FLOOR, planDestroy, REFUND, servantTear, servantStep, noxSubjectKeys, nextNoxZeroPower, grantNoxZeroPower } from "./soul-tithe.js";
+import { callingSteal, resolveCalling, lockWound, returnedHp, fragmentMayCall, fragmentName, MAX_HP_FLOOR, planDestroy, REFUND, servantTear, servantStep, noxSubjectKeys, nextNoxZeroPower, grantNoxZeroPower, woundedFragmentHp } from "./soul-tithe.js";
 import { getConflictEvent } from "../conflict-event-registry.js";
 import { isPermanentSoulFragment } from "../../battle-director/battlefield-object.js";
 
@@ -56,6 +56,14 @@ eq("the invariant holds with a wound", w.fMax, 120 - w.max);
 w = roundEnd({ max: 90, hp: 70, fHp: 20, fMax: 30 });
 eq("a chipped fragment steals less", w, { max: 70, hp: 70, fHp: 40, fMax: 50 });
 eq("the invariant holds when chipped", w.fMax, 120 - w.max);
+
+// Lock wound on an overflowed fragment (Soul Confluence): the overflow survives.
+eq("lock: 300/100 + wound 20 keeps the overflow", woundedFragmentHp({ hp: 300, oldMax: 100, wound: 20, max: 120 }), 320);
+eq("lock: ordinary wound still capped at the new Max", woundedFragmentHp({ hp: 30, oldMax: 30, wound: 30, max: 60 }), 60);
+eq("lock: a chipped fragment adds the wound", woundedFragmentHp({ hp: 10, oldMax: 30, wound: 20, max: 50 }), 30);
+eq("lock: Calling on an overflow still steals up to owner Max-1", resolveCalling({ ownerMax: 200, ownerHp: 200, fragmentHp: 300, fragmentMax: 100 }).stolen, 199);
+eq("lock: 300/100 vs a 500-Max owner", resolveCalling({ ownerMax: 500, ownerHp: 500, fragmentHp: 300, fragmentMax: 100 }),
+  { stolen: 300, ownerMax: 200, ownerHp: 200, fragmentHp: 600, fragmentMax: 400 });
 
 // Destroying it
 eq("return: Max and HP both come back", returnedHp({ ownerHp: 1, ownerMax: 120, stolen: 119 }), 120);

@@ -21,6 +21,7 @@
 // token) so a malformed legacy spec doesn't brick the picker.
 
 import { log, warn } from "./logger.js";
+import { mayExceedMax } from "./resources.js";
 
 // Canonical resource keys (match the schema doc's `grant_resource` values
 // plus `fp` for Fabula Points, which can be paid but not granted). The
@@ -368,7 +369,8 @@ export function sumCostParts(override, sinceIndex = 0) {
 // Settle a cost difference against an actor — debit when positive, REFUND when
 // negative (a discount that arrived after the debit). Mirrors debitCost's single
 // atomic update. Refunds are clamped to the resource max so a waive can't push a
-// pool above its ceiling. Returns `{ ok, settled: { res: signedAmount } }`.
+// pool above its ceiling (a Soul Fragment already above Max keeps it; see
+// mayExceedMax). Returns `{ ok, settled: { res: signedAmount } }`.
 export async function settleCostDelta(actor, deltaMap) {
   if (!actor || !deltaMap) return { ok: true, settled: {} };
   const update = {};
@@ -381,7 +383,7 @@ export async function settleCostDelta(actor, deltaMap) {
     let next = cur - amt;                                  // positive amt = extra spend
     next = Math.max(0, next);
     const maxProp = def.max ? Number(actor?.system?.props?.[def.max]) : NaN;
-    if (amt < 0 && Number.isFinite(maxProp)) next = Math.min(next, maxProp);
+    if (amt < 0 && Number.isFinite(maxProp)) next = Math.min(mayExceedMax(actor) ? Math.max(cur, maxProp) : maxProp, next);
     if (next === cur) continue;
     update[`system.props.${def.prop}`] = next;
     settled[resource] = cur - next;

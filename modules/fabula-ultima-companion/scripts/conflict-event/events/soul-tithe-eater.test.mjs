@@ -7,7 +7,7 @@ globalThis.game = { user: { isGM: false } };   // emitBattlefieldObjectTrigger r
 
 const {
   heldLoss, squareFragment, refundSplit, fragmentMayBeEaten, pickFragmentToEat, eatFragment,
-  titheWoundAmount, resolveCalling, lockWound, returnedHp, FRAGMENT_DESTROYED_TRIGGER,
+  titheWoundAmount, resolveCalling, lockWound, returnedHp, FRAGMENT_DESTROYED_TRIGGER, woundedFragmentHp,
 } = await import("./soul-tithe.js");
 const { getConflictEvent } = await import("../conflict-event-registry.js");
 
@@ -275,6 +275,31 @@ ok("pure: a permanent fragment is not food", !fragmentMayBeEaten({ hp: 30, calle
     return [await ev.actions.titheWound(w2.ctx, { tokens: [p.tokenDoc], amount: 30 }), p.actorDoc.system.props.max_hp];
   })(), [false, 90]);
   eq("titheWound: zero amount does nothing", await ev.actions.titheWound(w.ctx, { tokens: [hina.tokenDoc], amount: 0 }), false);
+}
+
+// P3 (Soul Confluence): an overflow (HP above Max) survives a wound / lock / re-square.
+{
+  eq("overflow: wound 20 on 300/100 keeps it (+wound)", woundedFragmentHp({ hp: 300, oldMax: 100, wound: 20, max: 120 }), 320);
+  eq("overflow: re-square up keeps hp and adds", squareFragment({ hp: 300, max: 100, stolen: 130, eaten: 0 }), { hp: 330, max: 130 });
+  eq("overflow: re-square down never trims", squareFragment({ hp: 300, max: 100, stolen: 60, eaten: 0 }), { hp: 300, max: 60 });
+  // Non-overflow stays byte-identical to the old rules: exhaustive grid vs the HEAD formulas.
+  let same = true;
+  for (let hp = 1; hp <= 60; hp += 7) for (let oldMax = hp; oldMax <= 60; oldMax += 9) for (let wound = 0; wound <= 40; wound += 8) {
+    const max = oldMax + wound;
+    if (woundedFragmentHp({ hp, oldMax, wound, max }) !== Math.min(hp + wound, max)) same = false;
+  }
+  for (let hp = 1; hp <= 60; hp += 7) for (let max = Math.max(1, hp); max <= 70; max += 9) for (let stolen = 0; stolen <= 80; stolen += 10) for (const eaten of [0, 10, 40]) {
+    const held = Math.max(0, stolen - eaten);
+    const old = (held === max || held <= 0) ? null : { hp: Math.max(1, Math.min(hp + (held - max), held)), max: held };
+    if (JSON.stringify(squareFragment({ hp, max, stolen, eaten })) !== JSON.stringify(old)) same = false;
+  }
+  ok("non-overflow wound + re-square identical to HEAD (grid)", same);
+  const w = makeWorld();
+  const hina = w.addPlayer("Hina", 120, 70);
+  await w.addTorn(hina, 30, 10);
+  const f = await w.addFragment(hina, 300, 20, 2);   // 300/20: overflowed
+  eq("overflow: titheWound done", await ev.actions.titheWound(w.ctx, { tokens: [hina.tokenDoc], amount: 50 }), true);
+  eq("overflow: titheWound keeps 300 and adds the wound", { hp: f.actorDoc.system.props.current_hp, max: f.actorDoc.system.props.max_hp }, { hp: 350, max: 70 });
 }
 
 console.log(`${pass} passed, ${fail} failed`);

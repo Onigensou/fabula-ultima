@@ -26,6 +26,22 @@ import { log, warn, err } from "./logger.js";
 import { STATES, STATE_TIMEOUT_MS, TRANSITIONS } from "./states.js";
 import { INTENTS } from "./intents.js";
 import { HookRegistry, TimerRegistry } from "./registries.js";
+import { resetFollowUpRegistry } from "./deferred-followups.js";
+import { emitFollowUpsPending } from "./battler-pose.js";
+
+// Battle end / director stop: no damage-reaction follow-up collector may stay
+// open into the next conflict (deferred-followups.js). When one was dropped,
+// also settle every client's lethal-hold gate, so a cut-off RESOLVE does not
+// leave clients "pending" until the 30 s ceiling.
+function _dropOpenFollowUps(where) {
+  try {
+    const n = resetFollowUpRegistry();
+    if (n) {
+      warn(`${where}: dropped ${n} open damage-reaction follow-up collector(s)`);
+      try { emitFollowUpsPending(false); } catch (e) { warn(`${where}: follow-ups settled broadcast threw`, e); }
+    }
+  } catch (e) { warn(`${where}: follow-up registry reset threw`, e); }
+}
 
 export class BattleDirector {
   constructor({ combat, payload, stateHandlers, onNaturalStop } = {}) {
@@ -196,6 +212,7 @@ export class BattleDirector {
     this._clearStateTimeout();
     this.hooks.disposeAll();
     this.timers.disposeAll();
+    _dropOpenFollowUps("director stop");
     this.state = STATES.STOPPED;
   }
 
@@ -309,6 +326,7 @@ export class BattleDirector {
       this._stopped = true;
       try { this.hooks.disposeAll(); } catch {}
       try { this.timers.disposeAll(); } catch {}
+      _dropOpenFollowUps("director rate-limit stop");
       this.state = STATES.STOPPED;
       return;
     }
@@ -324,6 +342,7 @@ export class BattleDirector {
 
     this.state = nextState;
     this._stateEpoch++;
+    if (nextState === STATES.BATTLE_ENDING || nextState === STATES.STOPPED) _dropOpenFollowUps(`enter ${nextState}`);
     // Host-local announcement of the new state, for listeners that care which
     // KIND of moment the battle is in (director-player-hud publishes "settled /
     // moving" from it). Never lets a listener throw into the transition.

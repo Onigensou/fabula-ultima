@@ -316,6 +316,11 @@ export async function remotePickAny({
 // broadcasts a pick request, then emits REMOTE_PICK_RESULT with the result.
 // Returns an unregister function. Registered once at boot; answers on every
 // client except the host (a support GM gets the picks it chose to answer).
+// Pickers open on this page right now (all responders). Read by the late-join
+// reload fallback (late-join-resync.js) so it never reloads a page mid-pick.
+let _openPicks = 0;
+export function remotePicksOpen() { return _openPicks; }
+
 export function registerRemotePickResponder(channel, isActiveDirector = () => !!game.user?.isGM) {
   // Requests whose picker is currently rendered on this client. Guards
   // against a same-requestId MENU_OPEN replay (the GM re-replays its
@@ -357,6 +362,7 @@ export function registerRemotePickResponder(channel, isActiveDirector = () => !!
       closeFire?.();
     });
     tabAlert(`pick:${requestId ?? kind}`, "★ Your pick");
+    _openPicks++;
     try {
       // Render the SAME leaf picker the GM races locally (see renderLocalPick).
       // closeSignal tears it down when the GM broadcasts MENU_CLOSE for this
@@ -372,6 +378,7 @@ export function registerRemotePickResponder(channel, isActiveDirector = () => !!
         ? { ok: false, cancelled: true, tokenUuids: [] }
         : null);
     } finally {
+      _openPicks = Math.max(0, _openPicks - 1);
       if (requestId) activeRequestIds.delete(requestId);
       try { offClose?.(); } catch {}
     }

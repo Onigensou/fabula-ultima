@@ -42,6 +42,13 @@ import { conflictEventReactor } from "../conflict-event/conflict-event-runtime.j
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
 import { installPlayerPresence, presenceOf, isReady as presenceIsReady, isGone as presenceIsGone, presenceList, trackWait, listWaits, GRACE_MS } from "./player-presence.js";
 import { installDirectorHost, claimHost, abandonClaim, announceHost, releaseHost, hostUser, hostInfo, mountingLocally, mainGM, onHostLost, hostUserId } from "./director-host.js";
+import { installLateJoinResync, runLateJoinResync, resyncAfterReconnect } from "./late-join-resync.js";
+import { installSocketNoiseGate } from "./socket-noise-gate.js";
+
+// Quiet the pre-ready "No socket handler" storm on our module socket. Installs at
+// socketlib's init; opens from its OWN ready hook, registered right here (before
+// this file's big ready hook), one tick after every ready hook ran. See socket-noise-gate.js.
+installSocketNoiseGate("fabula-ultima-companion");
 import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
 import { registerPlayerActionCardHandler } from "./action-card.js";
@@ -1893,6 +1900,16 @@ Hooks.once("ready", () => {
       try { installPlayerPresence(); }
       catch (e) { warn("player presence install threw", e); }
 
+      // Late-join resync: core dropped every document change between this
+      // client's world fetch and its ready, so a page that loaded during battle
+      // setup can be missing statuses / tokens. Compare with the BD host and
+      // repair in place (non-host clients only; a no-op with no battle).
+      // See late-join-resync.js.
+      try {
+        installLateJoinResync({ getActiveDirector });
+        runLateJoinResync().catch((e) => warn("late-join resync threw", e));
+      } catch (e) { warn("late-join resync install threw", e); }
+
       // Re-announce on socket RECONNECT so the GM replays any MENU_OPEN we
       // missed while our socket was down. A transient socket.io reconnect
       // (network blip / laptop sleep-wake / Wi-Fi drop) auto-reconnects
@@ -1915,6 +1932,10 @@ Hooks.once("ready", () => {
               log("IntentChannel: socket reconnected — re-announcing ready for menu resync");
               getIntentChannel().announceReady();
             } catch (e) { warn("announceReady (reconnect) threw", e); }
+            // Document broadcasts were dropped while the socket was down too:
+            // compare with the BD host again and repair (late-join-resync.js).
+            try { resyncAfterReconnect(); }
+            catch (e) { warn("late-join resync (reconnect) threw", e); }
           }, 750);
         });
       } catch (e) { warn("reconnect re-announce wiring threw", e); }
@@ -2325,4 +2346,5 @@ Hooks.once("ready", () => {
       catch (e) { warn("Player banner self-restore detection threw", e); }
     }, 0);
   }
+
 });
