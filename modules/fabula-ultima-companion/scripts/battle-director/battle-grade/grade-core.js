@@ -291,7 +291,11 @@ export const MVP = Object.freeze({
 export function computeMvp({ stats, roster, partyMaxHp, lastKill, rounds = 1 }) {
   const keys = Object.keys(stats).filter((k) => roster?.[k]?.recipient !== false);
   if (!keys.length) return { mvp: null, scores: {}, weights: {} };
-  const maxHp = Math.max(1, num(partyMaxHp));
+  // HP scale = the candidates' own max HP. partyMaxHp also holds guests, summons
+  // and companions (Kalina alone is ~500 next to a ~500 HP party), which read a
+  // near-wipe as ~35% pressure in the 11-24 sandbox run.
+  const pcMax = keys.reduce((t, k) => t + num(roster?.[k]?.maxHp), 0);
+  const maxHp = Math.max(1, pcMax > 0 ? pcMax : num(partyMaxHp));
   const lane = {
     off: (s) => s.dmgCredit ?? s.dmgDealt,
     exp: (s) => s.exploitActs ?? 0,
