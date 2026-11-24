@@ -129,9 +129,9 @@ function renderZenit(ctx) {
   const mz = zOf(m), sz = zOf(roster.db);
   const cls = (after, before) => (after > before ? "up" : after < before ? "down" : "");
   const memberPocket = (after) => `<div class="pm-zpocket"><div class="pm-portrait xs">${img(m.img)}</div><div style="min-width:0">
-      <div class="pm-zname">${esc(m.name)}</div><div class="pm-znums">${fmtZ(mz)} → <b class="${cls(after, mz)}">${fmtZ(after)}</b> z</div></div></div>`;
+      <div class="pm-zname">${esc(m.name)}</div><div class="pm-znums">${zenitIcon()}${fmtZ(mz)} → <b class="${cls(after, mz)}">${fmtZ(after)}</b> z</div></div></div>`;
   const stashPocket = (after) => `<div class="pm-zpocket"><div class="pm-portrait xs"><i class="fas fa-sack-dollar pm-bagicon"></i></div><div style="min-width:0">
-      <div class="pm-zname">Party Stash</div><div class="pm-znums">${fmtZ(sz)} → <b class="${cls(after, sz)}">${fmtZ(after)}</b> z</div></div></div>`;
+      <div class="pm-zname">Party Stash</div><div class="pm-znums">${zenitIcon()}${fmtZ(sz)} → <b class="${cls(after, sz)}">${fmtZ(after)}</b> z</div></div></div>`;
   const flow = z.dir === "deposit"
     ? `${memberPocket(mz - amt)}<i class="fas fa-arrow-right pm-zarrow"></i>${stashPocket(sz + amt)}`
     : `${stashPocket(sz - amt)}<i class="fas fa-arrow-right pm-zarrow"></i>${memberPocket(mz + amt)}`;
@@ -150,7 +150,7 @@ function renderZenit(ctx) {
         <span class="pm-tab pm-hit ${z.dir === "withdraw" ? "is-on" : ""}" data-action="z-dir" data-dir="withdraw"><i class="fas fa-arrow-up"></i>Take out</span>${kbd("Tab")}</div></div>
       <div class="pm-zwho">${kbd("q")}${chips}${kbd("e")}</div>
       <div class="pm-zflow">${flow}</div>
-      <div class="pm-zamt is-cursor"><div class="pm-zdigits">${digHtml}<span class="pm-zunit">&nbsp;z</span></div>
+      <div class="pm-zamt is-cursor"><div class="pm-zdigits">${zenitIcon()}${digHtml}<span class="pm-zunit">&nbsp;z</span></div>
         <div class="pm-zquick"><button type="button" class="pm-btn pm-hit" data-action="z-max">All ${kbd("A")}</button><button type="button" class="pm-btn pm-hit" data-action="z-clear">Clear</button></div></div>
       ${note}
       <div class="pm-pickfoot"><span class="pm-hint">${esc(Z.HINT)}</span>

@@ -461,10 +461,10 @@ function renderMain() {
           <div class="pm-info-row pm-loc">${esc(r.location || "—")}</div>
           <div class="pm-zsep"></div>
           <div class="pm-zline is-stash pm-hit" data-action="stash">
-            <span class="pm-label">${zenitIcon()}Party Total</span>
-            <span class="pm-zval"><span class="pm-zenit">${Number(r.zenit || 0).toLocaleString("en-US")}</span><em>z</em></span>
+            <span class="pm-label">Party Total</span>
+            <span class="pm-zval">${zenitIcon()}<span class="pm-zenit">${Number(r.zenit || 0).toLocaleString("en-US")}</span><em>z</em></span>
             <div class="pm-ztip" role="tooltip">
-              <div class="pm-ztip-row"><i class="fas fa-sack-dollar"></i><span>Party Stash</span><b>${Number(r.stash || 0).toLocaleString("en-US")}</b><em>z</em></div>
+              <div class="pm-ztip-row"><i class="fas fa-sack-dollar"></i><span>Party Stash</span><b>${zenitIcon()}${Number(r.stash || 0).toLocaleString("en-US")}</b><em>z</em></div>
               <div class="pm-ztip-sub">Everyone's zenit plus the stash · click to move zenit</div>
             </div></div>
         </div>
@@ -1705,7 +1705,11 @@ function ensureStyles() {
 #${ROOT_ID} .pm-zline .pm-label i { color: var(--gold-3); }
 /* the game's zenit icon (GP.png), in text and on the nav button */
 #${ROOT_ID} .pm-zicon { width: 1.35em; height: 1.35em; object-fit: contain; vertical-align: -.3em; border: 0; flex: 0 0 auto; }
-#${ROOT_ID} .pm-zline .pm-label .pm-zicon { width: 18px; height: 18px; }
+#${ROOT_ID} .pm-zval .pm-zicon { width: 22px; height: 22px; align-self: center; margin-right: 5px; }
+#${ROOT_ID} .pm-ztip-row b { display: inline-flex; align-items: center; gap: 4px; }
+#${ROOT_ID} .pm-ztip-row b .pm-zicon { width: 18px; height: 18px; }
+#${ROOT_ID} .pm-znums .pm-zicon { width: 16px; height: 16px; vertical-align: -3px; margin-right: 3px; }
+#${ROOT_ID} .pm-zdigits > .pm-zicon { width: 28px; height: 28px; margin-right: 6px; }
 #${ROOT_ID} .pm-navimg { width: 18px; height: 18px; object-fit: contain; vertical-align: -4px; margin-right: 5px; border: 0; }
 #${ROOT_ID} .pm-zline .pm-zval { align-self: flex-end; display: flex; align-items: baseline; }
 #${ROOT_ID} .pm-zline.is-stash { cursor: pointer; position: relative; }
