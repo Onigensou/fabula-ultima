@@ -780,6 +780,10 @@
     {
       "key": "2026-11-24-soul-steal-enemies-only",
       "path": "data-migrations/2026-11-24-soul-steal-enemies-only.js"
+    },
+    {
+      "key": "2026-11-25-hako-shop-roster",
+      "path": "data-migrations/2026-11-25-hako-shop-roster.js"
     }
   ]
 }

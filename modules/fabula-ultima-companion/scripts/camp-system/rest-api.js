@@ -260,6 +260,17 @@
       // has no hard dependency on DP.
       Hooks.callAll("fabula.restPerformed", actors);
 
+      // Roster shops (Hako) restock: equipment rerolls, consumables refill.
+      // AWAITED here instead of riding the hook above (callAll doesn't wait):
+      // the save ceremony right after this captures shop stock, so the new
+      // roster must already be on the actor. The shop system guards its own
+      // cooldown, lock and primary-GM checks.
+      if (!restDone("rest:shopRoster")) {
+        try { await globalThis.FUCompanion?.shopRoster?.onRest?.(); }
+        catch (e) { console.warn(TAG, "shop roster restock failed:", e); }
+        await markRest("rest:shopRoster");
+      }
+
       // 5 — Battle Director: the `party_rested` reaction window.
       //
       // FORCED-only by necessity, not by choice: there is no conflict here, so

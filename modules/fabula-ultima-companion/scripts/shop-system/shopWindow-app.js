@@ -1314,6 +1314,19 @@ export class ShopWindowApp {
               btnRow.prepend(btn);
             });
           }
+
+          // GM-only: a randomized-roster shop (Hako) gets a Roster console button.
+          if (game.user?.isGM && window.FUCompanion?.shopRoster?.isRosterShop?.(actor)) {
+            Promise.resolve().then(() => {
+              const btnRow = dlg?.element?.[0]?.querySelector?.(".dialog-buttons");
+              if (!btnRow || btnRow.querySelector(".fu-shop-roster-dlg-btn")) return;
+              const btn = document.createElement("button");
+              btn.className = "fu-shop-roster-dlg-btn";
+              btn.innerHTML = `<i class="fas fa-dice"></i> Roster`;
+              btn.addEventListener("click", () => window.FUCompanion?.shopRosterConsole?.open?.(actor));
+              btnRow.prepend(btn);
+            });
+          }
         },
         close: () => {
           window.FUCompanion?.shopSound?.playCancel();
