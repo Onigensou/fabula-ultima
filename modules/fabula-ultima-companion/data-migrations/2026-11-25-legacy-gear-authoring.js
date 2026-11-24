@@ -376,7 +376,7 @@ async function patchCataclysm(doc, lib, out) {
   await doc.update(patch);
   await doc.update({
     "system.props.effect_table": discountRows(src.effect_table),
-    "system.props.reaction_config_table": foundry.utils.deepClone(src.reaction_config_table ?? {}),
+    "system.props.reaction_config_table": discountRows(src.reaction_config_table),
     "system.props.isReaction": true,
   });
   out.push(`~ Cataclysm ${doc.parent ? doc.parent.name + ": " : ""}${doc.id}${hasRows ? "" : " (rows from library)"}`);
