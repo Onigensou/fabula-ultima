@@ -141,6 +141,12 @@ let _bannerSurfaceId = null;
 // cancels a pending stagger if a new round (or hide) supersedes it.
 let _iconsRevealed = false;
 let _revealGen = 0;
+// Round-opening generation. The opening runs ~1.5 s of awaits before the bar
+// docks; a hide (battle end) or a newer round bumps this so an in-flight
+// opening stops instead of docking afterwards. Without it, a battle ending
+// during the Round 1 opening left "ROUND 1" + playing portrait videos up for
+// the rest of the session.
+let _bannerGen = 0;
 // Last dCombat we rendered, so an actor HP-change hook can re-snapshot (live
 // crisis tint) without the turn-action hook having fired.
 let _lastDCombat = null;
@@ -154,7 +160,7 @@ export function initDirectorRoundBanner() {
     }
     _socket = socketlib.registerModule(MODULE_ID);
     _socket.register(ACTION_PLAY, playRoundBannerLocal);
-    _socket.register(ACTION_HIDE, () => { forgetDisplayRound(); exitRoundBannerLocal({ animate: true }); clearTurnActionsLocal(); });
+    _socket.register(ACTION_HIDE, () => { _bannerGen++; forgetDisplayRound(); exitRoundBannerLocal({ animate: true }); clearTurnActionsLocal(); });
     _socket.register(ACTION_BATTLE_START, playBattleStartBannerLocal);
     // Payload is { list, animate } (tolerate a bare array from older senders).
     _socket.register(ACTION_TURNACTIONS, (p) => {
@@ -682,7 +688,7 @@ function activateLayer(layer) {
 // ROUND N under it, then the creature icons fill in from the middle out and the
 // side that won the initiative breathes in its colour. Resolves once the frame
 // is complete (the icon wave + glow carry on by themselves).
-async function assembleDockedBar(layer, { round, label = null, side = null, dockTopPct, dockScale, dockBgOpacity }) {
+async function assembleDockedBar(layer, { round, label = null, side = null, dockTopPct, dockScale, dockBgOpacity, live = () => true }) {
   const fu = layer.__fu;
   placeDockedBar(fu, { round, label, dockTopPct, dockScale, dockBgOpacity });
   const { lt, lb, tx, spotlight } = fu;
@@ -705,6 +711,7 @@ async function assembleDockedBar(layer, { round, label = null, side = null, dock
     { duration: 360, delay: 160, easing: EASE_ENERGETIC, fill: "both" });
 
   await sleep(420);
+  if (!live()) return;
   revealTurnActionIconsStaggered();
   if (side) glowSide(fu, side);
   await sleep(360);
@@ -778,6 +785,8 @@ async function playRoundBannerLocal(payload = {}) {
       label = null,
     } = payload;
     const dock = { round, label, dockTopPct, dockScale, dockBgOpacity };
+    const gen = ++_bannerGen;
+    const live = () => gen === _bannerGen;
     // Players have no live combat object: this is how a client knows the round
     // (the merge status's Quick Summoning line reads it).
     try { globalThis.__fudDisplayRound = round; Hooks.callAll("fud.displayRound", round); } catch { /* sandbox */ }
@@ -802,6 +811,7 @@ async function playRoundBannerLocal(payload = {}) {
     const layer = ensureLayer();
     // The previous round's bar fades out first.
     if (layer.classList.contains("active")) await exitRoundBannerLocal({ animate: true });
+    if (!live()) return;
 
     const spec = resolveFollowupSpec(followup);
     if (sfx) playRoundSfx(ROUND_SFX_URL, sfxVol);
@@ -813,11 +823,12 @@ async function playRoundBannerLocal(payload = {}) {
 
     await plate.leaving;
     await sleep(120);
+    if (!live()) return; // battle ended / newer round during the opening
     // Note: NO layer.classList.remove — the bar persists until the next round
     // (exited above) or battle end (hideRoundBanner). Awaited so this promise
     // resolves only once the opening has settled — that promise is what the
     // director tracks to gate the enemy autopilot and the first turn banner.
-    await assembleDockedBar(layer, { ...dock, side: spec?.side ?? null });
+    await assembleDockedBar(layer, { ...dock, side: spec?.side ?? null, live });
   } catch (e) {
     warn("playRoundBannerLocal threw", e);
   }
@@ -1546,6 +1557,7 @@ function forgetDisplayRound() {
 
 export function hideRoundBanner() {
   try {
+    _bannerGen++; // stop any round opening still in flight from docking afterwards
     forgetDisplayRound();
     dropSpotlightHold();
     exitRoundBannerLocal({ animate: true });

@@ -19,6 +19,7 @@
     "scripts/_module-boot.js",
     "scripts/perf/pixi-stable-shader-names.js",
     "scripts/perf/client-setting-memo.js",
+    "scripts/perf/directory-observer-fix.js",
     "scripts/perf/pixi-shader-prewarm.js",
     "scripts/forge-mirror/forge-mirror.js",
     "scripts/data-migration-runner.js",

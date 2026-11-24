@@ -139,6 +139,20 @@
   let _gryphonTex  = null;
   let _gryphonNatW = 0;
   let _gryphonNatH = 0;
+  // The Gryphon webm is decoded once at boot but kept PAUSED: a looping video
+  // makes PIXI re-upload the texture every frame on every client, all session,
+  // for an animation seen a few times a night. Each fly-in/out plays it while
+  // its sprite is on stage; the count covers overlapping flights.
+  let _gryphonVideo = null;
+  let _gryphonUsers = 0;
+  function gryphonPlay() {
+    _gryphonUsers++;
+    try { _gryphonVideo?.play()?.catch?.(() => {}); } catch {}
+  }
+  function gryphonRelease() {
+    _gryphonUsers = Math.max(0, _gryphonUsers - 1);
+    if (_gryphonUsers === 0) { try { _gryphonVideo?.pause(); } catch {} }
+  }
 
   // ── Animation helpers ────────────────────────────────────────────────────────
   function easeInOut(t) {
@@ -191,10 +205,12 @@
       let resolved = false;
       function onReady() {
         if (resolved) return; resolved = true;
-        video.play().catch(() => {});
+        _gryphonVideo = video;
         _gryphonNatW = video.videoWidth  || 0;
         _gryphonNatH = video.videoHeight || 0;
         _gryphonTex  = PIXI.Texture.from(video);
+        // PIXI's VideoResource may autoplay; keep it parked unless a flight is on.
+        if (_gryphonUsers === 0) { try { video.pause(); } catch {} }
         resolve(_gryphonTex);
       }
 
@@ -273,6 +289,7 @@
     const startX   = pivot.x - halfW - spriteW;
     const exitX    = pivot.x + halfW + spriteW;
 
+    gryphonPlay();
     const sprite = new PIXI.Sprite(tex);
     sprite.width   = spriteW;
     sprite.height  = spriteH;
@@ -301,6 +318,7 @@
 
     try { canvas.stage.removeChild(sprite); } catch {}
     try { sprite.destroy({ texture: false }); } catch {}
+    gryphonRelease();
   }
 
   async function runGryphonAnimation(token, { waitForUpdate = false } = {}) {
@@ -332,6 +350,7 @@
     const startX   = pivot.x - halfW - spriteW;
     const exitX    = pivot.x + halfW + spriteW;
 
+    gryphonPlay();
     const sprite = new PIXI.Sprite(tex);
     sprite.width   = spriteW;
     sprite.height  = spriteH;
@@ -362,6 +381,7 @@
 
     try { canvas.stage.removeChild(sprite); } catch {}
     try { sprite.destroy({ texture: false }); } catch {} // preserve shared texture
+    gryphonRelease();
 
     if (waitForUpdate) {
       // Non-controller: hold token invisible until the position broadcast arrives,
