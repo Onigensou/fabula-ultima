@@ -95,19 +95,13 @@
 
   // ── Ownership helpers ─────────────────────────────────────────────────────
 
+  // Shared minigame owner rule (camp-minigame-sync.js).
   function _getOwnerUserId(actor) {
-    const hit = Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const user = game.users?.get(id);
-      return lvl === 3 && user && !user.isGM;
-    });
-    return hit?.[0] ?? null;
+    return actor ? (CAMP.MG?.ownerUserId?.(actor) ?? null) : null;
   }
 
   function _isOwner(actor) {
-    const ownerUserId = _getOwnerUserId(actor);
-    if (ownerUserId) return ownerUserId === game.user?.id;
-    return game.user?.isGM ?? false;   // solo: GM gets the button
+    return actor ? !!CAMP.MG?.isOwner?.(actor) : false;
   }
 
   // ── Roulette state ────────────────────────────────────────────────────────
@@ -119,6 +113,7 @@
   let _currentRoll = 1;
   let _stopping    = false;
   let _resultShown = false;   // idempotency — prevents double-apply
+  let _resultRoll  = null;    // landed number (late-join snapshot)
 
   function _clearRoulette() {
     if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
@@ -127,6 +122,7 @@
     _currentRoll = 1;
     _lastTickMs  = 0;
     _resultShown = false;
+    _resultRoll  = null;
   }
 
   // ── Public API ────────────────────────────────────────────────────────────
@@ -174,6 +170,9 @@
 
     // Called on all clients when the owner's result arrives via socket
     applyResult(actorId, roll) {
+      // The owner already played STOP in its click handler (its own echo
+      // lands here with _resultShown set); spectators hear it now.
+      if (!_resultShown && document.getElementById(OVL_ID)) _playSound(SFX.STOP, 0.7);
       _applyResultUI(actorId, roll);
     },
   };
@@ -244,11 +243,10 @@
       const roll = _currentRoll;
       _applyResultUI(null, roll);
 
-      if (game.user?.isGM) {
-        CAMP.ExplorationUI.resolveRoll(actorId, roll);
-      } else {
-        CAMP.Socket.emit(CAMP.MSG.EXPLORATION_RESULT, { actorId, roll });
-      }
+      // send() reaches every client AND this one: the router applies the
+      // result everywhere and resolves it on the GM (a GM-owner included;
+      // resolveRoll deletes its resolver, so a repeat is a no-op).
+      CAMP.Socket.send(CAMP.MSG.EXPLORATION_RESULT, { actorId, roll });
     });
   }
 
@@ -257,6 +255,7 @@
   function _applyResultUI(actorId, roll) {
     if (_resultShown) return;   // already shown (e.g. socket echo to owner)
     _resultShown = true;
+    _resultRoll  = roll;
 
     // Ensure spin is stopped
     if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
@@ -295,15 +294,26 @@
         proceedBtn.style.display = "";
         proceedBtn.addEventListener("click", () => {
           proceedBtn.disabled = true;
-          if (game.user?.isGM) {
-            CAMP.ExplorationUI.resolveProceed(_currentActorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.EXPLORATION_PROCEED, { actorId: _currentActorId });
-          }
+          CAMP.Socket.send(CAMP.MSG.EXPLORATION_PROCEED, { actorId: _currentActorId });
         }, { once: true });
       }
     }
   }
+
+  // ── Late join: the owner's STOP result is not in the GM replay log ──────
+  CAMP.MG?.registerGame?.("EXPLORATION", {
+    snapshot() {
+      if (!_currentActorId || !document.getElementById(OVL_ID)) return null;
+      if (!_isOwner(game.actors?.get(_currentActorId))) return null;
+      return { actorId: _currentActorId, roll: _resultRoll };
+    },
+    apply(snap) {
+      if (!snap?.actorId || snap.roll == null) return;   // still spinning
+      if (_currentActorId !== snap.actorId || !document.getElementById(OVL_ID)) return;
+      _applyResultUI(snap.actorId, snap.roll);
+    },
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 
   console.debug(TAG, "Exploration UI loaded.");
 })();
