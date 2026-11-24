@@ -4027,7 +4027,13 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   if (survey.capNote) ui.notifications?.info(survey.capNote);
 
   // ── Guard against empty pool ────────────────────────────────────────────
-  if (!isSelf && !eligibleForPicker.length) {
+  // Except the steal lock's "every creature is stolen from" pool: it still opens
+  // the picker (all greyed, Confirm off) so Back is the way out, the same flow
+  // as a partly stolen field (steal-lock.js `showWhenNoneLeft`). A pre-composed
+  // or autopilot pick never gets here with it: the AI sees 0 available.
+  const showLockedPool = !isSelf && !eligibleForPicker.length && eligibleForPicker.showWhenNoneLeft === true
+    && !(usingPreComposed && Array.isArray(composedTargetUuids) && composedTargetUuids.length);
+  if (!isSelf && !eligibleForPicker.length && !showLockedPool) {
     const categoryLabel = category === "any" ? "creatures" : `${category}s`;
     ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
     return noEligibleResult(director, attackerSnap);
@@ -4100,7 +4106,10 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
           : `${attackerSnap.name}: pick target${count > 1 ? "s" : ""}`);
     result = await requestTargeting({
       director, eligible: eligibleForPicker,
-      mode: pickerMode, count, titleText, card: _presetShown?.card ?? null, cancelLabel, secondaryAction, randomizeCount,
+      // A steal-locked empty pool still shows "0 / 1"; a random draw has nothing to roll.
+      mode: showLockedPool && pickerMode === "random" ? "exact" : pickerMode,
+      count: showLockedPool ? Math.max(1, count) : count,
+      titleText, card: _presetShown?.card ?? null, cancelLabel, secondaryAction, randomizeCount,
       mandatoryTokenUuids: mandatoryPins, remote,
     });
   }

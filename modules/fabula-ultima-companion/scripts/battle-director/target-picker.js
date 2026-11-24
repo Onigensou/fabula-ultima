@@ -224,6 +224,17 @@ function _buildDimFilter() {
   return f;
 }
 
+// Soft dim: a creature excluded with `dim: "soft"` (steal lock — "Nothing to
+// Steal") stays readable instead of dropping to a near-black silhouette
+// (user pick A+, 2026-11-24: greyed at ~62% vs the usual 30%).
+const _SOFT_DIM_BRIGHTNESS = 0.62;
+function _buildSoftDimFilter() {
+  const f = new PIXI.filters.ColorMatrixFilter();
+  f.desaturate();
+  f.brightness(_SOFT_DIM_BRIGHTNESS, true);
+  return f;
+}
+
 function _buildBgDimFilter() {
   const f = new PIXI.filters.ColorMatrixFilter();
   f.brightness(_BG_DIM_BRIGHTNESS, false);
@@ -238,6 +249,8 @@ function applyTargetingDim(eligible, director) {
   const sourceUuid = director?.ctx?.turnSnapshot?.tokenUuid ?? null;
   if (sourceUuid) visibleUuids.add(sourceUuid);
 
+  const softUuids = new Set((Array.isArray(eligible?.excluded) ? eligible.excluded : [])
+    .filter((x) => x?.dim === "soft").map((x) => x.tokenUuid).filter(Boolean));
   const savedTokenFilters = new Map(); // tokenUuid → { mesh, original }
   let savedBgFilters = null;
   let bg = null;
@@ -253,7 +266,7 @@ function applyTargetingDim(eligible, director) {
     try {
       const original = Array.isArray(mesh.filters) ? [...mesh.filters] : [];
       savedTokenFilters.set(uuid, { mesh, original });
-      mesh.filters = [...original, _buildDimFilter()];
+      mesh.filters = [...original, softUuids.has(uuid) ? _buildSoftDimFilter() : _buildDimFilter()];
     } catch (e) {
       warn("targetPicker dim apply failed", e);
     }
@@ -331,7 +344,13 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
   // No GM gate: target picking is client-local. The GM client uses this
   // as fallback when an NPC acts; player clients use it inside their
   // own composeAction() chain. See [[director-player-driven-input]].
-  if (!Array.isArray(eligible) || eligible.length === 0) {
+  // A steal-locked pool with nobody left to pick (every creature already stolen
+  // from) still OPENS: the greyed "Nothing to Steal" overlays show, Confirm stays
+  // off, Back is the way out — the same picker as a partly stolen field.
+  const showNoneLeft = Array.isArray(eligible) && eligible.length === 0
+    && eligible.showWhenNoneLeft === true && Array.isArray(eligible.excluded) && eligible.excluded.length > 0
+    && mode !== "self" && mode !== "all";
+  if ((!Array.isArray(eligible) || eligible.length === 0) && !showNoneLeft) {
     // If the caller offered a secondary "skip" path, treat empty-eligible
     // as an auto-skip rather than an error. Guard with no allies on scene,
     // for example, should still let the player proceed with self-guard.
@@ -434,7 +453,13 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         kind: REMOTE_PICK_KINDS.TARGET,
         externalCancel,
         onTimeoutValue: { ok: false, cancelled: true, tokenUuids: [] },
-        spec: { eligible, mode, count, titleText, card, cancelLabel, secondaryAction, randomizeCount, randomPool, lockSelection, mandatoryTokenUuids },
+        // `.excluded` / `.showWhenNoneLeft` are properties ON the array and would
+        // not survive the socket's JSON — send them as fields; remote-pick re-attaches.
+        spec: {
+          eligible, mode, count, titleText, card, cancelLabel, secondaryAction, randomizeCount, randomPool, lockSelection, mandatoryTokenUuids,
+          excluded: Array.isArray(eligible?.excluded) ? [...eligible.excluded] : [],
+          showWhenNoneLeft: eligible?.showWhenNoneLeft === true,
+        },
       })
     );
   }
@@ -519,6 +544,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     const confirmBtn = banner.querySelector(".fud-target-btn.confirm");
 
     function isValidSelection() {
+      if (!eligible.length) return false;  // steal-locked "nothing left": only Back
       if (mode === "random") return true; // draw is pre-computed; confirm is always valid
       // "Must include X" — every mandatory token must be selected before confirm,
       // regardless of mode (even lockSelection, which pre-selects everything anyway).
@@ -650,7 +676,9 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         return;
       }
       if (!isValidSelection()) {
-        if (mode === "exact") {
+        if (!eligible.length) {
+          ui.notifications?.warn("Nothing can be picked. Go back to choose another action.");
+        } else if (mode === "exact") {
           ui.notifications?.warn(`Pick exactly ${count} target${count === 1 ? "" : "s"}.`);
         } else {
           ui.notifications?.warn("Pick at least 1 target.");

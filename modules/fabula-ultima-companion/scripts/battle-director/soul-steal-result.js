@@ -132,7 +132,7 @@ function renderItemRow(targetName, won) {
 
 function renderTargetBlock(r) {
   if (r.missed)        return `<div class="fud-steal-empty"><b>Missed</b> — Check failed against <b>${escapeHtml(r.targetName)}</b>.</div>`;
-  if (r.alreadyStolen) return `<div class="fud-steal-empty"><b>Already stolen</b> from <b>${escapeHtml(r.targetName)}</b>.</div>`;
+  if (r.alreadyStolen) return `<div class="fud-steal-empty"><b>Nothing to steal</b> from <b>${escapeHtml(r.targetName)}</b>. It was already stolen from.</div>`;
   if (r.noTable)       return `<div class="fud-steal-empty"><b>No stealable items</b> on <b>${escapeHtml(r.targetName)}</b>.</div>`;
   if (!r.won?.length)  return `<div class="fud-steal-empty">Stole <b>nothing</b> from <b>${escapeHtml(r.targetName)}</b>.</div>`;
   return r.won.map((w) => renderItemRow(r.targetName, w)).join("");

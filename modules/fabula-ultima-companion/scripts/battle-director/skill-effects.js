@@ -13964,12 +13964,12 @@ function _resolveActorByUuidSyncSE(uuid) {
 //   flags.fabula-ultima-companion.directorPermanent: true   (no tick)
 //   transfer: false, statuses: [] (hidden, no token icon)
 //
-// Two gates this AE enforces:
-//   1. Per-caster: target with an AE matching this caster's UUID =
-//      "you already soul-stole this creature" — skip further attempts.
-//   2. Per-item availability across the party: union of stolenLootKeys
-//      across ALL soulStolenBy AEs on target = items already claimed.
-//      Roll outcomes resolving to a claimed item are skipped.
+// The gate this AE enforces (steal lock, 2026-11-24): ANY soulStolenBy AE on
+// the target, whoever stamped it, = "nothing to steal" for the whole party.
+// Only a WON item stamps it, so a miss or an "(Empty)" roll can be retried.
+// The picker hides stolen creatures first (steal-lock.js); this is the
+// backstop. (Before 2026-11-24 the lock was per caster and a second party
+// member could still roll the creature's unclaimed items.)
 //
 // Rewind: AEs ride the [[director-rewind-tool-plan]] actor snapshot, so
 // rewinding past a Soul Steal removes the AE and the gates clear.
@@ -14055,18 +14055,22 @@ async function applyRollLootTableEffect(row, ctx) {
   }
 
   // Helper: aggregate the soulStolen tracking state on a target.
-  // Returns { thisCasterAlreadyStole, claimedKeys: Set }.
+  // Returns { alreadyStolen, claimedKeys: Set }.
+  // Steal lock (to-do #16, 2026-11-24): ONE successful steal per creature for
+  // the WHOLE party — any soulStolenBy AE, whoever stamped it, locks it. It used
+  // to lock only the caster who stole, so a second party member could still
+  // roll the creature's other items. The picker already greys stolen creatures
+  // out (steal-lock.js); this is the backstop for a pick that got past it.
   function readStolenState(target) {
-    const thisCasterUuid = caster.uuid;
     const claimedKeys = new Set();
-    let thisCasterAlreadyStole = false;
+    let alreadyStolen = false;
     for (const ae of (target.effects?.contents ?? [])) {
       const fns = ae.flags?.[FLAG_NS];
       if (!fns?.soulStolenBy) continue;
-      if (fns.soulStolenBy === thisCasterUuid) thisCasterAlreadyStole = true;
+      alreadyStolen = true;
       for (const k of (fns.stolenLootKeys ?? [])) claimedKeys.add(k);
     }
-    return { thisCasterAlreadyStole, claimedKeys };
+    return { alreadyStolen, claimedKeys };
   }
 
   const results = [];
@@ -14082,8 +14086,8 @@ async function applyRollLootTableEffect(row, ctx) {
       continue;
     }
 
-    const { thisCasterAlreadyStole, claimedKeys } = readStolenState(target);
-    if (thisCasterAlreadyStole) {
+    const { alreadyStolen, claimedKeys } = readStolenState(target);
+    if (alreadyStolen) {
       results.push({ targetName: target.name, alreadyStolen: true, won: [] });
       continue;
     }

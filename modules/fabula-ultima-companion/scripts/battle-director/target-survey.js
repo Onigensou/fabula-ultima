@@ -95,6 +95,7 @@ import {
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 import { applyNoxMassiveGate } from "./massive-keyword.js";
 import { isNoxServant } from "./nox-servant.js";
+import { applyStealLockExclusion } from "./steal-lock.js";
 
 // ── skill_target text parsing ────────────────────────────────────────────────
 
@@ -606,6 +607,10 @@ export function surveyActionTargets({
       return unanswered("post-filter-threw", { category });
     }
   }
+  // Steal lock (Soul Steal / Pillage): a creature already stolen from moves to
+  // `.excluded` ("Nothing to Steal") for everyone. LAST of the exclusions so no
+  // later `.filter()` drops the side-channel; the AI counts it as unavailable.
+  eligible = applyStealLockExclusion(eligible, { action, actorOf: (e) => eligibleActor(e, dCombat) });
   eligible = applyActionPoolFocus(eligible, { action, dCombat, round: theRound });
 
   const plan = resolveTargetPlan({

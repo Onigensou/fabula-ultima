@@ -47,6 +47,7 @@ import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { resolveTargetPlan } from "./target-survey.js";
 import { applyNoxMassiveGate } from "./massive-keyword.js";
+import { applyStealLockExclusion } from "./steal-lock.js";
 import { isNoxServant } from "./nox-servant.js";
 import { freeActions } from "./free-actions.js";
 import { weightedModeBlock, weightedAttackCommandBlock } from "./weighted-rules.js";
@@ -1165,11 +1166,16 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   targetList = applyAreaGate(targetList, { skill: source, skillTargetText, intent });
   // Nox Servant: never a Massive target (the survey's gate, mirrored for a composed pick).
   targetList = noxMassiveGate(targetList, { director, action: source });
+  // Steal lock (Soul Steal / Pillage): creatures already stolen from stay on
+  // screen, greyed under "Nothing to Steal", and can't be picked. Last, so the
+  // `.excluded` side-channel survives (the gates above rebuild the array).
+  targetList = applyStealLockExclusion(targetList, { action: source });
+  const stealLockedNoneLeft = !targetList.length && targetList.showWhenNoneLeft === true;
 
   if (lockedTargetTokenUuid && !targetList.some((e) => e.tokenUuid === lockedTargetTokenUuid)) {
     return refuseLocked(`can't target ${lockedName()}`);
   }
-  if (!targetList.length) {
+  if (!targetList.length && !stealLockedNoneLeft) {
     ui.notifications?.warn(`No eligible ${categoryLabel} for ${source.name}.`);
     return { cancelled: true, reason: "no targets" };
   }
@@ -1197,6 +1203,18 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     // up-to-N target count so its printed MP fits the cap. Null on a normal cast.
     maxMpCost,
   });
+  if (stealLockedNoneLeft) {
+    // Every creature is already stolen from: open the same picker anyway, all
+    // greyed with Confirm off, so Back returns to the menu (user flow 2026-11-24).
+    const r = await raceCancel(
+      requestTargeting({
+        director, eligible: targetList, mode: plan.mode === "up_to" ? "up_to" : "exact", count: Math.max(1, plan.count || 1),
+        titleText: `${snap.name}: pick target for ${source.name}`, externalCancel: cancelSentinel,
+      }),
+      cancelSentinel,
+    );
+    return { cancelled: true, reason: r?.cancelled ? "target-cancelled" : "target-failed" };
+  }
   if (plan.mode === "random") return { cancelled: false, targetUuids: [] };
   if (plan.mode === "all") {
     const r = await raceCancel(

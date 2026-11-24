@@ -102,9 +102,14 @@ async function renderLocalPick({ kind, spec = {}, externalCancel = null }) {
     });
   }
   const { requestTargeting } = await import("./target-picker.js");
+  // Re-attach the side-channels the sender flattened into fields (the "🚫 <reason>"
+  // overlays and the steal lock's "nothing left" pool) — JSON drops array props.
+  const eligible = Array.isArray(spec.eligible) ? [...spec.eligible] : [];
+  if (Array.isArray(spec.excluded) && spec.excluded.length) eligible.excluded = spec.excluded;
+  if (spec.showWhenNoneLeft === true) eligible.showWhenNoneLeft = true;
   return await requestTargeting({
     director: null,
-    eligible: spec.eligible ?? [],
+    eligible,
     mode: spec.mode ?? "exact",
     count: spec.count ?? 1,
     titleText: spec.titleText ?? null,

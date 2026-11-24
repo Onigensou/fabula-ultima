@@ -776,6 +776,10 @@
     {
       "key": "2026-11-24-gravedigger-shovel-text",
       "path": "data-migrations/2026-11-24-gravedigger-shovel-text.js"
+    },
+    {
+      "key": "2026-11-24-soul-steal-enemies-only",
+      "path": "data-migrations/2026-11-24-soul-steal-enemies-only.js"
     }
   ]
 }
