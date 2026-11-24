@@ -90,6 +90,15 @@
   let _resultShown = false;
   let _gameOver    = false;
 
+  // ── Spectator sync / late join ────────────────────────────────────────────
+  let _phase        = null;   // owner: null | "countdown" | "play" | "over"
+  let _pendingState = null;   // GAME_STATE that arrived before the spectator arena existed
+  let _ghostEl      = null;   // spectator: the owner's dragged food
+  let _remoteSrcKey = null;   // spectator: cell the owner is dragging from
+  let _lastHoverKey = null;   // owner: last cell hover sent
+  let _dragSendMs   = 0;      // owner: drag stream throttle
+  const DRAG_SEND_MS = 50;    // ≤ 20 Hz
+
   // Flat grid [col*GRID_ROWS + row]; current order [{food,filled}]; drag state
   let _grid     = [];
   let _order    = [];
@@ -150,6 +159,13 @@
     _orderQueue  = [];
     _orderIdx    = 0;
     _lastLabelSec = -1;
+    _phase        = null;
+    _pendingState = null;
+    _remoteSrcKey = null;
+    _lastHoverKey = null;
+    _dragSendMs   = 0;
+    _ghostEl?.remove();
+    _ghostEl      = null;
     // Clear element cache — game DOM is being torn down
     for (const k of Object.keys(_els)) _els[k] = null;
     _cellEls       = null;
@@ -392,10 +408,102 @@
   // Event delegation — one-time setup per game
   // ===========================================================================
 
+  // ── Spectator mirror of the owner's hand (MG.event "DOUBLE_PORTION") ──────
+  //   hover    {col,row}|{col:null}   cell under the owner's cursor
+  //   drag     {col,row,food,x,y,over} x/y = 0..1 inside #oni-dp-game; over = above the feed zone
+  //   dragEnd  {}
+  // Positions are relative to the game panel so different screen sizes line up.
+  function _dpEvent(kind, data) { CAMP.MG?.event?.("DOUBLE_PORTION", _actorId, kind, data); }
+
+  function _relPos(clientX, clientY) {
+    const r = _els.game?.getBoundingClientRect();
+    if (!r || !r.width || !r.height) return null;
+    return { x: +((clientX - r.left) / r.width).toFixed(4), y: +((clientY - r.top) / r.height).toFixed(4) };
+  }
+
+  function _remoteHover(pos) {
+    if (!_cellEls) return;
+    const key = pos == null ? null : _cellKey(pos.col, pos.row);
+    for (let i = 0; i < _cellEls.length; i++) _cellEls[i]?.classList.toggle("oni-dp-remote-hover", i === key);
+  }
+
+  function _remoteDrag(d) {
+    if (!_els.game || _gameOver) return;
+    const key = _cellKey(d.col, d.row);
+    if (_remoteSrcKey !== key) {
+      if (_remoteSrcKey != null) _cellEls?.[_remoteSrcKey]?.classList.remove("dragging-src");
+      _remoteSrcKey = key;
+      _cellEls?.[key]?.classList.add("dragging-src");
+      _remoteHover(null);
+    }
+    if (!_ghostEl) {
+      _ghostEl = document.createElement("div");
+      _ghostEl.className = "oni-dp-remote-ghost";
+      document.body.appendChild(_ghostEl);
+    }
+    _ghostEl.textContent = d.food ?? "";
+    const r = _els.game.getBoundingClientRect();
+    _ghostEl.style.left = `${r.left + (d.x ?? 0) * r.width}px`;
+    _ghostEl.style.top  = `${r.top  + (d.y ?? 0) * r.height}px`;
+    _els.feedZone?.classList.toggle("drag-over", !!d.over);
+  }
+
+  function _remoteDragEnd() {
+    if (_remoteSrcKey != null) _cellEls?.[_remoteSrcKey]?.classList.remove("dragging-src");
+    _remoteSrcKey = null;
+    _ghostEl?.remove();
+    _ghostEl = null;
+    _els.feedZone?.classList.remove("drag-over");
+  }
+
+  // Owner + spectator: lock the grid and show the "Finished!" card.
+  function _showFinishedOverlay() {
+    _gameOver = true;
+    if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+    if (_els.timerBar)   _els.timerBar.style.width = "0%";
+    if (_els.timerLabel) _els.timerLabel.textContent = "0s";
+    _els.gridWrap?.querySelectorAll(".oni-dp-cell").forEach(c => c.classList.add("game-over"));
+    const gp = _els.game;
+    if (gp && !gp.querySelector(".oni-dp-finished-overlay")) {
+      const fin      = document.createElement("div");
+      fin.className  = "oni-dp-finished-overlay";
+      fin.innerHTML  = `<div class="oni-dp-finished-txt">Finished!</div>`;
+      gp.appendChild(fin);
+    }
+  }
+
   function _buildGameHandlers(actorId) {
     const wrap = _els.gridWrap;
     const fz   = _els.feedZone;
     if (!wrap || !fz) return;
+
+    let overFeed = false;
+    // Stream the drag position while a food is in hand. `dragover` on the
+    // document fires continuously (even when the cursor rests), unlike `drag`
+    // whose coordinates are 0 in some browsers.
+    const onDocDragOver = e => {
+      if (!_dragging) return;
+      const now = Date.now();
+      if (now - _dragSendMs < DRAG_SEND_MS) return;
+      _dragSendMs = now;
+      const p = _relPos(e.clientX, e.clientY);
+      if (p) _dpEvent("drag", { col: _dragging.col, row: _dragging.row, food: _dragging.food, x: p.x, y: p.y, over: overFeed });
+    };
+
+    // Cell under the cursor (on change only)
+    wrap.addEventListener("mouseover", e => {
+      if (_dragging || _gameOver) return;
+      const cell = e.target.closest?.(".oni-dp-cell");
+      const key = cell ? _cellKey(+cell.dataset.col, +cell.dataset.row) : null;
+      if (key === _lastHoverKey) return;
+      _lastHoverKey = key;
+      _dpEvent("hover", cell ? { col: +cell.dataset.col, row: +cell.dataset.row } : { col: null });
+    });
+    wrap.addEventListener("mouseleave", () => {
+      if (_lastHoverKey === null) return;
+      _lastHoverKey = null;
+      _dpEvent("hover", { col: null });
+    });
 
     // Single delegated dragstart on the grid wrapper — no per-cell listeners
     wrap.addEventListener("dragstart", e => {
@@ -407,11 +515,20 @@
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", _dragging.food);
       cell.classList.add("dragging-src");
+      overFeed = false;
+      _lastHoverKey = null;
+      document.addEventListener("dragover", onDocDragOver);
+      const p = _relPos(e.clientX, e.clientY);
+      _dragSendMs = Date.now();
+      _dpEvent("drag", { col, row, food: _dragging.food, x: p?.x ?? 0, y: p?.y ?? 0, over: false });
     });
 
     wrap.addEventListener("dragend", e => {
       e.target.closest?.(".oni-dp-cell")?.classList.remove("dragging-src");
       _dragging = null;
+      overFeed = false;
+      document.removeEventListener("dragover", onDocDragOver);
+      _dpEvent("dragEnd", {});
     });
 
     // Feed zone — attached once
@@ -419,11 +536,13 @@
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
       fz.classList.add("drag-over");
+      overFeed = true;
     });
-    fz.addEventListener("dragleave", () => fz.classList.remove("drag-over"));
+    fz.addEventListener("dragleave", () => { fz.classList.remove("drag-over"); overFeed = false; });
     fz.addEventListener("drop", e => {
       e.preventDefault();
       fz.classList.remove("drag-over");
+      overFeed = false;
       if (_dragging) { _handleDrop(_dragging.food, _dragging.col, _dragging.row); _dragging = null; }
     });
   }
@@ -471,8 +590,9 @@
       _spawnScorePop("+1", false);
       _spawnAllyParticles();
 
-      // Broadcast drop result + current state to spectators
-      _emitGameState(true);
+      // Broadcast drop result + current state to spectators (with the removed
+      // cell, so they run the same column-drop animation)
+      _emitGameState(true, { col, row });
 
       if (_order.every(o => o.filled)) {
         // Wait briefly then advance to next order — no full grid re-render needed
@@ -551,15 +671,104 @@
   // Called by the owner on game start and after every drop.
   // ===========================================================================
 
-  function _emitGameState(isCorrect) {
-    CAMP.Socket.emit(CAMP.MSG.DOUBLE_PORTION_GAME_STATE, {
+  function _emitGameState(isCorrect, removed = null) {
+    // send(): onGameState() returns for the owner, so the local echo is a no-op.
+    CAMP.Socket.send(CAMP.MSG.DOUBLE_PORTION_GAME_STATE, {
       actorId:   _actorId,
       grid:      [..._grid],
       order:     _order.map(o => ({ food: o.food, filled: o.filled })),
       score:     _score,
       wrong:     _wrong,
       isCorrect,
+      removed,                                                   // {col,row} on a correct drop
+      elapsed:   _gameStartMs != null ? Date.now() - _gameStartMs : null,   // timer anchor
     });
+  }
+
+  // Spectator: apply one owner state. First call renders the read-only grid;
+  // later calls patch cells (column drop animation on the removed column).
+  function _applyGameState(st, playFx) {
+    const { grid, order, score, wrong, isCorrect, removed, elapsed } = st ?? {};
+    if (!Array.isArray(grid) || !_els.gridWrap) return;
+
+    // Re-anchor the timer on the owner's clock.
+    if (typeof elapsed === "number" && !_gameOver) _anchorSpectatorClock(elapsed);
+
+    if (!_cellEls) {
+      _grid = [...grid];
+      const rows = [];
+      for (let r = 0; r < GRID_ROWS; r++) {
+        const cells = [];
+        for (let c = 0; c < GRID_COLS; c++) {
+          cells.push(`<div class="oni-dp-cell" data-col="${c}" data-row="${r}" style="cursor:default;pointer-events:none;">${_grid[_cellKey(c, r)]}</div>`);
+        }
+        rows.push(`<div class="oni-dp-grid-row">${cells.join("")}</div>`);
+      }
+      _els.gridWrap.innerHTML = rows.join("");
+      _buildCellMap();
+      if (_gameOver) _els.gridWrap.querySelectorAll(".oni-dp-cell").forEach(c => c.classList.add("game-over"));
+    } else {
+      _grid = [...grid];
+      const dropCol = playFx && removed && typeof removed.col === "number" ? removed.col : null;
+      if (dropCol != null) _refreshColumn(dropCol);
+      for (let i = 0; i < _grid.length; i++) {
+        if (dropCol != null && Math.floor(i / GRID_ROWS) === dropCol) continue;
+        const el = _cellEls[i];
+        if (el && el.textContent !== _grid[i]) el.textContent = _grid[i];
+      }
+    }
+
+    // Order bubble — same diff update the owner uses
+    if (Array.isArray(order)) {
+      _order = order.map(o => ({ food: o.food, filled: !!o.filled }));
+      _updateBubble();
+    }
+
+    if (_els.score) _els.score.textContent = `Score: ${score ?? 0} | ✗: ${wrong ?? 0}`;
+    if (!playFx) return;
+
+    // ── Correct drop — ally animation + particles + sounds (owner's volumes)
+    if (isCorrect === true) {
+      const at = _els.allyToken;
+      if (at) {
+        at.animate(
+          [{ transform: "scale(1)" },
+           { transform: "scale(1.18) translateY(-6px)", offset: 0.3 },
+           { transform: "scale(1)" }],
+          { duration: 350, easing: "ease" }
+        ).finished.then(() =>
+          at.animate(
+            [{ transform: "scale(1)" },
+             { transform: "scale(1.15) rotate(-5deg)", offset: 0.2 },
+             { transform: "scale(1.15) rotate(5deg)",  offset: 0.6 },
+             { transform: "scale(1)" }],
+            { duration: 400, easing: "ease" }
+          )
+        ).catch(() => {});
+      }
+      _spawnAllyParticles();
+      _spawnScorePop("+1", false);
+      _playPooled(SFX.EATING,  0.75);
+      _playPooled(SFX.SUCCESS, 0.6);
+    }
+
+    // ── Wrong drop — feed zone shake + sound
+    if (isCorrect === false) {
+      const fz = _els.feedZone;
+      if (fz) {
+        fz.classList.add("feed-wrong");
+        fz.addEventListener("animationend", () => fz.classList.remove("feed-wrong"), { once: true });
+      }
+      _spawnScorePop("-1", true);
+      _playPooled(SFX.FAIL, 0.7);
+    }
+  }
+
+  // Spectator: timer bar + "Finished!" follow the owner's clock.
+  function _anchorSpectatorClock(elapsedMs) {
+    _gameStartMs = Date.now() - elapsedMs;
+    if (_endTimer !== null) clearTimeout(_endTimer);
+    _endTimer = setTimeout(() => { _remoteDragEnd(); _showFinishedOverlay(); }, Math.max(0, GAME_MS - elapsedMs));
   }
 
   // ===========================================================================
@@ -567,9 +776,10 @@
   // Shows a live countdown timer + actor/target tokens while the owner plays.
   // ===========================================================================
 
-  function _startSpectatorGame() {
+  function _startSpectatorGame(elapsedMs = 0) {
     const ovl = document.getElementById(OVL_ID);
     if (!ovl) return;
+    if (_els.gridWrap) return;   // already built (late-join apply raced the countdown)
 
     // Render the full game arena layout — same HTML as the owner sees.
     // Grid cells start empty and are populated by the first onGameState() call.
@@ -577,18 +787,20 @@
 
     // Cache all element refs + static rects so onGameState can update them.
     _cacheEls();
+    _initAudioPool();
     _initParticlePool();
     _cacheRects();
 
-    _gameStartMs  = Date.now();
     _lastLabelSec = -1;
+    _anchorSpectatorClock(elapsedMs);
     _startGameLoop();
 
-    _endTimer = setTimeout(() => {
-      if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
-      if (_els.timerBar)   _els.timerBar.style.width  = "0%";
-      if (_els.timerLabel) _els.timerLabel.textContent = "0s";
-    }, GAME_MS);
+    // A state that arrived during our countdown (the owner's runs in parallel).
+    if (_pendingState) {
+      const st = _pendingState;
+      _pendingState = null;
+      _applyGameState(st, false);
+    }
   }
 
   // ===========================================================================
@@ -624,11 +836,9 @@
     if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
     const actor = game.actors?.get(actorId);
     if (actor && _isActorOwner(actor)) {
-      if (game.user?.isGM) {
-        CAMP.DoublePortionUI.resolveScore(actorId, { score: _score, wrong: _wrong });
-      } else {
-        CAMP.Socket.emit(CAMP.MSG.DOUBLE_PORTION_RESULT, { actorId, score: _score, wrong: _wrong });
-      }
+      // send(): no `grade` field, so the router hands it to the GM resolver
+      // (a GM-owner included).
+      CAMP.Socket.send(CAMP.MSG.DOUBLE_PORTION_RESULT, { actorId, score: _score, wrong: _wrong });
     }
   }
 
@@ -802,6 +1012,20 @@
       .oni-dp-cell:active       { cursor:grabbing; }
       .oni-dp-cell.dragging-src { opacity:.35; }
       .oni-dp-cell.game-over    { cursor:default;pointer-events:none;opacity:.65; }
+      /* Spectator: the owner's cursor / dragged food */
+      .oni-dp-cell.oni-dp-remote-hover { transform:scale(1.12);box-shadow:0 0 14px rgba(200,168,75,.6); }
+      .oni-dp-remote-ghost {
+        position:fixed;z-index:10002;pointer-events:none;
+        width:52px;height:52px;display:flex;align-items:center;justify-content:center;
+        font-size:1.65rem;border-radius:10px;
+        background:rgba(246,235,211,.25);border:2px solid rgba(200,168,75,.8);
+        transform:translate(-50%,-50%);opacity:.9;
+        transition:left 60ms linear,top 60ms linear;
+      }
+      .oni-dp-spectate .oni-dp-ally-card { cursor:default; }
+      .oni-dp-spectate .oni-dp-ally-card:hover:not(.oni-dp-remote-hover) { transform:none;box-shadow:none; }
+      .oni-dp-ally-card.oni-dp-remote-hover { transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.35); }
+      .oni-dp-ally-card.oni-dp-remote-pick  { box-shadow:0 0 0 3px rgba(200,168,75,.6),0 6px 18px rgba(0,0,0,.35); }
 
       /* Bottom row */
       .oni-dp-bottom-row { display:flex;align-items:flex-end;justify-content:space-between;padding:0 4px;margin-top:2px; }
@@ -920,18 +1144,13 @@
   // Helpers (non-hot-path)
   // ===========================================================================
 
+  // Shared minigame owner rule (camp-minigame-sync.js).
   function _getOwnerUserId(actor) {
-    const hit = Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const user = game.users?.get(id);
-      return lvl === 3 && user && !user.isGM;
-    });
-    return hit?.[0] ?? null;
+    return actor ? (CAMP.MG?.ownerUserId?.(actor) ?? null) : null;
   }
 
   function _isActorOwner(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return actor ? !!CAMP.MG?.isOwner?.(actor) : false;
   }
 
   function _getTokenImg(actor) {
@@ -963,14 +1182,14 @@
       const ovl    = document.createElement("div");
       ovl.id       = OVL_ID;
 
-      if (_isOwner) {
-        const cards = (allies ?? []).map(a => `
+      const cards = (allies ?? []).map(a => `
           <div class="oni-dp-ally-card" data-target-id="${a.id}">
             <img src="${a.img}" alt="${a.name}">
             <span>${a.name}</span>
           </div>
         `).join("");
 
+      if (_isOwner) {
         ovl.innerHTML = `
           <div class="oni-dp-panel">
             <div class="oni-dp-title"><img src="${DP_ICON}" alt=""> Double Portion</div>
@@ -979,23 +1198,28 @@
           </div>
         `;
 
+        let picked = false;
         ovl.querySelectorAll(".oni-dp-ally-card").forEach(card => {
+          card.addEventListener("mouseenter", () => { if (!picked) _dpEvent("ally", { targetId: card.dataset.targetId }); });
+          card.addEventListener("mouseleave", () => { if (!picked) _dpEvent("ally", { targetId: null }); });
           card.addEventListener("click", () => {
             const targetId = card.dataset.targetId;
-            if (!targetId) return;
-            if (game.user?.isGM) {
-              CAMP.DoublePortionUI.resolveTarget(actorId, targetId);
-            } else {
-              CAMP.Socket.emit(CAMP.MSG.DOUBLE_PORTION_TARGET, { actorId, targetActorId: targetId });
-            }
+            if (!targetId || picked) return;
+            picked = true;
+            _dpEvent("pickAlly", { targetId });
+            // send(): a GM-owner reaches its own resolver through the router.
+            CAMP.Socket.send(CAMP.MSG.DOUBLE_PORTION_TARGET, { actorId, targetActorId: targetId });
           }, { once: true });
         });
       } else {
         const ownerUid  = actor ? _getOwnerUserId(actor) : null;
         const ownerName = ownerUid ? (game.users?.get(ownerUid)?.name ?? "player") : "player";
+        // Spectators see the same cards (read-only) with the owner's cursor mirrored.
         ovl.innerHTML = `
-          <div class="oni-dp-panel">
+          <div class="oni-dp-panel oni-dp-spectate">
             <div class="oni-dp-title"><img src="${DP_ICON}" alt=""> Double Portion</div>
+            <div class="oni-dp-sub">Who will you feed?</div>
+            <div class="oni-dp-ally-grid">${cards}</div>
             <div class="oni-dp-waiting">Waiting for ${ownerName} to choose a target…</div>
           </div>
         `;
@@ -1014,66 +1238,14 @@
     // ── onGameState — live grid sync received by spectators on each owner drop ─
     // Renders the owner's exact grid, updates order bubble + HUD, and plays
     // the correct/wrong reaction animations and sounds on spectator clients.
-    onGameState({ actorId, grid, order, score, wrong, isCorrect } = {}) {
-      if (_isOwner) return;           // owner already sees it locally
-      if (!_els.gridWrap) return;     // spectator arena not yet rendered
-
-      // ── Grid cells (read-only; no drag attributes) ─────────────────────────
-      const rows = [];
-      for (let r = 0; r < GRID_ROWS; r++) {
-        const cells = [];
-        for (let c = 0; c < GRID_COLS; c++) {
-          cells.push(`<div class="oni-dp-cell" style="cursor:default;pointer-events:none;">${grid[_cellKey(c, r)]}</div>`);
-        }
-        rows.push(`<div class="oni-dp-grid-row">${cells.join("")}</div>`);
+    onGameState(payload = {}) {
+      if (_isOwner) return;                                       // owner already sees it locally
+      if (payload.actorId && _actorId && payload.actorId !== _actorId) return;
+      if (!_els.gridWrap) {                                       // still in our countdown: keep the latest
+        if (document.getElementById(OVL_ID)) _pendingState = payload;
+        return;
       }
-      _els.gridWrap.innerHTML = rows.join("");
-
-      // ── Order bubble ────────────────────────────────────────────────────────
-      if (_els.bubble) {
-        _els.bubble.innerHTML = (order ?? []).map(o =>
-          `<span class="oni-dp-bubble-item${o.filled ? " filled" : ""}">${o.food}</span>`
-        ).join("");
-      }
-
-      // ── Score / wrong HUD ───────────────────────────────────────────────────
-      if (_els.score) _els.score.textContent = `Score: ${score} | ✗: ${wrong}`;
-
-      // ── Correct drop — ally animation + particles + sounds ─────────────────
-      if (isCorrect === true) {
-        const at = _els.allyToken;
-        if (at) {
-          at.animate(
-            [{ transform: "scale(1)" },
-             { transform: "scale(1.18) translateY(-6px)", offset: 0.3 },
-             { transform: "scale(1)" }],
-            { duration: 350, easing: "ease" }
-          ).finished.then(() =>
-            at.animate(
-              [{ transform: "scale(1)" },
-               { transform: "scale(1.15) rotate(-5deg)", offset: 0.2 },
-               { transform: "scale(1.15) rotate(5deg)",  offset: 0.6 },
-               { transform: "scale(1)" }],
-              { duration: 400, easing: "ease" }
-            )
-          ).catch(() => {});
-        }
-        _spawnAllyParticles();
-        _spawnScorePop("+1", false);
-        _playSound(SFX.EATING,  0.55);
-        _playSound(SFX.SUCCESS, 0.45);
-      }
-
-      // ── Wrong drop — feed zone shake + sounds ──────────────────────────────
-      if (isCorrect === false) {
-        const fz = _els.feedZone;
-        if (fz) {
-          fz.classList.add("feed-wrong");
-          fz.addEventListener("animationend", () => fz.classList.remove("feed-wrong"), { once: true });
-        }
-        _spawnScorePop("-1", true);
-        _playSound(SFX.FAIL, 0.6);
-      }
+      _applyGameState(payload, true);
     },
 
     // ── Stage 2 — Arena (all clients; owner plays, others watch) ─────────────
@@ -1118,6 +1290,7 @@
 
         // Pre-warm audio, particles, and orders during the countdown
         _initGameAssets();
+        _phase = "countdown";
 
         _runCountdown(3, () => {
           // Switch overlay to game layout
@@ -1144,31 +1317,17 @@
 
           _lastLabelSec = -1;
           _gameStartMs  = Date.now();
+          _phase        = "play";
           _startGameLoop();
 
           // Push initial grid state to spectators
           _emitGameState(null);
 
           _endTimer = setTimeout(() => {
-            // Lock all interaction immediately
-            _gameOver = true;
-            if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
-
-            // Snap timer to 0 via cached refs
-            if (_els.timerBar)   _els.timerBar.style.width = "0%";
-            if (_els.timerLabel) _els.timerLabel.textContent = "0s";
-
-            // Mark cells non-interactive (querySelectorAll acceptable — game is over)
-            _els.gridWrap?.querySelectorAll(".oni-dp-cell").forEach(c => c.classList.add("game-over"));
-
-            // Overlay "Finished!" on game container
-            const gp = _els.game;
-            if (gp) {
-              const fin      = document.createElement("div");
-              fin.className  = "oni-dp-finished-overlay";
-              fin.innerHTML  = `<div class="oni-dp-finished-txt">Finished!</div>`;
-              gp.appendChild(fin);
-            }
+            // Lock all interaction, snap the timer and overlay "Finished!"
+            // (spectators run the same helper on their anchored clock).
+            _phase = "over";
+            _showFinishedOverlay();
 
             setTimeout(() => _endGame(actorId), 800);
           }, GAME_MS);
@@ -1205,6 +1364,8 @@
     applyResult(actorId, targetActorId, grade, multiplier) {
       if (_resultShown) return;
       _resultShown = true;
+      _phase = null;
+      _remoteDragEnd();
 
       _playSound(grade !== "failure" ? SFX.RESULT_GOOD : SFX.RESULT_BAD, 0.8);
 
@@ -1242,11 +1403,7 @@
         const btn = document.getElementById("oni-dp-proceed");
         btn?.addEventListener("click", () => {
           btn.disabled = true;
-          if (game.user?.isGM) {
-            CAMP.DoublePortionUI.resolveProceed(actorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.DOUBLE_PORTION_PROCEED, { actorId });
-          }
+          CAMP.Socket.send(CAMP.MSG.DOUBLE_PORTION_PROCEED, { actorId });
         }, { once: true });
       }
     },
@@ -1275,6 +1432,68 @@
       el.addEventListener("animationend", () => el.remove(), { once: true });
     },
   };
+
+  // ===========================================================================
+  // Spectator side of the MG channel
+  // ===========================================================================
+  function _markRemoteAlly(targetId, cls) {
+    document.querySelectorAll(`#${OVL_ID} .oni-dp-spectate .oni-dp-ally-card`).forEach(c => {
+      c.classList.toggle(cls, !!targetId && c.dataset.targetId === targetId);
+    });
+  }
+
+  CAMP.MG?.on?.("DOUBLE_PORTION", (kind, data, msg) => {
+    if (_isOwner || !msg?.a || msg.a !== _actorId) return;
+    switch (kind) {
+      case "ally":     _markRemoteAlly(data.targetId ?? null, "oni-dp-remote-hover"); break;
+      case "pickAlly": _markRemoteAlly(null, "oni-dp-remote-hover"); _markRemoteAlly(data.targetId ?? null, "oni-dp-remote-pick"); break;
+      case "hover":    if (!_gameOver) _remoteHover(data.col == null ? null : data); break;
+      case "drag":     if (typeof data.col === "number") _remoteDrag(data); break;
+      case "dragEnd":  _remoteDragEnd(); break;
+    }
+  });
+
+  // ===========================================================================
+  // Late join — the owner's page answers with the running round
+  // ===========================================================================
+  CAMP.MG?.registerGame?.("DOUBLE_PORTION", {
+    snapshot() {
+      if (!_isOwner || !_actorId || !_phase || _resultShown) return null;
+      if (!document.getElementById(OVL_ID)) return null;
+      return {
+        actorId:       _actorId,
+        targetActorId: _targetId,
+        phase:         _phase,
+        elapsedMs:     _phase === "countdown" || _gameStartMs == null ? 0 : Date.now() - _gameStartMs,
+        grid:          [..._grid],
+        order:         _order.map(o => ({ food: o.food, filled: o.filled })),
+        score:         _score,
+        wrong:         _wrong,
+      };
+    },
+    apply(snap) {
+      if (!snap?.actorId || _isOwner || _resultShown) return;
+      if (_actorId && _actorId !== snap.actorId) return;
+      if (!document.getElementById(OVL_ID)) return;
+      const targetId = snap.targetActorId ?? _targetId;
+
+      if (snap.phase === "countdown") {
+        // Not yet in the arena here (START replay shows the picker): open it;
+        // the owner's first GAME_STATE re-anchors the clock.
+        if (!_els.gridWrap && !document.getElementById("oni-dp-count")) CAMP.DoublePortionUI.showArena(snap.actorId, targetId);
+        return;
+      }
+
+      _actorId  = snap.actorId;
+      _targetId = targetId;
+      const elapsed = Math.min(GAME_MS, snap.elapsedMs ?? 0);
+      if (!_els.gridWrap) _startSpectatorGame(elapsed);
+      const st = { grid: snap.grid, order: snap.order, score: snap.score, wrong: snap.wrong, elapsed };
+      if (snap.phase === "over") { _applyGameState(st, false); _remoteDragEnd(); _showFinishedOverlay(); }
+      else _applyGameState(st, false);
+    },
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 
   console.debug(TAG, "Double Portion UI loaded.");
 })();
