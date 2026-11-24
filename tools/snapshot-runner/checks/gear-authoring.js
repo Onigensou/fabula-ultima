@@ -86,8 +86,11 @@ await temp.update({ "system.props.class_list": { "0": { class_name: "Elementalis
 await wait(300);
 const add = async (id) => { const s = W(id).toObject(); delete s._id; s.system.props.isEquipped = false; const [it] = await temp.createEmbeddedDocuments("Item", [s]); return it; };
 const wear = async (sel) => { await applyEquipmentSwap(temp, { main: null, off: null, accessory1: null, accessory2: null, ...sel }, { allowArmor: true }); await wait(400); };
+const wearArmor = async (it) => { await temp.updateEmbeddedDocuments("Item", temp.items.filter((i) => String(i.system?.props?.item_type).toLowerCase() === "armor").map((i) => ({ _id: i.id, "system.props.isEquipped": i.id === it.id }))); await wait(500); };
 const snap = () => ({ hp: P().max_hp, mp: P().max_mp, def: P().defense, mdef: P().magic_defense, crit: P().minimum_critical_dice, pois: P().condition_poisoned, disc: temp.flags?.[NS]?.cataclysm_cost_discount });
 const base = snap();
+out.hpKeys = Object.keys(P()).filter((k) => /(^|_)(hp|mp)(_|$)|health|mind/i.test(k)).map((k) => k + "=" + JSON.stringify(P()[k]).slice(0, 30));
+out.hinaKeys = Object.entries(game.actors.getName("Hina").system.props).filter(([k]) => /max/i.test(k)).map(([k, v]) => k + "=" + JSON.stringify(v).slice(0, 30));
 const classes = 3;
 out.temp = { base };
 try {
@@ -100,10 +103,10 @@ try {
   await wear({}); out.temp.bare = snap();
   ok("accessories off: values back", out.temp.bare.hp === base.hp && Number(out.temp.bare.crit) === Number(base.crit) && !Number(out.temp.bare.disc), out.temp.bare);
   const slimy = await add(IDS.slimy);
-  await wear({ armor: slimy.id }); out.temp.slimy = snap();
+  await wearArmor(slimy); out.temp.slimy = snap();
   ok("Slimy Jacket: Poisoned immune", String(out.temp.slimy.pois).toUpperCase() === "IM", out.temp.slimy.pois);
   const tunic = await add(IDS.fairy);
-  await wear({ armor: tunic.id }); const off = snap();
+  await wearArmor(tunic); const off = snap();
   const spell = game.items.find((i) => String(i.system?.props?.skill_type).toLowerCase() === "spell" && /scene/i.test(String(i.system?.props?.duration ?? "")) && !i.system?.container);
   await temp.createEmbeddedDocuments("ActiveEffect", [{ name: "GA Scene Spell", changes: [], flags: { [NS]: { directorAppliedBy: { skillUuid: spell?.uuid } } } }]);
   await wait(300); const on = snap();
@@ -111,7 +114,7 @@ try {
   ok("Fairy Tunic: +2 MDEF under a Scene spell", on.mdef === off.mdef + 2, out.temp.fairy);
   await temp.deleteEmbeddedDocuments("ActiveEffect", temp.effects.filter((e) => e.name === "GA Scene Spell").map((e) => e.id));
   const biker = await add(IDS.biker);
-  await wear({ armor: biker.id }); const formless = snap();
+  await wearArmor(biker); const formless = snap();
   const steel = W("GrAuBikerPsv0000").effects.find((e) => e.name === "Steel Form").toObject(); delete steel._id;
   await temp.createEmbeddedDocuments("ActiveEffect", [steel]); await wait(300); const st = snap();
   out.temp.biker = { formless, steel: st, effects: temp.items.get(biker.id)?.effects.map((e) => `${e.name}:${e.disabled ? "off" : "on"}`) };
