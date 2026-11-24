@@ -51,8 +51,13 @@
   let _targetImg  = null;
   let _isOwner    = false;
   let _isTarget   = false;
-  let _pickLocked = false;
+  let _pickLocked = false;   // (kept for compatibility; per-role locks below)
   let _resultShown = false;
+  // Guessing round: which question is open, and who has locked in. Locks
+  // travel as MG.event "lock" (never the choice itself) so everyone sees
+  // "Locked in" without spoiling the reveal.
+  let _curQ  = -1;
+  let _locks = { owner: false, target: false };
 
   // Web Audio
   let _audioCtx = null;
@@ -69,21 +74,53 @@
     _isTarget    = false;
     _pickLocked  = false;
     _resultShown = false;
+    _curQ        = -1;
+    _locks       = { owner: false, target: false };
   }
 
   // ---------------------------------------------------------------------------
   // Ownership helpers
   // ---------------------------------------------------------------------------
+  // Shared minigame owner rule (camp-minigame-sync.js) — used for BOTH the
+  // performer and the target (an unowned target is picked by the primary GM).
   function _getOwnerUserId(actor) {
-    return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      const user = game.users?.get(id);
-      return id !== "default" && lvl === 3 && user && !user.isGM;
-    })?.[0] ?? null;
+    return actor ? (CAMP.MG?.ownerUserId?.(actor) ?? null) : null;
   }
 
   function _isOwnerOfActor(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return actor ? !!CAMP.MG?.isOwner?.(actor) : false;
+  }
+
+  // ── Lock status line (visible to everyone during a guessing round) ───────
+  function _renderLockStatus() {
+    const el = document.getElementById("oni-pl-lock-status");
+    if (!el) return;
+    if (_curQ < 0) { el.style.display = "none"; return; }
+    el.style.display = "";
+    const chip = (name, on) =>
+      `<span class="oni-pl-lock-chip${on ? " oni-pl-lock-on" : ""}">${name}: ${on ? "✓ Locked in" : "Choosing…"}</span>`;
+    el.innerHTML = chip(_actorName ?? "?", _locks.owner) + chip(_targetName ?? "?", _locks.target);
+  }
+
+  function _setLock(role, q) {
+    if (q !== _curQ || !(role in _locks) || _locks[role]) return false;
+    _locks[role] = true;
+    _renderLockStatus();
+    return true;
+  }
+
+  // Picker whose own row was locked before a reload: show it as locked.
+  function _markOwnRowLocked(role) {
+    const row = document.querySelector(`#oni-pl-choices [data-role="${role}"]`)
+      ?? (document.querySelector("#oni-pl-choices > .oni-pl-choice") ? document.getElementById("oni-pl-choices") : null);
+    if (!row || row.dataset.locked === "1") return;
+    row.dataset.locked = "1";
+    row.querySelectorAll(".oni-pl-choice").forEach(b => { b.disabled = true; b.style.opacity = "0.3"; });
+    const lockMsg = document.createElement("div");
+    lockMsg.className = "oni-pl-spec-wait";
+    lockMsg.textContent = "Locked in!";
+    lockMsg.style.marginTop = "6px";
+    row.appendChild(lockMsg);
   }
 
   // ---------------------------------------------------------------------------
@@ -284,6 +321,22 @@
       .oni-pl-spec-wait {
         text-align: center; font-size: .82em; color: #9a8060; font-style: italic;
       }
+      /* ── Lock status (who has locked in; never which choice) ── */
+      .oni-pl-lock-status {
+        display: flex; gap: 16px; justify-content: center;
+        font-size: .8em; color: #9a8060; font-style: italic;
+      }
+      .oni-pl-lock-chip.oni-pl-lock-on { color: #7ad47a; font-style: normal; font-weight: 700; }
+      /* ── One client picking for both sides: one row per side ── */
+      .oni-pl-choices.oni-pl-dual { flex-direction: column; gap: 10px; }
+      .oni-pl-pick-row { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+      .oni-pl-pick-row-btns { display: flex; gap: 12px; justify-content: center; }
+      .oni-pl-pick-row-label { font-size: .8em; color: #d4a853; font-weight: 700; text-align: center; }
+      /* ── Spectator ally picker: read-only, owner's hover mirrored ── */
+      .oni-pl-spectate .oni-pl-ally-card { cursor: default; }
+      .oni-pl-spectate .oni-pl-ally-card:hover:not(.oni-pl-remote-hover) { border-color: #5a3f1a; background: #1e160a; }
+      .oni-pl-ally-card.oni-pl-remote-hover { border-color: #d4a853; background: #2e2010; }
+      .oni-pl-ally-card.oni-pl-remote-pick  { border-color: #d4a853; background: #2e2010; box-shadow: 0 0 0 2px rgba(212,168,83,.55); }
 
       /* ── Reveal: pick cards ── */
       .oni-pl-reveal-row {
@@ -454,6 +507,7 @@
         </div>
 
         <div class="oni-pl-choices" id="oni-pl-choices"></div>
+        <div class="oni-pl-lock-status" id="oni-pl-lock-status" style="display:none;"></div>
 
         <button class="oni-pl-proceed-btn" id="oni-pl-proceed" style="display:none;">
           Click to Proceed
@@ -472,63 +526,85 @@
     if (!wrap) return;
     wrap.innerHTML = "";
 
-    if (_isOwner || _isTarget) {
-      const role       = _isOwner ? "owner" : "target";
-      const msgType    = _isOwner ? CAMP.MSG.PLANNING_PICK_OWNER : CAMP.MSG.PLANNING_PICK_TARGET;
-      const resolverFn = _isOwner
-        ? () => CAMP.PlanningUI?.resolveOwnerPick(actorId, 0)
-        : () => CAMP.PlanningUI?.resolveTargetPick(targetActorId, 0);
+    wrap.classList.remove("oni-pl-dual");
+    delete wrap.dataset.locked;   // per-question lock flag (single-side layout)
+
+    // A client can own BOTH sides (e.g. the GM playing two unowned actors):
+    // it then gets one pick row per side, or the second pick never arrives.
+    const roles = [];
+    if (_isOwner)  roles.push("owner");
+    if (_isTarget) roles.push("target");
+
+    if (roles.length) {
+      const dual = roles.length > 1;
+      if (dual) wrap.classList.add("oni-pl-dual");
 
       const choices = [
         { label: question.a, idx: 0, badge: "A", cls: "oni-pl-rc-a" },
         { label: question.b, idx: 1, badge: "B", cls: "oni-pl-rc-b" },
       ];
 
-      choices.forEach(({ label, idx, badge, cls }) => {
-        const btn = document.createElement("button");
-        btn.className = `oni-pl-choice ${cls}`;
-        btn.dataset.idx = idx;
-        btn.innerHTML = `<span class="oni-pl-c-badge">${badge}</span><span>${label}</span>`;
+      roles.forEach(role => {
+        const msgType = role === "owner" ? CAMP.MSG.PLANNING_PICK_OWNER : CAMP.MSG.PLANNING_PICK_TARGET;
+        // Single side: buttons sit directly in the choices row (unchanged look).
+        let row = wrap, btnBox = wrap;
+        if (dual) {
+          row = document.createElement("div");
+          row.className = "oni-pl-pick-row";
+          row.dataset.role = role;
+          row.innerHTML = `<div class="oni-pl-pick-row-label">${role === "owner" ? _actorName : _targetName}</div>`;
+          btnBox = document.createElement("div");
+          btnBox.className = "oni-pl-pick-row-btns";
+          row.appendChild(btnBox);
+          wrap.appendChild(row);
+        }
+        let rowLocked = false;
 
-        btn.addEventListener("mouseenter", () => _playBuf(_hoverBuf));
-        btn.addEventListener("click", () => {
-          if (_pickLocked) return;
-          _pickLocked = true;
+        choices.forEach(({ label, idx, badge, cls }) => {
+          const btn = document.createElement("button");
+          btn.className = `oni-pl-choice ${cls}`;
+          btn.dataset.idx = idx;
+          btn.innerHTML = `<span class="oni-pl-c-badge">${badge}</span><span>${label}</span>`;
 
-          // Lock both buttons visually
-          wrap.querySelectorAll(".oni-pl-choice").forEach(b => {
-            b.disabled = true;
-            if (parseInt(b.dataset.idx) === idx) {
-              b.classList.add("oni-pl-choice-locked");
-            } else {
-              b.style.opacity = "0.3";
-            }
-          });
+          // Hover sound stays local: the pick is secret, so the cursor is not mirrored.
+          btn.addEventListener("mouseenter", () => _playBuf(_hoverBuf));
+          btn.addEventListener("click", () => {
+            if (rowLocked || row.dataset.locked === "1") return;
+            rowLocked = true;
+            row.dataset.locked = "1";
+            _pickLocked = true;
 
-          // Add "Locked in!" text
-          const lockMsg = document.createElement("div");
-          lockMsg.className = "oni-pl-spec-wait";
-          lockMsg.textContent = "Locked in!";
-          lockMsg.style.marginTop = "6px";
-          wrap.appendChild(lockMsg);
+            // Lock both buttons visually
+            btnBox.querySelectorAll(".oni-pl-choice").forEach(b => {
+              b.disabled = true;
+              if (parseInt(b.dataset.idx) === idx) {
+                b.classList.add("oni-pl-choice-locked");
+              } else {
+                b.style.opacity = "0.3";
+              }
+            });
 
-          // Emit or resolve directly
-          if (game.user?.isGM) {
-            if (_isOwner) {
-              CAMP.PlanningUI?.resolveOwnerPick(actorId, idx);
-            } else {
-              CAMP.PlanningUI?.resolveTargetPick(targetActorId, idx);
-            }
-          } else {
-            CAMP.Socket.emit(msgType, {
+            // Add "Locked in!" text
+            const lockMsg = document.createElement("div");
+            lockMsg.className = "oni-pl-spec-wait";
+            lockMsg.textContent = "Locked in!";
+            lockMsg.style.marginTop = "6px";
+            row.appendChild(lockMsg);
+
+            // Tell everyone THAT this side locked (not what it picked).
+            _setLock(role, q);
+            CAMP.MG?.event?.("PLANNING", actorId, "lock", { role, q });
+
+            // send(): reaches the GM resolver even when this client IS the GM.
+            CAMP.Socket.send(msgType, {
               actorId,
               targetActorId,
               choiceIdx: idx,
             });
-          }
-        }, { once: true });
+          }, { once: true });
 
-        wrap.appendChild(btn);
+          btnBox.appendChild(btn);
+        });
       });
     } else {
       // Spectator
@@ -537,6 +613,7 @@
       spec.textContent = "Both players are choosing…";
       wrap.appendChild(spec);
     }
+    _renderLockStatus();
   }
 
   // ---------------------------------------------------------------------------
@@ -565,14 +642,14 @@
       const ovl = document.createElement("div");
       ovl.id = OVL_ID;
 
-      if (_isOwner) {
-        const cards = (allies ?? []).map(a => `
+      const cards = (allies ?? []).map(a => `
           <div class="oni-pl-ally-card" data-target-id="${a.id}">
             <img src="${a.img}" alt="${a.name}">
             <span>${a.name}</span>
           </div>
         `).join("");
 
+      if (_isOwner) {
         ovl.innerHTML = `
           <div class="oni-pl-panel">
             <div class="oni-pl-panel-title">
@@ -583,25 +660,34 @@
           </div>
         `;
 
+        let picked = false;
         ovl.querySelectorAll(".oni-pl-ally-card").forEach(card => {
+          card.addEventListener("mouseenter", () => {
+            if (!picked) CAMP.MG?.event?.("PLANNING", actorId, "hover", { targetId: card.dataset.targetId });
+          });
+          card.addEventListener("mouseleave", () => {
+            if (!picked) CAMP.MG?.event?.("PLANNING", actorId, "hover", { targetId: null });
+          });
           card.addEventListener("click", () => {
             const tid = card.dataset.targetId;
-            if (!tid) return;
-            if (game.user?.isGM) {
-              CAMP.PlanningUI.resolveTarget(actorId, tid);
-            } else {
-              CAMP.Socket.emit(CAMP.MSG.PLANNING_TARGET, { actorId, targetActorId: tid });
-            }
+            if (!tid || picked) return;
+            picked = true;
+            CAMP.MG?.event?.("PLANNING", actorId, "pick", { targetId: tid });
+            // send(): a GM-owner reaches its own resolver through the router.
+            CAMP.Socket.send(CAMP.MSG.PLANNING_TARGET, { actorId, targetActorId: tid });
           }, { once: true });
         });
       } else {
         const ownerUid  = _getOwnerUserId(actorObj);
         const ownerName = ownerUid ? (game.users?.get(ownerUid)?.name ?? actorName) : actorName;
+        // Spectators see the same cards (read-only) with the owner's cursor mirrored.
         ovl.innerHTML = `
-          <div class="oni-pl-panel" style="text-align:center;">
+          <div class="oni-pl-panel oni-pl-spectate" style="text-align:center;">
             <div class="oni-pl-panel-title" style="justify-content:center;">
               <img src="${PLANNING_ICON}" alt=""> Planning
             </div>
+            <div class="oni-pl-panel-sub">Who would you like to strategize with?</div>
+            <div class="oni-pl-ally-grid">${cards}</div>
             <div class="oni-pl-waiting">Waiting for ${ownerName} to choose a target…</div>
           </div>
         `;
@@ -640,6 +726,14 @@
     // ── Stage 2b: Guessing Round ────────────────────────────────────────────
     showQuestion(actorId, targetActorId, q, question) {
       _pickLocked = false;
+      if (q !== _curQ) { _curQ = q; _locks = { owner: false, target: false }; }
+      // Late join / replay: showArena may not have run on this page.
+      if (!_targetId && targetActorId) {
+        _actorId  = actorId;
+        _targetId = targetActorId;
+        _isOwner  = _isOwnerOfActor(game.actors?.get(actorId));
+        _isTarget = _isOwnerOfActor(game.actors?.get(targetActorId));
+      }
 
       if (!document.getElementById(OVL_ID)) _buildArena();
 
@@ -678,6 +772,8 @@
     // ── Stage 3: Reveal ─────────────────────────────────────────────────────
     showReveal(actorId, targetActorId, q, question, ownerChoice, targetChoice, match, score) {
       if (!document.getElementById(OVL_ID)) _buildArena();
+      _curQ = -1;   // guessing over: hide the lock line
+      _renderLockStatus();
 
       // Update header
       const header = document.getElementById("oni-pl-q-header");
@@ -844,11 +940,7 @@
       if (_isOwner) {
         const btn = ovl.querySelector("#oni-pl-proceed");
         btn?.addEventListener("click", () => {
-          if (game.user?.isGM) {
-            CAMP.PlanningUI.resolveProceed(actorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.PLANNING_PROCEED, { actorId });
-          }
+          CAMP.Socket.send(CAMP.MSG.PLANNING_PROCEED, { actorId });
           btn.disabled = true;
         }, { once: true });
       }
@@ -881,6 +973,47 @@
     const proto = String(actor?.prototypeToken?.texture?.src ?? "").trim();
     return std || token || proto || actor.img || "icons/svg/mystery-man.svg";
   }
+
+  // ---------------------------------------------------------------------------
+  // Spectator channel: ally-picker cursor + "locked in" per side
+  // ---------------------------------------------------------------------------
+  function _markRemoteCard(targetId, cls) {
+    document.querySelectorAll(`#${OVL_ID} .oni-pl-spectate .oni-pl-ally-card`).forEach(c => {
+      c.classList.toggle(cls, !!targetId && c.dataset.targetId === targetId);
+    });
+  }
+
+  CAMP.MG?.on?.("PLANNING", (kind, data, msg) => {
+    if (!msg?.a || msg.a !== _actorId) return;
+    if (kind === "hover") _markRemoteCard(data.targetId ?? null, "oni-pl-remote-hover");
+    else if (kind === "pick") {
+      _markRemoteCard(null, "oni-pl-remote-hover");
+      _markRemoteCard(data.targetId ?? null, "oni-pl-remote-pick");
+    } else if (kind === "lock") {
+      _setLock(data.role, data.q);
+    }
+  });
+
+  // Late join: the GM replay log re-delivers ARENA/QUESTION, but not who has
+  // already locked in this round. Both pickers track both locks (own click +
+  // the other's event) and answer; apply() merges them.
+  CAMP.MG?.registerGame?.("PLANNING", {
+    snapshot() {
+      if (!_actorId || _curQ < 0 || _resultShown || !document.getElementById(OVL_ID)) return null;
+      if (!_isOwner && !_isTarget) return null;
+      return { actorId: _actorId, targetActorId: _targetId, q: _curQ, locks: { ..._locks } };
+    },
+    apply(snap) {
+      if (!snap?.actorId || snap.actorId !== _actorId || snap.q !== _curQ) return;
+      for (const role of ["owner", "target"]) {
+        if (!snap.locks?.[role]) continue;
+        _setLock(role, snap.q);
+        // This page picks for that side and had already locked before reloading.
+        if ((role === "owner" && _isOwner) || (role === "target" && _isTarget)) _markOwnRowLocked(role);
+      }
+    },
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 
   console.debug(TAG, "Planning UI loaded.");
 })();
