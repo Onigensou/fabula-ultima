@@ -475,8 +475,8 @@ const CARD_CSS = `
 .fu-roster-tag { font-size: 9px; font-weight: 700; color: #fff; border-radius: 3px; padding: 0 4px; margin-left: 4px; }
 .fu-roster-tag.rep { background: #a8661a; } .fu-roster-tag.pin { background: #3c5f91; } .fu-roster-tag.sig { background: #b8860b; }
 .fu-roster-note { font-size: 12px; background: rgba(168,102,26,.15); border-radius: 3px; padding: 3px 6px; margin-top: 5px; }
-.fu-roster-acts { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-.fu-roster-acts button { flex: 1 1 auto; line-height: 22px; font-size: 12px; }`;
+.fu-roster-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 8px; }
+.fu-roster-acts button { width: 100%; margin: 0; line-height: 22px; font-size: 12px; }`;
 
 Hooks.once("init", () => {
   const s = document.createElement("style");
