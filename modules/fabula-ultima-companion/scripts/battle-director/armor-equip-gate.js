@@ -13,9 +13,18 @@
 // sheet, its resident AEs enable/disable to match. GM-only (a single writer); it
 // stands down while a BD-managed equip flow drives the actor. Mirrors the
 // structure of set-bonus-hooks.js.
+//
+// Fresh hand/accessory gear (2026-11-24): a weapon, shield or accessory that
+// ARRIVES on an actor (loot, shop, gacha, transfer, GM drag) carries the world
+// item's `disabled` state, which is often `false`; a looted Gravedigger Shovel
+// cursed its unequipped holder. On createItem, if no slot names the new item,
+// its equip-linked AEs are switched off. Disable-only: equipping goes through
+// the equipment swap, which enables them. The party stash never applies item
+// effects at all (shared/stash-effect-rules.js).
 
-import { syncItemEffectsToEquip } from "./equipment-swap.js";
+import { syncItemEffectsToEquip, disableItemEquipEffects } from "./equipment-swap.js";
 import { isManagedEquip } from "./set-bonus.js";
+import { isHandItem, isAccessoryItem, slotOfItem } from "../shared/equipped-gear.js";
 import { log, warn } from "./logger.js";
 
 const isResponsibleGM = () => {
@@ -46,6 +55,20 @@ async function syncArmor(item, reason) {
   }
 }
 
+// A newly arrived hand/accessory item that no slot names starts dormant.
+async function quietNewGear(item) {
+  const actor = item.parent;
+  if (!actor || actor.documentName !== "Actor") return;
+  if (isManagedEquip(actor.id)) return;                           // an equip flow owns this actor right now
+  if (slotOfItem(actor, item, { includeHidden: true })) return;   // arrived worn: leave it
+  try {
+    const n = await disableItemEquipEffects(item);
+    if (n) log(`armor-equip-gate: new unworn ${item.name} on ${actor.name}: disabled ${n} effect(s)`);
+  } catch (e) {
+    warn(`armor-equip-gate: new-gear sync failed for ${item?.name}`, e);
+  }
+}
+
 export function installArmorEquipGate() {
   // Live equip/unequip on the CSB sheet.
   Hooks.on("updateItem", (item, changes) => {
@@ -60,6 +83,7 @@ export function installArmorEquipGate() {
   Hooks.on("createItem", (item) => {
     if (!isResponsibleGM()) return;
     if (item?.parent && isArmor(item)) syncArmor(item, "createItem");
+    else if (item?.parent && (isHandItem(item) || isAccessoryItem(item))) quietNewGear(item);
   });
 
   // Load/reload sweep: reconcile every owned armor's AE state to `isEquipped`, so

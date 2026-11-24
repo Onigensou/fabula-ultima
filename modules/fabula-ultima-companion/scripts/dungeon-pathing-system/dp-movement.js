@@ -230,8 +230,10 @@ await play(
      * TOKEN_OFFSET is applied so the character's feet rest on the tile graphic.
      * shove: pushed by a tile (Force Move, Gusty) rather than walked, so no
      * walk art and no turn.
+     * fogHold: a Confirm / Go Back panel follows; watchers keep the fog until
+     * the step is confirmed.
      */
-    async moveToNode(token, destNode, { shove = false } = {}) {
+    async moveToNode(token, destNode, { shove = false, fogHold = false } = {}) {
       if (!token?.document) return false;
 
       const gSize  = getGridSize();
@@ -307,7 +309,11 @@ await play(
         canvas.app.ticker.remove(_fct);
 
         const tUpd = performance.now();
-        await token.document.update({ x: realX, y: realY }, { animate: false, dungeonPathing: true });
+        // fogHold: the step still waits for Confirm / Go Back, so the other
+        // clients keep the fog where it was until the mover commits it
+        // (dp-bootstrap.js, fogHoldNodeId).
+        await token.document.update({ x: realX, y: realY },
+          { animate: false, dungeonPathing: true, ...(fogHold ? { dpFogHold: true } : {}) });
         const dtUpd = performance.now() - tUpd;
 
         const tW2 = performance.now();

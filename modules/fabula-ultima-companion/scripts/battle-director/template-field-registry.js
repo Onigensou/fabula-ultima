@@ -998,6 +998,9 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
   // by reactionWeaponUsedSatisfied (skill-effects.js). Morrigan's "on hit with THIS
   // weapon, recover 10 MP" sets this.
   checkboxCol("reaction_requires_weapon_used", "Requires Weapon Used", { tooltip: "CHECK for an on-use weapon rider: the row fires only when the weapon backing this skill (its own type, or its container weapon) is the one actually used in the action — not on a spell or a different weapon, and only for the acting attacker. UNCHECK (default) = fires whenever the weapon/gear is merely equipped (accessory-like)." }),
+  // KO opt-in. A KO'd creature reacts to nothing unless the row is CHECKED here.
+  // Read by rowWorksWhileKo (skill-effects.js). Oathsworn Paladin 3pc sets this.
+  checkboxCol("reaction_works_while_ko", "Works While KO", { tooltip: "CHECK only for a rule that lets a KO'd (0 HP) character act, e.g. \"spend 1 FP to Protect while you are KO\". The row then still reaches a KO'd reactor; gate the KO-only case with CUR_HP <= 0 in Row Condition and pay the cost in the chain. UNCHECK (default) = a KO'd creature can't use this reaction." }),
 ];
 
 // Map a table key → its required columns, for the boot sync to iterate.
