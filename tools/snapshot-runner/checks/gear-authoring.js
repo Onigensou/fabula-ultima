@@ -79,24 +79,24 @@ const IDS = {
 
 // 4. Stat effects on a temporary actor, equipped through the real swap
 const { applyEquipmentSwap } = await import(`/modules/${NS}/scripts/battle-director/equipment-swap.js`);
-const dummy = game.actors.getName("Dummy Player");
-const temp = await Actor.create({ ...dummy.toObject(), _id: undefined, name: "GA Temp" });
+const hina = game.actors.getName("Hina");
+const temp = await Actor.create({ ...hina.toObject(), _id: undefined, name: "GA Temp", prototypeToken: { ...hina.toObject().prototypeToken, actorLink: true } });
 const P = () => temp.system.props;
-await temp.update({ "system.props.class_list": { "0": { class_name: "Elementalist", level: 1 }, "1": { class_name: "Guardian", level: 1 }, "2": { class_name: "Rogue", level: 1 } } });
 await wait(300);
 const add = async (id) => { const s = W(id).toObject(); delete s._id; s.system.props.isEquipped = false; const [it] = await temp.createEmbeddedDocuments("Item", [s]); return it; };
 const wear = async (sel) => { await applyEquipmentSwap(temp, { main: null, off: null, accessory1: null, accessory2: null, ...sel }, { allowArmor: true }); await wait(400); };
 const wearArmor = async (it) => { await temp.updateEmbeddedDocuments("Item", temp.items.filter((i) => String(i.system?.props?.item_type).toLowerCase() === "armor").map((i) => ({ _id: i.id, "system.props.isEquipped": i.id === it.id }))); await wait(500); };
-const snap = () => ({ hp: P().max_hp, mp: P().max_mp, def: P().defense, mdef: P().magic_defense, crit: P().minimum_critical_dice, pois: P().condition_poisoned, disc: temp.flags?.[NS]?.cataclysm_cost_discount });
+const snap = () => ({ def: P().defense, mdef: P().magic_defense, hp: P().max_hp, mp: P().max_mp, def: P().defense, mdef: P().magic_defense, crit: P().minimum_critical_dice, pois: P().condition_poisoned, disc: temp.flags?.[NS]?.cataclysm_cost_discount });
 const base = snap();
-out.hpKeys = Object.keys(P()).filter((k) => /(^|_)(hp|mp)(_|$)|health|mind/i.test(k)).map((k) => k + "=" + JSON.stringify(P()[k]).slice(0, 30));
-out.hinaKeys = Object.entries(game.actors.getName("Hina").system.props).filter(([k]) => /max/i.test(k)).map(([k, v]) => k + "=" + JSON.stringify(v).slice(0, 30));
-const classes = 3;
+out.hpKeys = Object.keys(P()).filter((k) => /(^|_)(hp|mp)(_|$)|health|mind/i.test(k)).map((k) => k + "=" + String(JSON.stringify(P()[k])).slice(0, 30));
+out.hinaKeys = Object.entries(game.actors.getName("Hina").system.props).filter(([k]) => /max/i.test(k)).map(([k, v]) => k + "=" + String(JSON.stringify(v)).slice(0, 30));
+const classes = new Set(Object.values(P().class_list ?? {}).filter((r) => r && !r.$deleted && r.class_name).map((r) => r.class_name.trim().toLowerCase())).size;
+out.classes = classes;
 out.temp = { base };
 try {
   const ring = await add(IDS.onions), dice = await add(IDS.gambler), hat = await add(IDS.witch);
   await wear({ accessory1: ring.id }); out.temp.ring = snap();
-  ok("Ring of Onions: max HP/MP +2 per class (3 classes)", out.temp.ring.hp === base.hp + 2 * classes && out.temp.ring.mp === base.mp + 2 * classes, out.temp.ring);
+  ok("Ring of Onions: max HP/MP +2 per class (Hina clone)", out.temp.ring.hp === base.hp + 2 * classes && out.temp.ring.mp === base.mp + 2 * classes, out.temp.ring);
   await wear({ accessory1: dice.id, accessory2: hat.id }); out.temp.diceHat = snap();
   ok("Gambler's Dice: crit on doubles from 2", Number(out.temp.diceHat.crit) === 2, out.temp.diceHat.crit);
   ok("Witch Hat: discount flag 50", Number(out.temp.diceHat.disc) === 50, out.temp.diceHat.disc);
@@ -114,7 +114,7 @@ try {
   ok("Fairy Tunic: +2 MDEF under a Scene spell", on.mdef === off.mdef + 2, out.temp.fairy);
   await temp.deleteEmbeddedDocuments("ActiveEffect", temp.effects.filter((e) => e.name === "GA Scene Spell").map((e) => e.id));
   const biker = await add(IDS.biker);
-  await wearArmor(biker); const formless = snap();
+  await wearArmor(biker); const formless = { ...snap(), defRaw: P().defense, baseDef: P().base_defense, bonusDef: P().bonus_defense, bikerProps: ["item_def_bonus","item_mdef_bonus","isMartial","item_baseDef"].map((k) => k + "=" + JSON.stringify(temp.items.get(biker.id).system.props[k])) };
   const steel = W("GrAuBikerPsv0000").effects.find((e) => e.name === "Steel Form").toObject(); delete steel._id;
   await temp.createEmbeddedDocuments("ActiveEffect", [steel]); await wait(300); const st = snap();
   out.temp.biker = { formless, steel: st, effects: temp.items.get(biker.id)?.effects.map((e) => `${e.name}:${e.disabled ? "off" : "on"}`) };

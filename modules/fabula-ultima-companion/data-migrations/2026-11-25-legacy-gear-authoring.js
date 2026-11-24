@@ -171,7 +171,7 @@ function specs() {
     { effect_label: "bk_drop_mana", effect_kind: "remove_ae", ae_template_ref: "Mana Form", count: "all", target_ref: "self", condition_formula: "AE_COUNT_MANA_FORM > 0" },
   ];
   const marker = (_id, name) => ({ _id, name, transfer: false, disabled: false, changes: [], system: { tags: [] }, flags: permanentFlags() });
-  S["HlSNO4jVVSMkSCT7"] = { name: "Biker Suit", text: TEXT.bikerSuit, props: { item_rarity: "Rare" },
+  S["HlSNO4jVVSMkSCT7"] = { name: "Biker Suit", text: TEXT.bikerSuit, props: { item_rarity: "Rare", item_def_bonus: "0", item_mdef_bonus: "0" },
     aes: [{ _id: id("BikerFormAe"), name: "Biker Suit Forms", transfer: true, changes: [
       { key: "base_defense", mode: 4, value: `aeWhen("Steel Form", "16")`, priority: 30 },
       { key: "base_magic_defense", mode: 4, value: `aeWhen("Mana Form", "16")`, priority: 30 },
