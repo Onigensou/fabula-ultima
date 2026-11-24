@@ -34,18 +34,38 @@
 
   // ── Ownership helpers ─────────────────────────────────────────────────────
 
+  // Shared minigame owner rule (camp-minigame-sync.js).
   function _getOwnerUserId(actor) {
-    const hit = Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      if (id === "default") return false;
-      const user = game.users?.get(id);
-      return lvl === 3 && user && !user.isGM;
-    });
-    return hit?.[0] ?? null;
+    return actor ? (CAMP.MG?.ownerUserId?.(actor) ?? null) : null;
   }
 
   function _isOwner(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return actor ? !!CAMP.MG?.isOwner?.(actor) : false;
+  }
+
+  // Deterministic 0..1 sequence from a string seed (mulberry32 over an FNV
+  // hash). The rolling message carries only the two actor ids, so every
+  // client derives the same three swing timings from them.
+  function _seededRand(seedStr) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < seedStr.length; i++) { h ^= seedStr.charCodeAt(i); h = Math.imul(h, 16777619); }
+    let a = h >>> 0;
+    return () => {
+      a = (a + 0x6D2B79F5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // Spectator mirror of the owner's card hover / pick (MG.event "hover"/"pick").
+  function _markRemoteCard(targetId, cls) {
+    const ovl = document.getElementById(OVL_ID);
+    if (!ovl) return;
+    ovl.querySelectorAll(".oni-cl-ally-card").forEach(c => {
+      c.classList.toggle(cls, !!targetId && c.dataset.targetId === targetId);
+    });
   }
 
   // ── Token image ───────────────────────────────────────────────────────────
@@ -147,6 +167,19 @@
       .oni-cl-ally-card img  { width:64px; height:64px; border:none; border-radius:0; background:transparent; object-fit:contain; }
       .oni-cl-ally-card span { font-size:.82rem; font-weight:700; color:#5a3010; text-align:center; }
       .oni-cl-waiting-txt    { font-size:1rem; color:#c8a84b; font-style:italic; }
+      /* Spectator: same cards, read-only; the owner's hover/pick is mirrored */
+      .oni-cl-ally-grid.oni-cl-spectate .oni-cl-ally-card { cursor: default; }
+      .oni-cl-ally-grid.oni-cl-spectate .oni-cl-ally-card:hover:not(.oni-cl-remote-hover) {
+        transform: none; box-shadow: none;
+      }
+      .oni-cl-ally-card.oni-cl-remote-hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0,0,0,.35);
+      }
+      .oni-cl-ally-card.oni-cl-remote-pick {
+        border-color: #c8a84b;
+        box-shadow: 0 0 0 3px rgba(200,168,75,.55), 0 6px 18px rgba(0,0,0,.35);
+      }
 
       /* ── Rolling stage ── */
       .oni-cl-arena {
@@ -256,14 +289,14 @@
       const ovl = document.createElement("div");
       ovl.id = OVL_ID;
 
-      if (isOwner) {
-        const allyCards = (allies ?? []).map(a => `
+      const allyCards = (allies ?? []).map(a => `
           <div class="oni-cl-ally-card" data-target-id="${a.id}">
             <img src="${a.img}" alt="${a.name}">
             <span>${a.name}</span>
           </div>
         `).join("");
 
+      if (isOwner) {
         ovl.innerHTML = `
           <div class="oni-cl-picker">
             <div class="oni-cl-picker-title">
@@ -274,25 +307,34 @@
           </div>
         `;
 
+        let picked = false;
         ovl.querySelectorAll(".oni-cl-ally-card").forEach(card => {
+          card.addEventListener("mouseenter", () => {
+            if (!picked) CAMP.MG?.event?.("COMBAT_LESSON", actorId, "hover", { targetId: card.dataset.targetId });
+          });
+          card.addEventListener("mouseleave", () => {
+            if (!picked) CAMP.MG?.event?.("COMBAT_LESSON", actorId, "hover", { targetId: null });
+          });
           card.addEventListener("click", () => {
             const targetId = card.dataset.targetId;
-            if (!targetId) return;
-            if (game.user?.isGM) {
-              CAMP.CombatLessonUI.resolveTarget(actorId, targetId);
-            } else {
-              CAMP.Socket.emit(CAMP.MSG.COMBAT_LESSON_TARGET, { actorId, targetActorId: targetId });
-            }
+            if (!targetId || picked) return;
+            picked = true;
+            CAMP.MG?.event?.("COMBAT_LESSON", actorId, "pick", { targetId });
+            // send(): a GM-owner reaches its own resolver through the router.
+            CAMP.Socket.send(CAMP.MSG.COMBAT_LESSON_TARGET, { actorId, targetActorId: targetId });
           }, { once: true });
         });
       } else {
         const ownerUid   = _getOwnerUserId(teacherActor);
         const ownerName  = ownerUid ? (game.users?.get(ownerUid)?.name ?? "teacher") : "teacher";
+        // Spectators see the same cards (read-only) with the owner's cursor mirrored.
         ovl.innerHTML = `
           <div class="oni-cl-picker">
             <div class="oni-cl-picker-title">
               <img src="${LESSON_ICON}" alt=""> Combat Lesson
             </div>
+            <div class="oni-cl-picker-sub">Who will you teach?</div>
+            <div class="oni-cl-ally-grid oni-cl-spectate">${allyCards}</div>
             <div class="oni-cl-waiting-txt">Waiting for ${ownerName} to choose a target…</div>
           </div>
         `;
@@ -375,8 +417,9 @@
       }
       _rafId = requestAnimationFrame(_frame);
 
-      // ── SWING sfx × 3 at random intervals in 0–4 s window ──
-      const swingTimes = [0, 1, 2].map(() => Math.random() * 4000);
+      // ── SWING sfx × 3 at seeded intervals in 0–4 s window (same on every client) ──
+      const rand = _seededRand(`${actorId}|${targetActorId}`);
+      const swingTimes = [0, 1, 2].map(() => rand() * 4000);
       swingTimes.forEach(delay => {
         _swingTimers.push(setTimeout(() => _playSound(SFX.SWING, 0.55), delay));
       });
@@ -432,11 +475,7 @@
             proceedBtn.style.display = "";
             proceedBtn.addEventListener("click", () => {
               proceedBtn.disabled = true;
-              if (game.user?.isGM) {
-                CAMP.CombatLessonUI.resolveProceed(_currentTeacherActorId);
-              } else {
-                CAMP.Socket.emit(CAMP.MSG.COMBAT_LESSON_PROCEED, { actorId: _currentTeacherActorId });
-              }
+              CAMP.Socket.send(CAMP.MSG.COMBAT_LESSON_PROCEED, { actorId: _currentTeacherActorId });
             }, { once: true });
           }
         }
@@ -461,6 +500,16 @@
       el.addEventListener("animationend", () => el.remove(), { once: true });
     },
   };
+
+  // ── Spectator: owner's target cursor ──────────────────────────────────────
+  CAMP.MG?.on?.("COMBAT_LESSON", (kind, data, msg) => {
+    if (!msg?.a || msg.a !== _currentTeacherActorId) return;
+    if (kind === "hover") _markRemoteCard(data.targetId ?? null, "oni-cl-remote-hover");
+    else if (kind === "pick") {
+      _markRemoteCard(null, "oni-cl-remote-hover");
+      _markRemoteCard(data.targetId ?? null, "oni-cl-remote-pick");
+    }
+  });
 
   console.debug(TAG, "Combat Lesson UI loaded.");
 })();
