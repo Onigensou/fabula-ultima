@@ -38,7 +38,8 @@ export const DEFAULT_CONFIG = Object.freeze({
 });
 
 /** Merge a stored (possibly partial / older) config over the defaults. */
-export function resolveConfig(stored = {}) {
+export function resolveConfig(stored) {
+  stored ??= {};   // the shop flag stores null for "all defaults"
   const d = DEFAULT_CONFIG;
   const num = (v, def, min = 0) => (Number.isFinite(Number(v)) ? Math.max(min, Number(v)) : def);
   const quota = {}, weights = {};

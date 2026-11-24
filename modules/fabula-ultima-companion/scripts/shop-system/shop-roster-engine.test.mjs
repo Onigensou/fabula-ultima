@@ -22,7 +22,8 @@ const big = [
 ];
 
 // ── config ──────────────────────────────────────────────────────────────────
-check("config: defaults", JSON.stringify(cfg().quota) === JSON.stringify({ weapon: 8, armor: 4, shield: 2, accessory: 5 }));
+check("config: null (stored 'all defaults') resolves", E.resolveConfig(null).quota.weapon === 8 && E.resolveConfig(undefined).legendaryCap === 2);
+check("config: defaults",JSON.stringify(cfg().quota) === JSON.stringify({ weapon: 8, armor: 4, shield: 2, accessory: 5 }));
 check("config: partial override keeps the rest", cfg({ quota: { shield: 3 } }).quota.weapon === 8 && cfg({ quota: { shield: 3 } }).quota.shield === 3);
 check("config: junk numbers fall back", cfg({ legendaryCap: "x", repeatWeight: 7 }).legendaryCap === 2 && cfg({ repeatWeight: 7 }).repeatWeight === 1);
 
