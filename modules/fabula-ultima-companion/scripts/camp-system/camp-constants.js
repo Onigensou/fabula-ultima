@@ -109,6 +109,10 @@
     // Phase changes and SAVE_CHOICE carry the state; this only mirrors the
     // cursor so the spectator panel feels alive while the GM decides.
     REST_FOCUS:         "CAMP_REST_FOCUS",            // primary GM → all { choice: "yes"|"no" }
+    // Minigame spectator channel (camp-minigame-sync.js, CAMP.MG)
+    MG_EVENT:           "CAMP_MG_EVENT",              // player → all { g, a, k, d } live game event
+    MG_SYNC_REQ:        "CAMP_MG_SYNC_REQ",           // reloaded client → all { userId }
+    MG_SYNC:            "CAMP_MG_SYNC",               // player → that client { userId, g, a, start, snap }
     // Exploration roulette (GM → all, owner → GM)
     EXPLORATION_START:   "CAMP_EXPLORATION_START",
     EXPLORATION_RESULT:  "CAMP_EXPLORATION_RESULT",

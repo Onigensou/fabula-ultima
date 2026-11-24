@@ -208,6 +208,9 @@
     isParticipant,
     participantUsers,
     deciderUserIdForActor,
+    // The dedicated stream account(s) from "Always-spectator users" only —
+    // unlike isSpectator(), never a player of another campaign.
+    isAlwaysSpectator: (userOrId) => { const u = _user(userOrId); return !!u && _forcedIds().has(u.id); },
     refresh,
     partyActorIds: () => (_partyIds ? [..._partyIds] : null),
   };

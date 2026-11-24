@@ -393,6 +393,7 @@
     "scripts/camp-system/camp-party.js",
     "scripts/camp-system/camp-state.js",
     "scripts/camp-system/camp-socket.js",
+    "scripts/camp-system/camp-minigame-sync.js",
     "scripts/camp-system/activities/activity-registry.js",
     "scripts/camp-system/activities/activity-camp-forge.js",
     "scripts/camp-system/activities/activity-cartography.js",
