@@ -834,6 +834,12 @@
   let _panelMoveHandler  = null;
   let _panelLeaveHandler = null;
 
+  // Bumped by every show()/hide(). hide() removes the panel 350 ms later (after
+  // its fade); a show() inside that window (canvasTearDown → canvasReady on a
+  // fast scene change) reuses the same panel, so the pending removal must only
+  // fire if nothing showed the HUD again in between.
+  let _gen = 0;
+
   function _on(name, fn) { _hookIds.push([name, Hooks.on(name, fn)]); }
 
   function _removeHooks() {
@@ -845,8 +851,18 @@
 
     show() {
       injectStyles();
+      _gen++;
+      // A second show() without a hide() in between must not stack hooks and
+      // listeners (every render would then run twice).
+      _removeHooks();
+      teardownGMFade();
+      if (_resizeHandler) window.removeEventListener("resize", _resizeHandler);
 
       let panel = document.getElementById(PANEL_ID);
+      if (panel) {
+        if (_panelMoveHandler)  panel.removeEventListener("mousemove",  _panelMoveHandler);
+        if (_panelLeaveHandler) panel.removeEventListener("mouseleave", _panelLeaveHandler);
+      }
       if (!panel) {
         panel = document.createElement("div");
         panel.id = PANEL_ID;
@@ -889,7 +905,8 @@
         if (_panelMoveHandler)  panel.removeEventListener("mousemove",  _panelMoveHandler);
         if (_panelLeaveHandler) panel.removeEventListener("mouseleave", _panelLeaveHandler);
         panel.classList.remove("dp-hud-visible");
-        setTimeout(() => panel.remove(), 350);
+        const gen = ++_gen;
+        setTimeout(() => { if (gen === _gen) panel.remove(); }, 350);
       }
       _panelMoveHandler  = null;
       _panelLeaveHandler = null;
