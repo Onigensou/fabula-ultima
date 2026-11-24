@@ -276,12 +276,20 @@ export async function openPartyMenu({ actorId = null, view = null } = {}) {
     _root.addEventListener("contextmenu", onContext);
     _root.addEventListener("mousedown", onMouseBack);
     _root.addEventListener("mouseup", onMouseBack);
+    // A view may turn a dial with the wheel (the Zenit box's digits).
+    _root.addEventListener("wheel", (ev) => {
+      if (S.busy || !VIEWS[S.view]?.wheel) return;
+      if (VIEWS[S.view].wheel(ctx, ev)) ev.preventDefault();
+    }, { passive: false });
     // Hovering a linked term in a description shows what it means.
     wireLinkTips(_root);
     document.body.appendChild(_root);
     window.addEventListener("keydown", onKey, true);
   }
   _hadOverlay = false;
+  // While the menu is up, System Message lines draw above it (zenit moves are
+  // announced there; decided on mockup v2, D5).
+  document.body.classList.add("fud-pm-open");
   animate("open");
   play(SND.ok);
   render();
@@ -298,6 +306,7 @@ export function closePartyMenu() {
   _root.remove();
   _root = null;
   S.open = false;
+  document.body.classList.remove("fud-pm-open");
   play(SND.back);
 }
 
@@ -378,7 +387,7 @@ function render() {
 /** Does the current VIEWS view have a modal list open over it (dims the rest)? */
 function viewOverlay() {
   const v = S.v;
-  return !!(VIEWS[S.view] && v && (v.picker || v.focus === "dest" || v.focus === "qty"));
+  return !!(VIEWS[S.view] && v && (v.picker || v.focus === "dest" || v.focus === "qty" || v.focus === "zenit"));
 }
 
 
@@ -450,7 +459,14 @@ function renderMain() {
         <div class="pm-win pm-info">
           <div class="pm-info-row"><span class="pm-label">${esc(r.gameName || "Party")}</span></div>
           <div class="pm-info-row pm-loc">${esc(r.location || "—")}</div>
-          <div class="pm-info-row"><span class="pm-zenit"><i class="fas fa-coins"></i> ${Number(r.zenit || 0).toLocaleString()}</span><em>z</em></div>
+          <div class="pm-zsep"></div>
+          <div class="pm-zline is-stash pm-hit" data-action="stash">
+            <span class="pm-label"><i class="fas fa-coins"></i>Party Total</span>
+            <span class="pm-zval"><span class="pm-zenit">${Number(r.zenit || 0).toLocaleString("en-US")}</span><em>z</em></span>
+            <div class="pm-ztip" role="tooltip">
+              <div class="pm-ztip-row"><i class="fas fa-sack-dollar"></i><span>Party Stash</span><b>${Number(r.stash || 0).toLocaleString("en-US")}</b><em>z</em></div>
+              <div class="pm-ztip-sub">Everyone's zenit plus the stash · click to move zenit</div>
+            </div></div>
         </div>
       </div>
       ${compRow}
@@ -765,6 +781,13 @@ function enterView(id, actor = null) {
   render();
 }
 
+/** The main menu's Party Total line: straight into Item → Party Bag with the Zenit box open. */
+function openStashBox() {
+  if (!canUseCommand("item")) { play(SND.buzz, 0.5); toast(REASONS["not-granted"] ?? "The GM hasn't opened the Item menu to players."); return; }
+  enterView("item", S.roster.db);
+  if (S.view === "item") itemView.openZenit(ctx, { quiet: true });
+}
+
 /** Back from a view to the party list, hand on the character it was about. */
 function backToMain() {
   const id = S.view;
@@ -966,6 +989,7 @@ async function onClick(ev) {
   switch (a) {
     case "cmd": S.focus = "cmd"; S.cmd = i; confirmCmd(); break;
     case "member": pickMember(S.roster.active[i]); break;
+    case "stash": openStashBox(); break;
     case "comp": pickCompanion(i); break;
     case "filter": if (!S.picker) setFilter(el.dataset.id); break;
     case "nav-back": navBack(); break;
@@ -1042,7 +1066,10 @@ function onKey(ev) {
     : ev.key;
   const nav = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "Escape", "Tab", "Backspace", "Delete"];
   if (typing && !["ArrowUp", "ArrowDown", "Enter", "Escape"].includes(k)) return;
-  if (!nav.includes(k) && !["q", "e", "Q", "E", "u", "U", "t", "T", "o", "O", "PageUp", "PageDown"].includes(k)) {
+  // Item view: G opens the Zenit box; inside it, A = All and 0-9 type the amount.
+  const zenitKey = (S.view === "item" && (k === "g" || k === "G"))
+    || (S.v?.focus === "zenit" && (k === "a" || k === "A" || /^[0-9]$/.test(k)));
+  if (!nav.includes(k) && !zenitKey && !["q", "e", "Q", "E", "u", "U", "t", "T", "o", "O", "PageUp", "PageDown"].includes(k)) {
     // Swallow everything else too while the menu is up, so WASD / hotkeys do
     // not drive the canvas behind it. Typing in the search box returned above.
     ev.stopPropagation();
@@ -1670,6 +1697,60 @@ function ensureStyles() {
 #${ROOT_ID} .pm-net { flex: 0 0 auto; margin-left: auto; font-size: 12px; font-weight: 700; letter-spacing: -1px; }
 #${ROOT_ID} .pm-why + .pm-net { margin-left: 8px; }
 #${ROOT_ID} .pm-net.is-up { color: #2e7d32; } #${ROOT_ID} .pm-net.is-down { color: var(--low); } #${ROOT_ID} .pm-net.is-mixed { color: #7a3fb4; }
+/* Zenit (mockup v2, approved 2026-11-24 — https://claude.ai/artifact/5J7MVprV87fBkELxpB1zdR, ported verbatim):
+   the main menu's Party Total line + Party Stash tooltip, the bag line's amount, the Zenit box. */
+#${ROOT_ID} .pm-zsep { height: 1px; margin: 2px 0; background: linear-gradient(90deg, transparent, rgba(92,66,30,.55), transparent); opacity: .6; }
+#${ROOT_ID} .pm-zline { display: flex; flex-direction: column; gap: 0; border-radius: 8px; padding: 2px 6px; margin: 0 -6px; }
+#${ROOT_ID} .pm-zline .pm-label { font-size: 12px; display: flex; align-items: center; gap: 6px; }
+#${ROOT_ID} .pm-zline .pm-label i { color: var(--gold-3); }
+#${ROOT_ID} .pm-zline .pm-zval { align-self: flex-end; display: flex; align-items: baseline; }
+#${ROOT_ID} .pm-zline.is-stash { cursor: pointer; position: relative; }
+#${ROOT_ID} .pm-zline.is-stash:hover { background: linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.12) 70%); box-shadow: inset 0 0 0 1px rgba(154,122,43,.45); }
+#${ROOT_ID} .pm-ztip { position: absolute; right: calc(100% + 14px); bottom: -6px; z-index: 40; width: 230px; padding: 9px 12px; border-radius: 10px;
+  opacity: 0; transform: translateX(6px); pointer-events: none; transition: opacity 120ms ease-out, transform 160ms ease-out;
+  background: linear-gradient(180deg, var(--parchment-1), var(--parchment-3)); border: 2px solid var(--edge);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 3px var(--ring), 0 10px 22px rgba(0,0,0,.35); }
+#${ROOT_ID} .pm-zline.is-stash:hover .pm-ztip { opacity: 1; transform: none; }
+#${ROOT_ID} .pm-ztip-row { display: flex; align-items: baseline; gap: 7px; font-size: 16px; font-weight: 700; color: var(--ink); }
+#${ROOT_ID} .pm-ztip-row i { color: var(--gold-3); }
+#${ROOT_ID} .pm-ztip-row b { margin-left: auto; font-size: 20px; font-variant-numeric: tabular-nums; }
+#${ROOT_ID} .pm-ztip-row em { margin: 0; }
+#${ROOT_ID} .pm-ztip-sub { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+#${ROOT_ID} .pm-subz.is-flash { animation: pmz-flash 900ms ease-out; }
+@keyframes pmz-flash { 0% { background: rgba(244,212,136,.9); } 100% { background: transparent; } }
+#${ROOT_ID} .pm-subz { border-radius: 6px; padding: 0 4px; cursor: pointer; }
+#${ROOT_ID} .pm-subz:hover { background: rgba(244,212,136,.45); }
+#${ROOT_ID} .pm-subz b { font-weight: 700; color: var(--ink); }
+#${ROOT_ID} .pm-zbox { width: min(560px, calc(100% - 48px)); gap: 12px; }
+#${ROOT_ID} .pm-ztabs { display: flex; align-items: center; gap: 4px; }
+#${ROOT_ID} .pm-zwho { display: flex; align-items: center; gap: 8px; justify-content: center; }
+#${ROOT_ID} .pm-zwho .pm-pchip { flex: 0 0 46px; }
+#${ROOT_ID} .pm-zwho .pm-pchip.is-on { flex-basis: 54px; }
+#${ROOT_ID} .pm-zwho .pm-pchip.is-no { opacity: .28; filter: grayscale(1); cursor: not-allowed; }
+#${ROOT_ID} .pm-zflow { display: grid; grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr); align-items: center; gap: 6px; }
+#${ROOT_ID} .pm-zpocket { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px;
+  background: rgba(255,255,255,.28); box-shadow: inset 0 0 0 1px rgba(154,122,43,.35); min-width: 0; }
+#${ROOT_ID} .pm-zpocket .pm-portrait { width: 48px; height: 48px; }
+#${ROOT_ID} .pm-zpocket .pm-zname { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#${ROOT_ID} .pm-zpocket .pm-znums { font-size: 14px; font-variant-numeric: tabular-nums; color: var(--ink-soft); white-space: nowrap; }
+#${ROOT_ID} .pm-zpocket .pm-znums b { color: var(--ink); font-weight: 700; }
+#${ROOT_ID} .pm-zpocket .pm-znums .up { color: #2e7d32; } #${ROOT_ID} .pm-zpocket .pm-znums .down { color: var(--low); }
+#${ROOT_ID} .pm-zarrow { font-size: 22px; color: var(--gold-3); text-align: center; }
+#${ROOT_ID} .pm-zamt { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 4px 0 2px; margin-left: 40px; border-radius: 10px; }
+#${ROOT_ID} .pm-zdigits { display: flex; align-items: center; gap: 3px; }
+#${ROOT_ID} .pm-zdig { display: flex; flex-direction: column; align-items: center; width: 30px; }
+#${ROOT_ID} .pm-zdig button { all: unset; cursor: pointer; font-size: 10px; line-height: 1; padding: 2px 8px; color: var(--ink-dim); border-radius: 4px; }
+#${ROOT_ID} .pm-zdig button:hover { color: var(--ink); background: rgba(255,255,255,.4); }
+#${ROOT_ID} .pm-zdig span { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; width: 100%; text-align: center; border-radius: 6px; color: var(--ink-dim); }
+#${ROOT_ID} .pm-zdig.is-lit span { color: var(--ink); }
+#${ROOT_ID} .pm-zdig.is-sel span { background: linear-gradient(rgba(255,255,255,.75), rgba(255,255,255,.2)); box-shadow: inset 0 0 0 1px rgba(154,122,43,.6), 0 0 10px var(--glow); }
+#${ROOT_ID} .pm-zcomma { font-size: 28px; font-weight: 700; color: var(--ink-dim); align-self: center; margin-top: 4px; }
+#${ROOT_ID} .pm-zunit { font-size: 18px; font-weight: 700; color: var(--ink-soft); }
+#${ROOT_ID} .pm-zquick { display: flex; flex-direction: column; gap: 6px; }
+#${ROOT_ID} .pm-zquick .pm-btn { min-width: 64px; }
+#${ROOT_ID} .pm-pickfoot .pm-btn.is-go { min-width: 90px; }
+/* D5: while the menu is open, the System Message panel draws over it (zenit lines). */
+body.fud-pm-open #fu-sysmsg-host { z-index: 10001; }
 ${BONDS_CSS}
 ${BESTIARY_CSS}
 ${CONFIG_CSS(ROOT_ID)}

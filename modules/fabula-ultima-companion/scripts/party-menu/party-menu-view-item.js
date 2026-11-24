@@ -8,6 +8,7 @@
 import {
   ITEM_TYPES, visibleItemFilters, itemType, sortedInventory, itemSummary, quantityOf, isWorn,
   bagsOf, moveRefusal, moveItem, useRefusal, useItem, orbmentOf,
+  zenitMembersOf, zenitRefusal, moveZenit, conflictLive,
 } from "./party-menu-inventory.js";
 import { esc, safeHtml, play, SND, img, gridStep, portraitStrip, overlayFoot, kbd } from "./party-menu-ui.js";
 import { setBonusHTML } from "../linked-text/lt-setbonus.js";
@@ -40,6 +41,9 @@ const REASONS = {
   "transfer-failed": "The move failed — the item may have changed. Try again.",
   sender_quantity_zero_or_negative: "There are none left to move.",
   unregistered_request: "The Party Menu isn't loaded on the GM's client.",
+  "in-combat-zenit": "Zenit can't change hands during a conflict.",
+  "zenit-none": "Choose an amount first.",
+  "zenit-short": "There isn't that much zenit to move.",
 };
 export const moveReason = (r) => REASONS[r] ?? `Could not move it (${r}).`;
 
@@ -80,9 +84,195 @@ function destinations(ctx, item) {
   }));
 }
 
+// ── Zenit box: the Party Stash ⇄ a member's wallet (mockup v2, approved 2026-11-24) ──
+// Port of https://claude.ai/artifact/5J7MVprV87fBkELxpB1zdR — same markup, keys and
+// sounds. Rules live in zenitRefusal (party-menu-inventory.js).
+const Z = {
+  DIGITS: 5,            // 99,999 shown; widens when a wallet holds more
+  START_DIGIT: 1,       // the thousands digit is under the cursor on open (DIGITS - 4)
+  FLASH_MS: 900,        // the bag line's gold flash after a move (pmz-flash)
+  SND_DONE_VOL: 0.55,
+  HINT: "←→ digit · ↑↓ change · 0–9 type · Tab in/out · Q/E who · Z/Enter confirm · X/Esc cancel",
+};
+const fmtZ = (n) => Math.floor(Number(n) || 0).toLocaleString("en-US");
+const zOf = (a) => Math.max(0, Math.floor(Number(a?.system?.props?.zenit) || 0));
+const ownsActor = (a) => !!a?.testUserPermission?.(game.user, "OWNER");
+
+/** May this user open the Zenit box from this bag? (the Party Bag, your own bag; the GM: any party bag) */
+function zenitHere(ctx) {
+  const bag = bagActor(ctx);
+  const roster = ctx.roster();
+  if (!bag) return false;
+  if (bag.id === roster.db?.id) return game.user.isGM || zenitMembersOf(roster).some(ownsActor);
+  return zenitMembersOf(roster).some((a) => a.id === bag.id) && (game.user.isGM || ownsActor(bag));
+}
+const zMember = (ctx) => game.actors?.get(ctx.S.v.z?.who) ?? null;
+const zWhy = (ctx, member, dir) => zenitRefusal({ user: game.user, member, dir, roster: ctx.roster() });
+function zSource(ctx) {
+  const z = ctx.S.v.z;
+  return z.dir === "deposit" ? zOf(zMember(ctx)) : zOf(ctx.roster().db);
+}
+const zDigits = (ctx) => Math.max(Z.DIGITS, String(zSource(ctx)).length);
+
+function renderZenit(ctx) {
+  const v = ctx.S.v, z = v.z, roster = ctx.roster();
+  const m = zMember(ctx);
+  if (!m) return "";
+  const DIG = zDigits(ctx);
+  const max = zSource(ctx);
+  const amt = Math.min(z.amt, max);
+  const digits = String(amt).padStart(DIG, "0").split("");
+  const firstLit = digits.findIndex((d) => d !== "0");
+  const digHtml = digits.map((d, i) => `${i > 0 && (DIG - i) % 3 === 0 ? `<span class="pm-zcomma">,</span>` : ""}<div class="pm-zdig ${i === z.dig ? "is-sel" : ""} ${firstLit !== -1 && i >= firstLit ? "is-lit" : ""}">
+      <button type="button" class="pm-hit" data-action="z-dig" data-i="${i}" data-d="1" aria-label="Up">▲</button><span data-action="z-sel" data-i="${i}" class="pm-hit">${d}</span>
+      <button type="button" class="pm-hit" data-action="z-dig" data-i="${i}" data-d="-1" aria-label="Down">▼</button></div>`).join("");
+  const mz = zOf(m), sz = zOf(roster.db);
+  const cls = (after, before) => (after > before ? "up" : after < before ? "down" : "");
+  const memberPocket = (after) => `<div class="pm-zpocket"><div class="pm-portrait xs">${img(m.img)}</div><div style="min-width:0">
+      <div class="pm-zname">${esc(m.name)}</div><div class="pm-znums">${fmtZ(mz)} → <b class="${cls(after, mz)}">${fmtZ(after)}</b> z</div></div></div>`;
+  const stashPocket = (after) => `<div class="pm-zpocket"><div class="pm-portrait xs"><i class="fas fa-sack-dollar pm-bagicon"></i></div><div style="min-width:0">
+      <div class="pm-zname">Party Stash</div><div class="pm-znums">${fmtZ(sz)} → <b class="${cls(after, sz)}">${fmtZ(after)}</b> z</div></div></div>`;
+  const flow = z.dir === "deposit"
+    ? `${memberPocket(mz - amt)}<i class="fas fa-arrow-right pm-zarrow"></i>${stashPocket(sz + amt)}`
+    : `${stashPocket(sz - amt)}<i class="fas fa-arrow-right pm-zarrow"></i>${memberPocket(mz + amt)}`;
+  const chips = zenitMembersOf(roster).map((x) => {
+    const why = zWhy(ctx, x, z.dir);
+    const reserve = roster.reserve.some((r) => r.id === x.id);
+    return `<span class="pm-pchip pm-hit ${x.id === z.who ? "is-on" : ""} ${why ? "is-no" : ""} ${reserve ? "is-reserve" : ""}" data-action="z-who" data-id="${x.id}" title="${esc(why ? `${x.name}: ${moveReason(why)}` : x.name)}">${img(x.img)}</span>`;
+  }).join("");
+  const srcName = z.dir === "deposit" ? m.name : "The Party Stash";
+  const note = z.capped ? `<div class="pm-locked"><i class="fas fa-circle-info"></i> ${esc(srcName)} only has ${fmtZ(max)} z.</div>` : "";
+  const label = z.dir === "deposit" ? "Put in" : "Take out";
+  return `<div class="pm-picker-veil"></div>
+    <div class="pm-win pm-picker pm-zbox">
+      <div class="pm-picker-head"><span class="pm-label">Zenit</span>
+        <div class="pm-ztabs"><span class="pm-tab pm-hit ${z.dir === "deposit" ? "is-on" : ""}" data-action="z-dir" data-dir="deposit"><i class="fas fa-arrow-down"></i>Put in</span>
+        <span class="pm-tab pm-hit ${z.dir === "withdraw" ? "is-on" : ""}" data-action="z-dir" data-dir="withdraw"><i class="fas fa-arrow-up"></i>Take out</span>${kbd("Tab")}</div></div>
+      <div class="pm-zwho">${kbd("q")}${chips}${kbd("e")}</div>
+      <div class="pm-zflow">${flow}</div>
+      <div class="pm-zamt is-cursor"><div class="pm-zdigits">${digHtml}<span class="pm-zunit">&nbsp;z</span></div>
+        <div class="pm-zquick"><button type="button" class="pm-btn pm-hit" data-action="z-max">All ${kbd("A")}</button><button type="button" class="pm-btn pm-hit" data-action="z-clear">Clear</button></div></div>
+      ${note}
+      <div class="pm-pickfoot"><span class="pm-hint">${esc(Z.HINT)}</span>
+        <button type="button" class="pm-btn pm-hit" data-action="z-cancel">Cancel</button>
+        <button type="button" class="pm-btn pm-hit is-go" data-action="z-go"${amt > 0 ? "" : " disabled"}>${label}</button></div>
+    </div>`;
+}
+
 export const itemView = {
   id: "item",
   title: "Item",
+
+  // ── Zenit box ──
+  openZenit(ctx, { quiet = false } = {}) {
+    const v = ctx.S.v;
+    if (!zenitHere(ctx)) { play(SND.buzz, 0.5); return; }
+    if (conflictLive()) { play(SND.buzz, 0.5); ctx.toast(moveReason("in-combat-zenit")); return; }
+    const roster = ctx.roster();
+    const bag = bagActor(ctx);
+    const members = zenitMembersOf(roster);
+    const fromStash = bag.id === roster.db?.id;
+    const dir = fromStash ? "withdraw" : "deposit";
+    const own = members.find((a) => a.id === game.user.character?.id) ?? members.find((a) => !game.user.isGM && ownsActor(a));
+    let who = fromStash ? (game.user.isGM ? members[0] : own ?? members[0])?.id : bag.id;
+    if (!who) { play(SND.buzz, 0.5); return; }
+    if (zWhy(ctx, game.actors.get(who), dir)) who = members.find((a) => !zWhy(ctx, a, dir))?.id ?? who;
+    v.z = { dir, who, amt: 0, dig: Z.START_DIGIT, capped: false };
+    v.focus = "zenit";
+    if (!quiet) play(SND.ok);
+    ctx.render();
+  },
+
+  zSetAmt(ctx, n) {
+    const z = ctx.S.v.z, max = zSource(ctx);
+    n = Math.max(0, Math.floor(n));
+    z.capped = n > max;
+    z.amt = Math.min(n, max, 10 ** zDigits(ctx) - 1);
+    if (z.capped) play(SND.buzz, 0.4);
+  },
+
+  zStep(ctx, i, d) {
+    const place = 10 ** (zDigits(ctx) - 1 - i);
+    const cur = Math.floor(ctx.S.v.z.amt / place) % 10;
+    if (d < 0 && cur === 0) { play(SND.buzz, 0.4); return; }
+    this.zSetAmt(ctx, ctx.S.v.z.amt + d * place);
+    if (!ctx.S.v.z.capped) play(SND.move, 0.5);
+  },
+
+  zCycleWho(ctx, d) {
+    const z = ctx.S.v.z;
+    const ok = zenitMembersOf(ctx.roster()).filter((a) => !zWhy(ctx, a, z.dir));
+    if (ok.length < 2) { play(SND.buzz, 0.4); return; }
+    const i = ok.findIndex((a) => a.id === z.who);
+    z.who = ok[(i + d + ok.length) % ok.length].id;
+    this.zSetAmt(ctx, z.amt);
+    play(SND.move);
+  },
+
+  zSetDir(ctx, dir) {
+    const z = ctx.S.v.z;
+    z.dir = dir;
+    if (zWhy(ctx, zMember(ctx), dir)) z.who = zenitMembersOf(ctx.roster()).find((a) => !zWhy(ctx, a, dir))?.id ?? z.who;
+    this.zSetAmt(ctx, z.amt);
+    play(SND.move);
+  },
+
+  zClose(ctx) {
+    Object.assign(ctx.S.v, { focus: "list", z: null });
+  },
+
+  async zConfirm(ctx) {
+    const v = ctx.S.v, z = v.z;
+    if (!z) return;
+    const amt = Math.min(z.amt, zSource(ctx));
+    if (amt <= 0) { play(SND.buzz, 0.5); return; }
+    const member = zMember(ctx);
+    ctx.setBusy(true);
+    let res;
+    try { res = await moveZenit(member, z.dir, amt); }
+    catch (e) { console.error("[PartyMenu] zenit move failed", e); res = { ok: false, reason: e?.message ?? "error" }; }
+    finally { ctx.setBusy(false); }
+    if (!ctx.S.v) return;
+    if (res?.ok) {
+      play(SND.done, Z.SND_DONE_VOL);
+      this.zClose(ctx);
+      v.zflash = Date.now();
+      ctx.render();
+    } else {
+      play(SND.buzz, 0.5);
+      ctx.toast(moveReason(res?.reason));
+    }
+  },
+
+  zKey(ctx, k) {
+    const z = ctx.S.v.z;
+    const DIG = zDigits(ctx);
+    if (k === "ArrowLeft") { z.dig = Math.max(0, z.dig - 1); play(SND.move, 0.4); }
+    else if (k === "ArrowRight") { z.dig = Math.min(DIG - 1, z.dig + 1); play(SND.move, 0.4); }
+    else if (k === "ArrowUp") this.zStep(ctx, z.dig, 1);
+    else if (k === "ArrowDown") this.zStep(ctx, z.dig, -1);
+    else if (k === "Tab") this.zSetDir(ctx, z.dir === "deposit" ? "withdraw" : "deposit");
+    else if (k === "q" || k === "Q" || k === "PageUp") this.zCycleWho(ctx, -1);
+    else if (k === "e" || k === "E" || k === "PageDown") this.zCycleWho(ctx, 1);
+    else if (k === "a" || k === "A") { this.zSetAmt(ctx, zSource(ctx)); z.capped = false; play(SND.move); }
+    else if (/^[0-9]$/.test(k)) { this.zSetAmt(ctx, (z.amt * 10 + Number(k)) % 10 ** DIG); play(SND.move, 0.4); }
+    else if (k === "Backspace") { z.amt = Math.floor(z.amt / 10); z.capped = false; play(SND.back, 0.4); }
+    else if (k === "Enter") { this.zConfirm(ctx); return; }
+    else if (k === "Escape") { this.zClose(ctx); play(SND.back); }
+    else return;
+    ctx.render();
+  },
+
+  /** Mouse wheel over a digit turns it (the mockup's wheel). */
+  wheel(ctx, ev) {
+    const d = ev.target?.closest?.(".pm-zdig");
+    if (!d || ctx.S.v?.focus !== "zenit") return false;
+    const i = [...d.parentElement.querySelectorAll(".pm-zdig")].indexOf(d);
+    ctx.S.v.z.dig = i;
+    this.zStep(ctx, i, ev.deltaY < 0 ? 1 : -1);
+    ctx.render();
+    return true;
+  },
 
   enter(ctx, actor) {
     const all = bags(ctx);
@@ -100,6 +290,10 @@ export const itemView = {
       if (itemType(it) === "consumable" && !useRefusal({ item: it, roster: ctx.roster() })) actions.push({ key: "u", label: "Use", icon: "fa-hand-sparkles" });
       if (destinations(ctx, it).some((d) => !d.refusal)) actions.push({ key: "Enter", label: "Move to…", icon: "fa-right-left" });
     }
+    if ((v.focus === "list" || v.focus === "zenit") && zenitHere(ctx)) {
+      const why = conflictLive() ? moveReason("in-combat-zenit") : "";
+      actions.push({ key: "g", label: "Zenit", icon: "fa-coins", disabled: !!why, title: why || "Put zenit in the Party Stash or take it out" });
+    }
     if (v.focus === "list") actions.push({ key: "o", label: _orbPips ? "Hide Orbment" : "Show Orbment", icon: "fa-gem" });
     return { crumbs, actions };
   },
@@ -111,7 +305,9 @@ export const itemView = {
     const roster = ctx.roster();
     const items = list(ctx);
     // The item a Move overlay was open for went away (moved by someone else).
-    if (v.focus !== "list" && !pinned(ctx)) Object.assign(v, { focus: "list", itemId: null, qty: null });
+    if (v.focus !== "list" && v.focus !== "zenit" && !pinned(ctx)) Object.assign(v, { focus: "list", itemId: null, qty: null });
+    // The Zenit box's member left the party (or the box may no longer open here).
+    if (v.focus === "zenit" && (!zMember(ctx) || !zenitHere(ctx))) this.zClose(ctx);
     const sel = current(ctx);
     const isParty = bag.id === roster.db?.id;
 
@@ -139,9 +335,15 @@ export const itemView = {
         </div>`;
     }).join("") || `<div class="pm-empty">Nothing under this filter.</div>`;
 
+    // The bag line names the zenit there; where the Zenit box opens, the amount opens it.
+    const zHere = zenitHere(ctx);
+    const flash = v.zflash && Date.now() - v.zflash < Z.FLASH_MS ? "is-flash" : "";
+    const zAmt = zHere
+      ? `<span class="pm-subz pm-hit ${flash}" data-action="it-zenit" title="Open the Zenit box"><i class="fas fa-coins"></i> <b>${fmtZ(zOf(bag))}</b> z</span>`
+      : `<i class="fas fa-coins"></i> ${fmtZ(zOf(bag))} z`;
     const sub = isParty
-      ? `Shared by the party · ${items.length} shown`
-      : `${game.user.isGM ? "Bag" : bag.isOwner ? "Your bag" : "Teammate's bag"} · <i class="fas fa-coins"></i> ${Number(bag.system?.props?.zenit ?? 0).toLocaleString()} z`;
+      ? `Shared by the party · ${zAmt} · ${items.length} shown`
+      : `${game.user.isGM ? "Bag" : bag.isOwner ? "Your bag" : "Teammate's bag"} · ${zAmt}`;
 
     // Party Bag first, then each character's own bag — one click switches.
     const chips = bags(ctx).map((b) => ({
@@ -166,7 +368,8 @@ export const itemView = {
         </div>
       </div>
       ${v.focus === "dest" && sel ? this.renderDest(ctx, sel) : ""}
-      ${v.focus === "qty" && sel ? this.renderQty(ctx, sel) : ""}`;
+      ${v.focus === "qty" && sel ? this.renderQty(ctx, sel) : ""}
+      ${v.focus === "zenit" && v.z ? renderZenit(ctx) : ""}`;
   },
 
   detail(ctx, item) {
@@ -341,6 +544,7 @@ export const itemView = {
   // ── input ──
   key(ctx, k, ev) {
     const v = ctx.S.v;
+    if (v.focus === "zenit") return this.zKey(ctx, k);
     if (v.focus === "qty") {
       if (k === "ArrowLeft" || k === "ArrowDown") this.stepQty(ctx, -1);
       else if (k === "ArrowRight" || k === "ArrowUp") this.stepQty(ctx, 1);
@@ -365,6 +569,7 @@ export const itemView = {
     }
     if (k === "Escape") return ctx.back();
     if (k === "o" || k === "O") { _orbPips = !_orbPips; play(SND.ok, 0.45); ctx.render(); return; }
+    if (k === "g" || k === "G") return this.openZenit(ctx);
     const n = list(ctx).length;
     if (!n) return;
     if (k.startsWith("Arrow")) {
@@ -390,6 +595,21 @@ export const itemView = {
       case "it-dest": await this.chooseDest(ctx, i); break;
       case "it-qty": this.stepQty(ctx, el.dataset.delta === "max" ? "max" : Number(el.dataset.delta)); break;
       case "it-qty-ok": await this.commitQty(ctx); break;
+      case "it-zenit": if (v.focus === "list") this.openZenit(ctx); break;
+      case "z-dir": if (v.z && v.z.dir !== el.dataset.dir) { this.zSetDir(ctx, el.dataset.dir); ctx.render(); } break;
+      case "z-who": {
+        if (!v.z) break;
+        const m = game.actors?.get(el.dataset.id);
+        if (!m || zWhy(ctx, m, v.z.dir)) { play(SND.buzz, 0.4); break; }
+        v.z.who = m.id; this.zSetAmt(ctx, v.z.amt); play(SND.move); ctx.render();
+        break;
+      }
+      case "z-dig": if (v.z) { v.z.dig = Number(el.dataset.i); this.zStep(ctx, v.z.dig, Number(el.dataset.d)); ctx.render(); } break;
+      case "z-sel": if (v.z) { v.z.dig = Number(el.dataset.i); play(SND.move, 0.4); ctx.render(); } break;
+      case "z-max": if (v.z) { this.zSetAmt(ctx, zSource(ctx)); v.z.capped = false; play(SND.move); ctx.render(); } break;
+      case "z-clear": if (v.z) { v.z.amt = 0; v.z.capped = false; play(SND.back, 0.5); ctx.render(); } break;
+      case "z-cancel": if (v.z) { this.zClose(ctx); play(SND.back); ctx.render(); } break;
+      case "z-go": if (v.z) await this.zConfirm(ctx); break;
       default: break;
     }
   },

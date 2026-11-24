@@ -237,7 +237,26 @@
 
   function zenitOf(source, controller) {
     const props = (source === "controller" ? controller : partyActor())?.system?.props ?? {};
-    return Logic.toNumber(source === "total" ? props.total_zenit : props.zenit, 0);
+    return source === "total" ? partyTotalZenit(props) : Logic.toNumber(props.zenit, 0);
+  }
+
+  // Party Total, summed live: active (member_id_1-4) + reserve (bench_id_1-6)
+  // wallets + the stash — the Party Menu's sum (party-menu-core getPartyRoster).
+  // The stored total_zenit used to be stale between GM sheet opens.
+  function partyTotalZenit(props) {
+    const seen = new Set();
+    let sum = Logic.toNumber(props.zenit, 0);
+    for (const key of ["member_id_1", "member_id_2", "member_id_3", "member_id_4",
+      "bench_id_1", "bench_id_2", "bench_id_3", "bench_id_4", "bench_id_5", "bench_id_6"]) {
+      const raw = String(props[key] ?? "").trim();
+      if (!raw) continue;
+      const id = raw.startsWith("Actor.") ? raw.slice(6) : raw;
+      const a = game.actors?.get(id) ?? game.actors?.getName?.(raw) ?? null;
+      if (!a || seen.has(a.id)) continue;
+      seen.add(a.id);
+      sum += Logic.toNumber(a.system?.props?.zenit, 0);
+    }
+    return sum;
   }
 
   function isMember(name) {

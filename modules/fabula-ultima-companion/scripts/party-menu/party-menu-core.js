@@ -126,18 +126,20 @@ export async function getPartyRoster() {
   const reserve = slotActors(db, "bench", BENCH_SLOTS).filter((a) => !active.includes(a));
   const away = slotActors(db, "away", AWAY_SLOTS).filter((a) => !active.includes(a) && !reserve.includes(a));
   const props = db?.system?.props ?? {};
-  // `total_zenit` is party-sync's roll-up (members + bench + party coffer);
-  // fall back to summing the live actors when it has never been synced.
-  let zenit = num(props.total_zenit, NaN);
-  if (!Number.isFinite(zenit)) {
-    zenit = [...active, ...reserve].reduce((s, a) => s + num(a.system?.props?.zenit), 0) + num(props.zenit);
-  }
+  // Party Total, summed live every time (active + reserve wallets + the stash).
+  // The stored `total_zenit` roll-up was only refreshed when a GM opened the CSB
+  // party sheet, so it went stale (16,178 shown vs 21,043 real, 11-21 session);
+  // the acting GM now keeps it fresh too (party-menu-inventory.js), for the
+  // sheet and the event conditions.
+  const stash = num(props.zenit);
+  const zenit = [...active, ...reserve].reduce((s, a) => s + num(a.system?.props?.zenit), 0) + stash;
   return {
     db,
     active,
     reserve,
     away,
     zenit,
+    stash,
     gameName: str(props.game_name) || db?.name || "",
     location: canvas?.scene?.navName || canvas?.scene?.name || "",
   };

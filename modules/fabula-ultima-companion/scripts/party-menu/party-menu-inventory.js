@@ -44,6 +44,8 @@ const GEAR_TYPES = new Set(["weapon", "armor", "shield", "accessory"]);
 const MSG = {
   MOVE_REQ: "partyMenu.moveItem.req",
   MOVE_RES: "partyMenu.moveItem.res",
+  ZENIT_REQ: "partyMenu.moveZenit.req",
+  ZENIT_RES: "partyMenu.moveZenit.res",
 };
 
 const str = (v) => String(v ?? "").trim();
@@ -292,6 +294,138 @@ async function performMoveNow(payload) {
 }
 
 registerHandler(MSG.MOVE_REQ, MSG.MOVE_RES, performMove);
+
+// ── zenit: the Party Stash ⇄ a member's wallet ───────────────────────────────
+//
+// The Party Stash is the party database's own `system.props.zenit` (the same
+// actor the shared bag lives on). Rules, decided on mockup v2 (2026-11-24):
+//   put in   (wallet → stash): from a character you own.
+//   take out (stash → wallet): anyone in the party, into any party member's
+//                              wallet, like taking an item from the Party Bag.
+//   GM       → either way, for anyone.
+// Same locks as moving items: the Item command granted, no conflict running,
+// a GM online. Every move runs on the acting GM, on the item-move queue above,
+// through ItemTransferCore.transferZenit; the GM then tells the table with one
+// System Message line and the obtain chime.
+
+const ZENIT_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Item3.ogg";   // = feedback-rules ITEM_SFX
+
+/** The members whose wallet the stash can trade with: the active party, then the reserve. */
+export function zenitMembersOf(roster) {
+  return bagsOf(roster).filter((b) => b.kind !== "party").map((b) => b.actor);
+}
+
+/**
+ * Why `user` may not move zenit in direction `dir` ("deposit" = into the stash,
+ * "withdraw" = out of it) for `member`, or "". `amount` is checked only when given.
+ * Shared by the menu (to grey choices) and the GM handler (to enforce them).
+ */
+export function zenitRefusal({ user, member, dir, roster, amount = null }) {
+  if (!roster?.db) return "no-bag";
+  if (!member || !zenitMembersOf(roster).some((a) => a.id === member.id)) return "not-in-party";
+  if (dir !== "deposit" && dir !== "withdraw") return "no-bag";
+  if (conflictLive()) return "in-combat-zenit";
+  if (amount !== null) {
+    const n = Math.floor(num(amount));
+    if (n <= 0) return "zenit-none";
+    const have = num((dir === "deposit" ? member : roster.db).system?.props?.zenit);
+    if (n > have) return "zenit-short";
+  }
+  if (user?.isGM) return "";
+  if (!canUseCommand("item", user)) return "not-granted";
+  if (dir === "deposit") return owns(member, user) ? "" : "not-yours";
+  const partyPlayer = zenitMembersOf(roster).some((a) => owns(a, user));
+  return partyPlayer ? "" : "not-yours";
+}
+
+/** Move `amount` zenit between the stash and `member`, performed by the acting GM. */
+export async function moveZenit(member, dir, amount) {
+  const roster = await getPartyRoster();
+  const n = Math.floor(num(amount));
+  const refusal = zenitRefusal({ user: game.user, member, dir, roster, amount: n });
+  if (refusal) return { ok: false, reason: refusal };
+  return request(MSG.ZENIT_REQ, {
+    memberUuid: member.uuid, dir, amount: n, requesterUserId: game.user.id,
+  });
+}
+
+function performZenit(payload) {
+  const run = _moveChain.then(() => performZenitNow(payload)).catch((e) => {
+    console.error(TAG, "zenit move failed", e);
+    return { ok: false, reason: "transfer-failed" };
+  });
+  _moveChain = run.then(() => {}, () => {});
+  return run;
+}
+
+async function performZenitNow(payload) {
+  const user = game.users?.get(payload?.requesterUserId);
+  const member = await fromUuid(str(payload?.memberUuid)).catch(() => null);
+  const dir = payload?.dir;
+  const roster = await getPartyRoster();
+  const amount = Math.floor(num(payload?.amount));
+  const refusal = zenitRefusal({ user, member, dir, roster, amount });
+  if (refusal) return { ok: false, reason: refusal };
+  const ITC = globalThis["oni.ItemTransferCore"];
+  if (!ITC?.transferZenit) return { ok: false, reason: "no-transfer-core" };
+  const [from, to] = dir === "deposit" ? [member, roster.db] : [roster.db, member];
+  const res = await ITC.transferZenit({
+    senderActorUuid: from.uuid, receiverActorUuid: to.uuid, amount, requestedByUserId: user?.id,
+  });
+  if (!res?.ok) return { ok: false, reason: res?.reason === "insufficient_funds" ? "zenit-short" : (res?.reason ?? "transfer-failed") };
+  announceZenit(member, dir, res.transferredAmount ?? amount);
+  log(`${user?.name ?? "?"}: ${amount} z · ${from.name} → ${to.name}`);
+  return { ok: true, amount: res.transferredAmount ?? amount, stash: num(roster.db.system?.props?.zenit) };
+}
+
+/** System Message markup for one stash move (mockup v2's wording). */
+export function zenitLine(name, dir, amount) {
+  const z = `{w:${Math.floor(num(amount)).toLocaleString("en-US")} zenit}`;
+  const who = `{w:${String(name ?? "").replace(/[{}]/g, "")}}`;
+  return dir === "deposit" ? `${who} put ${z} in the {p:Party Stash}.` : `${who} took ${z} from the {p:Party Stash}.`;
+}
+
+function announceZenit(member, dir, amount) {
+  try { globalThis.FU?.SystemMessage?.broadcast?.(zenitLine(member?.name, dir, amount)); }
+  catch (e) { console.warn(TAG, "zenit line failed", e); }
+  try {
+    const AH = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
+    AH?.play?.({ src: ZENIT_SFX, volume: 0.5, autoplay: true, loop: false }, true);
+  } catch { /* sound is decoration */ }
+}
+
+registerHandler(MSG.ZENIT_REQ, MSG.ZENIT_RES, performZenit);
+
+// ── keeping the stored Party Total fresh ─────────────────────────────────────
+//
+// `total_zenit` on the party database (the CSB sheet's field, and what the event
+// condition "Party zenit (total)" used to read) was only written when a GM opened
+// that sheet. The acting GM now rewrites it whenever a party wallet or the stash
+// changes, whoever changed it (shops, loot, crafting, the Zenit box…).
+
+let _totalTimer = null;
+function queueTotalRefresh() {
+  clearTimeout(_totalTimer);
+  _totalTimer = setTimeout(async () => {
+    try {
+      const r = await getPartyRoster();
+      if (!r.db) return;
+      if (num(r.db.system?.props?.total_zenit, NaN) === r.zenit) return;
+      await r.db.update({ "system.props.total_zenit": r.zenit });
+    } catch (e) { console.warn(TAG, "party total refresh failed", e); }
+  }, 250);
+}
+
+Hooks.on("updateActor", (actor, change) => {
+  if (!game.user?.isGM || !isActingGM()) return;
+  const props = change?.system?.props;
+  if (!props || !("zenit" in props)) return;
+  if (isPartyDb(actor)) { queueTotalRefresh(); return; }
+  // A member's wallet: only party databases list members, so check the current one's roster.
+  getPartyRoster().then((r) => {
+    if (zenitMembersOf(r).some((a) => a.id === actor.id)) queueTotalRefresh();
+  }).catch(() => {});
+});
 
 // ── using an item ─────────────────────────────────────────────────────────────
 //
@@ -611,5 +745,6 @@ Hooks.once("ready", () => {
   globalThis.FUCompanion.api.partyMenuInventory = {
     bagsOf, sortedInventory, moveRefusal, moveItem, useRefusal, useItem, equipSlotsOf, equipCandidates, setEquipSlot,
     statusOf, rosterSlots, rosterCandidates, setRosterSlot,
+    zenitMembersOf, zenitRefusal, moveZenit, zenitLine,
   };
 });
