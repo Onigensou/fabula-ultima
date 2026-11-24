@@ -104,12 +104,14 @@ function stealIndex() {
     const c = p?.stealable_loot;
     if (c && typeof c === "object") for (const r of Object.values(c)) if (r?.name) { const k = normalizeName(r.name); if (!idx.has(k)) idx.set(k, who); }
   };
+  // Read the STORED props: CSB re-derives a live stealable_loot from the items
+  // an actor currently holds, so `system` would miss catalog-only entries.
   // Shop actors' catalogs are their own stock history (drag-drop side effect), not steals.
-  for (const a of game.actors) if (props(a).isShop !== true) scan(props(a), a.name);
+  for (const a of game.actors) if (props(a).isShop !== true) scan(a._source?.system?.props ?? props(a), a.name);
   for (const s of game.scenes) for (const tok of s.tokens) {
     if (tok.actorLink) continue;
     if (tok.actor && props(tok.actor).isShop === true) continue;
-    scan(tok.delta?.system?.props, tok.name);
+    scan(tok.delta?._source?.system?.props ?? tok.delta?.system?.props, tok.name);
   }
   return idx;
 }

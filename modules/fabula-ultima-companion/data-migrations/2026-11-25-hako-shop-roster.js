@@ -69,7 +69,9 @@ export async function migrate(game, log = () => {}) {
 
   // 1. Pool from the ledger + current listings.
   const listings = hako.items.filter((i) => !i.system?.container);
-  const catalog = Object.values(hako.system?.props?.stealable_loot ?? {}).map((r) => r?.name).filter(Boolean);
+  // _source, not system: CSB re-derives the live stealable_loot from the items
+  // the actor holds NOW (28 rows); the stored catalog keeps the history (117).
+  const catalog = Object.values(hako._source?.system?.props?.stealable_loot ?? {}).map((r) => r?.name).filter(Boolean);
   const names = [...new Set([...catalog, ...listings.map((i) => i.name)].map(decode))];
   const priceNow = new Map(listings.filter((i) => EQUIP.includes(typeOf(i))).map((i) => [decode(i.name), Number(i.system.props.item_cost) || 0]));
   const pool = [], skipped = [];
