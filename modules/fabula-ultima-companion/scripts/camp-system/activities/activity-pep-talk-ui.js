@@ -70,6 +70,8 @@
   let _isTarget      = false;
   let _resultShown   = false;
   let _answerLocked  = false;
+  let _curQ          = -1;     // question on screen (spectator events are keyed by it)
+  let _buildSlot     = -1;     // quiz-build progress: slot being written (3 = done)
 
   // Quiz builder state (target's client only)
   let _builtTopics   = [];
@@ -92,6 +94,8 @@
     _isTarget     = false;
     _resultShown  = false;
     _answerLocked = false;
+    _curQ         = -1;
+    _buildSlot    = -1;
     _builtTopics  = [];
     _usedPresets  = new Set();
     _currentBuild = 0;
@@ -100,16 +104,35 @@
   // ---------------------------------------------------------------------------
   // Ownership helpers
   // ---------------------------------------------------------------------------
+  // Shared minigame owner rule (camp-minigame-sync.js) — for the performer
+  // AND the target (an unowned target's quiz is written on the primary GM).
   function _getOwnerUserId(actor) {
-    return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
-      const user = game.users?.get(id);
-      return id !== "default" && lvl === 3 && user && !user.isGM;
-    })?.[0] ?? null;
+    return actor ? (CAMP.MG?.ownerUserId?.(actor) ?? null) : null;
   }
 
   function _isOwnerOfActor(actor) {
-    const uid = _getOwnerUserId(actor);
-    return uid ? uid === game.user?.id : (game.user?.isGM ?? false);
+    return actor ? !!CAMP.MG?.isOwner?.(actor) : false;
+  }
+
+  // ── Spectator channel (MG.event "PEP_TALK") ───────────────────────────────
+  //   ally   {targetId|null}  owner hovers an ally card       pickAlly {targetId}
+  //   hover  {q, idx|null}    owner hovers an answer (+ cursor sound)
+  //   pick   {q, idx}         owner chose an answer (buttons lock)
+  //   build  {slot}           target is writing topic slot+1 of 3 (3 = done)
+  function _ptEvent(kind, data) { CAMP.MG?.event?.("PEP_TALK", _actorId, kind, data); }
+
+  function _renderBuildStatus() {
+    const el = document.getElementById("oni-pt-build-status");
+    if (!el) return;
+    el.textContent = _buildSlot >= 3 ? "All topics written — get ready…"
+      : _buildSlot >= 0 ? `Writing topic ${_buildSlot + 1} of 3…` : "";
+  }
+
+  function _setBuildSlot(slot) {
+    if (typeof slot !== "number" || slot <= _buildSlot) return false;
+    _buildSlot = slot;
+    _renderBuildStatus();
+    return true;
   }
 
   // ---------------------------------------------------------------------------
@@ -200,6 +223,12 @@
         min-width: 88px;
       }
       .oni-pt-ally-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+      /* Spectator: read-only ally cards, owner's hover/pick mirrored */
+      .oni-pt-spectate .oni-pt-ally-card { cursor: default; }
+      .oni-pt-spectate .oni-pt-ally-card:hover:not(.oni-pt-remote-hover) { transform: none; box-shadow: none; }
+      .oni-pt-ally-card.oni-pt-remote-hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+      .oni-pt-ally-card.oni-pt-remote-pick  { box-shadow: 0 0 0 3px rgba(200,168,75,.6), 0 6px 18px rgba(0,0,0,.35); }
+      .oni-pt-build-status { font-size:.88rem; color:#8a5c2c; font-weight:700; margin-top:6px; }
       .oni-pt-ally-card img  { width:64px; height:64px; border:none; border-radius:0; background:transparent; object-fit:contain; }
       .oni-pt-ally-card span { font-size:.82rem; font-weight:700; color:#5a3010; text-align:center; }
 
@@ -331,6 +360,9 @@
       .oni-pt-choice:hover:not(:disabled) { background:#fff8ee; }
       .oni-pt-c-badge { font-size:.85rem; font-weight:900; flex-shrink:0; width:22px; text-align:center; color:#8d5f38; }
       .oni-pt-c-skip { background:rgba(60,60,60,.3); border-color:#555; color:#aaa; font-style:italic; justify-content:center; }
+      /* Spectator answers: look live (not disabled) until the owner picks */
+      .oni-pt-choice.oni-pt-spectate-choice { pointer-events:none; cursor:default; }
+      .oni-pt-choice.oni-pt-remote-hover:not(:disabled) { transform:translateY(-2px); filter:brightness(1.1); background:#fff8ee; }
 
       /* ── Token reaction animations ── */
       @keyframes oni-pt-bounce {
@@ -483,6 +515,9 @@
 
     ovl.appendChild(panel);
     _playSound(SFX.BOOK_OPEN, 0.7);
+    // Watchers see the progress (never the text) and hear the page turn.
+    _buildSlot = slotIdx;
+    _ptEvent("build", { slot: slotIdx });
 
     // Preset → auto-fill custom topic field
     const presetSel   = panel.querySelector("#oni-pt-preset-sel");
@@ -554,6 +589,8 @@
   }
 
   function _submitQuiz() {
+    _buildSlot = 3;
+    _ptEvent("build", { slot: 3 });
     const ovl = document.getElementById(OVL_ID);
     if (ovl) {
       ovl.innerHTML = `
@@ -565,7 +602,9 @@
         </div>
       `;
     }
-    CAMP.Socket.emit(CAMP.MSG.PEP_TALK_QUIZ_READY, {
+    // send(), not emit(): when the target is unowned the GM writes the quiz,
+    // and an emit never reached its own resolver (the activity hung).
+    CAMP.Socket.send(CAMP.MSG.PEP_TALK_QUIZ_READY, {
       actorId:      _actorId,
       targetActorId: _targetId,
       topics:       _builtTopics,
@@ -636,14 +675,21 @@
       return;
     }
 
-    const configs = [
+    let configs = [
       { cls: "oni-pt-c-positive2", idx: 0 },
       { cls: "oni-pt-c-positive1", idx: 1 },
       { cls: "oni-pt-c-negative",  idx: 2 },
     ];
-    for (let i = configs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [configs[i], configs[j]] = [configs[j], configs[i]];
+    // The GM shuffles once and sends `topic.order`, so every screen shows the
+    // same A/B/C. Local shuffle only as a fallback for an old payload.
+    const order = Array.isArray(topic.order) ? topic.order : null;
+    if (order && order.length === configs.length && [0, 1, 2].every(i => order.includes(i))) {
+      configs = order.map(i => configs[i]);
+    } else {
+      for (let i = configs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [configs[i], configs[j]] = [configs[j], configs[i]];
+      }
     }
     configs.forEach((c, pos) => { c.badge = ["A", "B", "C"][pos]; });
 
@@ -654,23 +700,29 @@
       btn.innerHTML = `<span class="oni-pt-c-badge">${badge}</span><span>${topic.choices[idx]?.text ?? "?"}</span>`;
 
       if (!_isOwner) {
-        btn.disabled = true;
-        btn.style.pointerEvents = "none";
+        // Read-only, but drawn like the owner's live buttons; the owner's
+        // hover / pick arrive as MG events.
+        btn.classList.add("oni-pt-spectate-choice");
+        btn.tabIndex = -1;
       } else {
-        btn.addEventListener("mouseenter", () => _playBuf(_hoverBuf));
+        btn.addEventListener("mouseenter", () => {
+          _playBuf(_hoverBuf);
+          if (!_answerLocked) _ptEvent("hover", { q: _curQ, idx });
+        });
+        btn.addEventListener("mouseleave", () => {
+          if (!_answerLocked) _ptEvent("hover", { q: _curQ, idx: null });
+        });
         btn.addEventListener("click", () => {
           if (_answerLocked) return;
           _answerLocked = true;
           wrap.querySelectorAll(".oni-pt-choice").forEach(b => b.disabled = true);
+          _ptEvent("pick", { q: _curQ, idx });
 
-          if (game.user?.isGM) {
-            CAMP.PepTalkUI.resolveAnswer(_actorId, idx);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.PEP_TALK_ANSWER, {
-              actorId:  _actorId,
-              answerIdx: idx,
-            });
-          }
+          // send(): a GM-owner reaches its own resolver through the router.
+          CAMP.Socket.send(CAMP.MSG.PEP_TALK_ANSWER, {
+            actorId:  _actorId,
+            answerIdx: idx,
+          });
         }, { once: true });
       }
       wrap.appendChild(btn);
@@ -704,14 +756,14 @@
       const ovl = document.createElement("div");
       ovl.id = OVL_ID;
 
-      if (_isOwner) {
-        const cards = (allies ?? []).map(a => `
+      const cards = (allies ?? []).map(a => `
           <div class="oni-pt-ally-card" data-target-id="${a.id}">
             <img src="${a.img}" alt="${a.name}">
             <span>${a.name}</span>
           </div>
         `).join("");
 
+      if (_isOwner) {
         ovl.innerHTML = `
           <div class="oni-pt-panel">
             <div class="oni-pt-panel-title">
@@ -722,25 +774,30 @@
           </div>
         `;
 
+        let picked = false;
         ovl.querySelectorAll(".oni-pt-ally-card").forEach(card => {
+          card.addEventListener("mouseenter", () => { if (!picked) _ptEvent("ally", { targetId: card.dataset.targetId }); });
+          card.addEventListener("mouseleave", () => { if (!picked) _ptEvent("ally", { targetId: null }); });
           card.addEventListener("click", () => {
             const tid = card.dataset.targetId;
-            if (!tid) return;
-            if (game.user?.isGM) {
-              CAMP.PepTalkUI.resolveTarget(actorId, tid);
-            } else {
-              CAMP.Socket.emit(CAMP.MSG.PEP_TALK_TARGET, { actorId, targetActorId: tid });
-            }
+            if (!tid || picked) return;
+            picked = true;
+            _ptEvent("pickAlly", { targetId: tid });
+            // send(): a GM-owner reaches its own resolver through the router.
+            CAMP.Socket.send(CAMP.MSG.PEP_TALK_TARGET, { actorId, targetActorId: tid });
           }, { once: true });
         });
       } else {
         const ownerUid  = _getOwnerUserId(actorObj);
         const ownerName = ownerUid ? (game.users?.get(ownerUid)?.name ?? actorName) : actorName;
+        // Spectators see the same cards (read-only) with the owner's cursor mirrored.
         ovl.innerHTML = `
-          <div class="oni-pt-panel" style="text-align:center;">
+          <div class="oni-pt-panel oni-pt-spectate" style="text-align:center;">
             <div class="oni-pt-panel-title" style="justify-content:center;">
               <img src="${PEP_TALK_ICON}" alt=""> Pep Talk
             </div>
+            <div class="oni-pt-panel-sub">Who would you like to cheer up?</div>
+            <div class="oni-pt-ally-grid">${cards}</div>
             <div class="oni-pt-waiting">Waiting for ${ownerName} to choose a target…</div>
           </div>
         `;
@@ -779,6 +836,7 @@
       _builtTopics  = [];
       _usedPresets  = new Set();
       _currentBuild = 0;
+      _buildSlot    = -1;
 
       if (_isTarget) {
         // Target player builds the quiz
@@ -800,6 +858,7 @@
               <img src="${targetImg}" style="width:64px;height:64px;border:none;border-radius:0;object-fit:contain;opacity:.85;display:block;margin:8px auto;">
               Please wait…
             </div>
+            <div class="oni-pt-build-status" id="oni-pt-build-status"></div>
           </div>
         `;
         document.body.appendChild(ovl);
@@ -814,10 +873,12 @@
               <img src="${PEP_TALK_ICON}" alt=""> Pep Talk
             </div>
             <div class="oni-pt-waiting">${targetActorName} is preparing a quiz for ${actorName}…</div>
+            <div class="oni-pt-build-status" id="oni-pt-build-status"></div>
           </div>
         `;
         document.body.appendChild(ovl);
       }
+      _renderBuildStatus();
     },
 
     resolveQuizReady(actorId, topics) {
@@ -839,6 +900,8 @@
       _isTarget = _isOwnerOfActor(targetObj);
 
       _answerLocked = false;
+      _curQ         = q;
+      _buildSlot    = 3;   // quiz is built once questions run
 
       // If this is q=0 (or arena not yet built), build it from scratch
       if (q === 0 || !document.getElementById(OVL_ID)) {
@@ -866,10 +929,12 @@
       // If skip, auto-resolve after a brief pause
       if (topic.skip) {
         setTimeout(() => {
+          // Any GM page may resolve (only the primary holds a resolver; a
+          // repeat is a no-op); a player owner sends it as before.
           if (game.user?.isGM) {
             CAMP.PepTalkUI.resolveAnswer(_actorId, 2);
           } else if (_isOwner) {
-            CAMP.Socket.emit(CAMP.MSG.PEP_TALK_ANSWER, {
+            CAMP.Socket.send(CAMP.MSG.PEP_TALK_ANSWER, {
               actorId:   _actorId,
               answerIdx: 2,
             });
@@ -1007,11 +1072,7 @@
       if (_isOwner) {
         const btn = ovl.querySelector("#oni-pt-proceed");
         btn?.addEventListener("click", () => {
-          if (game.user?.isGM) {
-            CAMP.PepTalkUI.resolveProceed(actorId);
-          } else {
-            CAMP.Socket.emit(CAMP.MSG.PEP_TALK_PROCEED, { actorId });
-          }
+          CAMP.Socket.send(CAMP.MSG.PEP_TALK_PROCEED, { actorId });
           btn.disabled = true;
         }, { once: true });
       }
@@ -1072,6 +1133,58 @@
     const proto = String(actor?.prototypeToken?.texture?.src ?? "").trim();
     return std || token || proto || actor.img || "icons/svg/mystery-man.svg";
   }
+
+  // ---------------------------------------------------------------------------
+  // Spectator side of the MG channel
+  // ---------------------------------------------------------------------------
+  function _markRemote(selector, attr, key, cls) {
+    document.querySelectorAll(`#${OVL_ID} ${selector}`).forEach(el => {
+      el.classList.toggle(cls, key != null && String(el.dataset[attr]) === String(key));
+    });
+  }
+
+  CAMP.MG?.on?.("PEP_TALK", (kind, data, msg) => {
+    if (!msg?.a || msg.a !== _actorId) return;
+    switch (kind) {
+      case "ally":
+        _markRemote(".oni-pt-spectate .oni-pt-ally-card", "targetId", data.targetId ?? null, "oni-pt-remote-hover");
+        break;
+      case "pickAlly":
+        _markRemote(".oni-pt-spectate .oni-pt-ally-card", "targetId", null, "oni-pt-remote-hover");
+        _markRemote(".oni-pt-spectate .oni-pt-ally-card", "targetId", data.targetId ?? null, "oni-pt-remote-pick");
+        break;
+      case "hover":
+        if (data.q !== _curQ || _isOwner || _answerLocked) return;
+        _markRemote(".oni-pt-spectate-choice", "idx", data.idx ?? null, "oni-pt-remote-hover");
+        if (data.idx != null) _playBuf(_hoverBuf);   // same cursor sound the owner hears
+        break;
+      case "pick":
+        if (data.q !== _curQ || _isOwner) return;
+        _answerLocked = true;
+        _markRemote(".oni-pt-spectate-choice", "idx", null, "oni-pt-remote-hover");
+        document.querySelectorAll(`#${OVL_ID} .oni-pt-choice`).forEach(b => { b.disabled = true; });
+        break;
+      case "build":
+        // Page turn per new topic form, as the writer hears it.
+        if (_setBuildSlot(data.slot) && data.slot > 0 && data.slot < 3) _playSound(SFX.BOOK_OPEN, 0.7);
+        break;
+    }
+  });
+
+  // Late join: quiz-build progress lives only on the writer's page (GM replay
+  // covers START / QUIZ_BUILD / QUESTION / Q_RESULT).
+  CAMP.MG?.registerGame?.("PEP_TALK", {
+    snapshot() {
+      if (!_actorId || !_isTarget || _curQ >= 0 || _buildSlot < 0) return null;
+      if (!document.getElementById(OVL_ID)) return null;
+      return { actorId: _actorId, buildSlot: _buildSlot };
+    },
+    apply(snap) {
+      if (!snap?.actorId || snap.actorId !== _actorId || _curQ >= 0) return;
+      _setBuildSlot(snap.buildSlot);
+    },
+    isOpen() { return !!document.getElementById(OVL_ID); },
+  });
 
   console.debug(TAG, "Pep Talk UI loaded.");
 })();
