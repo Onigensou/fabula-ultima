@@ -139,5 +139,58 @@ const none = C.drawPrize({ bag: [], last: null }, { eligible: () => false, rng }
 check("bag: nothing eligible → null, no loop", none.prize === null);
 check("zenit prize: floor 250", C.zenitPrize(1200) === 250 && C.zenitPrize(4000) === 400);
 
+// ── MVP v2 (to-do #17): roles beyond damage can win ────────────────────────
+{
+  const R = roster(...party4, ...three);
+  let n = 0;
+  const A = (a, r, ak = "Attack") => ({ k: "act", r, a, ak, tg: [], id: ++n });
+  // Multi-target: 3 targets × 100 in one action = 100 + 50 + 50 credit.
+  const multi = C.aggregate({ roster: R, events: [A("zarg", 1), dmg("zarg", "e1", 100), dmg("zarg", "e2", 100), dmg("zarg", "e3", 100)], rows: [] }).stats.zarg;
+  check("MVP v2: extra targets give half damage credit", multi.dmgCredit === 200 && multi.dmgDealt === 300, multi);
+  // Two strikes on the SAME target in one action are full damage.
+  const chain = C.aggregate({ roster: R, events: [A("zarg", 1), dmg("zarg", "e1", 60), dmg("zarg", "e1", 60)], rows: [] }).stats.zarg;
+  check("MVP v2: same-target strikes count in full", chain.dmgCredit === 120, chain);
+  // Exploit per ACTION: three Vulnerable rows of one action (same _g) = 1.
+  const ex = C.aggregate({ roster: R, events: [], rows: [row("Zarg", "Vulnerable", "Damage", { _g: "a" }), row("Zarg", "Vulnerable", "Damage", { _g: "a" }), row("Zarg", "Vulnerable", "Damage", { _g: "a" }), row("Zarg", "Vulnerable", "Damage", { _g: "b" })] }).stats.zarg;
+  check("MVP v2: exploits count once per action", ex.exploitActs === 2 && ex.weak === 4, ex);
+  const legacyRows = C.aggregate({ roster: R, events: [], rows: [row("Zarg", "Vulnerable"), row("Zarg", "Vulnerable")] }).stats.zarg;
+  check("MVP v2: rows without _g each count (DB-table fallback)", legacyRows.exploitActs === 2, legacyRows);
+  // Debuff on 2 enemies in one action = 1.5.
+  const st = C.aggregate({ roster: R, events: [A("keren", 1, "Spell"), { k: "ae", r: 1, a: "keren", t: "e1", buff: false }, { k: "ae", r: 1, a: "keren", t: "e2", buff: false }], rows: [] }).stats.keren;
+  check("MVP v2: debuff on 2 enemies = 1.5 status actions", st.statusActs === 1.5, st);
+
+  // Roles: same total damage, spread vs single → the single-target hitter.
+  const ev = [];
+  for (let r = 1; r <= 3; r++) {
+    ev.push(A("zarg", r), dmg("zarg", "e1", 34, r), dmg("zarg", "e2", 33, r), dmg("zarg", "e3", 33, r));
+    ev.push(A("hina", r, "Spell"), dmg("hina", "e1", 100, r));
+    ev.push(A("keren", r), dmg("keren", "e2", 20, r), A("blanche", r), dmg("blanche", "e3", 10, r));
+  }
+  check("MVP v2: equal damage → single-target beats spread", C.computeGrade({ roster: R, events: ev, rows: [], rounds: 3 }).mvp === "hina");
+
+  // A tank who guards, covers and soaks wins a fight the dealers split.
+  const tk = [];
+  for (let r = 1; r <= 3; r++) {
+    tk.push(A("zarg", r), dmg("zarg", "e1", 90, r), A("hina", r, "Spell"), dmg("hina", "e2", 90, r));
+    tk.push(A("keren", r, "Guard"), { k: "guard", r, a: "keren", cover: true }, dmg("e1", "keren", 45, r), dmg("e2", "keren", 40, r));
+    tk.push(A("blanche", r), dmg("blanche", "e3", 10, r));
+  }
+  check("MVP v2: tank can win", C.computeGrade({ roster: R, events: tk, rows: [], rounds: 3 }).mvp === "keren", C.computeGrade({ roster: R, events: tk, rows: [], rounds: 3 }).mvpScores);
+
+  // A buffer every turn wins a fight the dealers split.
+  const bf = [];
+  for (let r = 1; r <= 3; r++) {
+    bf.push(A("zarg", r), dmg("zarg", "e1", 90, r), A("hina", r, "Spell"), dmg("hina", "e2", 90, r), A("keren", r), dmg("keren", "e3", 30, r));
+    bf.push(A("blanche", r, "Skill"), { k: "ae", r, a: "blanche", t: "zarg", buff: true }, { k: "ae", r, a: "blanche", t: "hina", buff: true });
+  }
+  check("MVP v2: buffer every turn can win", C.computeGrade({ roster: R, events: bf, rows: [], rounds: 3 }).mvp === "blanche");
+
+  // A summon's damage counts for its summoner.
+  const RS = roster(...party4, PC("gigas", { recipient: false, owner: "blanche" }), ...three);
+  const sm = [A("zarg", 1), dmg("zarg", "e1", 100), A("blanche", 1, "Spell"), dmg("blanche", "e2", 20), A("gigas", 1), dmg("gigas", "e3", 150)];
+  const gs = C.computeGrade({ roster: RS, events: sm, rows: [], rounds: 1 });
+  check("MVP v2: summon damage → summoner", gs.mvp === "blanche" && !gs.mvpScores.gigas, gs.mvpScores);
+}
+
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");
 process.exit(fail ? 1 : 0);

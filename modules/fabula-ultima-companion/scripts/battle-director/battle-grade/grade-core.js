@@ -83,6 +83,10 @@ function blankStats() {
     misses: 0, resist: 0, immune: 0, absorb: 0,
     buffsGiven: 0, mpGiven: 0, itemsOnAllies: 0, covers: 0, guards: 0,
     hitsTaken: 0, dmgTaken: 0, healsTotal: 0, healsCrisis: 0, overheal: 0, kos: 0, kills: 0,
+    // MVP-only, counted per ACTION (the rank gauges above keep their per-row counts):
+    dmgCredit: 0,      // damage with extra targets of one action at MVP.EXTRA_TARGET
+    exploitActs: 0,    // actions that hit a weakness / crit / landed >100% efficiency
+    statusActs: 0,     // debuff / status actions on enemies (extra targets at MVP.EXTRA_TARGET)
   };
 }
 
@@ -102,11 +106,18 @@ export function aggregate({ roster, events, rows }) {
   const S = (k) => stats[k] ?? null;
   let lastKill = null;
   const seenCrit = new Set();
+  // Per-action grouping for the MVP: every event a creature causes belongs to
+  // its latest "act" (a free opener with no act groups by round).
+  const curAct = {};
+  const groupOf = (k, r) => `${k}|${curAct[k] ?? "r" + num(r)}`;
+  const actDmg = new Map();          // group → { key, byTarget: Map }
+  const critGroups = new Set(), statusGroups = new Map();   // group → Set(target)
 
   for (const e of events ?? []) {
     const a = S(e.a), t = S(e.t);
     switch (e.k) {
       case "act":
+        if (e.a) curAct[e.a] = e.id ?? `i${e.r}-${Math.random()}`;
         if (a) { a.actions++; if (ATTACKY.has(norm(e.ak))) a.attackActions++; }
         if (a && norm(e.ak) === "item" && (e.tg ?? []).some((k) => isParty(k) && k !== e.a)) a.itemsOnAllies++;
         break;
@@ -114,6 +125,11 @@ export function aggregate({ roster, events, rows }) {
         if (a && isEnemy(e.t)) {
           a.dmgDealt += num(e.v);
           if (e.c && !seenCrit.has(e.di ?? e.id)) { seenCrit.add(e.di ?? e.id); a.crits++; }
+          const g = groupOf(e.a, e.r);
+          if (!actDmg.has(g)) actDmg.set(g, { key: e.a, byTarget: new Map() });
+          const bt = actDmg.get(g).byTarget;
+          bt.set(e.t, (bt.get(e.t) ?? 0) + num(e.v));
+          if (e.c) critGroups.add(g);
         }
         if (t && isEnemy(e.a)) t.dmgTaken += num(e.v);
         else if (t && e.dmg) t.dmgTaken += num(e.v);    // damage with no known enemy cause (tick)
@@ -140,7 +156,7 @@ export function aggregate({ roster, events, rows }) {
         break;
       case "ae":        // an effect the director applied (buff / debuff / status)
         if (!a) break;
-        if (isEnemy(e.t)) a.statusesOnEnemy++;
+        if (isEnemy(e.t)) { a.statusesOnEnemy++; const g = groupOf(e.a, e.r); if (!statusGroups.has(g)) statusGroups.set(g, new Set()); statusGroups.get(g).add(e.t); }
         else if (isParty(e.t) && e.t !== e.a && e.buff) a.buffsGiven++;
         break;
       case "guard":
@@ -150,9 +166,19 @@ export function aggregate({ roster, events, rows }) {
     }
   }
 
+  // MVP damage: one action's biggest target counts in full, every other target
+  // at EXTRA_TARGET, so a Multi attack is worth more than one hit but not N.
+  for (const { key, byTarget } of actDmg.values()) {
+    const v = [...byTarget.values()].sort((x, y) => y - x);
+    stats[key].dmgCredit += v.reduce((s, x, i) => s + (i === 0 ? x : x * MVP.EXTRA_TARGET), 0);
+  }
+  for (const g of critGroups) { const s = stats[g.split("|")[0]]; if (s) s.exploitActs++; }
+  for (const [g, ts] of statusGroups) { const s = stats[g.split("|")[0]]; if (s) s.statusActs += 1 + MVP.EXTRA_TARGET * (ts.size - 1); }
+  const rowExploitGroups = new Set();
+
   // Battle-log rows: affinity / miss / efficiency by attacker NAME.
   const byName = new Map(party.map((c) => [norm(c.name), c.key]));
-  for (const r of rows ?? []) {
+  for (const [i, r] of (rows ?? []).entries()) {
     if (!r || r.$deleted === true) continue;
     const key = byName.get(norm(r.attacker));
     const s = key ? stats[key] : null;
@@ -167,7 +193,14 @@ export function aggregate({ roster, events, rows }) {
     if (aff.includes("absorb")) s.absorb++;
     if (aff.includes("immune")) s.immune++;
     const eff = parseFloat(String(r.efficiency ?? "").replace(/[^\d.-]/g, ""));
-    if (Number.isFinite(eff) && eff > 100) s.effGood++;
+    const good = Number.isFinite(eff) && eff > 100;
+    if (good) s.effGood++;
+    // Rows of one action share `_g` (one appendBattleLog call); a row without
+    // it (the DB-table fallback) is its own action.
+    if (aff.includes("vulner") || good) {
+      const g = `${key}|${r._g ?? "row" + i}`;
+      if (!rowExploitGroups.has(g)) { rowExploitGroups.add(g); s.exploitActs++; }
+    }
   }
 
   return { stats, lastKill };
@@ -238,34 +271,61 @@ export function letterOf(score, { kos = 0, threat = "even" } = {}) {
 
 // ── MVP + titles ────────────────────────────────────────────────────────────
 
-export function computeMvp({ stats, roster, partyMaxHp, lastKill }) {
+// MVP v2 (to-do #17, 2026-11-24). v1 let a multi-target attacker win every
+// fight of the 11-21 session: damage AND exploits counted per target, and the
+// guard / support lanes were scaled down by pressure / support share (a lone
+// supporter in four topped out near 0.25). Now:
+//   - exploits and statuses count once per ACTION, extra targets give part damage
+//   - every lane has a fixed weight; a lane is "full" only past a floor, so one
+//     buff in an easy fight can't take the whole support lane
+//   - damage taken (soak) feeds the protect lane: tanks score
+//   - a summon's lanes go to its summoner
+export const MVP = Object.freeze({
+  EXTRA_TARGET: 0.5,                 // damage credit for each target after the biggest
+  W: { off: 1, exp: 0.4, grd: 1, sup: 0.9 },
+  GRD_MIN_W: 0.2, GRD_SLOPE: 1.5,    // protect weight = clamp(MIN + SLOPE × party HP lost share, MIN, 1)
+  SOAK: 3,                           // protect points for taking 100% of party max HP
+  FLOOR: { exp: 2, sup: 2, grd: 4 },     // a lane is full only past this total (sup: per round)
+});
+
+export function computeMvp({ stats, roster, partyMaxHp, lastKill, rounds = 1 }) {
   const keys = Object.keys(stats).filter((k) => roster?.[k]?.recipient !== false);
   if (!keys.length) return { mvp: null, scores: {}, weights: {} };
+  const maxHp = Math.max(1, num(partyMaxHp));
   const lane = {
-    off: (s) => s.dmgDealt,
-    exp: (s) => s.weak + s.crits + s.effGood + s.statusesOnEnemy,
-    grd: (s) => s.guards + s.covers + 2 * s.healsCrisis + 6 * (s.healsTotal / Math.max(1, partyMaxHp)),
-    sup: (s) => s.buffsGiven + s.mpGiven + s.itemsOnAllies + s.covers,
+    off: (s) => s.dmgCredit ?? s.dmgDealt,
+    exp: (s) => s.exploitActs ?? 0,
+    grd: (s) => s.guards + s.covers + 2 * s.healsCrisis + 6 * (s.healsTotal / maxHp) + MVP.SOAK * (s.dmgTaken / maxHp),
+    sup: (s) => s.buffsGiven + s.mpGiven + s.itemsOnAllies + s.covers + (s.statusActs ?? 0),
   };
+  const L = Object.keys(lane);
+
+  // Lane values per recipient, with each summon's folded into its summoner.
+  const ownerKey = (c) => {
+    const o = c?.owner;
+    if (!o) return null;
+    if (keys.includes(o)) return o;
+    return keys.find((k) => roster[k]?.actorUuid === o || roster[k]?.tokenUuid === o) ?? null;
+  };
+  const vals = Object.fromEntries(keys.map((k) => [k, Object.fromEntries(L.map((l) => [l, num(lane[l](stats[k]))]))]));
+  for (const [k, s] of Object.entries(stats)) {
+    if (keys.includes(k)) continue;
+    const o = ownerKey(roster?.[k]);
+    if (!o) continue;
+    for (const l of L) vals[o][l] += num(lane[l](s));
+  }
+
   const taken = keys.reduce((t, k) => t + stats[k].dmgTaken, 0);
-  const allActs = Math.max(1, keys.reduce((t, k) => t + stats[k].actions, 0));
-  const supActs = keys.reduce((t, k) => t + lane.sup(stats[k]), 0);
-  const weights = {
-    off: 1, exp: 0.6,
-    grd: clamp(taken / Math.max(1, partyMaxHp), 0, 1),
-    // Plain share of actions spent supporting, capped: a lone support player
-    // owns the whole lane, so a ×2 here let one buff in four actions outweigh
-    // the top damage dealer in an easy fight (caught by the burst-fight test).
-    sup: clamp(supActs / allActs, 0, 0.6),
-  };
-  const totals = Object.fromEntries(Object.keys(lane).map((l) => [l, keys.reduce((t, k) => t + lane[l](stats[k]), 0)]));
+  const weights = { ...MVP.W, grd: clamp(MVP.GRD_MIN_W + MVP.GRD_SLOPE * taken / maxHp, MVP.GRD_MIN_W, 1) * MVP.W.grd };
+  const floor = { off: 0, exp: MVP.FLOOR.exp, grd: MVP.FLOOR.grd, sup: MVP.FLOOR.sup * Math.max(1, num(rounds, 1)) };
+  const totals = Object.fromEntries(L.map((l) => [l, keys.reduce((t, k) => t + vals[k][l], 0)]));
   const scores = {};
   for (const k of keys) {
     const parts = {};
     let tot = 0;
-    for (const l of Object.keys(lane)) {
-      const share = totals[l] > 0 ? lane[l](stats[k]) / totals[l] : 0;
-      parts[l] = share * weights[l];
+    for (const l of L) {
+      const den = Math.max(totals[l], floor[l]);
+      parts[l] = den > 0 ? (vals[k][l] / den) * weights[l] : 0;
       tot += parts[l];
     }
     scores[k] = { ...parts, total: tot };
@@ -392,7 +452,7 @@ export function computeGrade({ roster, events, rows, rounds }) {
   const bonus = (threat === "hard" || threat === "boss") ? G.THREAT_BONUS : 0;
   const score = Math.round(clamp(raw + bonus, 0, 100) * 10) / 10;
   const letter = letterOf(score, { kos, threat });
-  const mvp = computeMvp({ stats, roster, partyMaxHp, lastKill });
+  const mvp = computeMvp({ stats, roster, partyMaxHp, lastKill, rounds });
   const titles = assignTitles({ stats, roster, lastKill });
   const delta = boardDelta({ starCount: m.starCount, crossCount: m.crossCount, kos, threat });
 
