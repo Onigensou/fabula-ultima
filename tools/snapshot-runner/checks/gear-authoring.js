@@ -120,6 +120,16 @@ try {
   out.temp.biker = { formless, steel: st, effects: temp.items.get(biker.id)?.effects.map((e) => `${e.name}:${e.disabled ? "off" : "on"}`) };
   ok("Biker Suit: Steel Form DEF 16, Formless below", Number(st.def) === 16 && Number(formless.def) < 16, out.temp.biker);
 } catch (e) { out.temp.error = String(e?.stack ?? e).slice(0, 600); ok("stat section ran", false, out.temp.error); }
+// 5. False Idol math
+try {
+  const SF = await import(`/modules/${NS}/scripts/battle-director/skill-formulas.js`);
+  const before = { hp: SF.shouldReverseHeal(temp, { resource: "hp", amount: 20 }), mp: SF.applyMpReceiving(temp, 20) };
+  const tpl = W("GrAuFalseIdolPsv").effects.find((e) => e.name === "False Idol").toObject(); delete tpl._id;
+  await temp.createEmbeddedDocuments("ActiveEffect", [tpl]); await wait(200);
+  const after = { hp: SF.shouldReverseHeal(temp, { resource: "hp", amount: 20 }), mp: SF.applyMpReceiving(temp, 20), ignoreUndeadRow: SF.shouldReverseHeal(temp, { resource: "hp", amount: 20, row: { heal_ignore_undead: true } }) };
+  out.falseIdol = { before, after };
+  ok("False Idol: heals reversed, MP gain becomes loss", before.hp === false && before.mp === 20 && after.hp === true && after.mp === -20 && after.ignoreUndeadRow === true, out.falseIdol);
+} catch (e) { ok("False Idol math ran", false, String(e)); }
 await temp.delete();
 out.errorCount = out.errors.length;
 return out;
