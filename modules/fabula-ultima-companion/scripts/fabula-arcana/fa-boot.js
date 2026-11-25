@@ -19,7 +19,7 @@
 
 import { TAG, MODULE_ID, SETTING_SESSIONS, Catalog, Engine, isHostGM, hostGM, ASSET_BASE } from "./fa-const.js";
 import { install as installNet, send } from "./fa-net.js";
-import { installHost, restore, listSessions, closeAll, cancelEventDuels } from "./fa-host.js";
+import { installHost, restore, listSessions, closeAll, cancelEventDuels, addCardToHand } from "./fa-host.js";
 import { eventDuel, grantStarterToParty } from "./fa-event.js";
 import { registerTutorial } from "../system-tutorial/system-tutorial.js";
 import { installClient, currentDuel } from "./fa-client.js";
@@ -65,6 +65,8 @@ Hooks.once("ready", () => {
       ? actor?.unsetFlag(MODULE_ID, FLAG_DROP)
       : actor?.setFlag(MODULE_ID, FLAG_DROP, cid === false ? false : String(cid)),
     sessions: () => listSessions(), closeAll, current: currentDuel,
+    // create a card and add it to a duelist's hand (host / GM): addCardToHand(sidOrActorId, "GRAPE", { n, source, seat })
+    addCardToHand, hand: { keys: () => Engine().Hand.keys(), created: () => Engine().Hand.keys().filter((k) => Engine().Hand.isCreated(k)) },
     eventDuel, grantStarterToParty, cancelEventDuels,
     Catalog: Catalog(), Engine: Engine(),
   };

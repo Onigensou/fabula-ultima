@@ -10,7 +10,7 @@
  * ITEMS[*].art are asset keys the UI maps to icons.
  */
 (() => {
-  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1, BARRAGE:2, FORETELL_S:10, TIPS_HEAL:2, FOXFIRE:2, FOXFIRE_CAP:6, SPD_MAX:5, SLIPSTREAM:2, SERENADE:2, SERENADE_ROUNDS:4, BERSERK_ATK:3, BERSERK_TAKE:1, TWIN:1, GRACE_HEAL:2, GRACE_SELF:0, GRACE_MODE:4, REGEN:3, REGEN_ROUNDS:4, SERENADE_DEF:2, SERENADE_MODE:2, BREATH_ATK:1, BREATH_ROUNDS:3, PIERCE:2, THIEF_BOW:2, NULL_GUARD:3, HEAVY_ARMOR:2, RIVAL:1, GEIST_BN:1, DIVE:2, SUPPLY_MIN:3 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
+  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1, BARRAGE:2, FORETELL_S:10, TIPS_HEAL:2, FOXFIRE:2, FOXFIRE_CAP:6, SPD_MAX:5, SLIPSTREAM:2, SERENADE:2, SERENADE_ROUNDS:4, BERSERK_ATK:3, BERSERK_TAKE:1, TWIN:1, GRACE_HEAL:2, GRACE_SELF:0, GRACE_MODE:4, REGEN:3, REGEN_ROUNDS:4, SERENADE_DEF:2, SERENADE_MODE:2, BREATH_ATK:1, BREATH_ROUNDS:3, PIERCE:2, THIEF_BOW:2, NULL_GUARD:3, HEAVY_ARMOR:2, RIVAL:1, GEIST_BN:1, DIVE:2, SUPPLY_MIN:3, HAND_MAX:8 };   // HAND_MAX: cards a hand can hold (items + created); a card created into a full hand fizzles   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
   const AI_DIFF = { casual:{noise:0.25, rand:0.15, speed:false}, skilled:{noise:0.10, rand:0.03, speed:true, lookahead:true} };
   const AI_STYLE = {
     aggressive:{ STRENGTH:1.5, SHARD:1.3, SMOKE:1.2, SWITCH:0.6, GOLEM:0.8, REMEDY:0.8, rand:0 },
@@ -92,6 +92,18 @@
     SMOKE:{t:'Smoke Bomb', k:'Trick', d:'Your attack ignores DEF this round (Golem Fragment too)', art:'i_smoke'},
     SHARD:{t:'Elemental Shard', k:'Neutralize', d:`Attack turns Elementless, +${CFG.SHARD} ATK`, art:'i_shard'},
     CAFE:{t:'Café au Lait', k:'Swift', d:'+1 SPD this round (max 5)', art:'i_cafe'},
+    // ---- created cards (2026-11-25, hand model v2): never in the starting hand, Hako never restocks them, gone after use.
+    // Effects are DATA (fx), read by the same steps as the items above: atk / def (this round), spd (this round),
+    // heal (before attacks), dmg { n, el } (before attacks, ignores DEF and items; el = element chart applies).
+    // Numbers are the approved drafts; the new NPC cards' balance sims (phase 4) may retune them.
+    LUCKY:{created:true, t:'Lucky Trinket', k:'Created', d:'+1 ATK and +1 DEF this round', art:'c_lucky', fx:{atk:1, def:1}},
+    GRAPE:{created:true, t:'Grape Juice', k:'Created', d:'+1 ATK and +1 SPD this round', art:'c_grape', fx:{atk:1, spd:1}},
+    APPLE_BOMB:{created:true, t:'Apple Bomb', k:'Created', d:'Deal 2 Piercing Fire DMG to the enemy active card before attacks', art:'c_applebomb', fx:{dmg:{n:2, el:'fire'}}},
+    STEW:{created:true, t:'Hearty Stew', k:'Created', d:'Heal 4 HP before attacks', art:'c_stew', fx:{heal:4}},
+    ARC_SUN:{created:true, t:'Arcana: The Sun', k:'Created', d:'+2 ATK this round', art:'c_sun', fx:{atk:2}},
+    ARC_MOON:{created:true, t:'Arcana: The Moon', k:'Created', d:'+2 DEF this round', art:'c_moon', fx:{def:2}},
+    ARC_STAR:{created:true, t:'Arcana: The Star', k:'Created', d:'Heal 2 HP before attacks', art:'c_star', fx:{heal:2}},
+    WHETSTONE:{created:true, t:'Whetstone', k:'Created', d:'+2 ATK this round', art:'c_whetstone', fx:{atk:2}},
   };
   const ACT_T = { ...Object.fromEntries(Object.entries(ITEMS).map(([k,v])=>[k,v.t])), PASS:'Pass', SWITCH:'Switch' };
 

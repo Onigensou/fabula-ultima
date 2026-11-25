@@ -427,5 +427,73 @@ const blank = blankStats;
   ok(threw, "three bosses still illegal without a format");
 }
 
+// ===== hand model v2 + Hand API (2026-11-25): counts, created cards, cap, effects, AI, Hako, views =====
+{
+  const M = E.Match, H = E.Hand, I = Catalog.ITEMS;
+  const P = { action:"PASS" };
+  const fresh = (teams = [["wolf","pyrefly","skizzik"], ["kirin","roper","pyrefly"]]) => {
+    const m = M.create({ teams }); M.submit(m, 0, { replace:0 }); M.submit(m, 1, { replace:0 }); return m; };
+  const m = fresh();
+  ok(H.size(m, 0) === 6 && H.list(m, 0).every((x) => x.n === 1 && !x.created), "hand v2: six base items at 1, nothing created");
+  ok(Object.keys(I).filter((k) => !I[k].created).join() === "STRENGTH,GOLEM,REMEDY,SMOKE,SHARD,CAFE", "base items unchanged and listed first");
+  let r = H.add(m, 0, "GRAPE", { source:"Rume" });
+  ok(r.ok && r.n === 1 && H.count(m, 0, "GRAPE") === 1 && H.size(m, 0) === 7, "Hand.add: Grape Juice arrives");
+  ok(m.log[0].head === "CARD CREATED" && /Rume creates Grape Juice/.test(m.log[0].lines[0][0]), "Hand.add writes a CARD CREATED log line");
+  r = H.add(m, 0, "STRENGTH", { n:3 });
+  ok(r.n === 1 && r.fizzled === 2 && H.count(m, 0, "STRENGTH") === 2 && H.size(m, 0) === 8, "cap 8: one more Strength fits, two fizzle");
+  ok(/Hand full/.test(m.log[0].lines.map((l) => l[0]).join(" ")), "a fizzle is logged");
+  ok(!H.add(m, 0, "NOPE").ok && !H.add(m, 2, "GRAPE").ok, "unknown card / seat refused");
+  ok(M.validate(m, 1, { action:"GRAPE" }) === "card not in hand" && M.validate(m, 0, { action:"GRAPE" }) === null, "validate: only the holder may play it");
+  // two Strengths: both can be used, one per round
+  M.submit(m, 0, { action:"STRENGTH" }); M.submit(m, 1, P);
+  ok(H.count(m, 0, "STRENGTH") === 1 && M.validate(m, 0, { action:"STRENGTH" }) === null, "a duplicate stays playable after the first is used");
+  // Grape Juice: +1 ATK and +1 SPD this round, then gone from the hand
+  const g = fresh([["wolf","pyrefly","skizzik"], ["kirin","roper","pyrefly"]]);   // Wolf SPD 2 vs Kirin SPD 2
+  H.add(g, 0, "GRAPE");
+  const hp0 = g.p[1].roster[0].hp;
+  const res = (M.submit(g, 0, { action:"GRAPE" }), M.submit(g, 1, P)).resolved;
+  ok(res.ev.seq && res.ev.seq[0] === 0, "Grape Juice +1 SPD: Wolf strikes first");
+  ok(hp0 - g.p[1].roster[0].hp === E._withState(g, () => E._calcAttack(g.p[0].roster[0], g.p[1].roster[0], { attItem:"PASS", defItem:"PASS" })).dmg + 1, "Grape Juice +1 ATK on that attack");
+  ok(!("GRAPE" in g.p[0].items), "a used created card leaves the hand");
+  // Lucky Trinket +1 DEF, Moon +2 DEF, Smoke Bomb ignores both
+  const d = fresh();
+  const base = E._withState(d, () => E._calcAttack(d.p[1].roster[0], d.p[0].roster[0], { attItem:"PASS", defItem:"PASS" })).dmg;
+  const moon = E._withState(d, () => E._calcAttack(d.p[1].roster[0], d.p[0].roster[0], { attItem:"PASS", defItem:"ARC_MOON" })).dmg;
+  const smoke = E._withState(d, () => E._calcAttack(d.p[1].roster[0], d.p[0].roster[0], { attItem:"SMOKE", defItem:"ARC_MOON" })).dmg;
+  ok(moon === Math.max(1, base - 2) && smoke === base, "The Moon +2 DEF this round; Smoke Bomb ignores it");
+  // Hearty Stew heals 4 before attacks
+  const st = fresh(); st.p[0].roster[0].hp = 3; H.add(st, 0, "STEW");
+  const rs = (M.submit(st, 0, { action:"STEW" }), M.submit(st, 1, P)).resolved;
+  ok(rs.ev.heal[0] === 4, "Hearty Stew heals 4 before attacks");
+  // Apple Bomb: 2 Fire damage before attacks, element chart applies, ignores DEF
+  const ab = fresh([["wolf","pyrefly","skizzik"], ["gorger","roper","pyrefly"]]);   // Aero Gorger is Air: Weak to Fire (+2)
+  H.add(ab, 0, "APPLE_BOMB"); const gh = ab.p[1].roster[0].hp;
+  const ra = (M.submit(ab, 0, { action:"APPLE_BOMB" }), M.submit(ab, 1, P)).resolved;
+  const bomb = (ra.ev.direct || []).find((x) => x.src === "Apple Bomb");
+  ok(bomb && bomb.amt === 4 && bomb.s === 1, "Apple Bomb: 2 Fire + Weak 2 = 4 to the Air card, before attacks");
+  ok(gh - ab.p[1].roster[0].hp >= 4, "the bomb's damage lands on the enemy active card");
+  // round abilities can create cards too: ev.added mirrors for seat 1
+  const mirrored = E.View.resolvedForSeat({ kind:"round", ev:{ added:[{ s:0, k:"GRAPE", n:1 }] } }, 1);
+  ok(mirrored.ev.added[0].s === 1, "ev.added mirrors for seat 1");
+  // Hako restocks base items only, never a created card; counts only base items
+  const h = M.create({ teams:[["hako","wolf","pyrefly"], ["kirin","roper","pyrefly"]] }); M.submit(h, 0, { replace:0 }); M.submit(h, 1, { replace:0 });
+  h.p[1].roster[0].hp = 99;   // Kirin stays up: no replacement step in between
+  for (const k of ["STRENGTH","GOLEM"]) { M.submit(h, 0, { action:k }); M.submit(h, 1, P); }
+  H.add(h, 0, "LUCKY"); M.submit(h, 0, { action:"LUCKY" }); M.submit(h, 1, P);
+  ok(!H.restore(h, 0, "LUCKY") && H.count(h, 0, "LUCKY") === 0, "Hand.restore never brings back a created card");
+  M.submit(h, 0, { action:"REMEDY" }); const hr = M.submit(h, 1, P).resolved;
+  ok(hr.ev.supply && ["STRENGTH","GOLEM","REMEDY"].includes(hr.ev.supply[0].k), "Hako still restocks at 3 base items used (a created card doesn't count)");
+  // AI plays a created card when only it is lethal: Aero Gorger (Air) at 4 HP vs Kirin's 2-damage hit; Apple Bomb = 2 Fire +2 Weak
+  const ai = fresh([["gorger","wolf","pyrefly"], ["kirin","roper","pyrefly"]]); ai.p[0].roster[0].hp = 4; ai.p[1].items.STRENGTH = 0; H.add(ai, 1, "APPLE_BOMB");   // Strength would be lethal too
+  const tally = {}; for (let i = 0; i < 300; i++) { const a = M.aiChoice(ai, 1, { diff:"casual" }).action; tally[a] = (tally[a] || 0) + 1; }
+  const top = Object.keys(tally).sort((x, y) => tally[y] - tally[x])[0];
+  ok(top === "APPLE_BOMB" && tally.APPLE_BOMB > 100, `casual AI: the lethal card is its top pick (${tally.APPLE_BOMB}/300; casual noise spreads the rest)`);
+  let sp = 0; for (let i = 0; i < 20; i++) if (M.aiChoice(ai, 1, { diff:"skilled" }).action === "APPLE_BOMB") sp++;
+  ok(sp >= 10, `skilled AI's lookahead finds it too (${sp}/20)`);
+  // old saved states (0/1 items, no created keys) still play
+  const old = fresh(); old.p[0].items = { STRENGTH:true, GOLEM:0, REMEDY:1, SMOKE:1, SHARD:1, CAFE:1 };
+  ok(M.validate(old, 0, { action:"STRENGTH" }) === null && M.validate(old, 0, { action:"GOLEM" }) === "item already used" && H.size(old, 0) === 5, "old 0/1/true hands read the same");
+}
+
 console.log(fails ? fails + " FAILED" : "ALL PASS");
 process.exit(fails ? 1 : 0);

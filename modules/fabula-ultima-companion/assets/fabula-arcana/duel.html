@@ -530,6 +530,16 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 .divestreak{position:absolute;width:8px;height:140px;margin-left:-4px;border-radius:4px;pointer-events:none;z-index:6;
   background:linear-gradient(180deg,transparent,#e8fff4 60%,#9ff0b0);filter:drop-shadow(0 0 10px #9ff0b0)}
 .supfly{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;pointer-events:none;z-index:7;filter:drop-shadow(0 0 8px #fff2a8)}
+/* hand model v2 (2026-11-25): created cards + counts */
+.hcard.created{border-style:dashed;border-color:#c98a1e;background:linear-gradient(180deg,#fffdf4,#f7e6b4)}
+.hcard .cnt{position:absolute;top:-8px;right:-8px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:#7a4e20;color:#fff4d6;font:700 12px/22px var(--font-b);box-shadow:0 0 0 2px #f4d58a;z-index:2}
+.itemrow .ii{position:relative}
+.itemrow .ii.made{border-style:dashed;border-color:#c98a1e}
+.itemrow .ii .cn{position:absolute;right:-5px;bottom:-5px;min-width:13px;height:13px;border-radius:7px;background:#7a4e20;color:#fff4d6;font:700 9px/13px var(--font-b);text-align:center;padding:0 2px}
+.madefly{position:absolute;width:62px;height:84px;margin:-42px 0 0 -31px;pointer-events:none;z-index:8;border-radius:8px;border:2px dashed #c98a1e;background:linear-gradient(180deg,#fffdf4,#f7e6b4);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 18px #f4c95daa}
+.madefly img{width:40px;height:40px;object-fit:contain;image-rendering:pixelated}
+.madefly::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,#fff0 30%,#fffd 50%,#fff0 70%);transform:translateX(-130%);animation:madeGlint .55s .25s ease-out forwards}
+@keyframes madeGlint{to{transform:translateX(130%)}}
 /* ===== announcement banner (FA_BANNER): a horizontal strip, text slides in ===== */
 .annc{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);z-index:30;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 0;
   background:linear-gradient(90deg,transparent 0%,#1a0f05e6 14%,#1a0f05f2 50%,#1a0f05e6 86%,transparent 100%);border-top:2px solid #c9a44a;border-bottom:2px solid #c9a44a;
@@ -1479,7 +1489,9 @@ function updateField(){
     setHP(s,m.i,m.hp);
   }
   for (const s of [0,1]){
-    $(`#items${s}`).innerHTML = Object.keys(ITEMS).map(k=>`<span class="ii ${S.p[s].items[k]?'':'used'}" title="${ITEMS[k].t}${S.p[s].items[k]?'':' (used)'}"><img src="${ART[ITEMS[k].art]}" alt="${ITEMS[k].t}"></span>`).join('');
+    // the six items (used ones dimmed), then any created cards held, with a count past one
+    $(`#items${s}`).innerHTML = Object.keys(ITEMS).filter(k=>!ITEMS[k].created || Number(S.p[s].items[k])>0).map(k=>{ const n=Number(S.p[s].items[k])||0;
+      return `<span class="ii ${n?'':'used'} ${ITEMS[k].created?'made':''}" title="${ITEMS[k].t}${n?(n>1?` ×${n}`:''):' (used)'}"><img src="${ART[ITEMS[k].art]}" alt="${ITEMS[k].t}">${n>1?`<b class="cn">${n}</b>`:''}</span>`; }).join('');
     $(`#alive${s}`).textContent = `${living(S.p[s]).length} / ${CFG.TEAM} standing`;
   }
   renderEffects();
@@ -1633,7 +1645,7 @@ function fxList(s, m){
     desc:`+${m.loot} ATK for the rest of the match. +1 more each time the opponent uses an item while Raubens is the active card.` });
   if (m.cid==='kalina' && m.dive) add({ k:'dive', tier:'ready', icon:'fx_jump', name:'Dive Ready', short:'next switch-in',
     desc:`The next time Kalina is switched in (or sent in after a KO), she drops on the enemy card for ${CFG.DIVE||2} damage (ignores DEF and items).`, when:'Triggers when she comes back in.' });
-  if (m.cid==='hako'){ const used=Object.keys(S.p[s].items).filter(k=>!S.p[s].items[k]).length, need=CFG.SUPPLY_MIN||3, on=used>=need;
+  if (m.cid==='hako'){ const used=Object.keys(ITEMS).filter(k=>!ITEMS[k].created && !Number(S.p[s].items[k])).length, need=CFG.SUPPLY_MIN||3, on=used>=need;
     add({ k:'supply', tier: on?'ready':'buff', icon:'fx_loot', name:'Trusty Supplier', num: Math.min(used,need), short: on ? 'restocks next round' : `${used} / ${need} items used`,
       desc:esc(c.txt), when: on ? 'At the start of each round she is in front, one used item comes back.' : `Needs ${need} used-up items.` }); }
   if (m.cid==='geist'){ const used=!!m.bn;
@@ -1906,6 +1918,13 @@ async function fxItem(s, item){
   if (item==='STRENGTH'){ slot.classList.add('b-str'); particles(c.x,c.y+30,22,'#ff7a2a',{up:true,r:90,spread:60}); particles(c.x,c.y,10,'#ffd36a',{r:50}); add('ring',c.x,c.y,{'--pc':'#ff7a2a'}); }
   if (item==='GOLEM'){ const h=$(`#holo${s}_${S.p[s].active}`); const b=document.createElement('div'); b.className='barrier'; b.id='barrier'+s; h.appendChild(b); particles(c.x,c.y,14,'#e8c38a',{r:60}); }
   if (item==='REMEDY'){ particles(c.x,c.y+30,24,'#7ee29a',{up:true,r:80,spread:70}); add('ring',c.x,c.y,{'--pc':'#7ee29a'}); }
+  // created cards (hand model v2): the effect its fx names, with the matching item's sound
+  { const fx=ITEMS[item] && ITEMS[item].created && ITEMS[item].fx; if (fx){
+    if (fx.atk){ slot.classList.add('b-str'); particles(c.x,c.y+30,18,'#ff9a3a',{up:true,r:80,spread:60}); sfx('strength',0.8,0); }
+    if (fx.def){ const h=$(`#holo${s}_${S.p[s].active}`); if (h && !$('#barrier'+s)){ const b=document.createElement('div'); b.className='barrier'; b.id='barrier'+s; h.appendChild(b); } particles(c.x,c.y,12,'#e8c38a',{r:60}); sfx('golem',0.8,0); }
+    if (fx.heal){ particles(c.x,c.y+30,22,'#7ee29a',{up:true,r:80,spread:70}); add('ring',c.x,c.y,{'--pc':'#7ee29a'}); sfx('remedy',0.8,0); }
+    if (fx.dmg){ const t=spriteCenter(1-s); particles(t.x,t.y,26,'#ff6a3d',{r:80}); add('ring',t.x,t.y,{'--pc':'#ff6a3d'}); sfx('hit_fire',0.9,0); }
+    if (fx.spd && !fx.atk){ slot.classList.add('b-str'); sfx('cafe',0.8,0); } } }
   if (item==='SHARD'){ slot.classList.add('b-shard'); particles(c.x,c.y,24,'#ffffff',{r:70}); particles(c.x,c.y,14,'#c9a8ff',{r:50}); add('ring',c.x,c.y,{'--pc':'#e9dcff'}); }
   if (item==='CAFE'){ slot.classList.add('b-str'); for (let k=0;k<14;k++){ add('pt', c.x+(Math.random()-.5)*60, c.y+20, {'--pc':'#ffe9a8','--dx':(Math.random()<.5?-1:1)*(60+Math.random()*40)+'px','--dy':(Math.random()-.5)*20+'px','--sz':'3px','--d':'.5s'}); } add('ring',c.x,c.y,{'--pc':'#ffe9a8'}); }
   if (item==='SMOKE'){ slot.classList.add('b-smoke'); for (let k=0;k<7;k++){ const a=Math.random()*Math.PI*2; add('puff', c.x+Math.cos(a)*20, c.y+20+Math.sin(a)*10, {'--dx':Math.cos(a)*40+'px','--dy':(Math.sin(a)*20-20)+'px'}); } }
@@ -2053,6 +2072,23 @@ async function fxSupply(v){
   if (img.animate && !RM()) await img.animate([{ transform:'translate(0,0) scale(.4)', opacity:0 }, { transform:'translate(0,-40px) scale(1.15)', opacity:1, offset:.35 }, { transform:`translate(${b.x-a.x}px,${b.y-a.y}px) scale(.6)`, opacity:.9 }],
     { duration:900, easing:'cubic-bezier(.3,.7,.4,1)', fill:'forwards' }).finished.catch(()=>{});
   img.remove(); sfx('cursor', 0.6, 0); await sleep(RM()?40:250);
+}
+// A created card (hand model v2, 2026-11-25): it appears over the side's active card, glints, then flies into that side's
+// hand (face up for both: open information). v = { s, k, n, fizzled, src }. A full hand: a "Hand full" pop instead.
+async function fxAdded(v){
+  const L=$('#fxl'), it=ITEMS[v.k]; if (!L || !it) return;
+  const a=spriteCenter(v.s), hand=$('#hand'+v.s), b = hand && hand.getBoundingClientRect && hand.getBoundingClientRect().width ? centerOf(hand, L) : { x:a.x, y:a.y+140 };
+  if (v.n>0){
+    sfx('shard', 0.8, 0); particles(a.x, a.y-20, 12, '#ffe7a0', {up:true, r:50, spread:28});
+    for (let i=0; i<Math.min(v.n,3); i++){
+      const c=document.createElement('div'); c.className='madefly'; c.innerHTML=`<img src="${ART[it.art]||''}" alt="">`; c.style.left=a.x+'px'; c.style.top=(a.y-30)+'px'; L.appendChild(c);
+      if (c.animate && !RM()) await c.animate([{ transform:'scale(0) rotate(-8deg)', opacity:0 }, { transform:'translate(0,-26px) scale(1.12)', opacity:1, offset:.32 }, { transform:'translate(0,-26px) scale(1)', opacity:1, offset:.6 },
+        { transform:`translate(${b.x-a.x}px,${b.y-a.y+30}px) scale(.55)`, opacity:.85 }], { duration:950, easing:'cubic-bezier(.3,.7,.4,1)', fill:'forwards' }).finished.catch(()=>{});
+      c.remove(); sfx('cursor', 0.6, 0);
+    }
+  }
+  if (v.fizzled>0){ popNum(v.s, 'Hand full', 'zero', `<span class="afb dn">${esc(it.t)} fizzles</span>`); await sleep(RM()?40:500); }
+  await sleep(RM()?20:120);
 }
 // Kalina's hop banner: returns the roster index of the card that steps in, or null (Back / the round moved on)
 function askHop(bench){ return new Promise(res=>{
@@ -2544,15 +2580,18 @@ function renderPicker(){
   $('#btnLock').onclick=()=>lockFromUI(); bindSeat();
 }
 // ===================== hands, drag & drop, flights =====================
-function handCards(s){ const pl=S.p[s], played=S.commit&&S.commit[s]&&S.commit[s].action; return [...Object.keys(ITEMS).filter(k=>pl.items[k] && k!==played), 'PASS']; }   // a played card has left the hand
+// hand model v2 (2026-11-25): pl.items holds a COUNT per card (0/1 in older states); a played card has left the hand
+const heldN = (s, k) => { const pl=S.p[s], played=S.commit&&S.commit[s]&&S.commit[s].action; return Math.max(0, (Number(pl.items[k])||0) - (k===played?1:0)); };
+function handCards(s){ return [...Object.keys(ITEMS).filter(k=>heldN(s,k)>0), 'PASS']; }
 function renderHands(){
   for (const s of [0,1]){ const box=$('#hand'+s); if (!box) continue;
     const keys=handCards(s), n=keys.length, faceUp = s===UI.seat;
     const live = faceUp && S.phase==='choose' && !S.commit[s] && !UI.busy && !(S.flying&&S.flying[s]);
-    if (!faceUp){ box.innerHTML = keys.map((k,i)=>`<div class="hback" style="--r:${((n-1)/2-i)*6}deg"></div>`).join(''); box.className='hand theirs'; continue; }
+    if (!faceUp){ const backs=keys.reduce((a,k)=>a+(k==='PASS'?1:heldN(s,k)),0);   // the opponent sees how many cards, not which
+      box.innerHTML = Array.from({length:backs},(_,i)=>`<div class="hback" style="--r:${((backs-1)/2-i)*6}deg"></div>`).join(''); box.className='hand theirs'; continue; }
     box.className = s===0 ? 'hand mine' : 'hand mine gmhand';
-    box.innerHTML = keys.map((k,i)=>{ const it=ITEMS[k], r=(i-(n-1)/2)*4, y=Math.abs(i-(n-1)/2)*5;
-      return `<div class="hcard ${k==='PASS'?'pass':''} ${UI.sel===k?'sel':''} ${live?'':'off'}" data-hand="${k}" style="--r:${r}deg;--y:${y}px" tabindex="${live?0:-1}" title="${esc(ACT_T[k])}">${it?`<img src="${ART[it.art]}" alt=""><span class="t">${it.t}</span><span class="k">${it.k}</span><span class="d">${it.d}</span>`:`<span class="ico">⟳</span><span class="t">Pass</span><span class="k">Unlimited</span><span class="d">Attack normally, keep your items</span>`}</div>`; }).join('');
+    box.innerHTML = keys.map((k,i)=>{ const it=ITEMS[k], r=(i-(n-1)/2)*4, y=Math.abs(i-(n-1)/2)*5, cn=it?heldN(s,k):1;
+      return `<div class="hcard ${k==='PASS'?'pass':''} ${it&&it.created?'created':''} ${UI.sel===k?'sel':''} ${live?'':'off'}" data-hand="${k}" style="--r:${r}deg;--y:${y}px" tabindex="${live?0:-1}" title="${esc(ACT_T[k])}${cn>1?` ×${cn}`:''}">${cn>1?`<span class="cnt">×${cn}</span>`:''}${it?`<img src="${ART[it.art]}" alt=""><span class="t">${it.t}</span><span class="k">${it.k}</span><span class="d">${it.d}</span>`:`<span class="ico">⟳</span><span class="t">Pass</span><span class="k">Unlimited</span><span class="d">Attack normally, keep your items</span>`}</div>`; }).join('');
     if (!live) continue;
     box.querySelectorAll('.hcard').forEach(el=>{
       const k=el.dataset.hand;
@@ -2760,7 +2799,8 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
   // one source of truth for card data: the module catalog (loaded before the main script)
   const Cat = globalThis.FabulaArcana && globalThis.FabulaArcana.Catalog;
   if (Cat){ for (const k of Object.keys(Cat.CARDS)) { if (CARDS[k]) Object.assign(CARDS[k], Cat.CARDS[k]); else CARDS[k] = { ...Cat.CARDS[k] }; } Object.assign(CFG, Cat.CFG);
-    if (Cat.ITEMS) for (const k of Object.keys(Cat.ITEMS)) if (ITEMS[k]) ITEMS[k].d = Cat.ITEMS[k].d; }   // item texts from the catalog too
+    // item texts from the catalog too; created cards (hand model v2) come only from the catalog
+    if (Cat.ITEMS) for (const k of Object.keys(Cat.ITEMS)) { if (ITEMS[k]) ITEMS[k].d = Cat.ITEMS[k].d; else { ITEMS[k] = { ...Cat.ITEMS[k] }; ACT_T[k] = Cat.ITEMS[k].t; } } }
 
   seatName = s => spectator() ? ((NET.names && NET.names[s]) || (s ? 'Right' : 'Left')) : (s === 0 ? 'You' : NET.oppName);
   timed = () => !!(S && S.deadline);
@@ -3080,6 +3120,7 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     const rv = S.reveal; S = fromView(m.view, m); const ph = S.phase; S.reveal = rv; S.phase = 'anim'; S.commit = [C[0], C[1]];
     await playRound(res.ev, before);
     for (const v of (res.ev.supply || [])) await fxSupply(v);
+    for (const v of (res.ev.added || [])) await fxAdded(v);   // cards an ability created this round
     S.reveal = null; clearBuffs(); S.phase = ph; S.commit = fromView(m.view, m).commit;
     return after(m);
   }
@@ -3227,6 +3268,15 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
       case 'spectators': NET.spectators = m.n || 0; if (S) renderSidebar(); else if (spectator()) render(); else drawWatch(); return;
       case 'draft': if (!spectator() || S) return; specUpdate(m.draft); render(); return;
       case 'toast': { const st = $('#status'); if (st) st.textContent = m.text || ''; return; }
+      // a card created outside a round (FUCompanion.api.fabulaArcana.addCardToHand: an event, the GM, a future effect)
+      case 'added': {
+        if (!S || !m.view) return applyState(m);
+        const got = (m.added || []).filter(v => v.n > 0);
+        if (got.length) announce(got.map(v => `${v.src ? v.src + ' creates' : 'New card:'} ${ITEMS[v.k] ? ITEMS[v.k].t : v.k}${v.n > 1 ? ' ×' + v.n : ''}`).join(' · '),
+          { tone:'good', sub: got.map(v => (ITEMS[v.k] && ITEMS[v.k].d) || '').filter(Boolean).join(' · ') });
+        for (const v of (m.added || [])) await fxAdded(v);
+        return applyState(m);
+      }
     }
   }
   const queue = []; let busy = false;

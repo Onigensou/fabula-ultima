@@ -56,12 +56,35 @@
     const b=t.hp; t.hp=Math.max(0,t.hp-CFG.DIVE); const d={ s, i:k.i, t:1-s, ti:t.i, amt:b-t.hp, from:b, how }; (ev.dive=ev.dive||[]).push(d);
     S.stats.dive=(S.stats.dive||0)+1; L.push([`Skyfall Dive: Kalina drops on ${N(t.cid)} for ${d.amt} damage (${t.hp} HP).`,'']);
     bnCheck(t, ev, L); return d; }
+  // ===================== hand model v2 (2026-11-25) =====================
+  // pl.items holds a COUNT per card key (old states hold 0/1/true, which read the same). The six base items start at 1;
+  // created cards (ITEMS[k].created) only arrive through addToHand and leave the hand when their count hits 0.
+  // The hand holds at most CFG.HAND_MAX cards; a card created into a full hand fizzles.
+  const BASE_ITEMS = Object.keys(ITEMS).filter(k=>!ITEMS[k].created);
+  const cnt = (pl, k) => Number(pl && pl.items && pl.items[k]) || 0;
+  const handSize = pl => Object.keys(pl.items||{}).reduce((a,k)=>a+cnt(pl,k),0);
+  const fxOf = k => (ITEMS[k] && ITEMS[k].fx) || null;
+  function addToHand(state, s, k, n=1, src=null, L=null, ev=null){
+    const pl=state.p[s]; n=Math.max(1, Math.floor(Number(n)||1));
+    if (!ITEMS[k]) return { s, k, n:0, fizzled:n, src };
+    const room=Math.max(0,(CFG.HAND_MAX||8)-handSize(pl)), add=Math.min(n,room), fizzled=n-add;
+    if (add) pl.items[k]=cnt(pl,k)+add;
+    const rec={ s, k, n:add, fizzled, src };
+    if (ev) (ev.added=ev.added||[]).push(rec);
+    state.stats.added=(state.stats.added||0)+add;
+    if (L){ const by = src ? `${src} creates` : `${seatLabel(state,s)} get${third(state,s)?'s':''}`;
+      if (add) L.push([`${by} ${ITEMS[k].t}${add>1?` ×${add}`:''}.`,'g']);
+      if (fizzled) L.push([`Hand full: ${ITEMS[k].t}${fizzled>1?` ×${fizzled}`:''} fizzles.`,'m']); }
+    return rec;
+  }
+  // a used base item back to 1 (Hako); created cards are never restocked
+  function restoreItem(state, s, k){ const pl=state.p[s]; if (!BASE_ITEMS.includes(k) || cnt(pl,k)) return false; pl.items[k]=1; return true; }
   // Hako's Trusty Supplier: at the start of a round, while Hako is the active card and SUPPLY_MIN+ item cards are used up,
   // one of them (random) comes back to the hand.
   function supplyStep(state, L){ const out=[];
     for (const s of [0,1]){ const pl=state.p[s], m=pl.active==null?null:pl.roster[pl.active]; if (!m || m.cid!=='hako' || m.ko || m.hp<=0) continue;
-      const spent=Object.keys(pl.items).filter(k=>!pl.items[k]); if (spent.length<CFG.SUPPLY_MIN) continue;
-      const k=spent[Math.floor(RNG()*spent.length)]; pl.items[k]=1; state.stats.supply=(state.stats.supply||0)+1; out.push({ s, k });
+      const spent=BASE_ITEMS.filter(k=>!cnt(pl,k)); if (spent.length<CFG.SUPPLY_MIN) continue;
+      const k=spent[Math.floor(RNG()*spent.length)]; restoreItem(state, s, k); state.stats.supply=(state.stats.supply||0)+1; out.push({ s, k });
       L.push([`Trusty Supplier: Hako restocks ${ITEMS[k].t} for ${seatLabel(state,s)}.`,'g']); }
     return out; }
   // Hina's Foretell: the seat whose active card is Hina chooses SECOND and sees the other seat's card.
@@ -77,7 +100,7 @@
   const IDS = Object.keys(CARDS).filter(k=>!CARDS[k].future);   // launch pool
   function mkPlayer(ids){
     return { roster: ids.map((cid,i)=>({ i, cid, hp:CARDS[cid].hp, ko:false, abilityUsed:false, attacked:false, activeRounds:0 })),
-             active:null, items:{STRENGTH:1,GOLEM:1,REMEDY:1,SMOKE:1,SHARD:1,CAFE:1}, pending:false };
+             active:null, items:Object.fromEntries(BASE_ITEMS.map(k=>[k,1])), pending:false };
   }
   const mon = (pl, idx) => idx==null ? null : pl.roster[idx];
   const living = pl => pl.roster.filter(m=>!m.ko);
@@ -102,6 +125,7 @@
     if (att.cid==='raubens' && (att.loot||0)>0){ atk+=att.loot; parts.push(`+${att.loot} Bandit King`); }
     if (ctx.attItem==='STRENGTH'){ atk+=CFG.STR; parts.push(`+${CFG.STR} Strength`); }
     if (ctx.attItem==='SHARD'){ atk+=CFG.SHARD; parts.push(`+${CFG.SHARD} Shard`); }
+    { const fx=fxOf(ctx.attItem); if (fx && fx.atk){ atk+=fx.atk; parts.push(`+${fx.atk} ${ITEMS[ctx.attItem].t}`); } }   // created cards
     const pyre = att.cid==='pyrefly' && ((att.burn||{})[def.i]||0)>=CFG.PYRE_N; if (pyre){ atk+=CFG.PYRE_BURST; parts.push(`+${CFG.PYRE_BURST} Funeral Pyre`); }
     const kcharge = att.cid==='kirin' && !!(att.chg && att.chg[S.round]); if (kcharge){ atk+=CFG.KCHARGE; parts.push(`+${CFG.KCHARGE} Lightning Charge`); }
     if (att.cid==='gigas' && D.def>=1){ atk+=1; parts.push('+1 Crushing Blow'); }
@@ -125,9 +149,10 @@
     const nullG = def.cid==='nullis' && ITEMS[ctx.attItem] ? CFG.NULL_GUARD : 0, heavy = def.cid==='gardner' && ctx.attItem==='PASS' ? CFG.HEAVY_ARMOR : 0;
     const rival = (def.cid==='nullis' && twinDown(def,'gardner')) || (def.cid==='gardner' && twinDown(def,'nullis')) ? CFG.RIVAL : 0;
     const gdef = golem ? CFG.GOLEM : 0;
-    const tdef = pdef + nullG + heavy + rival + gdef, pierce = att.cid==='brucev' && !smoke ? Math.min(CFG.PIERCE, tdef) : 0;
+    const fdef = (fxOf(ctx.defItem)||{}).def || 0;   // a created card's DEF this round (works like Golem Fragment: Smoke ignores it)
+    const tdef = pdef + nullG + heavy + rival + gdef + fdef, pierce = att.cid==='brucev' && !smoke ? Math.min(CFG.PIERCE, tdef) : 0;
     const ddef = smoke ? 0 : tdef - pierce;
-    const defNotes = smoke ? '' : [gdef ? `Golem Fragment +${gdef}` : '', nullG ? `Null Guard +${nullG}` : '', heavy ? `Heavy Armor +${heavy}` : '', rival ? `Rival +${rival}` : ''].filter(Boolean).join(', ');
+    const defNotes = smoke ? '' : [gdef ? `Golem Fragment +${gdef}` : '', fdef ? `${ITEMS[ctx.defItem].t} +${fdef}` : '', nullG ? `Null Guard +${nullG}` : '', heavy ? `Heavy Armor +${heavy}` : '', rival ? `Rival +${rival}` : ''].filter(Boolean).join(', ');
     let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}`:'') + (defNotes ? ` (${defNotes})` : '') + (smoke && tdef ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + (pierce ? ` · <b>Teleportation Strike</b> ignores ${pierce} DEF` : '') + (slip && ddef ? ' (Slipstream +' + CFG.SLIPSTREAM + ')' : '') + ` = ${d}`;
     const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
     if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Weak</b>: ${EL[D.el]} takes +${mod} from ${EL[ael]} = ${d}`; }
@@ -186,7 +211,8 @@
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); BN(t); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
         L.push([`Dynamic Entry: Wandering Flame bursts in, ${b-t.hp} Fire damage to ${N(t.cid)} (${t.hp} HP).`,'']); } }
     for (const s of [0,1]) if (ev.switched[s]) diveIn(s, 'switch', ev, L);
-    for (const s of [0,1]){ const a=ch[s].action; S.stats.acts[s][a]=(S.stats.acts[s][a]||0)+1; if (ITEMS[a]){ P[s].items[a]=0; ev.items[s]=a; } }
+    for (const s of [0,1]){ const a=ch[s].action; S.stats.acts[s][a]=(S.stats.acts[s][a]||0)+1;
+      if (ITEMS[a]){ P[s].items[a]=Math.max(0,cnt(P[s],a)-1); if (ITEMS[a].created && !P[s].items[a]) delete P[s].items[a]; ev.items[s]=a; } }
     // Raubens' Bandit King: an item used while he is the opposing active card = +1 ATK for the rest of the match (counts this round)
     for (const s of [0,1]) if (ITEMS[ch[s].action]){ const r=mon(P[1-s],P[1-s].active); if (r && r.cid==='raubens' && r.hp>0){ r.loot=(r.loot||0)+1; S.stats.loot=(S.stats.loot||0)+1;
       L.push([`Bandit King: Raubens takes his cut of the ${ITEMS[ch[s].action].t} (+1 ATK, now +${r.loot}).`,'m']); } }
@@ -222,7 +248,18 @@
       m.hp=Math.min(CARDS[m.cid].hp, m.hp+amt); ev.heal[s]=m.hp-b;
       L.push([`${N(m.cid)} drinks a Remedy: +${ev.heal[s]} HP → ${m.hp}.`,'g']);
     }
-    for (const s of [0,1]) if (['STRENGTH','GOLEM','SMOKE','SHARD'].includes(ch[s].action)) L.push([`${who(s)} use${third(s)?'s':''} ${ITEMS[ch[s].action].t}.`,'m']);
+    // created cards: heal before attacks, then a pre-attack hit on the enemy active card (ignores DEF and items; el = element chart)
+    for (const s of [0,1]){ const fx=fxOf(ch[s].action); if (!fx || !fx.heal) continue;
+      const m=mon(P[s],P[s].active), b=m.hp; m.hp=Math.min(CARDS[m.cid].hp, m.hp+fx.heal); ev.heal[s]=(ev.heal[s]||0)+(m.hp-b);
+      L.push([`${N(m.cid)} uses ${ITEMS[ch[s].action].t}: +${m.hp-b} HP → ${m.hp}.`,'g']); }
+    for (const s of [0,1]){ const fx=fxOf(ch[s].action); if (!fx || !fx.dmg) continue;
+      const t=mon(P[1-s],P[1-s].active); if (!t || t.hp<=0) continue;
+      const amt=Math.max(1, (fx.dmg.n||0) + (fx.dmg.el ? elMod(fx.dmg.el, CARDS[t.cid].el) : 0)), b=t.hp;
+      t.hp=Math.max(0,t.hp-amt); BN(t); (ev.direct=ev.direct||[]).push({ s:1-s, i:t.i, amt:b-t.hp, src:ITEMS[ch[s].action].t });
+      S.stats.cardDmg=(S.stats.cardDmg||0)+(b-t.hp);
+      L.push([`${ITEMS[ch[s].action].t}: ${b-t.hp} ${fx.dmg.el ? EL[fx.dmg.el]+' ' : ''}damage to ${N(t.cid)} (${t.hp} HP).`,'']); }
+    for (const s of [0,1]){ const a=ch[s].action, fx=fxOf(a);
+      if (['STRENGTH','GOLEM','SMOKE','SHARD'].includes(a) || (fx && !fx.heal && !fx.dmg && !(fx.spd && !fx.atk && !fx.def))) L.push([`${who(s)} use${third(s)?'s':''} ${ITEMS[a].t}.`,'m']); }
     for (const s of [0,1]){ const m=mon(P[s],P[s].active); m.activeRounds++; }
     const preHP=[0,1].map(s=>mon(P[s],P[s].active).hp); // v0.4 tiebreak snapshot (after Remedy, before impact)
     // ---- attack phase (v0.5): equal Speed = simultaneous; otherwise the faster attack fully resolves first ----
@@ -272,7 +309,7 @@
     if (!canAtk[0]&&!canAtk[1]) L.push(['Both sides switched. No attacks this round.','m']);
     const baseSp=[0,1].map(s=>{ const m=mon(P[s],P[s].active); const tw = (CFG.TW_ALL || CARDS[m.cid].el==='air') && P[s].twFrom<=S.round && S.round<=P[s].twUntil ? 1 : 0;
       if (tw){ S.stats.tailwind=(S.stats.tailwind||0)+1; } return Math.min(CFG.SPD_MAX||5, Math.max(1, CARDS[m.cid].spd + tw - (m.slowRound===S.round?1:0) - ((m.breath||0)>=S.round?1:0))); });
-    const sp=[0,1].map(s=>Math.min(CFG.SPD_MAX||5, baseSp[s] + (ch[s].action==='CAFE'?1:0)));   // Café au Lait: +1 SPD this round, cap SPD_MAX (5)
+    const sp=[0,1].map(s=>Math.min(CFG.SPD_MAX||5, baseSp[s] + (ch[s].action==='CAFE'?1:0) + ((fxOf(ch[s].action)||{}).spd||0)));   // Café au Lait / a created card's SPD: this round, cap SPD_MAX (5)
     S._sp = sp; S._spRound = S.round;   // this round's real SPD (Gryphon's Slipstream reads it)
     for (const s of [0,1]) if (ch[s].action==='CAFE'){ const changed=(Math.sign(baseSp[s]-baseSp[1-s])!==Math.sign(sp[s]-baseSp[1-s])); S.stats.cafe=S.stats.cafe||{used:0,changed:0,capped:0}; S.stats.cafe.used++; if (changed) S.stats.cafe.changed++; if (baseSp[s]>=(CFG.SPD_MAX||5)) S.stats.cafe.capped++;
       L.push([`${N(mon(P[s],P[s].active).cid)} drinks Café au Lait: SPD ${baseSp[s]} → ${sp[s]}${baseSp[s]>=(CFG.SPD_MAX||5)?' (already at max)':''}.`,'m']); }
@@ -369,6 +406,14 @@
       w.SMOKE = 0.1 + Math.max(0,outK-out)*0.9 + (opMon.hp>out && opMon.hp<=outK ? 2 : 0) + (op.items.GOLEM && opMon.hp<=out+1 && out>0 ? 1.5 : 0) + (dK>=2 ? 0.6 : 0); }
     if (me.items.CAFE){ const ms=CARDS[my.cid].spd, os=CARDS[opMon.cid].spd; const SM=CFG.SPD_MAX||5; w.CAFE = 0.2 + (ms<SM && ms+1>os && ms<=os && out>=opMon.hp ? 2.6 : 0) + (ms<SM && ms+1===os && my.hp<=incS ? 0.8 : 0); }
     if (me.items.SHARD){ const outX=est(my,opMon,'SHARD'); w.SHARD = 0.3 + Math.max(0,outX-out)*0.9 + (opMon.hp>out && opMon.hp<=outX ? 2 : 0); }
+    // created cards: weighed from their effect (fx), the same reasons the items above are played for
+    for (const k of Object.keys(me.items)){ if (!ITEMS[k] || !ITEMS[k].created || !cnt(me,k)) continue; const fx=ITEMS[k].fx||{}; let v=0.4;
+      if (fx.atk){ const o2=est(my,opMon,k); v += Math.max(0,o2-out)*0.6 + (opMon.hp>out && opMon.hp<=o2 ? 3 : 0); }
+      if (fx.def) v += (my.hp<=incS && incS>0 ? 1.8 : 0.2);
+      if (fx.heal) v += my.hp>=max-1 ? -0.4 : (my.hp<=max/2 ? 1.8 : 0.3) + (my.hp<=incS && my.hp+fx.heal>incS ? 1.2 : 0);
+      if (fx.spd){ const ms=CARDS[my.cid].spd, os=CARDS[opMon.cid].spd; v += (ms<=os && ms+fx.spd>os && out>=opMon.hp) ? 2 : 0.1; }
+      if (fx.dmg && opMon){ const n=Math.max(1,(fx.dmg.n||0)+(fx.dmg.el?elMod(fx.dmg.el,CARDS[opMon.cid].el):0)); v += opMon.hp<=n ? 3 : (opMon.hp<=n+out ? 1.6 : 0.7); }
+      w[k]=v; }
     if (!me.pending){
       const bench=benchOptions(me);
       if (bench.length){
@@ -390,8 +435,8 @@
         { const kd=bench.find(x=>x.cid==='kalina' && x.dive); if (kd){ const lethal=opMon && opMon.hp>0 && opMon.hp<=CFG.DIVE;
           if (lethal || my.hp<=inc){ best=kd; w.SWITCH += lethal?2.5:0.8; } else { w.SWITCH += 0.3; if (est(opMon,kd,'PASS','PASS',true) < est(opMon,best,'PASS','PASS',true)) best=kd; } } }
         // Hako: send her in once SUPPLY_MIN+ items are used up; take her out again once the hand is restocked (4+) or she is about to fall
-        { const nIt=Object.values(me.items).filter(Boolean).length, used=Object.keys(me.items).length-nIt, need=CFG.SUPPLY_MIN, hk=bench.find(x=>x.cid==='hako');
-          if (hk && used>=need && nIt<=Object.keys(me.items).length-need && est(opMon,hk,'PASS','PASS',true)<hk.hp){ best=hk; w.SWITCH += 1.2; }
+        { const nIt=BASE_ITEMS.filter(k=>cnt(me,k)).length, used=BASE_ITEMS.length-nIt, need=CFG.SUPPLY_MIN, hk=bench.find(x=>x.cid==='hako');
+          if (hk && used>=need && nIt<=BASE_ITEMS.length-need && est(opMon,hk,'PASS','PASS',true)<hk.hp){ best=hk; w.SWITCH += 1.2; }
           if (my.cid==='hako' && (nIt>=4 || my.hp<=inc)){ best=[...bench].sort((a,b)=>est(b,opMon)-est(a,opMon))[0]; w.SWITCH += 1.2; } }
         if (my.cid==='sylph' && twOn && (CFG.TW_ALL || CARDS[best.cid].el==='air')) w.SWITCH += 0.9;   // set up, then switch
         if (op.active!=null && mon(op,op.active).cid==='roo' && mon(op,op.active).steps && mon(op,op.active).steps.t===my.i && mon(op,op.active).steps.n>=2) w.SWITCH += 3;   // dodge the knife
@@ -526,7 +571,7 @@
       if (c.hop != null && c.action !== 'SWITCH'){ const m = pl.roster[c.hop]; if (!(m && !m.ko && m.hp > 0 && m.i !== pl.active)) return 'Kalina hops to a living benched card'; }
       if (c.action === 'PASS') return null;
       if (c.action === 'SWITCH'){ const m = pl.roster[c.target]; return m && !m.ko && m.i !== pl.active ? null : 'switch to a living benched monster'; }
-      if (ITEMS[c.action]) return pl.items[c.action] ? null : 'item already used';
+      if (ITEMS[c.action]) return cnt(pl, c.action) ? null : (ITEMS[c.action].created ? 'card not in hand' : 'item already used');
       return 'unknown action';
     },
     submit(state, seat, c){
@@ -639,7 +684,7 @@
       if (ev.seq) ev.seq = ev.seq.map(flip);
       if (ev.snaps) ev.snaps = ev.snaps.map(swap2);
       if (ev.denied != null) ev.denied = flip(ev.denied);
-      for (const k of ['direct','entry','revive','tips','serenade','grace','regen','hop','dive','supply']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
+      for (const k of ['direct','entry','revive','tips','serenade','grace','regen','hop','dive','supply','added']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
       for (const x of ev.dive || []) if (x && x.t != null) x.t = flip(x.t);
       return r;
     },
@@ -650,8 +695,30 @@
     },
   };
 
+  // ===================== Hand API (2026-11-25): create a card and add it to a seat's hand =====================
+  // Abilities call addToHand at their own timing step (the round's ev.added drives the UI). Outside a round (an event, a
+  // GM, a future effect) Hand.add writes a "CARD CREATED" log entry and returns the record for the host to broadcast.
+  const Hand = Object.freeze({
+    MAX: () => CFG.HAND_MAX || 8,
+    keys: () => Object.keys(ITEMS),
+    isCreated: k => !!(ITEMS[k] && ITEMS[k].created),
+    count: (state, seat, k) => cnt(state.p[seat], k),
+    size: (state, seat) => handSize(state.p[seat]),
+    // [{ k, n, created }] in registry order (base items first), held cards only
+    list: (state, seat) => Object.keys(ITEMS).filter(k=>cnt(state.p[seat],k)).map(k=>({ k, n:cnt(state.p[seat],k), created:!!ITEMS[k].created })),
+    add(state, seat, k, { n = 1, source = null } = {}){
+      if (!state || !state.p || ![0,1].includes(seat)) return { ok:false, error:'no such seat' };
+      if (!ITEMS[k]) return { ok:false, error:`unknown card ${k}` };
+      if (state.phase === 'ended') return { ok:false, error:'match over' };
+      const L=[]; const rec=addToHand(state, seat, k, n, source, L, null);
+      if (L.length) state.log.unshift({ head:'CARD CREATED', lines:L });
+      return { ok:true, ...rec, L };
+    },
+    restore: (state, seat, k) => restoreItem(state, seat, k),
+  });
+
   const Engine = Object.freeze({
-    Match, Series, View, Format, foretellSeat, foxFire: (state, m) => withState(state, () => foxFire(m)), IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
+    Match, Series, View, Format, Hand, foretellSeat, foxFire: (state, m) => withState(state, () => foxFire(m)), IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
     setRng(fn){ RNG = typeof fn === 'function' ? fn : Math.random; },
     // low-level hooks for tests and the balance tool (run inside a state)
     _withState: withState, _resolveRound: ch => resolveRound(ch), _calcAttack: (a, d, ctx) => calcAttack(a, d, ctx), _mkPlayer: mkPlayer,

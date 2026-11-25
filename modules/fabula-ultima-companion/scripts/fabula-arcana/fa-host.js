@@ -277,6 +277,7 @@ async function submit(s, seat, choice) {
   if (m.phase === "ended") await onGameEnd(s);
   decide(s);
   broadcast(s, (v) => ({ t: "reveal", res: E().View.resolvedForSeat(r.resolved, v), ...payload(s, v) }));
+  flushAdds(s);   // cards queued by addCardToHand while that seat had already chosen
   if (s.over) pushStatus();
   save();
 }
@@ -617,6 +618,41 @@ export function installHost() {
 }
 
 // Event aborted from the GM chip: end only the duels a story event started (they report "cancel").
+// ------------------------------------------------------------------ create a card and add it to a hand (2026-11-25)
+// FUCompanion.api.fabulaArcana.addCardToHand(target, key, { n, source, seat }) — on the host (the GM running the duel).
+//   target  a session id (then `seat`, default 0 = the challenger), or the actor id of a character sitting in a duel
+//   key     a card key from Catalog.ITEMS: an item (STRENGTH…) or a created card (GRAPE, APPLE_BOMB…)
+//   n       how many (the hand holds CFG.HAND_MAX; the rest fizzles, and the duel shows "Hand full")
+//   source  who made it, for the log and the duel's status line ("Rume creates Grape Juice")
+// Lands at once if that seat is choosing and hasn't committed; otherwise it waits for the seat's next choice.
+// Every viewer gets an 'added' message (the card flies into the hand) with the new state.
+export function addCardToHand(target, key, { n = 1, source = null, seat = 0 } = {}) {
+  const s = sessions.get(target) || [...sessions.values()].find((x) => !x.over && x.seats.some((t) => t.actorId === target));
+  if (!s) return { ok: false, error: "no duel with that id or character" };
+  const at = sessions.get(target) ? (seat === 1 ? 1 : 0) : s.seats.findIndex((t) => t.actorId === target);
+  if (!s.match || s.match.phase === "ended") return { ok: false, error: "no game is being played" };
+  if (!Catalog().ITEMS[key]) return { ok: false, error: `unknown card "${key}"` };
+  (s.pendingAdds = s.pendingAdds || []).push({ seat: at, key, n: Math.max(1, Math.floor(Number(n) || 1)), source: source ? String(source) : null });
+  const done = flushAdds(s);
+  save();
+  return { ok: true, sid: s.sid, seat: at, queued: !done.length, added: done };
+}
+function flushAdds(s) {
+  const m = s.match;
+  if (!m || m.phase === "ended" || !s.pendingAdds?.length) return [];
+  const done = [], keep = [];
+  for (const a of s.pendingAdds) {
+    if (m.phase === "choose" && !m.commit[a.seat]) { const r = E().Hand.add(m, a.seat, a.key, { n: a.n, source: a.source }); if (r.ok) done.push(r); }
+    else keep.push(a);
+  }
+  s.pendingAdds = keep;
+  if (done.length) {
+    // no decide(): it would restart a PvP round clock. An AI seat picks its move when its think timer fires, so it sees the card.
+    broadcast(s, (v) => ({ t: "added", added: done.map((r) => ({ s: v === 1 ? 1 - r.s : r.s, k: r.k, n: r.n, fizzled: r.fizzled, src: r.src })), ...payload(s, v) }));
+  }
+  return done;
+}
+
 export function cancelEventDuels() { for (const s of [...sessions.values()]) if (s.event) closeSession(s); }
 
 // GM tool: end every duel (e.g. before a session ends)
