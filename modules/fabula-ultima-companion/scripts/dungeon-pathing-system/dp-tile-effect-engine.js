@@ -117,6 +117,7 @@
       ignoreDR:     cfg.ignoreReduction,
       attackerName: "Trap",
       sourceType:   "Tile",
+      isHazard:     true,
       verbosity:    "silent",
       hpFloor:      R.TRAP_HP_FLOOR,
     };
@@ -272,6 +273,7 @@
         targetActor:  actor,
         attackerName: "Tile",
         sourceType:   "Tile",
+        isHazard:     cfg.resourceType === "damage",
         verbosity:    "silent",
       });
       const max = Number(actor.system?.props?.[rt.maxProp] ?? 0);

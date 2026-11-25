@@ -118,6 +118,7 @@
           elementType: row.element,
           valueType: "hp",
           isRecovery: false,
+          isHazard: true,
           targetActor: actor,
           attackerName: row.source || "Event",
           sourceType: "Tile",

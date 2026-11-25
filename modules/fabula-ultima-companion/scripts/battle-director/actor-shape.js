@@ -114,7 +114,10 @@ export function buildPseudoWeaponFromNpcAttack(item) {
   // 2026-08-09: Wolf's Bite (`skill_range: ""`) vs an Aura of Decay bearer —
   // "condition_formula ATTACK_IS_MELEE == 1 → 0 (falsy)". Melee is the
   // documented default the `??` was already reaching for; make it mean it.
-  const rangeRaw = String(p.skill_range ?? "").trim();
+  // A PC weapon staged as a preset (free_action action_ref "<weapon name>":
+  // Moon Dancer Chakram's swap-out attack) carries its reach in `weapon_range`,
+  // not `skill_range` — without the fallback a Ranged weapon became Melee.
+  const rangeRaw = String(p.skill_range || p.weapon_range || "").trim();
   const range = (!rangeRaw || rangeRaw === "-") ? "Melee" : rangeRaw;
 
   return Object.freeze({

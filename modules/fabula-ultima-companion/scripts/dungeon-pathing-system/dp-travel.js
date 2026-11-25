@@ -193,7 +193,7 @@
     for (const actor of failed) {
       try {
         await dmgApi?.({ baseDamage: dmg, valueType: "hp", targetActor: actor,
-                         attackerName: hazard.name, sourceType: "Tile", verbosity: "silent" });
+                         attackerName: hazard.name, sourceType: "Tile", isHazard: true, verbosity: "silent" });
       } catch (e) { warn(`damage on ${actor.name} failed`, e); }
     }
     if (hazard.status && failed.length) {

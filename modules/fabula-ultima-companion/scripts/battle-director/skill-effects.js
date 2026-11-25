@@ -7315,9 +7315,31 @@ async function dealDamageApply(row, ctx, d) {
         ? [...new Set([...(Array.isArray(d.damageKeywords) ? d.damageKeywords : String(d.damageKeywords ?? "").split(/[,\n]/))
             .map((k) => String(k).trim().toLowerCase()).filter(Boolean), ..._aeKw])]
         : d.damageKeywords;
+      // Field-hazard damage (Traveler's Cloak / Hunter Boots halve it). NOT the
+      // ledger cause alone: blank-cause rows default to "hazard" and that covers
+      // monster riders, consumables and self-recoil. A hazard is damage carried
+      // by a status-condition AE (Burn, Envenomed ticks) or by an AE tagged
+      // "hazard" (Scorching Ground, the Valley storm's Lightning Rod). Lethal
+      // formulas (Doomed / Virus read CUR_HP) and Crush stay untouched.
+      let _hazardTick = false;
+      if (!isMp && d.damageCause === "hazard") {
+        try {
+          const _hc = ctx.sourceUuid ? await fromUuid(ctx.sourceUuid).catch(() => null) : null;
+          if (_hc?.documentName === "ActiveEffect") {
+            const _tags = Array.from(_hc.system?.tags ?? []).map((t) => String(t).toLowerCase());
+            _hazardTick = _tags.includes("hazard") || !!resolveCanonicalConditionTemplate(_hc.statuses);
+          }
+        } catch { /* carrier gone — not a hazard */ }
+        if (_hazardTick) {
+          const _kwl = (Array.isArray(_kw) ? _kw : String(_kw ?? "").split(/[,\n]/))
+            .map((k) => String(k).trim().toLowerCase());
+          if (_kwl.includes("crush") || /\bCUR(RENT)?_HP\b/i.test(String(amountFormula ?? ""))) _hazardTick = false;
+        }
+      }
       const ruled = isMp ? null : computeIncomingDamage(actor, {
         base: _outgoing, element, ignoreAffinity, keywords: _kw,
         range: d.damageRange, weaponType: d.damageWeaponType,
+        hazard: _hazardTick,
       });
       const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
       const subjectSnapshot = captureSubjectSnapshot(actor);
@@ -8217,6 +8239,28 @@ async function applyApplyAeEffect(row, ctx) {
       continue;
     }
 
+    // Status trade (`status_trade` rule key on the TARGET's gear, an AE change
+    // "Slow>Swift,Dazed>Focus,…" — read like weapon_category_alias: equipped gear
+    // only). Moon Dancer Ornament: "When you would gain Slow/Dazed/Weak/Shaken,
+    // you may lose its matching buff to block it." The matching buff is spent
+    // and the status never lands. Waived like immunity.
+    if (!ignoreImmunity) {
+      const pairs = statusTradePairs(actor);
+      if (pairs.length) {
+        const want = String(template.name ?? "").trim().toLowerCase();
+        const pair = pairs.find(([st]) => st.toLowerCase() === want);
+        const buffAe = pair ? actor.effects?.find?.((e) => !e.disabled && e.name?.toLowerCase() === pair[1].toLowerCase()) : null;
+        if (buffAe) {
+          try {
+            await actor.deleteEmbeddedDocuments("ActiveEffect", [buffAe.id]);
+            log(`skill-effects.apply_ae: ${actor.name} spent ${buffAe.name} to block "${template.name}" (status_trade)`);
+            fireStatusImmuneVfx({ tokenUuid: token?.document?.uuid ?? token?.uuid ?? null, statusName: template.name });
+            continue;
+          } catch (e) { warn(`skill-effects.apply_ae: status_trade on ${actor.name} failed`, e); }
+        }
+      }
+    }
+
     // Grapple hold cap (`grapple_max` rule key on the grappler, snapshot.js).
     // A new Grappled from an applier already holding its cap does not land; one
     // it already holds is a refresh and passes. No rule = no cap (monster grabs).
@@ -8765,6 +8809,15 @@ async function applyApplyAeEffect(row, ctx) {
     if (row?.ae_remember_action) {
       data.flags[FLAG_NS].rememberedAction = String(row.ae_remember_value ?? ctx.payload?.sourceSkillName ?? "");
     }
+    // `ae_remember_from: "<AE name>"` — copy THAT AE's rememberedAction (on the
+    // same target) instead of the triggering action. Snapshots a moving marker:
+    // Moonlight Dancer stamps "Last Turn Dance" from base Dance's "Dancing" at
+    // turn start, so a 2nd dance this turn still compares against LAST turn's.
+    const _rememberFrom = String(row?.ae_remember_from ?? "").trim();
+    if (_rememberFrom) {
+      const _src = actor?.effects?.find?.((e) => e.name === _rememberFrom);
+      data.flags[FLAG_NS].rememberedAction = String(_src?.flags?.[FLAG_NS]?.rememberedAction ?? "");
+    }
     // Once-per-event counting (`ae_once_per_event`, add_charges) — remember the
     // event that created the stack, so another observer of the SAME event cannot
     // add to it. See the add_charges branch above.
@@ -9014,6 +9067,28 @@ async function resolveAeTemplate(aeRef, ctx) {
 // stat `changes`. Matches by status id (robust across name drift). Synchronous
 // (reads already-loaded world Items) so it's safe to call inside a
 // `preCreateActiveEffect` hook. Returns a plain AE object or null.
+// `status_trade` pairs [status, buff] from the actor's live AEs; a gear carrier
+// counts only while equipped (same rule as weapon-alias.js liveAliasChanges).
+const STATUS_TRADE_GEAR = new Set(["accessory", "armor", "weapon", "shield"]);
+export function statusTradePairs(actor) {
+  const out = [];
+  const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? [];
+  for (const ae of effs) {
+    if (!ae || ae.disabled) continue;
+    const item = ae.parent?.documentName === "Item" ? ae.parent : null;
+    const itype = String(item?.system?.props?.item_type ?? "").toLowerCase();
+    if (STATUS_TRADE_GEAR.has(itype) && item?.system?.props?.isEquipped !== true) continue;
+    for (const ch of ae.changes ?? []) {
+      if (ch?.key !== "status_trade") continue;
+      for (const p of String(ch.value ?? "").split(/[,\n]/)) {
+        const [st, buff] = p.split(">").map((s) => s.trim());
+        if (st && buff) out.push([st, buff]);
+      }
+    }
+  }
+  return out;
+}
+
 export function resolveCanonicalConditionTemplate(statuses) {
   const list = statuses
     ? (typeof statuses.has === "function" ? Array.from(statuses)
@@ -11529,6 +11604,13 @@ async function applyFreeActionEffect(row, ctx) {
   let copiedItem = false;
   if (ref.toLowerCase() === "self") {
     presetItem = ctx.skill ?? null;
+  } else if (ref.toLowerCase() === "container") {
+    // The carrier passive's CONTAINER item — "perform an Attack with THIS weapon"
+    // from a weapon's (Passive) (Moon Dancer Chakram's swap-out throw). Resolved on
+    // the carrier's own actor, so refine prefixes ("+2 …") and renames don't matter.
+    const cid = String(ctx.skill?.system?.container ?? "").trim();
+    presetItem = (cid && ctx.skill?.parent?.items?.get?.(cid)) || null;
+    if (!presetItem) warn(`skill-effects.free_action: action_ref "container" — ${ctx.skill?.name ?? "?"} has no container item on its actor`);
   } else if (ref.toLowerCase() === "trigger_item") {
     // Copycat (2026-11-25): perform the consumable the TRIGGER's Item action used,
     // as a copy — "create" mode at 0 IP, so nothing is taken from anyone's bag.
@@ -11653,8 +11735,42 @@ async function applyFreeActionEffect(row, ctx) {
   // "perform a <subset> action as a free action" (Matador's Counter Pass → only
   // Passes). Comma/newline list; matched case-insensitively against each candidate's
   // name AND uuid in the picker. Empty = no restriction (any skill of the enabled type).
-  const allowedSkillRefs = String(row.allowed_skill_refs ?? "")
+  let allowedSkillRefs = String(row.allowed_skill_refs ?? "")
     .split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+  // `exclude_skill_refs` — names to drop from the allow-list, plus
+  // `remembered:<AE name>` = the action that AE remembered (Moonlight Dancer
+  // Robe: the extra Dance "must differ from your first" → remembered:Dancing).
+  // Resolved HERE into an explicit name list over the reactor's own skills, so
+  // the picker, compose and autopilot keep reading one plain allow-list.
+  {
+    const ex = new Set();
+    for (const r of String(row.exclude_skill_refs ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean)) {
+      const m = r.match(/^remembered:(.+)$/i);
+      if (m) {
+        const ae = reactor.effects?.find?.((e) => e.name === m[1].trim());
+        const v = String(ae?.flags?.[FLAG_NS]?.rememberedAction ?? "").trim();
+        if (v) ex.add(v.toLowerCase());
+      } else ex.add(r.toLowerCase());
+    }
+    if (ex.size && allowedSkillRefs.length) {
+      const names = new Set(), tags = new Set();
+      for (const r of allowedSkillRefs) {
+        const s = r.toLowerCase();
+        if (s.startsWith("tag:")) tags.add(s.slice(4).trim()); else names.add(s);
+      }
+      allowedSkillRefs = (reactor.items?.contents ?? [...(reactor.items ?? [])])
+        .filter((i) => {
+          const n = String(i.name ?? "").trim().toLowerCase();
+          if (ex.has(n)) return false;
+          if (names.has(n)) return true;
+          const t = String(i.system?.props?.skill_tags ?? "").split(/[\s,]+/).map((x) => x.trim().toLowerCase().split("@")[0]);
+          return t.some((x) => tags.has(x));
+        })
+        .map((i) => i.name);
+      // Everything excluded → keep an impossible ref so the grant stays restricted.
+      if (!allowedSkillRefs.length) allowedSkillRefs = ["(none)"];
+    }
+  }
 
   // element_override — force the spawned action's damage element (Ripples: "all
   // its damage becomes of the same type dealt by your ally"). The literal

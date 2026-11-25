@@ -28,6 +28,16 @@ import { resolveAffinity, applyAffinityToDamage, readWeaponEfficiency } from "./
 const FLAG_NS = "fabula-ultima-companion";
 function _num(v, d = 0) { const n = Number(v); return Number.isFinite(n) ? n : d; }
 
+// Field-hazard damage reduction, in percent. Summed from ADD-mode AE changes on
+// flags.fabula-ultima-companion.hazard_damage_reduction_pct (seedAeAccumulators
+// seeds new ADD flags at 0). Capped at 75: two 50% items must not add up to
+// hazard immunity (house rule: no permanent immunity on gear).
+export const HAZARD_REDUCTION_CAP = 75;
+export function hazardReductionPct(actor) {
+  const raw = _num(actor?.flags?.["fabula-ultima-companion"]?.hazard_damage_reduction_pct, 0);
+  return Math.max(0, Math.min(HAZARD_REDUCTION_CAP, raw));
+}
+
 // Damage-class affinity flag ("" | RS | VU | IM | AB). Null when no class or
 // no flag — element-only effect damage (deal_damage) passes no class, so this
 // is inert there but keeps the ruleset complete for any classed caller.
@@ -221,6 +231,11 @@ export function computeIncomingDamage(actor, {
   // a separate resource band consumed in applyDamageToTarget, not a reduction.
   // For the CLAMP semantics of "ignores Resistances", see bypassAffinity.
   keywords = null,
+  // Field-hazard damage (status ticks, hazard-tagged field AEs, dungeon tiles):
+  // the target's hazard_damage_reduction_pct applies (Traveler's Cloak, Hunter
+  // Boots). The CALLER decides what counts as a hazard — see isHazardTick in
+  // skill-effects.js and applyToActor's isHazard in apply-damage-core.js.
+  hazard = false,
 } = {}) {
   const breakdown = [];
   let v = Math.max(0, Math.ceil(_num(base)));
@@ -275,6 +290,16 @@ export function computeIncomingDamage(actor, {
   });
   v = cm.value;
   const absorbed = cm.absorbed;
+
+  // 5) Field-hazard reduction (last, so it scales the final hit; skipped on absorb).
+  if (hazard && !absorbed && v > 0) {
+    const pct = hazardReductionPct(actor);
+    if (pct > 0) {
+      const next = Math.ceil(v * (1 - pct / 100));
+      breakdown.push({ source: `Hazard −${pct}%`, amount: next - v });
+      v = next;
+    }
+  }
 
   return {
     damage: Math.max(0, Math.ceil(v)),

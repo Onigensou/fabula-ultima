@@ -118,6 +118,7 @@
           targetActor:  actor,
           attackerName: "Buried Explosive",
           sourceType:   "Tile",
+          isHazard:     true,
           verbosity:    "silent",
         }).catch(e => console.warn(TAG, `detonate damage failed for ${actor.name}:`, e));
       }

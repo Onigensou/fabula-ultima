@@ -473,6 +473,11 @@
     sourceType         = "None",
     targetActor,
     targetToken        = null,
+    // Field-hazard damage (dungeon tiles, traps, travel, hazard events): the
+    // target's hazard_damage_reduction_pct applies (Traveler's Cloak, Hunter
+    // Boots). Set ONLY by hazard callers — sourceType "Tile" is also used by
+    // the GM effects menu and healing tiles, so it is not the test.
+    isHazard           = false,
     ignoreDR           = false,
     ignoreShield       = false,
     // Skip element + damage-class affinity (RS/VU/IM/AB) and condition-forced
@@ -637,6 +642,14 @@
       if (Number.isFinite(mult) && mult > 0 && mult !== 1) {
         finalValue = Math.ceil(finalValue * mult);
       }
+    }
+
+    // Step 9e: Field-hazard reduction (same flag + 75% cap as
+    // battle-director/damage-ruleset.js hazardReductionPct — this file is a
+    // classic script and can't import it).
+    if (isHazard && finalValue > 0 && (currentChangeKey === "hpReduction" || currentChangeKey === "shieldReduction")) {
+      const pct = Math.max(0, Math.min(75, _num(targetActor?.flags?.["fabula-ultima-companion"]?.hazard_damage_reduction_pct, 0)));
+      if (pct > 0) finalValue = Math.ceil(finalValue * (1 - pct / 100));
     }
 
     // ── STAT UPDATE ───────────────────────────────────────────────────

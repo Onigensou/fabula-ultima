@@ -371,7 +371,7 @@
       );
       const actors = await _getPartyActors();
       for (const actor of actors) {
-        await _restoreResources(actor, { ignoreOuch: true });
+        await _restoreResources(actor, { ignoreOuch: true, restIp: false });
         const cured = actor.effects.filter(e => isDebuffEffect(e)).map(e => e.id);
         if (cured.length) {
           try { await actor.deleteEmbeddedDocuments("ActiveEffect", cured); }
@@ -387,7 +387,7 @@
   // ---------------------------------------------------------------------------
   // ignoreOuch: the Exploration "Ouch!" debuff belongs to a camp cycle — an inn
   // Short Rest neither applies nor consumes it.
-  async function _restoreResources(actor, { ignoreOuch = false } = {}) {
+  async function _restoreResources(actor, { ignoreOuch = false, restIp = true } = {}) {
     const props = actor.system?.props;
     if (!props) {
       console.warn(TAG, `No system.props on ${actor.name}; skipping restore.`);
@@ -406,11 +406,29 @@
     const newHp    = halfRest ? curHp + Math.floor((props.max_hp - curHp) / 2) : props.max_hp;
     const newMp    = halfRest ? curMp + Math.floor((props.max_mp - curMp) / 2) : props.max_mp;
 
-    await actor.update({
+    const update = {
       "system.props.current_hp": newHp,
       "system.props.current_mp": newMp,
-    });
-    console.debug(TAG, `Restored ${actor.name}: HP=${newHp} MP=${newMp}${halfRest ? " (Ouch! — halved)" : ""}`);
+    };
+    // Gear-granted IP on rest (Eternal Traveler 2pc: "When you rest, recover 50%
+    // of your max IP, even outside town"). ADD-mode AE flag, auto-seeded to 0 by
+    // seedAeAccumulators. Rests only — story recovery (recoverParty) opts out.
+    // The Ouch! debuff halves it like HP/MP.
+    let ipNote = "";
+    if (restIp) {
+      const pct = Math.max(0, Math.min(100, Number(actor.flags?.["fabula-ultima-companion"]?.rest_ip_recover_pct) || 0));
+      const maxIp = parseInt(props.max_ip) || 0;
+      const curIp = parseInt(props.current_ip) || 0;
+      if (pct > 0 && maxIp > 0 && curIp < maxIp) {
+        let gain = Math.ceil(maxIp * pct / 100);
+        if (halfRest) gain = Math.floor(gain / 2);
+        const newIp = Math.min(maxIp, curIp + gain);
+        update["system.props.current_ip"] = newIp;
+        ipNote = ` IP=${newIp}`;
+      }
+    }
+    await actor.update(update);
+    console.debug(TAG, `Restored ${actor.name}: HP=${newHp} MP=${newMp}${ipNote}${halfRest ? " (Ouch! — halved)" : ""}`);
   }
 
   async function _clearTemporaryEffects(actor) {
