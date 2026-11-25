@@ -37,7 +37,7 @@ const IDS = {
   const passives = ["gambler", "falseIdol", "copycat", "dominatrix", "ballGag", "biker", "matrix", "alpha", "brief", "devil", "avalon", "hekat", "enforcer"];
   ok("world: passives created", passives.every((k) => rows[k].kids?.some((n) => n.endsWith("(Passive)"))), passives.filter((k) => !rows[k].kids?.some((n) => n.endsWith("(Passive)"))));
   ok("world: Biker Suit has Transform", rows.biker.kids?.includes("Transform"), rows.biker.kids);
-  ok("world: transfer AEs", ["manaRobe", "gambler", "biker", "fairy", "witch", "onions", "slimy"].every((k) => rows[k].aes?.length > 0));
+  ok("world: transfer AEs", ["manaRobe", "biker", "fairy", "witch", "onions", "slimy"].every((k) => rows[k].aes?.length > 0));
   const wh = kids(W(IDS.witch)).find((c) => c.name === "Cataclysm");
   ok("world: Witch Hat's Cataclysm now has rows + discount", Object.keys(wh?.system?.props?.reaction_config_table ?? {}).length > 0
     && JSON.stringify(wh.system.props.effect_table).includes("CATACLYSM_COST_DISCOUNT"));
@@ -98,7 +98,7 @@ try {
   await wear({ accessory1: ring.id }); out.temp.ring = snap();
   ok("Ring of Onions: max HP/MP +2 per class (Hina clone)", out.temp.ring.hp === base.hp + 2 * classes && out.temp.ring.mp === base.mp + 2 * classes, out.temp.ring);
   await wear({ accessory1: dice.id, accessory2: hat.id }); out.temp.diceHat = snap();
-  ok("Gambler's Dice: crit on doubles from 2", Number(out.temp.diceHat.crit) === 2, out.temp.diceHat.crit);
+  ok("Gambler's Dice: no crit change (balance pass)", Number(out.temp.diceHat.crit) === 6, out.temp.diceHat.crit);
   ok("Witch Hat: discount flag 50", Number(out.temp.diceHat.disc) === 50, out.temp.diceHat.disc);
   await wear({}); out.temp.bare = snap();
   ok("accessories off: values back", out.temp.bare.hp === base.hp && Number(out.temp.bare.crit) === Number(base.crit) && !Number(out.temp.bare.disc), out.temp.bare);
@@ -111,7 +111,7 @@ try {
   await temp.createEmbeddedDocuments("ActiveEffect", [{ name: "GA Scene Spell", changes: [], flags: { [NS]: { directorAppliedBy: { skillUuid: spell?.uuid } } } }]);
   await wait(300); const on = snap();
   out.temp.fairy = { spell: spell?.name, off: off.mdef, on: on.mdef };
-  ok("Fairy Tunic: +2 MDEF under a Scene spell", on.mdef === off.mdef + 2, out.temp.fairy);
+  ok("Fairy Tunic: untagged Scene effect gives nothing (balance pass: buff/debuff)", on.mdef === off.mdef, out.temp.fairy);
   await temp.deleteEmbeddedDocuments("ActiveEffect", temp.effects.filter((e) => e.name === "GA Scene Spell").map((e) => e.id));
   const biker = await add(IDS.biker);
   await wearArmor(biker); const formless = { ...snap(), defRaw: P().defense, baseDef: P().base_defense, bonusDef: P().bonus_defense, bikerProps: ["item_def_bonus","item_mdef_bonus","isMartial","item_baseDef"].map((k) => k + "=" + JSON.stringify(temp.items.get(biker.id).system.props[k])) };
