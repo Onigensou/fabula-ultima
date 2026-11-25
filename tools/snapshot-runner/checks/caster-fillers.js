@@ -59,7 +59,9 @@ async function makeHero(srcName, name, ids, equip) {
   await equip(hero, got);
   await wait(2500);
   const td = await hero.getTokenDocument({ x: 1200, y: 1200 });
-  const [tok] = await scene.createEmbeddedDocuments("Token", [td.toObject()]);
+  // Linked token: an unlinked synthetic actor does not reflect the swap's AE enable.
+  const tdo = td.toObject(); tdo.actorLink = true;
+  const [tok] = await scene.createEmbeddedDocuments("Token", [tdo]);
   return { hero: tok.actor ?? hero, base: hero, tok, got };
 }
 const ctxFor = (h, extra = {}) => ({ casterActor: h.hero, reactorActor: h.hero, reactorToken: h.tok, payload: { _capturedTargets: { t: [h.tok.uuid] } }, sourceUuid: null, skill: null, ...extra });
