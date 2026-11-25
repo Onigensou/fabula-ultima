@@ -452,6 +452,9 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // (re-derives each target's affinity for the new element). Literal element id or
   // VAR_<NAME> (a prompt_element pick from earlier in the chain).
   textCol("change_element", "Change To Element", { tooltip: "change_damage_element: the new element — fire/ice/bolt/earth/air/light/dark/poison/physical, or VAR_<NAME> from an earlier prompt_element pick.", vis: CHANGE_EL_VIS }),
+  // "Converted damage can't be Absorbed" (Silver Bolt): an Absorb affinity to the
+  // NEW element reads as normal damage instead. Resistance / Immunity still apply.
+  checkboxCol("element_no_absorb", "Can't Be Absorbed", { tooltip: "change_damage_element: if the target Absorbs the new element, it takes the hit as normal damage instead (Resistance / Immunity still apply).", vis: CHANGE_EL_VIS }),
   // check_die_swap config (Psychokinesis) — which Attribute to swap an accuracy die TO + firing mode.
   selectCol("swap_to_attribute", "Swap To Attribute", [
     { key: "WLP", value: "WLP — Willpower" },

@@ -809,6 +809,10 @@
     {
       "key": "2026-11-25-trio-elite-steals",
       "path": "data-migrations/2026-11-25-trio-elite-steals.js"
+    },
+    {
+      "key": "2026-11-26-frankensteiner-rework",
+      "path": "data-migrations/2026-11-26-frankensteiner-rework.js"
     }
   ]
 }

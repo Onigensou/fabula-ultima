@@ -837,6 +837,9 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       if (reactionElement) {
         const eop = [...targetOps].reverse().find((o) => o.op === "element" && o.element === reactionElement);
         affinityCode = (eop && eop.affinity != null) ? String(eop.affinity) : String(e.affinities?.[reactionElement] ?? "NE");
+        // "Converted damage can't be Absorbed" (element_no_absorb): an Absorb to
+        // the new element lands as normal damage. RS / IM are untouched.
+        if (eop?.noAbsorb && affinityCode === "AB") affinityCode = "NE";
       }
       // ONE keyword pass (Crush → Expose → clamps) over inherent/AE-granted +
       // reaction-granted keywords, AFTER a reaction element override so it

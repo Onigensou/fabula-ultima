@@ -3082,7 +3082,11 @@ export async function computeSenderDamageBonuses({
                 const v = cand.payloadAtFire?._chainVars?.[vkey] ?? cand.payload?._chainVars?.[vkey];
                 element = String(v ?? "").trim().toLowerCase();
               }
-              if (element) ops.push({ op: "element", element, source: cand.carrierName || carrierSkill?.name || "Infusion" });
+              // element_no_absorb: an Absorb to the new element reads as normal
+              // damage (Silver Bolt: "converted damage can't be Absorbed").
+              const nab = row.element_no_absorb;
+              const noAbsorb = nab === true || nab === 1 || nab === "true" || nab === "1";
+              if (element) ops.push({ op: "element", element, source: cand.carrierName || carrierSkill?.name || "Infusion", ...(noAbsorb ? { noAbsorb: true } : {}) });
             } else if (kind === "chain") {
               const steps = String(row.chain_steps ?? "").split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
               for (const s of steps) walkDamage(s);
