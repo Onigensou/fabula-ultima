@@ -965,6 +965,8 @@ function hasBuffOrDebuff(actor) {
     if (!ae || ae.disabled) return false;
     const tags = (Array.isArray(ae.system?.tags) ? ae.system.tags : []).map((t) => String(t).toLowerCase());
     const cat = String(ae.flags?.[MODULE_ID]?.category ?? "").toLowerCase();
+    // "ready" markers (Heart of Darkness Ready, Rampart Ready) are bookkeeping, not statuses.
+    if (tags.includes("ready")) return false;
     return tags.includes("buff") || tags.includes("debuff") || cat === "buff" || cat === "debuff";
   });
 }

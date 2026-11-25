@@ -60,7 +60,9 @@ try {
   const s = W("G8fBxPWSabEzD5V6").toObject(); delete s._id; s.system.props.isEquipped = false;
   const [tunic] = await temp.createEmbeddedDocuments("Item", [s]);
   await temp.updateEmbeddedDocuments("Item", temp.items.filter((i) => String(i.system?.props?.item_type).toLowerCase() === "armor").map((i) => ({ _id: i.id, "system.props.isEquipped": i.id === tunic.id })));
-  await temp.deleteEmbeddedDocuments("ActiveEffect", temp.effects.filter((e) => (e.system?.tags ?? []).some((t) => /buff/i.test(t))).map((e) => e.id));
+  out.fxBefore = temp.effects.map((e) => `${e.name}|${JSON.stringify(e.system?.tags ?? [])}|${e.flags?.[NS]?.category ?? ""}|${e.disabled ? "off" : "on"}`);
+  await temp.deleteEmbeddedDocuments("ActiveEffect", temp.effects.filter((e) => (e.system?.tags ?? []).some((t) => /buff/i.test(t)) || /buff/i.test(String(e.flags?.[NS]?.category ?? ""))).map((e) => e.id));
+  out.fxAfter = temp.effects.map((e) => e.name); out.tunicFx = temp.items.get(tunic.id).effects.map((e) => `${e.name}:${e.disabled ? "off" : "on"}:${JSON.stringify(e.changes.map((c) => c.value))}`);
   await wait(400);
   const off = temp.system.props.magic_defense;
   await temp.createEmbeddedDocuments("ActiveEffect", [{ name: "GB Test Buff", changes: [], system: { tags: ["buff"] } }]);
