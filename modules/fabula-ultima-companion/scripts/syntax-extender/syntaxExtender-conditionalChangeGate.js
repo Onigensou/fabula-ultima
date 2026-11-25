@@ -69,7 +69,7 @@
   const TRACE_TAG = "[ONI][AE-Gate][TRACE]";
   const VERSION = "6.5.0-skill-level-bonus-2026-11-23";
 
-  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor", "aeAffinityStep", "aeAffinityCap", "aeSceneSpellWhen", "aeClassCount"];
+  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor", "aeAffinityStep", "aeAffinityCap", "aeSceneSpellWhen", "aeClassCount", "aeBuffDebuffWhen"];
 
   const PATCH_FLAGS = {
     actorPatched: "__oniAeConditionalGateActorPatched",
@@ -278,7 +278,7 @@
 
   function hasGateSyntax(value) {
     return typeof value === "string"
-      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep|aeAffinityCap|aeSceneSpellWhen|aeClassCount)\s*\(/i.test(value);
+      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor|aeAffinityStep|aeAffinityCap|aeSceneSpellWhen|aeClassCount|aeBuffDebuffWhen)\s*\(/i.test(value);
   }
 
   // Does the actor have any equipped item matching the requested type
@@ -926,7 +926,7 @@ function hasEffectStatus(actor, statusId, currentEffect = null) {
     // is active (i.e. current affinity isn't IM/AB); the affinity step takes
     // the signed rung count, quotes optional (aeAffinityStep(-1) parses too).
     const match1 = text.match(
-      /^\s*(?:\$\{\s*)?(aeAffinityFloor|aeAffinityStep|aeAffinityCap|aeSceneSpellWhen|aeClassCount)\s*\(\s*(?:(['"])(.*?)\2|([-+]?\d+(?:\.\d+)?))\s*\)\s*(?:\}\$)?\s*$/i
+      /^\s*(?:\$\{\s*)?(aeAffinityFloor|aeAffinityStep|aeAffinityCap|aeSceneSpellWhen|aeClassCount|aeBuffDebuffWhen)\s*\(\s*(?:(['"])(.*?)\2|([-+]?\d+(?:\.\d+)?))\s*\)\s*(?:\}\$)?\s*$/i
     );
 
     if (match1) {
@@ -959,6 +959,16 @@ function countDistinctClasses(actor) {
 
 // Does the bearer carry an effect applied by a Spell whose duration is Scene?
 // Duration rank mirrors skill-formulas actionDurationRank ("scene"/"rest"/"session").
+function hasBuffOrDebuff(actor) {
+  const effects = actor?.effects?.contents ?? Array.from(actor?.effects ?? []);
+  return effects.some((ae) => {
+    if (!ae || ae.disabled) return false;
+    const tags = (Array.isArray(ae.system?.tags) ? ae.system.tags : []).map((t) => String(t).toLowerCase());
+    const cat = String(ae.flags?.[MODULE_ID]?.category ?? "").toLowerCase();
+    return tags.includes("buff") || tags.includes("debuff") || cat === "buff" || cat === "debuff";
+  });
+}
+
 function hasSceneSpellEffect(actor) {
   const effects = actor?.effects?.contents ?? Array.from(actor?.effects ?? []);
   for (const ae of effects) {
@@ -1067,6 +1077,11 @@ if (helperNorm === "aewhen") {
   // "Scene" duration applied (the director stamps directorAppliedBy.skillUuid
   // on every effect it applies). False → the ADD identity like every gate.
   active = hasSceneSpellEffect(actor);
+} else if (helperNorm === "aebuffdebuffwhen") {
+  // Fairy Tunic (balance pass 2026-11-25): active while the bearer has any buff or
+  // debuff — an actor-owned effect tagged buff/debuff (gear effects live on items,
+  // so the tunic's own effect never counts itself).
+  active = hasBuffOrDebuff(actor);
 } else if (helperNorm === "aeclasscount") {
   // Ring of Onions: value × the bearer's distinct classes (class_list rows).
   const n = Number(parsed.trueValue);

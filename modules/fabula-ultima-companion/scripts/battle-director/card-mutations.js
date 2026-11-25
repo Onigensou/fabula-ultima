@@ -1053,6 +1053,14 @@ async function applyCheckRerollMutation(ctx, cand, row) {
       warn("check_reroll: rerollDice threw — skipping", e);
       return "failed";
     }
+    // `keep_fumble_fp` (Gambler's Dice): rerolling a Fumble still pays the Fabula
+    // Point the Fumble earned — the ledger only sees the FINAL roll, which is no
+    // longer a fumble. Inside the roll-once block, so preview + commit pay once.
+    const keepFp = row?.keep_fumble_fp === true || String(row?.keep_fumble_fp ?? "").toLowerCase() === "true";
+    if (roll.isFumble && allowFumble && keepFp && attacker) {
+      try { await globalThis.FabulaLedger?.api?.fumble?.(attacker, { via: "reroll" }); }
+      catch (e) { warn("check_reroll: fumble FP award threw", e); }
+    }
     if (haveInstance) {
       if (_checkRerollCache.size >= CHECK_REROLL_CACHE_CAP) {
         const oldest = _checkRerollCache.keys().next().value;

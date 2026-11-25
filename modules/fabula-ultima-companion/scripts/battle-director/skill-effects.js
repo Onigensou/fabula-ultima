@@ -11608,8 +11608,12 @@ async function applyFreeActionEffect(row, ctx) {
     } catch (e) { warn(`skill-effects.free_action: getRuntimeActionView threw for ${presetItem.name}`, e); }
     const targetUuids = presetTargetTokenUuids ?? undefined;
     if (copiedItem) {
+      // `copy_pays_ip` (Copycat, 2026-11-25 balance): the copy costs the item's IP,
+      // debited by the Item TARGET step's "create" cost (affordability-gated there).
+      const paysIp = row.copy_pays_ip === true || String(row.copy_pays_ip ?? "").toLowerCase() === "true";
+      const ipCost = paysIp ? (Number.parseInt(String(presetItem.system?.props?.ip_cost ?? "0"), 10) || 0) : 0;
       preset = { command: "Item", skillUuid: presetItem.uuid, sourceItemUuid: presetItem.uuid,
-        itemMode: "create", itemCost: 0, targetUuids };
+        itemMode: "create", itemCost: ipCost, targetUuids };
     } else if (kind === "Attack") {
       preset = { command: "Attack", attackMode: "npc", npcAttackItemUuid: presetItem.uuid, targetUuids };
     } else if (kind === "Spell") {
