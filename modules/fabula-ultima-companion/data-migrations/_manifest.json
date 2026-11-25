@@ -792,6 +792,11 @@
     {
       "key": "2026-11-25-fa-duel-dialogue",
       "path": "data-migrations/2026-11-25-fa-duel-dialogue.js"
+    },
+    {
+      "key": "2026-11-25-fa-card-item-text",
+      "path": "data-migrations/2026-11-25-fa-card-item-text.js",
+      "idempotent": true
     }
   ]
 }

@@ -530,6 +530,9 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 .divestreak{position:absolute;width:8px;height:140px;margin-left:-4px;border-radius:4px;pointer-events:none;z-index:6;
   background:linear-gradient(180deg,transparent,#e8fff4 60%,#9ff0b0);filter:drop-shadow(0 0 10px #9ff0b0)}
 .supfly{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;pointer-events:none;z-index:7;filter:drop-shadow(0 0 8px #fff2a8)}
+/* card text keywords (2026-11-25): named on the card, defined on hover / focus */
+.ab .kw{font-weight:700;border-bottom:1px dotted currentColor;cursor:help}
+.ab .kw:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 /* hand model v2 (2026-11-25): created cards + counts */
 .hcard.created{border-style:dashed;border-color:#c98a1e;background:linear-gradient(180deg,#fffdf4,#f7e6b4)}
 .hcard .cnt{position:absolute;top:-8px;right:-8px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:#7a4e20;color:#fff4d6;font:700 12px/22px var(--font-b);box-shadow:0 0 0 2px #f4d58a;z-index:2}
@@ -895,32 +898,32 @@ const ROLES = {
 };
 const CARDS = {
   // ---- launch pool v2 (16, all met in the bestiary) ----
-  skizzik:  {name:'Skizzik', el:'bolt', cost:1, role:'Combo', atk:3, hp:8, def:0, ab:'Static Buildup', txt:'Each damaging attack banks 1 Static. Its third damaging attack deals +3 damage and clears Static.'},
-  pyrefly:  {name:'Pyrefly', el:'fire', cost:1, role:'Combo', atk:2, hp:8, def:0, ab:'Funeral Pyre', txt:'Its damaging attack puts Burn on the target. Its next attack on a Burning target consumes it for +4 ATK.'},
-  salamander:{name:'Salamander', el:'fire', cost:1, role:'Guardian', atk:3, hp:10, def:1, ab:'Pyrophagy', txt:'The first Fire attack that would damage it deals 2 less. Once per match.'},
-  manaray:  {name:'Mana Ray', el:'bolt', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Mana Catcher', txt:'+1 ATK in a round the opponent plays an item.'},
-  hellhound:{name:'Hellhound', el:'dark', cost:1, role:'Hunter', atk:4, hp:8, def:0, ab:'On the Hunt', txt:'+1 ATK against a monster at half its max HP or less.'},
-  scorpion: {name:'Bandit Scorpion', el:'poison', cost:1, role:'Striker', atk:3, hp:9, def:0, ab:'Venom Sting', txt:'The first time its attack deals damage, +2 damage. Once per match.'},
-  archer:   {name:'Bandit Archer', el:'phys', cost:1, role:'Striker', atk:3, hp:8, def:1, ab:'Double Strafe', txt:'Whenever it attacks, it also deals 1 damage to a random benched enemy (ignores DEF, items and elements).'},
-  wolf:     {name:'Wolf', el:'phys', cost:1, role:'Combo', atk:3, hp:10, def:0, ab:'Howl', txt:'When it Passes, its attack this round gets +1 ATK.'},
-  obsidrax: {name:'Obsidrax', el:'earth', cost:1, role:'Guardian', atk:3, hp:9, def:1, ab:'Earthen Wire', txt:'The first Bolt attack that would damage it is grounded: it takes none, and that damage hits a random enemy instead. Once per match.'},
-  fulgimite:{name:'Fulgimite', el:'bolt', cost:2, role:'Pivot', atk:4, hp:9, def:0, ab:'Evasion', txt:'Takes 2 less attack damage in a round it enters by voluntary Switch.'},
-  kirin:    {name:'Kirin', el:'bolt', cost:2, role:'Punisher', atk:2, hp:10, def:1, ab:'Lightning Charge', txt:'When an attack damages it, it charges: +3 ATK on its attack next round.'},
-  cryo:     {name:'Cryo Gorger', el:'ice', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Cryo Explosion', txt:'When an attack KOs it, it bursts: 2 damage to the attacker.'},
-  inferex:  {name:'Inferex', el:'fire', cost:2, role:'Hunter', atk:4, hp:9, def:0, ab:'Voracious', txt:'When its attack KOs the enemy active monster and it survives, 3 damage to a random benched enemy.'},
-  roper:    {name:'Roper', el:'phys', cost:2, role:'Punisher', atk:3, hp:11, def:1, ab:'Entangle', txt:'+1 ATK against a monster that entered by voluntary Switch this round.'},
-  rgolem:   {name:'Rock Golem', el:'earth', cost:2, role:'Guardian', atk:2, hp:9, def:2, ab:'Wind Up', txt:'After a round in which it Passes, its next attack is an Earthquake: it also deals 1 damage to every benched enemy (does not stack).'},
-  gigas:    {name:'Gigas', el:'earth', cost:3, role:'Striker', atk:4, hp:9, def:1, ab:'Crushing Blow', txt:'+1 ATK against a monster with printed DEF 1 or more.'},
-  flame:    {name:'Wandering Flame', el:'fire', cost:3, role:'Pivot', atk:5, hp:11, def:0, ab:'Dynamic Entry', txt:'When it enters by voluntary Switch, it deals 2 Fire damage to the enemy active monster (ignores DEF and items).'},
+  skizzik:  {name:'Skizzik', el:'bolt', cost:1, role:'Combo', atk:3, hp:8, def:0, ab:'Static Buildup', txt:'Every 3rd damaging attack from this unit deals +3 DMG.'},
+  pyrefly:  {name:'Pyrefly', el:'fire', cost:1, role:'Combo', atk:2, hp:8, def:0, ab:'Funeral Pyre', txt:'After this unit\'s attack deals damage: the target gains Burn. This unit\'s next attack on a Burning card uses up Burn for +4 ATK.'},
+  salamander:{name:'Salamander', el:'fire', cost:1, role:'Guardian', atk:3, hp:10, def:1, ab:'Pyrophagy', txt:'The first Fire attack against this unit deals −2 DMG. Once per Match.'},
+  manaray:  {name:'Mana Ray', el:'bolt', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Mana Catcher', txt:'+1 ATK in rounds the opponent uses an item.'},
+  hellhound:{name:'Hellhound', el:'dark', cost:1, role:'Hunter', atk:4, hp:8, def:0, ab:'On the Hunt', txt:'+1 ATK against cards at half HP or less.'},
+  scorpion: {name:'Bandit Scorpion', el:'poison', cost:1, role:'Striker', atk:3, hp:9, def:0, ab:'Venom Sting', txt:'This unit\'s first damaging attack deals +2 DMG. Once per Match.'},
+  archer:   {name:'Bandit Archer', el:'phys', cost:1, role:'Striker', atk:3, hp:8, def:1, ab:'Double Strafe', txt:'When this unit attacks: deal 1 Piercing DMG to a random enemy Bench card.'},
+  wolf:     {name:'Wolf', el:'phys', cost:1, role:'Combo', atk:3, hp:10, def:0, ab:'Howl', txt:'When this unit Passes: +1 ATK this round.'},
+  obsidrax: {name:'Obsidrax', el:'earth', cost:1, role:'Guardian', atk:3, hp:9, def:1, ab:'Earthen Wire', txt:'The first Bolt attack against this unit is redirected to a random enemy. Once per Match.'},
+  fulgimite:{name:'Fulgimite', el:'bolt', cost:2, role:'Pivot', atk:4, hp:9, def:0, ab:'Evasion', txt:'When Switched In: this unit takes −2 DMG this round.'},
+  kirin:    {name:'Kirin', el:'bolt', cost:2, role:'Punisher', atk:2, hp:10, def:1, ab:'Lightning Charge', txt:'After this unit takes attack damage: +3 ATK next round.'},
+  cryo:     {name:'Cryo Gorger', el:'ice', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Cryo Explosion', txt:'When this unit is KO\'d by an attack: deal 2 DMG to the attacker.'},
+  inferex:  {name:'Inferex', el:'fire', cost:2, role:'Hunter', atk:4, hp:9, def:0, ab:'Voracious', txt:'After this unit\'s attack KOs the enemy active card, if this unit survives: deal 3 DMG to a random enemy Bench card.'},
+  roper:    {name:'Roper', el:'phys', cost:2, role:'Punisher', atk:3, hp:11, def:1, ab:'Entangle', txt:'+1 ATK against a card Switched In this round.'},
+  rgolem:   {name:'Rock Golem', el:'earth', cost:2, role:'Guardian', atk:2, hp:9, def:2, ab:'Wind Up', txt:'After a round this unit Passes: this unit\'s next attack also deals 1 DMG to each enemy Bench card.'},
+  gigas:    {name:'Gigas', el:'earth', cost:3, role:'Striker', atk:4, hp:9, def:1, ab:'Crushing Blow', txt:'+1 ATK against cards with printed DEF 1+.'},
+  flame:    {name:'Wandering Flame', el:'fire', cost:3, role:'Pivot', atk:5, hp:11, def:0, ab:'Dynamic Entry', txt:'When Switched In: deal 2 Piercing Fire DMG to the enemy active card.'},
   // ---- future unlocks / retired (never in the launch pool) ----
-  roo:      {name:'Roo', el:'dark', cost:1, role:'Combo', atk:0, hp:12, def:2, ab:"Chef's Knife", txt:'It does not hurry and it does not stop: +1 step at the end of each round it stays on the field (steps reset if it leaves). On its 3rd round on the field it draws the knife: 9999 damage, then Roo walks away and leaves the duel.'},
-  walrog:   {name:'Walrog', el:'ice', cost:3, role:'Guardian', atk:4, hp:12, def:1, ab:'Thick Skin', txt:'The first attack that would damage it deals 3 less. Once per match.'},
+  roo:      {name:'Roo', el:'dark', cost:1, role:'Combo', atk:0, hp:12, def:2, ab:"Chef's Knife", txt:'This unit\'s attacks deal no damage. End of round on the field: gain 1 Step (lost when this unit leaves). At 3 Steps: deal 9999 DMG, then this unit leaves the duel.'},
+  walrog:   {name:'Walrog', el:'ice', cost:3, role:'Guardian', atk:4, hp:12, def:1, ab:'Thick Skin', txt:'The first attack against this unit deals −3 DMG. Once per Match.'},
   broo:     {future:true, retired:true, name:'Bandit Roo', el:'dark', cost:1, role:'Pivot', atk:3, hp:9, def:0, ab:'Soft Landing', txt:'Takes 2 less attack damage in a round it enters by voluntary Switch.'},
-  gorger:   {name:'Aero Gorger', el:'air', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Aero Explosion', txt:'When an attack KOs it, it bursts: 2 damage to the attacker.'},
-  succubus: {name:'Succubus', el:'dark', cost:2, role:'Pivot', atk:4, hp:10, def:0, ab:'Charm', txt:'When it enters by voluntary Switch, the enemy active monster is Charmed: −2 ATK this round and next round.'},
-  carlbero: {future:true, name:'Carlbero', el:'poison', cost:1, role:'Guardian', atk:3, hp:10, def:1, ab:'Fortify', txt:'When its owner uses Golem Fragment, takes 1 less damage (even through Smoke Bomb).'},
+  gorger:   {name:'Aero Gorger', el:'air', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Aero Explosion', txt:'When this unit is KO\'d by an attack: deal 2 DMG to the attacker.'},
+  succubus: {name:'Succubus', el:'dark', cost:2, role:'Pivot', atk:4, hp:10, def:0, ab:'Charm', txt:'When Switched In: the enemy active card becomes Charmed.'},
+  carlbero: {future:true, name:'Carlbero', el:'poison', cost:1, role:'Guardian', atk:3, hp:10, def:1, ab:'Fortify', txt:'After this unit\'s attack deals damage: the target gets −1 ATK, −1 DEF and −1 SPD. Duration (Rounds): 3.'},
   life:     {future:true, name:'Life Gorger', el:'light', cost:1, role:'Survivor', atk:3, hp:10, def:0, ab:'Renewal', txt:'The first time it survives an attack at 4 HP or less, restore 2 HP. Once per match.'},
-  sylph:    {name:'Sylph', el:'air', cost:1, role:'Support', atk:3, hp:8, def:0, ab:'Tailwind', txt:'When Sylph attacks, it raises a Tailwind: for the next 3 rounds your Air monsters have +1 SPD (max 4), even after Sylph leaves.'},
+  sylph:    {name:'Sylph', el:'air', cost:1, role:'Support', atk:3, hp:8, def:0, ab:'Tailwind', txt:'When this unit attacks: your Air cards gain +1 SPD. Duration (Rounds): 3.'},
 };
 // mockup: standalone page also takes the module catalog, so owned character cards show in the binder like in-game
 if (!window.FA_NET_MODE && globalThis.FabulaArcana && globalThis.FabulaArcana.Catalog){ const Cat=globalThis.FabulaArcana.Catalog;
@@ -2187,7 +2190,19 @@ function cardHTML(cid, extra=''){
     <div class="nm">${elBadge(c.el,'name')}<span>${esc(c.name)}</span><span class="costn" title="Team cost ${c.cost}">${starStr(c.cost)}</span></div><div class="role">${EL_PLACE==='name'?`<span class="elword" style="color:var(--e-${c.el})">${EL[c.el]}</span> · `:''}<span title="${esc(ROLES[c.role]||'')}">${esc(c.role)}</span></div>
     <div class="stats">${elBadge(c.el,'stats')}${statChip('atk',c.atk)}${statChip('hp',c.hp)}${statChip('def',c.def)}${statChip('spd',c.spd)}</div>
     ${extra}
-    <div class="ab"><b>${esc(c.ab)}:</b> ${esc(c.txt)}</div>`;
+    <div class="ab"><b>${esc(c.ab)}:</b> ${kwText(c.txt)}</div>`;
+}
+// Card text keywords (2026-11-25): the card names them, hover / focus shows the definition. In game the list comes from the
+// catalog (net block); this copy serves the standalone mockup.
+const KW = { 'Switched In':'Entered by a voluntary Switch.', 'Enters':'Switched In or sent in after a KO.',
+  'Piercing DMG':'Ignores DEF and items. Elementless unless an element is named.', 'Burn':"Pyrefly's next attack on this unit uses up Burn for +4 ATK.",
+  'Charmed':'−2 ATK. Duration (Rounds): 2.', 'Berserk':'+3 ATK, takes +1 DMG from every hit.',
+  'Regen':'End of round: your active card heals 3 HP (not the card that raised it).', 'Dive Ready':'Next time this unit Enters: deal 2 Piercing DMG to the enemy active card.' };
+let KW_RE = null;
+function kwText(t){
+  const s = esc(t || ''); const keys = Object.keys(KW); if (!keys.length) return s;
+  if (!KW_RE) KW_RE = new RegExp('\\b(' + keys.sort((a,b)=>b.length-a.length).map(k=>esc(k).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|') + ')\\b', 'g');
+  return s.replace(KW_RE, k => `<span class="kw" tabindex="0" title="${esc(KW[k] || '')}">${k}</span>`);
 }
 function rulesHTML(){
   return `<div class="win rules"><div class="label">How a round works</div><ol>
@@ -2800,7 +2815,8 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
   const Cat = globalThis.FabulaArcana && globalThis.FabulaArcana.Catalog;
   if (Cat){ for (const k of Object.keys(Cat.CARDS)) { if (CARDS[k]) Object.assign(CARDS[k], Cat.CARDS[k]); else CARDS[k] = { ...Cat.CARDS[k] }; } Object.assign(CFG, Cat.CFG);
     // item texts from the catalog too; created cards (hand model v2) come only from the catalog
-    if (Cat.ITEMS) for (const k of Object.keys(Cat.ITEMS)) { if (ITEMS[k]) ITEMS[k].d = Cat.ITEMS[k].d; else { ITEMS[k] = { ...Cat.ITEMS[k] }; ACT_T[k] = Cat.ITEMS[k].t; } } }
+    if (Cat.ITEMS) for (const k of Object.keys(Cat.ITEMS)) { if (ITEMS[k]) ITEMS[k].d = Cat.ITEMS[k].d; else { ITEMS[k] = { ...Cat.ITEMS[k] }; ACT_T[k] = Cat.ITEMS[k].t; } }
+    if (Cat.KEYWORDS){ for (const k of Object.keys(KW)) delete KW[k]; Object.assign(KW, Cat.KEYWORDS); KW_RE = null; } }   // card text keywords: the catalog's list
 
   seatName = s => spectator() ? ((NET.names && NET.names[s]) || (s ? 'Right' : 'Left')) : (s === 0 ? 'You' : NET.oppName);
   timed = () => !!(S && S.deadline);
