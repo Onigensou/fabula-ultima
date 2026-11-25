@@ -123,7 +123,7 @@ const phys = onHero.filter((a) => a.skill === "Fire Bolt").pop();   // last snap
 ok("Silver Bolt converts the Fire hit to Bolt, NOT absorbed (option B)", !!phys && /bolt/i.test(String(phys.rows[0]?.element)) && phys.rows[0]?.affinity !== "AB" && phys.rows[0]?.damage > 0, phys);
 ok("Strong gained", aes.some((s) => (s.startsWith("+Mof Hero") && s.endsWith(":Strong") || s.startsWith("+Mof Hero") && s.includes(":Strong("))), aes);
 ok("Overcharge stacks gained", aes.filter((s) => (s.startsWith("+Mof Hero") && s.endsWith(":Overcharge") || s.startsWith("+Mof Hero") && s.includes(":Overcharge("))).length >= 2, aes);
-const heroAtk = ars.filter((a) => a.by === "Mof Hero");
+const heroAtk = ars.filter((a) => String(a.by).startsWith("Mof Hero"));
 out.rodParts = heroAtk.map((a) => (a.rows[0]?.parts ?? []).join(" "));
 const hitDmg = heroAtk.map((a) => a.rows[0]).filter((r) => r?.hit).map((r) => r.damage);
 out.rodDamage = hitDmg;
