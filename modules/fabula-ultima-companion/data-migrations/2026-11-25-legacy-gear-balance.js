@@ -56,9 +56,9 @@ const patchRows = (tableObj, byLabel) => {
 
 // spec: { text?, html?, props?, rarity?, passive?: { effect?, reaction? }, aes?: { [name]: (ae) => update|"delete" } }
 const SPECS = {
-  "0b9L1O59jxijKJ1I": { name: "Alpha Regalia", rarity: "Uncommon", text: [`Your critical hits deal double damage.`],
+  "0b9L1O59jxijKJ1I": { name: "Alpha Regalia", rarity: "Uncommon", text: [`Critical hits deal double damage.`],
     passive: { effect: { au_who: () => selfTargeting("au_who") } } },
-  "jnhWaWPLwZcPQ883": { name: "Mana Robe", text: [`Half of the damage you take is dealt to your MP instead of your HP.`],
+  "jnhWaWPLwZcPQ883": { name: "Mana Robe", text: [`${B("50%")} of damage taken is dealt to your MP instead of your HP.`],
     aes: { "Mana Robe": (ae) => {
       const rc = ae.flags?.[M]?.reactionConfig ?? {};
       const half = "min(floor(INCOMING_DAMAGE / 2), CUR_MP)";
@@ -70,21 +70,21 @@ const SPECS = {
       };
     } } },
   "fXTiW1mHRFBGSGR8": { name: "Gambler's Dice", rarity: "Common",
-    text: [`When you Fumble, you may reroll once. You still gain the Fabula Point. Once per round.`],
+    text: [`When you Fumble, you may reroll. You still gain the Fabula Point. Once per round.`],
     aes: { "Gambler's Dice": () => "delete" },
     passive: { effect: { gd_reroll: (r) => ({ ...r, allow_fumble: true, keep_fumble_fp: true }) } } },
   "Hurc7SbzCtjIAaC3": { name: "Copycat",
-    text: [`When another creature uses a consumable, you may use a copy of it by paying its IP cost. Once per round.`],
+    text: [`When another creature uses a consumable, you may pay its IP cost to use a copy. Once per round.`],
     passive: { effect: { cc_copy: (r) => ({ ...r, free_of_cost: false, copy_pays_ip: true,
       menu_description: "Use a copy of the item just used, paying its IP cost." }) } } },
   "6f3U2Cz826kB5ZIp": { name: "Brief Respite",
-    text: [`When you spend MP on a spell or skill, gain ${SHIELD} equal to half the MP spent. Once per turn.`, `This Shield fades at the start of your next turn.`],
+    text: [`After spending MP on a spell or skill, gain ${SHIELD} equal to ${B("50%")} of the MP spent. Once per turn.`, `The Shield lasts until the start of your next turn.`],
     passive: { effect: {
       br_mark: (r) => ({ ...r, ae_initial_charges: "max(0, floor(ACTION_EFFECTIVE_COST_MP / 2) - CUR_SHIELD)" }),
       br_shield: (r) => ({ ...r, grant_amount: "floor(ACTION_EFFECTIVE_COST_MP / 2)" }),
     }, reaction: { "rc:br_root": (r) => ({ ...r, condition_formula: "ACTION_EFFECTIVE_COST_MP > 1 && ACTION_IS_FREE_CAST == 0 && ACTION_IS_ATTACK == 0" }) } } },
   "V3R1cSiLgIfXVgRj": { name: "Dominatrix Leotard",
-    text: [`Flail attacks deal ${B("5")} extra damage.`, `On a critical hit, they also inflict ${je("x6ByoJnflDAuVn9r", "Charm")}.`],
+    text: [`Flail attacks deal ${B("5")} extra damage.`, `Critical hits with flails inflict ${je("x6ByoJnflDAuVn9r", "Charm")}.`],
     passive: { reaction: { "rc:dl_charm": (r) => ({ ...r, condition_formula: "USED_WEAPON_CATEGORY_IS_FLAIL == 1 && DAMAGE_IS_HP == 1 && ATTACK_IS_CRIT == 1" }) } } },
   "vH6Q88n3beOHjxKq": { name: "Avalon", rarity: "Legendary", props: { item_def_bonus: "0", item_mdef_bonus: "0" } },
   "4OH9H2YYxr9KhhBx": { name: "Defense Matrix", text: [`At the start of your turn, gain ${B("5")} ${SHIELD}.`],
