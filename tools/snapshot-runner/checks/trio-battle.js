@@ -24,6 +24,9 @@ const SF = await import(`/modules/${NS}/scripts/battle-director/skill-formulas.j
 const hero = await Actor.create({ ...game.actors.getName("Hina").toObject(), _id: undefined, name: "TrEl Hero" });
 const ws = hero.effects.filter((e) => e.flags?.[NS]?.innerWellspring || /wellspring/i.test(e.name ?? "")).map((e) => e.id);
 if (ws.length) await hero.deleteEmbeddedDocuments("ActiveEffect", ws);
+// Hina's own die-swap reaction (Lucky Number) re-rolls a hit into a miss when the sim applies it blindly
+const noise = hero.items.filter((i) => /Lucky Number/i.test(i.name)).map((i) => i.id);
+if (noise.length) await hero.deleteEmbeddedDocuments("Item", noise);
 const add = async (id) => { const s = W(id).toObject(); delete s._id; s.system.props.isEquipped = false; const [top] = await hero.createEmbeddedDocuments("Item", [s]);
   const kids = game.items.filter((i) => i.system?.container === id).map((k) => { const d = k.toObject(); delete d._id; delete d.folder; d.system.container = top.id; return d; });
   if (kids.length) await hero.createEmbeddedDocuments("Item", kids); return top; };
@@ -86,7 +89,7 @@ try {
   res = await FUCompanion.api.experimental.sim.run({
     enemies: [{ uuid: dummy.uuid, quantity: 1 }], party: [hero.uuid], maxRounds: 3, reactions: "apply", guests: false, startingZp: 0, pace: "fast",
     scripts: [
-      { caster: hero.uuid, skill: "Attack", attack: true, targets: "enemy", once: true },
+      { caster: hero.uuid, skill: "Attack", attack: true, targets: "enemy", once: true, force: "hit" },
       { caster: hero.uuid, skill: "Asura Strike", targets: "enemies", once: true },
       { caster: hero.uuid, skill: "Iceberg", targets: "enemy", once: true },
     ],
