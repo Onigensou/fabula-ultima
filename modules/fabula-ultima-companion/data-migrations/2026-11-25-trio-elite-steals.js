@@ -6,9 +6,11 @@
  *
  *   Asura Blade (Asura)       Legendary 4000z · Sword · Two-handed · Melee · Martial
  *                             DEX+MIG +0 · HR+10 Physical.
- *                             When you attack: optional prompt, spend 10 MP before the roll
- *                             (lost on a miss) → the attack's damage type becomes Air / Bolt /
- *                             Fire / Ice. Grants the skill Asura Strike.
+ *                             On hit: optional prompt on the card, spend 10 MP → the damage
+ *                             type becomes Air / Bolt / Fire / Ice. (User picked "pay before the
+ *                             roll"; an attack's card is built after its roll, so the prompt can
+ *                             only ride the hit — reported back 2026-11-25.)
+ *                             Grants the skill Asura Strike.
  *   Asura Strike (granted)    30 MP · All enemies · Chain 4 seek + Pierce · each strike its own
  *                             DEX+MIG check vs M.DEF · HR+10 · Bolt → Fire → Ice → Air
  *                             (the monster move's engine: flags.chainElements; no Mark reset).
@@ -53,7 +55,6 @@ const ID = {
   blade: "TrElAsuraBlade01", bladePsv: "TrElAsuraBldPsv1", strike: "TrElAsuraStrike1",
   armor: "TrElRakshArmor01", armorPsv: "TrElRakshArmPsv1",
   crown: "TrElMukutaCrown1", crownPsv: "TrElMukutaPsv001", crownHp: "TrElMukutaHpAE01", crownMp: "TrElMukutaMpAE01",
-  edge: { air: "TrElEdgeAirAE001", bolt: "TrElEdgeBoltAE01", fire: "TrElEdgeFireAE01", ice: "TrElEdgeIceAE001" },
   loot: { asura: "TrElAsuraLoot001", rakshasa: "TrElRakshLoot001", deva: "TrElDevaLoot0001" },
 };
 const ICON = {
@@ -84,7 +85,7 @@ const table = (rows) => Object.fromEntries(rows.map((r, i) => [String(i), r]));
 
 // ── Text (Genshin mode, Option A; approved on the tuning page) ──────────────
 const BLADE_TEXT = ul(
-  `When you attack, you may spend ${B("10 MP")} to change its damage type to ${AIR}, ${BOLT}, ${FIRE} or ${ICE}.`,
+  `On hit, you may spend ${B("10 MP")} to change the damage type to ${AIR}, ${BOLT}, ${FIRE} or ${ICE}.`,
   `You may perform the skill 【💥<strong>@UUID[Item.${ID.strike}]{Asura Strike}</strong>】`,
 );
 const BLADE_FLAVOR = em("Asura's own blade, tempered in every element it ever collected. It answers to whichever one its wielder calls.");
@@ -138,15 +139,6 @@ const freshEffect = (base) => {
   }
   return e;
 };
-const markerEffect = (id, name, img) => ({
-  _id: id, name, img, transfer: false, disabled: false, changes: [], statuses: [], description: "",
-  duration: {}, origin: null, sort: 0, tint: "#ffffff", type: "base", system: { tags: [] },
-  flags: {
-    "custom-system-builder": { isFromTemplate: false },
-    [M]: { category: "buff", directorPermanent: true, lifetimeMode: "persistent_counter" },
-    statuscounter: { config: { dataSource: "flags.statuscounter.value", multiplyEffect: true, type: "default" }, value: 1, visible: false },
-  },
-});
 const pctEffect = (id, name, key, mult) => ({
   _id: id, name, img: ICON.crown, transfer: true, disabled: false, statuses: [], description: "",
   duration: {}, origin: null, sort: 0, tint: "#ffffff", type: "base", system: {},
@@ -162,9 +154,6 @@ const pctEffect = (id, name, key, mult) => ({
 // ── Asura Blade ──────────────────────────────────────────────────────────────
 const ELS = ["air", "bolt", "fire", "ice"];
 const CAP = { air: "Air", bolt: "Bolt", fire: "Fire", ice: "Ice" };
-const EDGE_NAME = (el) => `Asura ${CAP[el]} Edge`;
-const EDGE_COUNT = (el) => `AE_COUNT_ASURA_${el.toUpperCase()}_EDGE`;
-const NO_EDGE = ELS.map(EDGE_COUNT).join(" + ") + " == 0";
 
 function bladeData() {
   return cloneData(DONOR.weapon, {
@@ -179,10 +168,14 @@ function bladeData() {
     },
   });
 }
+// The prompt rides the hit (Thermokinesis pattern): an attack's card is built AFTER its roll,
+// so a "before the roll" prompt cannot change the element (measured 2026-11-25: a
+// creature_performs_action ask applies at the card, after the damage pass). On the card the
+// player sees the hit, picks the element and pays; the damage recompute applies the element.
 function bladePassiveData() {
   const rows = [
     { effect_kind: "open_action_menu", effect_label: "ab_offer", menu_title: "Asura Blade",
-      menu_subtitle: "Spend 10 MP: this attack's damage type becomes…", menu_pick_count: "1",
+      menu_subtitle: "Spend 10 MP: this hit's damage type becomes…", menu_pick_count: "1",
       menu_option_labels: "Air|Bolt|Fire|Ice",
       menu_option_descriptions: "Damage becomes Air|Damage becomes Bolt|Damage becomes Fire|Damage becomes Ice",
       menu_option_refs: ELS.map((e) => `ab_${e}`).join(",") },
@@ -190,31 +183,16 @@ function bladePassiveData() {
   ];
   for (const el of ELS) {
     rows.push(
-      { effect_kind: "chain", effect_label: `ab_${el}`, menu_label: CAP[el], chain_steps: `ab_pay, ab_mk_${el}` },
-      { effect_kind: "apply_ae", effect_label: `ab_mk_${el}`, ae_template_ref: `Item.${ID.bladePsv}.ActiveEffect.${ID.edge[el]}`,
-        ae_duplicate_mode: "replace", target_ref: "self" },
+      { effect_kind: "chain", effect_label: `ab_${el}`, menu_label: CAP[el], chain_steps: `ab_pay, ab_el_${el}` },
       { effect_kind: "change_damage_element", effect_label: `ab_el_${el}`, change_element: el },
-      { effect_kind: "remove_ae", effect_label: `ab_clr_${el}`, ae_template_ref: EDGE_NAME(el), count: "all", include_persistent: true, target_ref: "self" },
     );
   }
   const rc = [
-    // Before the roll: the optional prompt (pay + pick). The MP is spent even if the attack misses.
-    { reaction_trigger: "creature_performs_action", reaction_passive_mode: "ask", reaction_source: "self",
-      condition_formula: `ACTION_IS_ATTACK == 1 && CUR_MP >= 10 && ${NO_EDGE}`, reaction_effect_ref: "ab_offer" },
+    { reaction_trigger: "creature_will_deal_damage", reaction_passive_mode: "ask", reaction_source: "self",
+      condition_formula: "ACTION_IS_ATTACK == 1 && CUR_MP >= 10 && DAMAGE_IS_HP == 1", reaction_effect_ref: "ab_offer" },
   ];
-  for (const el of ELS) {
-    rc.push(
-      { reaction_trigger: "creature_will_deal_damage", reaction_passive_mode: "force", reaction_source: "self",
-        condition_formula: `${EDGE_COUNT(el)} > 0 && ACTION_IS_ATTACK == 1 && DAMAGE_IS_HP == 1`, reaction_effect_ref: `ab_el_${el}` },
-      { reaction_trigger: "creature_completes_action", reaction_passive_mode: "force", reaction_passive_target: "self", reaction_source: "self",
-        condition_formula: `${EDGE_COUNT(el)} > 0`, reaction_effect_ref: `ab_clr_${el}` },
-      { reaction_trigger: "conflict_end", reaction_passive_mode: "force", reaction_passive_target: "self",
-        condition_formula: `${EDGE_COUNT(el)} > 0`, reaction_effect_ref: `ab_clr_${el}` },
-    );
-  }
   return cloneData(DONOR.passive, {
-    id: ID.bladePsv, name: "Asura Blade (Passive)", container: ID.blade,
-    effects: ELS.map((el) => markerEffect(ID.edge[el], EDGE_NAME(el), ICON.blade)),
+    id: ID.bladePsv, name: "Asura Blade (Passive)", container: ID.blade, effects: [],
     props: {
       description: BLADE_TEXT, skill_description: BLADE_TEXT, isReaction: true, skill_type: "Passive", skill_target: "Self",
       effect_table: table(rows), reaction_config_table: table(rc),
@@ -361,6 +339,9 @@ export async function migrate(game, log = () => {}) {
   await createIfMissing(armorPassiveData(), out);
   await createIfMissing(crownData(), out);
   await createIfMissing(crownPassiveData(), out);
+  // The parents derived their granted-skill listing before the children existed; re-derive
+  // so the Item Window shows "Grants · Asura Strike" without waiting for the next load.
+  for (const id of [ID.blade, ID.armor, ID.crown]) { try { game.items.get(id)?.prepareData?.(); } catch { /* next load re-derives */ } }
   await wireSteals(out);
   for (const l of out) log(l);
   return { applied: true, summary: out.join(" | ") };
