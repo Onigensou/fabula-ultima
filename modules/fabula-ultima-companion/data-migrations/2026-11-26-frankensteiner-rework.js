@@ -99,15 +99,18 @@ const SET_DESC = `<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</str
 // ── Row builders ─────────────────────────────────────────────────────────────
 const rc = (trigger, ref, extra = {}) => ({
   reaction_trigger: trigger, reaction_source: "self", reaction_passive_mode: "force", reaction_effect_ref: ref,
-  condition_formula: "", reaction_damage_type: "", reaction_max_per_round: "", reaction_requires_weapon_used: false, ...extra,
+  condition_formula: "", reaction_resource_filter: "", reaction_cause_filter: "", reaction_max_per_round: "", reaction_requires_weapon_used: false, ...extra,
 });
 const removeAe = (label, name) => ({ effect_label: label, effect_kind: "remove_ae", ae_template_ref: name, include_persistent: true, target_ref: "self" });
 const applyAe = (label, name, extra = {}) => ({ effect_label: label, effect_kind: "apply_ae", ae_template_ref: name, ae_duplicate_mode: "replace", target_ref: "self", ...extra });
-// "take or Absorb Bolt" = two triggers (an absorbed hit fires creature_absorbs_damage, not takes_damage).
-const takeOrAbsorbBolt = (ref, extra = {}) => [
-  rc("creature_takes_damage", ref, { condition_formula: "TRIGGER_DAMAGE_IS_BOLT == 1 && DAMAGE_IS_HP == 1", ...extra }),
-  rc("creature_absorbs_damage", ref, { reaction_damage_type: "bolt", ...extra }),
-];
+// The battle engine's damage events are the resource ledger: a hit taken is an HP
+// creature_lose_resource, an ABSORBED hit an HP creature_gain_resource, both carrying the
+// true element (state-handlers: "an ABSORB is still a bolt event"). No cause filter on the
+// Bolt rows, so a Bolt hazard (Lightning Storm) counts too; heals/costs carry no element.
+const BOLT_HP = { reaction_resource_filter: "hp", condition_formula: "TRIGGER_DAMAGE_IS_BOLT == 1" };
+const takeBolt = (ref, extra = {}) => rc("creature_lose_resource", ref, { ...BOLT_HP, ...extra });
+const absorbBolt = (ref, extra = {}) => rc("creature_gain_resource", ref, { ...BOLT_HP, ...extra });
+const takeOrAbsorbBolt = (ref, extra = {}) => [takeBolt(ref, extra), absorbBolt(ref, extra)];
 
 // Jacket — the charge AE carries the Absorb.
 const absorbAe = (img) => ({
@@ -118,7 +121,7 @@ const absorbAe = (img) => ({
 });
 const JACKET_RC = [
   rc("turn_start", "mj_refill"), rc("conflict_start", "mj_refill", { reaction_source: "" }),
-  rc("creature_absorbs_damage", "mj_spend", { reaction_damage_type: "bolt" }),
+  absorbBolt("mj_spend"),
   rc("conflict_end", "mj_spend", { reaction_source: "" }),
 ];
 // "skip": an unspent charge stays as is. A re-apply over it would read its AB as native and
@@ -179,8 +182,9 @@ const ROD_EFF = [
 ];
 
 // 2-Piece — absorb anything → MP, once per round.
-const T2_RC = [rc("creature_absorbs_damage", "gf_mp", { reaction_passive_mode: "on", reaction_max_per_round: "1" })];
-const T2_EFF = [{ effect_label: "gf_mp", effect_kind: "grant", grant_resource: "mp", grant_amount: "DAMAGE_DEALT", target_ref: "self" }];
+// An absorbed hit = an HP gain with cause "damage" (a heal is cause "heal").
+const T2_RC = [rc("creature_gain_resource", "gf_mp", { reaction_passive_mode: "on", reaction_max_per_round: "1", reaction_resource_filter: "hp", reaction_cause_filter: "damage" })];
+const T2_EFF = [{ effect_label: "gf_mp", effect_kind: "grant", grant_resource: "mp", grant_amount: "TRIGGER_AMOUNT", target_ref: "self" }];
 
 // 3-Piece — Spark of Life. The KO save rides the Spark AE (resolveDamageReactions walks the
 // victim's AEs at HP-write), Life Charm's chain: cap → card → KO pose → revive → HP = Crisis.
@@ -211,7 +215,7 @@ const sparkAe = (img) => ({
   } },
 });
 const T3_RC = [
-  rc("creature_absorbs_damage", "sp_gain", { reaction_passive_mode: "on", reaction_damage_type: "bolt" }),
+  absorbBolt("sp_gain", { reaction_passive_mode: "on" }),
   rc("conflict_end", "sp_clear", { reaction_source: "" }),
 ];
 const T3_EFF = [

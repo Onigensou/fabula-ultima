@@ -5,10 +5,10 @@ const NS = "fabula-ultima-companion";
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const out = { steps: {}, fails: [], errors: [], lines: [] };
 const ok = (name, cond, detail) => { out.steps[name] = { pass: !!cond, detail }; if (!cond) out.fails.push(name); };
-const KEYS = /Frankenst|mofRework|Bolt Absorb|Silver Bolt|Overcharge|Spark of Life|Galvanic|sb_|lr_|mj_|gf_|sp_|sl_|change_damage_element|noAbsorb|absorbs|damage-reaction/;
+const KEYS = /Frankenst|Bolt Absorb|Silver Bolt|Overcharge|Spark of Life|Galvanic|sb_|lr_|mj_|gf_|sp_|absorb|takes_damage|Thunderbolt|affinity|RESOLVE|resolution|loss|Mof Hero/i;
 const origLog = console.log, origErr = console.error, origWarn = console.warn;
 const grab = (lvl) => (...a) => { const s = a.map((x) => (typeof x === "string" ? x : "")).join(" ");
-  if (KEYS.test(s) && out.lines.length < 700) out.lines.push(`${lvl} ${s.slice(0, 300)}`); if (lvl === "E") out.errors.push(s.slice(0, 300)); };
+  if (KEYS.test(s) && out.lines.length < 2500) out.lines.push(`${lvl} ${s.slice(0, 300)}`); if (lvl === "E") out.errors.push(s.slice(0, 300)); };
 console.log = (...a) => { try { grab("L")(...a); } catch {} return origLog(...a); };
 console.warn = (...a) => { try { grab("W")(...a); } catch {} return origWarn(...a); };
 console.error = (...a) => { try { grab("E")(...a); } catch {} return origErr(...a); };
@@ -46,7 +46,10 @@ src.system.props.affinity_3 = "NA";
 const hero = await Actor.create(src);
 const ws = hero.effects.filter((e) => e.flags?.[NS]?.innerWellspring || /wellspring/i.test(e.name ?? "")).map((e) => e.id);
 if (ws.length) await hero.deleteEmbeddedDocuments("ActiveEffect", ws);
-const noise = hero.items.filter((i) => /Lucky Number|Life Charm|Lucky Seven|Prophe/i.test(i.name)).map((i) => i.id);
+// Strip Hina's own kit (Magic Mirror bounced the Thunderbolt, Absorb MP / Painful Lesson fired):
+// every skill + consumable, keep only gear. The set pieces are added after this.
+const noise = hero.items.filter((i) => { const p = i.system?.props ?? {}; return !!p.skill_type || p.item_type === "consumable" || !!i.system?.container
+  || /Mirror|Life Charm/i.test(i.name); }).map((i) => i.id);
 if (noise.length) await hero.deleteEmbeddedDocuments("Item", noise);
 const add = async (id) => { const s = W(id).toObject(); delete s._id; s.system.props.isEquipped = false; const [top] = await hero.createEmbeddedDocuments("Item", [s]);
   const kids = game.items.filter((i) => i.system?.container === id).map((k) => { const d = k.toObject(); delete d._id; delete d.folder; d.system.container = top.id; return d; });
