@@ -657,8 +657,14 @@
       return { x: gp.x, y: gp.y - h * BUBBLE_ANCHOR - OFFSET_Y };
     }
 
+    // A token bubble whose token is gone (the scene changed under it, the token was redrawn away) can't be placed:
+    // getGlobalPosition() on a destroyed mesh threw every frame. It closes itself once instead.
+    let orphaned = false;
+    const tokenGone = () => !onScreen && (!token || token.destroyed || !token.mesh || token.mesh.destroyed || !token.mesh.transform);
+
     function place() {
       if (!box.isConnected) return;
+      if (tokenGone()) { if (!orphaned) { orphaned = true; setTimeout(() => cleanup(), 0); } return; }
       const rect = box.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
       if (onScreen) {
