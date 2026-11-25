@@ -121,7 +121,9 @@ const JACKET_RC = [
   rc("creature_absorbs_damage", "mj_spend", { reaction_damage_type: "bolt" }),
   rc("conflict_end", "mj_spend", { reaction_source: "" }),
 ];
-const JACKET_EFF = [applyAe("mj_refill", AE.absorb), removeAe("mj_spend", AE.absorb)];
+// "skip": an unspent charge stays as is. A re-apply over it would read its AB as native and
+// drop the new copy's override (skill-effects' preserve-IM/AB guard); spending deletes it.
+const JACKET_EFF = [applyAe("mj_refill", AE.absorb, { ae_duplicate_mode: "skip" }), removeAe("mj_spend", AE.absorb)];
 
 // Silver Bolt — Strong + the once-a-turn convert (defender card pill).
 const readyAe = (img) => ({
