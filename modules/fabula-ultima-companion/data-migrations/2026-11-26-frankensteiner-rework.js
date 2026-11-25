@@ -169,14 +169,14 @@ const ROD_RC = [
   }),
   rc("creature_deals_damage", "lr_para", {
     reaction_passive_mode: "on", reaction_requires_weapon_used: true,
-    condition_formula: "TRIGGER_IS_SELF == 1 && ACTION_IS_ATTACK == 1",
+    condition_formula: "DAMAGE_IS_HP == 1",   // Rusty Pipe / Vajra shape: the weapon gate does the rest
   }),
   rc("conflict_end", "lr_clear", { reaction_source: "" }),
 ];
 const ROD_EFF = [
   applyAe("lr_gain", AE.over, { ae_duplicate_mode: "stack", ae_duration_rounds: String(T.x), ae_lifetime_mode: "target_turn_end" }),
   { effect_label: "lr_bonus", effect_kind: "adjust_damage", damage_stage: "outgoing", damage_operation: "add", damage_amount: `${T.y} * AE_COUNT_OVERCHARGE` },
-  { effect_label: "lr_para", effect_kind: "apply_ae", ae_template_ref: "Paralyzed", ae_duplicate_mode: "replace", target_ref: "hit_action_targets",
+  { effect_label: "lr_para", effect_kind: "apply_ae", ae_template_ref: "Paralyzed", ae_duplicate_mode: "replace", target_ref: "trigger_subject",
     ae_chance_percent: `${T.pBase} + ${T.pStep} * AE_COUNT_OVERCHARGE` },
   removeAe("lr_clear", AE.over),
 ];

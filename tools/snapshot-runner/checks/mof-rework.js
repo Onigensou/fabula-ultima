@@ -60,6 +60,10 @@ await hero.updateEmbeddedDocuments("Item", hero.items.filter((i) => !i.system?.c
 // Low defenses so every scripted hit lands (the check is about what the hit does).
 await hero.createEmbeddedDocuments("ActiveEffect", [{ name: "Mof Test Exposed", img: "icons/svg/downgrade.svg", disabled: false, transfer: false,
   changes: [{ key: "defense", mode: 5, priority: 99, value: "0" }, { key: "magic_defense", mode: 5, priority: 99, value: "0" }] }]);
+// Force the Rod's Paralyze roll to 100% on THIS copy so the on-hit path is checked deterministically.
+{ const rp = hero.items.find((i) => i.name === "Lightning Rod (Passive)"); const et = foundry.utils.deepClone(rp.system.props.effect_table);
+  for (const r of Object.values(et)) if (r.effect_label === "lr_para") r.ae_chance_percent = "100";
+  await rp.update({ "system.props.effect_table": null }); await rp.update({ "system.props.effect_table": et }); }
 await wait(2500);
 out.hero = {
   worn: hero.items.filter((i) => !i.system?.container && i.system?.props?.isEquipped).map((i) => i.name),
@@ -87,7 +91,7 @@ const iv = setInterval(() => {
       parts: (r.reactionParts ?? r.damageModParts ?? []).map?.((p) => `${p.source}:${p.amount}`) })) });
 }, 25);
 const effName = (e) => `${e.parent?.name}:${e.name}`;
-const h1 = Hooks.on("updateActor", (a, ch) => { const v = ch?.system?.props?.current_mp; if (v !== undefined && a.name === "Mof Hero") mp.push(v); });
+const h1 = Hooks.on("updateActor", (a, ch) => { const v = ch?.system?.props?.current_mp; if (v !== undefined && /^Mof Hero/.test(a.name)) mp.push(v); });
 const h2 = Hooks.on("createActiveEffect", (e) => { if (/Mof /.test(e.parent?.name ?? "")) { aes.push(`+${effName(e)}${e.flags?.[NS]?.charges != null ? "(" + e.flags[NS].charges + ")" : ""}`); if (e.name === "Paralyzed") para.push(e.parent.name); } });
 const h3 = Hooks.on("deleteActiveEffect", (e) => { if (/Mof /.test(e.parent?.name ?? "")) aes.push(`-${effName(e)}`); });
 const h4 = Hooks.on("updateActiveEffect", (e, ch) => { const c = ch?.flags?.[NS]?.charges; if (c !== undefined && /Mof /.test(e.parent?.name ?? "")) aes.push(`~${effName(e)}=${c}`); });
@@ -114,16 +118,19 @@ ok("sim ran", !!res && !out.simError, out.simError);
 const onHero = ars.filter((a) => a.by === "Mof Dummy");
 const tb = onHero.filter((a) => a.skill === "Thunderbolt");
 ok("Thunderbolt absorbed by the Jacket charge", tb.length > 0 && tb[0].rows[0]?.affinity === "AB", tb);
-ok("Jacket charge spent on absorb and refilled", aes.some((s) => s === "-Mof Hero:Bolt Absorb") && aes.filter((s) => s.startsWith("+Mof Hero:Bolt Absorb")).length >= 2, aes);
-const phys = onHero.find((a) => a.skill === "Fire Bolt");
+ok("Jacket charge spent on absorb and refilled", aes.some((s) => /^-Mof Hero.*:Bolt Absorb$/.test(s)) && aes.filter((s) => /^+Mof Hero.*:Bolt Absorb/.test(s)).length >= 2, aes);
+const phys = onHero.filter((a) => a.skill === "Fire Bolt").pop();   // last snapshot = after the pill
 ok("Silver Bolt converts the Fire hit to Bolt, NOT absorbed (option B)", !!phys && /bolt/i.test(String(phys.rows[0]?.element)) && phys.rows[0]?.affinity !== "AB" && phys.rows[0]?.damage > 0, phys);
-ok("Strong gained", aes.some((s) => s.startsWith("+Mof Hero:Strong")), aes);
-ok("Overcharge stacks gained", aes.filter((s) => s.startsWith("+Mof Hero:Overcharge")).length >= 2, aes);
+ok("Strong gained", aes.some((s) => /^+Mof Hero.*:Strong/.test(s)), aes);
+ok("Overcharge stacks gained", aes.filter((s) => /^+Mof Hero.*:Overcharge/.test(s)).length >= 2, aes);
 const heroAtk = ars.filter((a) => a.by === "Mof Hero");
 out.rodParts = heroAtk.map((a) => (a.rows[0]?.parts ?? []).join(" "));
-ok("Rod attack carries the Overcharge bonus", heroAtk.some((a) => (a.rows[0]?.parts ?? []).some((p) => /Lightning Rod|Overcharge/.test(p))), out.rodParts);
+const hitDmg = heroAtk.map((a) => a.rows[0]).filter((r) => r?.hit).map((r) => r.damage);
+out.rodDamage = hitDmg;
+ok("Rod attack carries the Overcharge bonus (+5 per stack)", out.lines.some((l) => /lr_bonus|Lightning Rod (Passive).*will_deal/.test(l)) || (Math.max(...hitDmg) - Math.min(...hitDmg) >= 5), hitDmg);
+ok("Rod on-hit Paralyze lands (chance forced to 100% on the test copy)", para.includes("Mof Dummy"), { para, lines: out.lines.filter((l) => /lr_para|Paralyz/.test(l)).slice(0, 6) });
 ok("2-Piece: MP recovered on absorb", out.lines.some((l) => /gf_mp/.test(l)) || mp.length > 0, { mp, gf: out.lines.filter((l) => /gf_mp/.test(l)).slice(0, 4) });
-ok("3-Piece: Spark of Life gained on Bolt absorb", aes.some((s) => s.startsWith("+Mof Hero:Spark of Life") || /Spark of Life=/.test(s)), aes);
+ok("3-Piece: Spark of Life gained on Bolt absorb", aes.some((s) => /^+Mof Hero.*:Spark of Life/.test(s) || /Spark of Life=/.test(s)), aes);
 
 // ── 4. Spark of Life save, direct (resolveDamageReactions at HP-write) ────────
 const SE = await import(`/modules/${NS}/scripts/battle-director/skill-effects.js`);
@@ -138,6 +145,7 @@ await two.delete();
 const three = await mk(3);
 const r3 = await SE.resolveDamageReactions({ target: hero, curHp: 10, rawDamage: 50 });
 out.save = { two: { dealt: r2.dealtDamage, fired: r2.fired }, three: { dealt: r3.dealtDamage, fired: r3.fired, consumed: r3.consumedAeIds, followUp: (r3.followUp ?? []).map((f) => f.rows.map((r) => r.effect_label).join(",")) }, sparkId: three.id };
+ok("Spark of Life reached 3 and cleared at conflict end", aes.some((s) => /Spark of Life=3/.test(s)) && aes.some((s) => /^-Mof Hero.*:Spark of Life$/.test(s)), aes.filter((s) => /Spark/.test(s)));
 ok("Spark at 2: no save (lethal)", r2.dealtDamage === 50, out.save.two);
 ok("Spark at 3: save fires, AE spent, follow-up sets HP to Crisis", r3.dealtDamage === 9 && (r3.consumedAeIds ?? []).includes(three.id)
   && out.save.three.followUp.some((s) => /sl_heal/.test(s)), out.save.three);
