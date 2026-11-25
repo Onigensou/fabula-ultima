@@ -173,6 +173,13 @@ await safe("fairy save", async () => {
   const grace = (await a.createEmbeddedDocuments("ActiveEffect", [src]))[0];
   // A living Fairy in the combat is what the condition reads; without a director this is 0,
   // so check the save twice: no fairy → lethal; then the row shape.
+  // Clear any Fairy left by the sim, then: no living Fairy → lethal.
+  for (const sc of game.scenes) { const ids = sc.tokens.filter((t) => t.actor?.name === "Fairy" || /^Fairy/.test(t.name ?? "")).map((t) => t.id); if (ids.length) { try { await sc.deleteEmbeddedDocuments("Token", ids); } catch {} } }
+  await wait(500);
+  const SF = await import(`/modules/${NS}/scripts/battle-director/skill-formulas.js`);
+  const presence = () => { try { return SF.evaluateFormula("COMBAT_LIVING_MAX_AE_CHARGES_FAIRY_PRESENCE", SF.buildSkillResolver({ actor: a, payload: null, skill: null, round: 1 }), -1); } catch (e) { return `err ${e.message}`; } };
+  out.presenceNoFairy = presence();
+  out.fairyTokensLeft = game.scenes.contents.flatMap((sc) => sc.tokens.filter((t) => /^Fairy/.test(t.name ?? "")).map((t) => `${sc.name}:${t.name}`));
   await a.update({ "system.props.current_hp": 10 });
   const r0 = await SE.resolveDamageReactions({ target: a, curHp: 10, rawDamage: 50 });
   const row = grace.flags?.[NS]?.reactionConfig?.reaction_config_table?.[0];
