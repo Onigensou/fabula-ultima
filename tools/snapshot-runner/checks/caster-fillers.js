@@ -56,6 +56,9 @@ async function makeHero(srcName, name, ids, equip) {
     if (kids.length) await hero.createEmbeddedDocuments("Item", kids);
     got[id] = top;
   }
+  // Let the "arrived unworn → disable its AEs" hook land first; equipping in the
+  // same tick lets it re-disable the AEs the swap just enabled.
+  await wait(1500);
   await equip(hero, got);
   await wait(2500);
   const td = await hero.getTokenDocument({ x: 1200, y: 1200 });
@@ -80,7 +83,9 @@ await safe("et hero", async () => {
   out.et = { worn: a.items.filter((i) => !i.system?.container && i.system?.props?.isEquipped).map((i) => i.name),
     granted: a.items.filter((i) => i.name === "Ready Pack").map((i) => i.name), setAes: a.effects.filter((e) => /Eternal Traveler/.test(e.name)).map((e) => e.name),
     hazardPct: f.hazard_damage_reduction_pct, restPct: f.rest_ip_recover_pct, ipRed: a.system.props.ip_reduction_value,
-    alias: aliasCategories(a, "dagger", "melee") };
+    alias: aliasCategories(a, "dagger", "melee"),
+    packAe: a.items.filter((i) => /Backpack|Cloak/.test(i.name)).map((i) => `${i.name} eq=${i.system.props.isEquipped} ${i.effects.map((e) => `${e.name}:dis=${e.disabled}`).join(",")}`),
+    slots: [a.system.props.accessory_name, a.system.props.accessory2_name], same: a === et.base };
   ok("ET: wears 3, Ready Pack + rest AE granted", out.et.granted.length === 1 && out.et.setAes.includes("Eternal Traveler: Rest"), out.et);
   ok("ET: hazard 50 / rest IP 50 / IP −1 / knives alias", Number(out.et.hazardPct) === 50 && Number(out.et.restPct) === 50 && Number(out.et.ipRed) === 1
     && ["sword", "spear", "thrown"].every((c) => out.et.alias.includes(c)), out.et);
