@@ -180,8 +180,14 @@ await safe("fairy save", async () => {
   const presence = () => { try { return SF.evaluateFormula("COMBAT_LIVING_MAX_AE_CHARGES_FAIRY_PRESENCE", SF.buildSkillResolver({ actor: a, payload: null, skill: null, round: 1 }), -1); } catch (e) { return `err ${e.message}`; } };
   out.presenceNoFairy = presence();
   out.fairyTokensLeft = game.scenes.contents.flatMap((sc) => sc.tokens.filter((t) => /^Fairy/.test(t.name ?? "")).map((t) => `${sc.name}:${t.name}`));
+  // Hina's own kit carries a KO save (Life Charm) — strip it so only Fairy's Grace can answer.
+  const charm = a.items.filter((i) => /Life Charm/i.test(i.name)).map((i) => i.id);
+  if (charm.length) await a.deleteEmbeddedDocuments("Item", charm);
+  const others = a.effects.filter((e) => e.name === "Fairy's Grace" && e.id !== grace.id).map((e) => e.id);
+  if (others.length) await a.deleteEmbeddedDocuments("ActiveEffect", others);
   await a.update({ "system.props.current_hp": 10 });
   const r0 = await SE.resolveDamageReactions({ target: a, curHp: 10, rawDamage: 50 });
+  out.saveFired = JSON.stringify(r0.fired ?? null).slice(0, 300);
   const row = grace.flags?.[NS]?.reactionConfig?.reaction_config_table?.[0];
   out.save = { noFairyDealt: r0.dealtDamage, cond: row?.condition_formula, outcome: row?.reaction_damage_outcome,
     chain: Object.values(grace.flags?.[NS]?.reactionConfig?.effect_table ?? {}).map((r) => r.effect_label) };
