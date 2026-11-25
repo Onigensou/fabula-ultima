@@ -10,7 +10,7 @@
  * ITEMS[*].art are asset keys the UI maps to icons.
  */
 (() => {
-  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1, BARRAGE:2, FORETELL_S:10, TIPS_HEAL:2, FOXFIRE:2, FOXFIRE_CAP:6, SPD_MAX:5, SLIPSTREAM:2, SERENADE:2, SERENADE_ROUNDS:4, BERSERK_ATK:3, BERSERK_TAKE:1, TWIN:1, GRACE_HEAL:2, GRACE_SELF:0, GRACE_MODE:4, REGEN:3, REGEN_ROUNDS:4, SERENADE_DEF:2, SERENADE_MODE:2, BREATH_ATK:1, BREATH_ROUNDS:3, PIERCE:2, THIEF_BOW:2, NULL_GUARD:3, HEAVY_ARMOR:2, RIVAL:1, GEIST_BN:1, DIVE:2, SUPPLY_MIN:3, HAND_MAX:8 };   // HAND_MAX: cards a hand can hold (items + created); a card created into a full hand fizzles   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
+  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1, BARRAGE:2, FORETELL_S:10, TIPS_HEAL:2, FOXFIRE:2, FOXFIRE_CAP:6, SPD_MAX:5, SLIPSTREAM:2, SERENADE:2, SERENADE_ROUNDS:4, BERSERK_ATK:3, BERSERK_TAKE:1, TWIN:1, GRACE_HEAL:2, GRACE_SELF:0, GRACE_MODE:4, REGEN:3, REGEN_ROUNDS:4, SERENADE_DEF:2, SERENADE_MODE:2, BREATH_ATK:1, BREATH_ROUNDS:3, PIERCE:2, THIEF_BOW:2, NULL_GUARD:3, HEAVY_ARMOR:2, RIVAL:1, GEIST_BN:1, DIVE:2, SUPPLY_MIN:3, HAND_MAX:8, WILDFIRE:1, ARMOR_BREAK:1, ELDER:1, LAST_CALL:2, TRAVELER_MAX:1, DECREE:1 };   // town NPC cards (11-25): Roselie's bench burn, Canis's DEF shred, Albero's guard, Thomas's DEF, Guy's cap, Seigfried's item bonus   // HAND_MAX: cards a hand can hold (items + created); a card created into a full hand fizzles   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
   const AI_DIFF = { casual:{noise:0.25, rand:0.15, speed:false}, skilled:{noise:0.10, rand:0.03, speed:true, lookahead:true} };
   const AI_STYLE = {
     aggressive:{ STRENGTH:1.5, SHARD:1.3, SMOKE:1.2, SWITCH:0.6, GOLEM:0.8, REMEDY:0.8, rand:0 },
@@ -79,11 +79,24 @@
     kalina:   {character:true, name:'Kalina', el:'air', cost:3, role:'Pivot', atk:2, hp:11, def:2, ab:'Skyfall Dive', txt:'After this unit attacks: swap in a Bench card of your choice (the new card takes any incoming attack). This unit becomes Dive Ready.'},
     // ---- batch 5 (2026-11-17) ----
     hako:     {character:true, name:'Hako', el:'none', cost:3, role:'Support', atk:3, hp:12, def:0, ab:'Trusty Supplier', txt:'Start of round, while active: if 3+ of your items are used, 1 random one returns to your hand.'},
+    // ---- town NPC cards (2026-11-25, phase 4): stats from the approved sims (6000/3000 games x 2 seeds, 45-55% casual + skilled)
+    willy:    {character:true, name:'Willy', el:'bolt', cost:1, role:'Support', atk:3, hp:10, def:1, ab:'Curio Collector', txt:'The first time this unit is Switched In: create 1 Lucky Trinket and add it to your hand. Once per Match.'},
+    rume:     {character:true, name:'Rume', el:'light', cost:2, role:'Support', atk:3, hp:11, def:1, ab:'Grape Harvest', txt:'When this unit Passes: create 1 Grape Juice and add it to your hand. Max 1 in hand.'},
+    pomme:    {character:true, name:'Pomme', el:'fire', cost:2, role:'Striker', atk:4, hp:10, def:0, ab:'Apple Bomb', txt:'After this unit\'s attack deals damage: create 1 Apple Bomb and add it to your hand. Max 1 in hand.'},
+    canis:    {character:true, name:'Canis', el:'phys', cost:2, role:'Striker', atk:3, hp:11, def:1, ab:'Armor Break', txt:'After this unit\'s attack deals damage: the target loses 1 DEF for the rest of the match (min 0).'},
+    albero:   {character:true, name:'Albero', el:'earth', cost:2, role:'Guardian', atk:3, hp:11, def:1, ab:'Village Elder', txt:'Takes −1 DMG from attacks while your side has fewer cards standing.'},
+    alcina:   {character:true, name:'Alcina', el:'light', cost:2, role:'Support', atk:3, hp:11, def:1, ab:'Hearty Stew', txt:'When this unit is Switched Out: create 1 Hearty Stew and add it to your hand. Once per Match.'},
+    wagner:   {character:true, name:'Wagner', el:'phys', cost:2, role:'Survivor', atk:3, hp:11, def:1, ab:'Hearty Laugh', txt:'The first time this unit would be KO\'d by an attack, this unit stays at 1 HP instead. Once per Match.'},
+    roselie:  {character:true, name:'Roselie', el:'fire', cost:2, role:'Striker', atk:3, hp:9, def:0, ab:'Wildfire Kiss', txt:'When this unit attacks: deal 1 Piercing Fire DMG to each enemy Bench card.'},
+    thomas:   {character:true, name:'Thomas', el:'earth', cost:2, role:'Support', atk:3, hp:12, def:1, ab:'Last Call', txt:'When this unit is KO\'d: your next card gains +2 DEF. Duration (Rounds): 2.'},
+    seigfried:{character:true, name:'King Seigfried', el:'light', cost:3, role:'Support', atk:4, hp:12, def:1, ab:'Royal Decree', txt:'While active: your items with a number get +1 (Tincture +3 ATK, Golem +4 DEF, Remedy heals 4, Shard +2 ATK, Café +2 SPD).'},
+    guy:      {character:true, name:'Guy', el:'phys', cost:2, role:'Guardian', atk:3, hp:10, def:1, ab:'Seasoned Traveler', txt:'+1 DEF after a full round as the active card. Resets when this unit leaves.'},
+    farin:    {character:true, name:'Farin', el:'dark', cost:3, role:'Support', atk:3, hp:11, def:1, ab:'Read the Stars', txt:'Start of round, while active: create 1 random Arcana and add it to your hand. Max 1 in hand.'},
   };
   // v0.5 Speed = DEX die tier (d6=1, d8=2, d10=3, d12=4) from the world sheets
   const SPD = { gigas:1, gorger:2, carlbero:2, kirin:2, flame:2, cryo:2, sylph:2, fulgimite:3, broo:3, life:3, pyrefly:4, skizzik:4,
     salamander:2, manaray:3, hellhound:3, scorpion:2, archer:2, wolf:2, inferex:3, roper:2, obsidrax:2, roo:1, walrog:1, succubus:3, rgolem:1,
-    hina:1, zarg:4, raubens:2, geist:3, kalina:3, blanche:2, keren:3, gryphon:4, love:3, jack:3, jill:2, hilde:3, brucev:2, nullis:2, gardner:1, hako:2 };   // characters: their sheets' DEX dice (Hina d6, Zarg d12, Rauben d8, Geist d10, Kalina d10)   // Roo SPD 1 by design (slow Tonberry), not its DEX die
+    hina:1, zarg:4, raubens:2, geist:3, kalina:3, blanche:2, keren:3, gryphon:4, love:3, jack:3, jill:2, hilde:3, brucev:2, nullis:2, gardner:1, hako:2, willy:2, rume:2, pomme:2, canis:2, albero:2, alcina:2, wagner:2, roselie:3, thomas:2, seigfried:1, guy:2, farin:2 };   // characters: their sheets' DEX dice (Hina d6, Zarg d12, Rauben d8, Geist d10, Kalina d10)   // Roo SPD 1 by design (slow Tonberry), not its DEX die
   for (const k of Object.keys(CARDS)) CARDS[k].spd = SPD[k];
   const ITEMS = {
     STRENGTH:{t:'Tincture of Strength', k:'Attack', d:`+${CFG.STR} ATK this round`, art:'i_strength'},
@@ -98,7 +111,7 @@
     // Numbers are the approved drafts; the new NPC cards' balance sims (phase 4) may retune them.
     LUCKY:{created:true, t:'Lucky Trinket', k:'Created', d:'+1 ATK and +1 DEF this round', art:'c_lucky', fx:{atk:1, def:1}},
     GRAPE:{created:true, t:'Grape Juice', k:'Created', d:'+1 ATK and +1 SPD this round', art:'c_grape', fx:{atk:1, spd:1}},
-    APPLE_BOMB:{created:true, t:'Apple Bomb', k:'Created', d:'Deal 2 Piercing Fire DMG to the enemy active card before attacks', art:'c_applebomb', fx:{dmg:{n:2, el:'fire'}}},
+    APPLE_BOMB:{created:true, t:'Apple Bomb', k:'Created', d:'Deal 1 Piercing Fire DMG to the enemy active card before attacks', art:'c_applebomb', fx:{dmg:{n:1, el:'fire'}}},   // 1 dmg: the 2-dmg draft made Pomme 69/76% (sims 11-25)
     STEW:{created:true, t:'Hearty Stew', k:'Created', d:'Heal 4 HP before attacks', art:'c_stew', fx:{heal:4}},
     ARC_SUN:{created:true, t:'Arcana: The Sun', k:'Created', d:'+2 ATK this round', art:'c_sun', fx:{atk:2}},
     ARC_MOON:{created:true, t:'Arcana: The Moon', k:'Created', d:'+2 DEF this round', art:'c_moon', fx:{def:2}},
@@ -117,6 +130,11 @@
     'Berserk':'+3 ATK, takes +1 DMG from every hit.',
     'Regen':'End of round: your active card heals 3 HP (not the card that raised it).',
     'Dive Ready':'Next time this unit Enters: deal 2 Piercing DMG to the enemy active card.',
+    'Lucky Trinket':'Created card: +1 ATK and +1 DEF this round.',
+    'Grape Juice':'Created card: +1 ATK and +1 SPD this round.',
+    'Apple Bomb':'Created card: deal 1 Piercing Fire DMG to the enemy active card before attacks.',
+    'Hearty Stew':'Created card: heal 4 HP before attacks.',
+    'Arcana':'Created card, one of three: The Sun (+2 ATK), The Moon (+2 DEF) or The Star (heal 2 HP).',
   };
 
   const Catalog = Object.freeze({ CFG, AI_DIFF, AI_STYLE, EL, BEATS, ROLES, CARDS, SPD, ITEMS, ACT_T, KEYWORDS });

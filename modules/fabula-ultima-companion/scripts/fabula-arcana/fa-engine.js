@@ -123,8 +123,8 @@
     if (att.cid==='keren'){ const ff=foxFire(att); if (ff){ atk+=ff; parts.push(`+${ff} Fox Fire`); } }
     if (att.cid==='geist' && att.bn && CFG.GEIST_BN){ atk+=CFG.GEIST_BN; parts.push(`+${CFG.GEIST_BN} Blackest Night`); }
     if (att.cid==='raubens' && (att.loot||0)>0){ atk+=att.loot; parts.push(`+${att.loot} Bandit King`); }
-    if (ctx.attItem==='STRENGTH'){ atk+=CFG.STR; parts.push(`+${CFG.STR} Strength`); }
-    if (ctx.attItem==='SHARD'){ atk+=CFG.SHARD; parts.push(`+${CFG.SHARD} Shard`); }
+    if (ctx.attItem==='STRENGTH'){ atk+=CFG.STR+(att.cid==='seigfried'?CFG.DECREE:0); parts.push(`+${CFG.STR} Strength`); }
+    if (ctx.attItem==='SHARD'){ atk+=CFG.SHARD+(att.cid==='seigfried'?CFG.DECREE:0); parts.push(`+${CFG.SHARD} Shard`); }
     { const fx=fxOf(ctx.attItem); if (fx && fx.atk){ atk+=fx.atk; parts.push(`+${fx.atk} ${ITEMS[ctx.attItem].t}`); } }   // created cards
     const pyre = att.cid==='pyrefly' && ((att.burn||{})[def.i]||0)>=CFG.PYRE_N; if (pyre){ atk+=CFG.PYRE_BURST; parts.push(`+${CFG.PYRE_BURST} Funeral Pyre`); }
     const kcharge = att.cid==='kirin' && !!(att.chg && att.chg[S.round]); if (kcharge){ atk+=CFG.KCHARGE; parts.push(`+${CFG.KCHARGE} Lightning Charge`); }
@@ -142,13 +142,13 @@
     // Smoke Bomb (11-15): this attack ignores DEF — printed and Golem Fragment's +3
     const smoke = ctx.attItem==='SMOKE', golem = ctx.defItem==='GOLEM';
     const slip = def.cid==='gryphon' && spdNow(att) < spdNow(def);
-    const pdef = Math.max(0, D.def + ((def.ser||0)>=S.round ? (CFG.SERENADE_DEF ?? CFG.SERENADE) : 0) - ((def.breath||0)>=S.round ? 1 : 0) + (slip ? CFG.SLIPSTREAM : 0));
+    const pdef = Math.max(0, Math.max(0, D.def-(def.armorBreak||0)) + (def.cid==='guy' ? Math.min(CFG.TRAVELER_MAX, def.stay||0) : 0) + ((def.lc||0)>=S.round ? CFG.LAST_CALL : 0) + ((def.ser||0)>=S.round ? (CFG.SERENADE_DEF ?? CFG.SERENADE) : 0) - ((def.breath||0)>=S.round ? 1 : 0) + (slip ? CFG.SLIPSTREAM : 0));
     // batch 4 (11-16): Null Guard (opponent used an item), Heavy Armor (opponent Passed), Rival (+1 once the rival ally fell),
     // Bruce V's Teleportation Strike (ignores 2 DEF, Golem Fragment's +3 included). Smoke Bomb still ignores all of it.
     // Golem Fragment (11-17 rule): a real +GOLEM DEF this round, so like any DEF it can only bring a hit down to 1 (no more blocks to 0).
     const nullG = def.cid==='nullis' && ITEMS[ctx.attItem] ? CFG.NULL_GUARD : 0, heavy = def.cid==='gardner' && ctx.attItem==='PASS' ? CFG.HEAVY_ARMOR : 0;
     const rival = (def.cid==='nullis' && twinDown(def,'gardner')) || (def.cid==='gardner' && twinDown(def,'nullis')) ? CFG.RIVAL : 0;
-    const gdef = golem ? CFG.GOLEM : 0;
+    const gdef = golem ? CFG.GOLEM + (def.cid==='seigfried'?CFG.DECREE:0) : 0;
     const fdef = (fxOf(ctx.defItem)||{}).def || 0;   // a created card's DEF this round (works like Golem Fragment: Smoke ignores it)
     const tdef = pdef + nullG + heavy + rival + gdef + fdef, pierce = att.cid==='brucev' && !smoke ? Math.min(CFG.PIERCE, tdef) : 0;
     const ddef = smoke ? 0 : tdef - pierce;
@@ -164,6 +164,7 @@
     if (golem && smoke) red.push('Golem Fragment pierced by Smoke Bomb');
     if (def.cid==='broo' && ctx.defSwitchedIn){ r+=2; red.push('Soft Landing −2'); }
     if (def.cid==='fulgimite' && ctx.defSwitchedIn){ r+=2; red.push('Evasion −2'); }
+    if (def.cid==='albero'){ const ds=sideOf(def); if (ds>=0 && living(S.p[ds]).length < living(S.p[1-ds]).length){ r+=CFG.ELDER; red.push('Village Elder −'+CFG.ELDER); } }
     d = Math.max(0, d-r);
     let usedFirst=false;
     let prevented=0;
@@ -194,7 +195,7 @@
       L.push([`Kalina hops out after her attack; ${N(mon(pl,t).cid)} steps in. Dive Ready.`,'m']); };
     const who = s => (S.names && S.names[s]) || (s===0?'You':'NPC'); const third = s => !!(S.names && S.names[s]) || s===1;
     for (const s of [0,1]) if (P[s].pending){
-      P[s].active=ch[s].replace; P[s].pending=false; S.stats.forced[s]++; ev.enter[s]='forced';
+      P[s].active=ch[s].replace; P[s].pending=false; if (P[s].lastCall){ mon(P[s],P[s].active).lc=S.round+1; P[s].lastCall=false; L.push(['Last Call: the card sent in gets +'+CFG.LAST_CALL+' DEF for 2 rounds.','g']); } S.stats.forced[s]++; ev.enter[s]='forced';
       L.push([`${who(s)} send${third(s)?'s':''} in ${N(mon(P[s],P[s].active).cid)}.`,'m']);
     }
     for (const s of [0,1]) if (ch[s].action==='SWITCH'){
@@ -203,10 +204,14 @@
         (ev.grace=ev.grace||[]).push({ s, heals:[{ i:inc.i, amt:inc.hp-was }] }); L.push([`Royal Grace: Princess Hilde steps back and tends to ${N(inc.cid)} (+${inc.hp-was} HP).`,'g']); } }
       if (out.cid==='love' && (CFG.SERENADE_MODE||1)===2 && out.hp>0){ const inc=mon(P[s],ch[s].target); if (inc){ inc.ser=S.round+CFG.SERENADE_ROUNDS; S.stats.ser=(S.stats.ser||0)+1;
         (ev.serenade=ev.serenade||[]).push({ s, is:[inc.i] }); L.push([`Love Serenade: Love hands the stage to ${N(inc.cid)} (+${CFG.SERENADE} ATK / +${CFG.SERENADE_DEF ?? CFG.SERENADE} DEF for ${CFG.SERENADE_ROUNDS} rounds).`,'g']); } }
+      if (out.cid==='alcina' && out.hp>0 && !out.stew){ out.stew=true; addToHand(S, s, 'STEW', 1, 'Alcina', L, ev); }
+      out.stay=0;
       P[s].active=ch[s].target; ev.switched[s]=true; ev.enter[s]='switch'; S.stats.switches[s]++;
+      if (P[s].lastCall){ mon(P[s],P[s].active).lc=S.round+1; P[s].lastCall=false; L.push(['Last Call: the card switched in gets +'+CFG.LAST_CALL+' DEF for 2 rounds.','g']); }
       L.push([`${who(s)} switch${third(s)?'es':''} ${N(out.cid)} out for ${N(mon(P[s],P[s].active).cid)}. It skips its attack.`,'m']);
     }
     for (const s of [0,1]) if ((CFG.SERENADE_MODE||1)===1 && ev.switched[s] && mon(P[s],P[s].active).cid==='love') serenade(s, 'entry');
+    for (const s of [0,1]) if (ev.switched[s]){ const w=mon(P[s],P[s].active); if (w.cid==='willy' && !w.curio){ w.curio=true; addToHand(S, s, 'LUCKY', 1, 'Willy', L, ev); } }
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='succubus'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ t.charm=S.round+1; S.stats.charm=(S.stats.charm||0)+1; L.push([`Charm: ${N(t.cid)} is Charmed (−${CFG.CHARM} ATK this round and next).`,'m']); } }
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); BN(t); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
         L.push([`Dynamic Entry: Wandering Flame bursts in, ${b-t.hp} Fire damage to ${N(t.cid)} (${t.hp} HP).`,'']); } }
@@ -223,6 +228,7 @@
     for (const s of [0,1]) if (ch[s].action==='PASS' && armNext(mon(P[s],P[s].active))) (ev.passArm=ev.passArm||[]).push(s);
     for (const s of [0,1]) if (ch[s].action==='PASS' && !armNext(mon(P[s],P[s].active))){ const m=mon(P[s],P[s].active); if (m.cid==='wolf' && CFG.HOWL_NEXT!==2 && !m.howl){ m.howl=true; L.push(['Wolf howls: +1 ATK on its attack this round.','m']); }
       if (m.cid==='rgolem' && CFG.WINDUP_NEXT!==2 && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
+    for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m && m.cid==='rume' && m.hp>0 && !cnt(P[s],'GRAPE')) addToHand(S, s, 'GRAPE', 1, 'Rume', L, ev); }
     for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m && m.cid==='blanche' && m.hp>0){
       const b=P[s].roster.filter(x=>!x.ko && x.hp>0 && x.i!==P[s].active && x.hp<CARDS[x.cid].hp).sort((x,y)=>(x.hp-y.hp)||((x.hp/CARDS[x.cid].hp)-(y.hp/CARDS[y.cid].hp))||(x.i-y.i));
       if (b.length){ const x=b[0], was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.TIPS_HEAL); S.stats.tips=(S.stats.tips||0)+(x.hp-was);
@@ -244,7 +250,7 @@
       if (got.length){ (ev.grace=ev.grace||[]).push({ s, heals:got }); L.push([`Royal Grace: Princess Hilde's prayer heals ${got.map(g=>N(P[s].roster[g.i].cid)+' +'+g.amt).join(', ')}.`,'g']); } } }
     const startHP=[0,1].map(s=>mon(P[s],P[s].active).hp);
     for (const s of [0,1]) if (ch[s].action==='REMEDY'){
-      const m=mon(P[s],P[s].active), amt=CFG.REMEDY, b=m.hp;
+      const m=mon(P[s],P[s].active), amt=CFG.REMEDY+(P[s].roster[P[s].active].cid==='seigfried'?CFG.DECREE:0), b=m.hp;
       m.hp=Math.min(CARDS[m.cid].hp, m.hp+amt); ev.heal[s]=m.hp-b;
       L.push([`${N(m.cid)} drinks a Remedy: +${ev.heal[s]} HP → ${m.hp}.`,'g']);
     }
@@ -267,13 +273,13 @@
       const m=c[Math.floor(RNG()*c.length)]; return hitOne(s, m, amt, src); };
     const hitOne = (s, m, amt, src) => { const pl=P[s]; m.hp=Math.max(0,m.hp-amt); BN(m); (ev.direct=ev.direct||[]).push({s,i:m.i,amt,src}); S.stats.direct=S.stats.direct||{}; S.stats.direct[src]=(S.stats.direct[src]||0)+1;
       const bench=m.i!==pl.active; L.push([`${src}: ${amt} damage to ${bench?'benched ':''}${N(m.cid)} (${m.hp} HP).`,'']);
-      if (m.hp===0 && bench){ m.ko=true; ev.benchKO=(ev.benchKO||0)+1; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out on the bench!`,'k']); }
+      if (m.hp===0 && bench){ m.ko=true; if (m.cid==='thomas') pl.lastCall=true; ev.benchKO=(ev.benchKO||0)+1; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out on the bench!`,'k']); }
       return m; };
     const calcFor = s => { const o=1-s, a=mon(P[s],P[s].active), d=mon(P[o],P[o].active);
       return { ...calcAttack(a,d,{attItem:ch[s].action, defItem:ch[o].action, defSwitchedIn:ev.switched[o]||hopIn[o]}), a, d, side:s }; };
     const applyHit = r => {
       if (r.heal){ const b=r.d.hp; r.d.hp=Math.min(CARDS[r.d.cid].hp, r.d.hp+r.heal); r.healed=r.d.hp-b; }
-      else { r.d.hp=Math.max(0, r.d.hp-r.dmg); BN(r.d); }
+      else { r.d.hp=Math.max(0, r.d.hp-r.dmg); BN(r.d); if (r.d.cid==='wagner' && r.d.hp<=0 && !r.d.laugh){ r.d.hp=1; r.d.laugh=true; S.stats.laugh=(S.stats.laugh||0)+1; L.push(['Hearty Laugh: Wagner laughs it off at 1 HP.','g']); } }
       r.a.attacked=true; if (r.usedOwn) r.a.abilityUsed=true; if (r.howl){ r.a.howl=false; S.stats.howl=(S.stats.howl||0)+1; }
       if (r.a.cid==='pyrefly'){ r.a.burn=r.a.burn||{}; if (r.pyre){ r.a.burn[r.d.i]=0; S.stats.pyre=(S.stats.pyre||0)+1; } else if (r.dmg>0) r.a.burn[r.d.i]=Math.min(CFG.PYRE_N,(r.a.burn[r.d.i]||0)+1); if (r.d.hp===0) delete r.a.burn[r.d.i]; }
       if (r.a.cid==='skizzik' && r.dmg>0){ r.a.static = r.zap ? 0 : Math.min(2,(r.a.static||0)+1); if (r.zap) S.stats.zap=(S.stats.zap||0)+1; }
@@ -286,6 +292,9 @@
       if (false && r.a.cid==='sylph' && r.dmg>0 && r.d.hp>0){ r.d.slowRound=S.round+1; S.stats.gust=(S.stats.gust||0)+1; L.push([`Gust: ${N(r.d.cid)} will be −1 SPD next round.`,'m']); }
       if (r.a.cid==='sylph'){ P[r.side].twFrom=S.round+1; P[r.side].twUntil=S.round+CFG.TAILWIND; S.stats.twSet=(S.stats.twSet||0)+1; L.push([`Tailwind: ${CFG.TW_ALL?'your monsters':'your Air monsters'} get +1 SPD for ${CFG.TAILWIND} rounds.`,'m']); }
       if (r.a.cid==='archer') directHit(1-r.side, 1, 'Double Strafe', false);
+      if (r.a.cid==='pomme' && r.dmg>0 && !r.heal && !cnt(P[r.side],'APPLE_BOMB')) addToHand(S, r.side, 'APPLE_BOMB', 1, 'Pomme', L, ev);
+      if (CFG.ARMOR_BREAK && r.a.cid==='canis' && r.dmg>0 && !r.heal && Math.max(0, CARDS[r.d.cid].def-(r.d.armorBreak||0))>0){ r.d.armorBreak=(r.d.armorBreak||0)+CFG.ARMOR_BREAK; S.stats.abreak=(S.stats.abreak||0)+1; L.push([`Armor Break: ${N(r.d.cid)} loses ${CFG.ARMOR_BREAK} DEF for the match.`,'m']); }
+      if (r.a.cid==='roselie'){ const pl=P[1-r.side]; for (const m of pl.roster) if (!m.ko && m.hp>0 && m.i!==pl.active) hitOne(1-r.side, m, Math.max(1, CFG.WILDFIRE + elMod('fire', CARDS[m.cid].el)), 'Wildfire Kiss'); }
       if (r.a.cid==='carlbero' && r.dmg>0 && r.d.hp>0){ r.d.breath=S.round+(CFG.BREATH_ROUNDS-1); S.stats.breath=(S.stats.breath||0)+1; L.push([`Stinking Breath: ${N(r.d.cid)} reeks (−1 ATK, −1 DEF, −1 SPD for ${CFG.BREATH_ROUNDS} rounds).`,'m']); }
       if (r.a.cid==='love' && (CFG.SERENADE_MODE||1)===1) serenade(r.side, 'attack');
       if (r.a.cid==='zarg'){ const pl=P[1-r.side]; const b=pl.roster.filter(m=>!m.ko && m.hp>0 && m.i!==pl.active).sort((x,y)=>x.hp-y.hp);
@@ -309,7 +318,7 @@
     if (!canAtk[0]&&!canAtk[1]) L.push(['Both sides switched. No attacks this round.','m']);
     const baseSp=[0,1].map(s=>{ const m=mon(P[s],P[s].active); const tw = (CFG.TW_ALL || CARDS[m.cid].el==='air') && P[s].twFrom<=S.round && S.round<=P[s].twUntil ? 1 : 0;
       if (tw){ S.stats.tailwind=(S.stats.tailwind||0)+1; } return Math.min(CFG.SPD_MAX||5, Math.max(1, CARDS[m.cid].spd + tw - (m.slowRound===S.round?1:0) - ((m.breath||0)>=S.round?1:0))); });
-    const sp=[0,1].map(s=>Math.min(CFG.SPD_MAX||5, baseSp[s] + (ch[s].action==='CAFE'?1:0) + ((fxOf(ch[s].action)||{}).spd||0)));   // Café au Lait / a created card's SPD: this round, cap SPD_MAX (5)
+    const sp=[0,1].map(s=>Math.min(CFG.SPD_MAX||5, baseSp[s] + (ch[s].action==='CAFE'?(mon(P[s],P[s].active).cid==='seigfried'?1+CFG.DECREE:1):0) + ((fxOf(ch[s].action)||{}).spd||0)));   // Café au Lait / a created card's SPD: this round, cap SPD_MAX (5)
     S._sp = sp; S._spRound = S.round;   // this round's real SPD (Gryphon's Slipstream reads it)
     for (const s of [0,1]) if (ch[s].action==='CAFE'){ const changed=(Math.sign(baseSp[s]-baseSp[1-s])!==Math.sign(sp[s]-baseSp[1-s])); S.stats.cafe=S.stats.cafe||{used:0,changed:0,capped:0}; S.stats.cafe.used++; if (changed) S.stats.cafe.changed++; if (baseSp[s]>=(CFG.SPD_MAX||5)) S.stats.cafe.capped++;
       L.push([`${N(mon(P[s],P[s].active).cid)} drinks Café au Lait: SPD ${baseSp[s]} → ${sp[s]}${baseSp[s]>=(CFG.SPD_MAX||5)?' (already at max)':''}.`,'m']); }
@@ -350,8 +359,9 @@
     if ((CFG.GRACE_MODE||0)===3) for (const s of [0,1]){ const pl=P[s], h=mon(pl,pl.active); if (!h || h.cid!=='hilde' || h.hp<=0) continue; const got=[];
       for (const x of pl.roster) if (!x.ko && x.hp>0 && x.i!==pl.active && x.hp<CARDS[x.cid].hp){ const was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.GRACE_HEAL); got.push({ i:x.i, amt:x.hp-was }); S.stats.grace=(S.stats.grace||0)+(x.hp-was); }
       if (got.length){ (ev.grace=ev.grace||[]).push({ s, heals:got, end:true }); L.push([`Royal Grace: Princess Hilde's prayer heals ${got.map(g=>N(pl.roster[g.i].cid)+' +'+g.amt).join(', ')}.`,'g']); } }
+    for (const s of [0,1]){ const a=mon(P[s],P[s].active); if (a && a.cid==='guy' && a.hp>0) a.stay=(a.stay||0)+1; }
     // KO
-    for (const s of [0,1]){ const m=mon(P[s],P[s].active); if (m.hp<=0 && !m.ko){ m.ko=true; ev.ko[s]=true; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out!`,'k']); } }
+    for (const s of [0,1]){ const m=mon(P[s],P[s].active); if (m.hp<=0 && !m.ko){ m.ko=true; if (m.cid==='thomas') P[s].lastCall=true; ev.ko[s]=true; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out!`,'k']); } }
     const out0=living(P[0]).length===0, out1=living(P[1]).length===0;
     if (out0&&out1){
       S.stats.mutualFinal=true;
@@ -393,6 +403,7 @@
     if (my.cid==='wolf' && !my.howl) w.PASS+=0.8;
     if (my.cid==='rgolem' && !my.windup) w.PASS+=0.8;
     if (my.cid==='blanche' && benchOptions(me).some(x=>x.hp<CARDS[x.cid].hp)) w.PASS+=0.8;
+    if (my.cid==='rume' && !cnt(me,'GRAPE')) w.PASS+=0.9;
     if (my.cid==='hilde' && (CFG.GRACE_MODE||0)!==2 && (CFG.GRACE_MODE||0)!==3 && me.roster.some(x=>!x.ko && x.hp>0 && x!==my && x.i!==me.active && x.hp<CARDS[x.cid].hp)) w.PASS+=1.0;
     // Royal Grace (mode 4) play pattern: Hilde Passes to raise Regen, then hands off to the best attacker while it runs
     const rgOn = (CFG.GRACE_MODE||0)===4 && me.rgUntil>=S.round+1;
@@ -430,6 +441,7 @@
         if (my.cid==='hilde' && (CFG.GRACE_MODE||0)===2){ const hurt=bench.filter(x=>CARDS[x.cid].hp-x.hp>=2).sort((a,b)=>(CARDS[b.cid].hp-b.hp)-(CARDS[a.cid].hp-a.hp)); if (hurt.length){ best=hurt[0]; w.SWITCH += 1.8; } }
         if (rgOn && my.cid==='hilde'){ best=[...bench].sort((a,b)=>est(b,opMon)-est(a,opMon))[0]; w.SWITCH += 1.4; }
         if (best.cid==='love') w.SWITCH += 0.4;
+        if (my.cid==='alcina' && !my.stew) w.SWITCH += 0.7;
         if (best.cid==='succubus') w.SWITCH += 0.5;
         // Kalina with Dive Ready on the bench: bring her in to finish a card at DIVE HP or less, or when the front card is about to fall
         { const kd=bench.find(x=>x.cid==='kalina' && x.dive); if (kd){ const lethal=opMon && opMon.hp>0 && opMon.hp<=CFG.DIVE;
@@ -618,7 +630,7 @@
       out = { kind:'opening', choices:C, L };
     } else if (state.phase === 'replace'){
       const L = [];
-      for (const s of [0,1]) if (state.p[s].pending && C[s]){ const pl = state.p[s]; pl.active = C[s].replace; pl.pending = false; state.stats.forced[s]++;
+      for (const s of [0,1]) if (state.p[s].pending && C[s]){ const pl = state.p[s]; pl.active = C[s].replace; pl.pending = false; state.stats.forced[s]++; if (pl.lastCall){ pl.roster[pl.active].lc = state.round + 2; pl.lastCall = false; L.push(['Last Call: the card sent in gets +'+CFG.LAST_CALL+' DEF for 2 rounds.','g']); }
         L.push([`${seatLabel(state,s)} send${third(state,s)?'s':''} in ${N(pl.roster[pl.active].cid)}.`, 'm']); }
       // Skyfall Dive: Kalina sent in after a KO with Dive Ready lands on the enemy active card (it can KO it: then that side replaces)
       const ev = {};
@@ -640,6 +652,8 @@
     }
     // Hako's Trusty Supplier fires as the next round begins (lines join the step that just resolved)
     if (state.phase === 'choose'){ const sup = withState(state, () => supplyStep(state, out.L)); if (sup.length){ out.ev = out.ev || {}; out.ev.supply = sup; } }
+    if (state.phase === 'choose') withState(state, () => { const ARC=['ARC_SUN','ARC_MOON','ARC_STAR']; for (const s of [0,1]){ const pl=state.p[s], m=pl.active==null?null:pl.roster[pl.active];
+      if (!m || m.cid!=='farin' || m.ko || m.hp<=0 || ARC.some(k=>cnt(pl,k))) continue; out.ev = out.ev || {}; addToHand(state, s, ARC[Math.floor(RNG()*3)], 1, 'Farin', out.L, out.ev); } });
     state.commit = [null, null];
     return out;
   }

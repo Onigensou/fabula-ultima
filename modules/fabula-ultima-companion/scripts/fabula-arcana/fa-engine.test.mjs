@@ -152,7 +152,7 @@ const blank = blankStats;
   S = duel(A('hellhound'), ['roper','flame','kirin'], {hp:[30,1]}); r=go(P,P); S.p[1].pending=true; r=go(P,{replace:1,action:'PASS'});
   ok(S.p[1].active===1 && !(r.ev.entry||[]).length, 'Dynamic Entry does not trigger on a forced replacement');
   // pool
-  ok(R.IDS.length===39 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren','gryphon','love','jack','jill','hilde','carlbero','brucev','nullis','gardner','hako'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','life'].includes(k)), 'pool = 39 cards (23 + 16 character cards; Bandit Roo retired)');
+  ok(R.IDS.length===51 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren','gryphon','love','jack','jill','hilde','carlbero','brucev','nullis','gardner','hako'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','life'].includes(k)), 'pool = 51 cards (23 + 28 character cards; Bandit Roo retired)');
   // Succubus Charm
   S = duel(A('hellhound'), ['roper','succubus','kirin'], {hp:[30,30]}); S.p[1].roster[1].hp=30; r=go(P,{action:'SWITCH',target:1});
   const c1=dmg0(); r=go(P,P); const c2=dmg0(); r=go(P,P); const c3=dmg0();
@@ -470,8 +470,8 @@ const blank = blankStats;
   H.add(ab, 0, "APPLE_BOMB"); const gh = ab.p[1].roster[0].hp;
   const ra = (M.submit(ab, 0, { action:"APPLE_BOMB" }), M.submit(ab, 1, P)).resolved;
   const bomb = (ra.ev.direct || []).find((x) => x.src === "Apple Bomb");
-  ok(bomb && bomb.amt === 4 && bomb.s === 1, "Apple Bomb: 2 Fire + Weak 2 = 4 to the Air card, before attacks");
-  ok(gh - ab.p[1].roster[0].hp >= 4, "the bomb's damage lands on the enemy active card");
+  ok(bomb && bomb.amt === 3 && bomb.s === 1, "Apple Bomb: 1 Fire + Weak 2 = 3 to the Air card, before attacks");
+  ok(gh - ab.p[1].roster[0].hp >= 3, "the bomb's damage lands on the enemy active card");
   // round abilities can create cards too: ev.added mirrors for seat 1
   const mirrored = E.View.resolvedForSeat({ kind:"round", ev:{ added:[{ s:0, k:"GRAPE", n:1 }] } }, 1);
   ok(mirrored.ev.added[0].s === 1, "ev.added mirrors for seat 1");
@@ -483,8 +483,8 @@ const blank = blankStats;
   ok(!H.restore(h, 0, "LUCKY") && H.count(h, 0, "LUCKY") === 0, "Hand.restore never brings back a created card");
   M.submit(h, 0, { action:"REMEDY" }); const hr = M.submit(h, 1, P).resolved;
   ok(hr.ev.supply && ["STRENGTH","GOLEM","REMEDY"].includes(hr.ev.supply[0].k), "Hako still restocks at 3 base items used (a created card doesn't count)");
-  // AI plays a created card when only it is lethal: Aero Gorger (Air) at 4 HP vs Kirin's 2-damage hit; Apple Bomb = 2 Fire +2 Weak
-  const ai = fresh([["gorger","wolf","pyrefly"], ["kirin","roper","pyrefly"]]); ai.p[0].roster[0].hp = 4; ai.p[1].items.STRENGTH = 0; H.add(ai, 1, "APPLE_BOMB");   // Strength would be lethal too
+  // AI plays a created card when only it is lethal: Aero Gorger (Air) at 3 HP vs Kirin's 2-damage hit; Apple Bomb = 1 Fire +2 Weak
+  const ai = fresh([["gorger","wolf","pyrefly"], ["kirin","roper","pyrefly"]]); ai.p[0].roster[0].hp = 3; ai.p[1].items.STRENGTH = 0; ai.p[1].items.SHARD = 0; H.add(ai, 1, "APPLE_BOMB");   // Strength would be lethal too
   const tally = {}; for (let i = 0; i < 300; i++) { const a = M.aiChoice(ai, 1, { diff:"casual" }).action; tally[a] = (tally[a] || 0) + 1; }
   const top = Object.keys(tally).sort((x, y) => tally[y] - tally[x])[0];
   ok(top === "APPLE_BOMB" && tally.APPLE_BOMB > 100, `casual AI: the lethal card is its top pick (${tally.APPLE_BOMB}/300; casual noise spreads the rest)`);
@@ -493,6 +493,82 @@ const blank = blankStats;
   // old saved states (0/1 items, no created keys) still play
   const old = fresh(); old.p[0].items = { STRENGTH:true, GOLEM:0, REMEDY:1, SMOKE:1, SHARD:1, CAFE:1 };
   ok(M.validate(old, 0, { action:"STRENGTH" }) === null && M.validate(old, 0, { action:"GOLEM" }) === "item already used" && H.size(old, 0) === 5, "old 0/1/true hands read the same");
+}
+
+
+// ===== town NPC cards (2026-11-25, phase 4): one check per ability =====
+{
+  const M = E.Match, H = E.Hand, C = Catalog.CARDS, CFG = Catalog.CFG;
+  const P = { action:"PASS" };
+  const fresh = (teams) => { const m = M.create({ teams }); M.submit(m, 0, { replace:0 }); M.submit(m, 1, { replace:0 }); return m; };
+  const round = (m, a0, a1 = P) => (M.submit(m, 0, a0), M.submit(m, 1, a1)).resolved;
+  ok(['willy','rume','pomme','canis','albero','alcina','wagner','roselie','thomas','seigfried','guy','farin'].every(k => C[k] && C[k].character && E.IDS.includes(k)), "the 12 town NPC cards are in the pool, as character cards");
+  ok(['willy'].every(k=>C[k].cost===1) && ['seigfried','farin'].every(k=>C[k].cost===3) && ['rume','pomme','canis','albero','alcina','wagner','roselie','thomas','guy'].every(k=>C[k].cost===2), "stars: Willy ★, Seigfried + Farin ★★★, the rest ★★");
+  ok(Object.values(C).filter(c=>!c.future).every(c => !/\b(he|she|his|her|him)\b/i.test(c.txt)), "no gendered pronoun in any card text");
+  ok(E.isLegalTeam(["willy","hilde","wolf"]), "Willy ★ fits a deck with Princess Hilde ★★★ + a ★");
+  // Willy: first voluntary Switch In → Lucky Trinket, once
+  { const m = fresh([["wolf","willy","pyrefly"],["kirin","roper","pyrefly"]]);
+    round(m, { action:"SWITCH", target:1 }); const n1 = H.count(m, 0, "LUCKY");
+    round(m, { action:"SWITCH", target:0 }); round(m, { action:"SWITCH", target:1 });
+    ok(n1 === 1 && H.count(m, 0, "LUCKY") === 1, "Willy: Lucky Trinket on his first Switch In only"); }
+  // Rume: Pass → Grape Juice, max 1
+  { const m = fresh([["rume","wolf","pyrefly"],["kirin","roper","pyrefly"]]); m.p[1].roster[0].hp = 99;
+    round(m, P); const a = H.count(m, 0, "GRAPE"); round(m, P);
+    ok(a === 1 && H.count(m, 0, "GRAPE") === 1, "Rume: a Pass makes Grape Juice, max 1 in hand"); }
+  // Pomme: damaging attack → Apple Bomb, max 1
+  { const m = fresh([["pomme","wolf","pyrefly"],["kirin","roper","pyrefly"]]); m.p[1].roster[0].hp = 99;
+    round(m, P); const a = H.count(m, 0, "APPLE_BOMB"); round(m, P);
+    ok(a === 1 && H.count(m, 0, "APPLE_BOMB") === 1, "Pomme: her damaging attack makes an Apple Bomb, max 1 in hand"); }
+  // Canis: damaging attack → target loses 1 printed DEF, min 0
+  { const m = fresh([["canis","wolf","pyrefly"],["roper","wolf","pyrefly"]]); m.p[1].roster[0].hp = 99;   // Roper DEF 1
+    round(m, P); const t = m.p[1].roster[0]; const d1 = t.armorBreak; round(m, P);
+    const dmg = E._withState(m, () => E._calcAttack(m.p[0].roster[0], t, { attItem:"PASS", defItem:"PASS" })).dmg;
+    ok(d1 === 1 && t.armorBreak === 1 && dmg === C.canis.atk, "Canis: Armor Break takes Roper's 1 DEF away, never below 0"); }
+  // Albero: −1 from attacks only while his side has fewer cards standing
+  { const m = fresh([["albero","wolf","pyrefly"],["kirin","roper","pyrefly"]]); const al = m.p[0].roster[0], k = m.p[1].roster[0];
+    const even = E._withState(m, () => E._calcAttack(k, al, { attItem:"PASS", defItem:"PASS" })).dmg;
+    m.p[0].roster[2].ko = true; m.p[0].roster[2].hp = 0;
+    const behind = E._withState(m, () => E._calcAttack(k, al, { attItem:"PASS", defItem:"PASS" })).dmg;
+    ok(behind === Math.max(0, even - CFG.ELDER), `Albero: −${CFG.ELDER} only while behind (${even} → ${behind})`); }
+  // Alcina: Switched Out → Hearty Stew, once per match
+  { const m = fresh([["alcina","wolf","pyrefly"],["kirin","roper","pyrefly"]]); m.p[1].roster[0].hp = 99;
+    round(m, { action:"SWITCH", target:1 }); const a = H.count(m, 0, "STEW");
+    round(m, { action:"SWITCH", target:0 }); round(m, { action:"SWITCH", target:1 });
+    ok(a === 1 && H.count(m, 0, "STEW") === 1, "Alcina: Hearty Stew when she switches out, once per match"); }
+  // Wagner: first KO by an attack → 1 HP, once
+  { const m = fresh([["wagner","wolf","pyrefly"],["gigas","roper","pyrefly"]].map((t,i)=>i?["gigas","wolf","pyrefly"]:t)); m.p[0].roster[0].hp = 1;
+    round(m, P); const w = m.p[0].roster[0]; const survived = w.hp === 1 && !w.ko && w.laugh;
+    round(m, P);
+    ok(survived && (w.ko || w.hp === 0), "Wagner: Hearty Laugh keeps him at 1 HP the first time, not the second"); }
+  // Roselie: her attack burns every enemy Bench card for 1 Fire (the element chart applies)
+  { const m = fresh([["roselie","wolf","pyrefly"],["kirin","gorger","wolf"]]); m.p[1].roster[0].hp = 99;
+    const g0 = m.p[1].roster[1].hp, w0 = m.p[1].roster[2].hp; round(m, P);
+    ok(g0 - m.p[1].roster[1].hp === 3 && w0 - m.p[1].roster[2].hp === 1, "Roselie: Wildfire Kiss = 1 Fire to each Bench card (Air takes 3: Weak)"); }
+  // Thomas: KO'd → the next card in gets +2 DEF for 2 rounds
+  { const m = fresh([["thomas","wolf","pyrefly"],["gigas","wolf","pyrefly"]]); m.p[0].roster[0].hp = 1;
+    round(m, P); const pend = m.phase === "replace";
+    M.submit(m, 0, { replace:1 }); const w = m.p[0].roster[1];
+    const def2 = E._withState(m, () => E._calcAttack(m.p[1].roster[0], w, { attItem:"PASS", defItem:"PASS" })).dmg;
+    const base = E._withState(m, () => { const s = w.lc; w.lc = 0; const d = E._calcAttack(m.p[1].roster[0], w, { attItem:"PASS", defItem:"PASS" }).dmg; w.lc = s; return d; });
+    ok(pend && w.lc >= m.round && def2 === Math.max(1, base - CFG.LAST_CALL), `Thomas: Last Call gives the next card +${CFG.LAST_CALL} DEF (${base} → ${def2})`); }
+  // King Seigfried: his items +1
+  { const m = fresh([["seigfried","wolf","pyrefly"],["kirin","roper","pyrefly"]]); const s = m.p[0].roster[0], k = m.p[1].roster[0];
+    const str = E._withState(m, () => E._calcAttack(s, k, { attItem:"STRENGTH", defItem:"PASS" })).dmg - E._withState(m, () => E._calcAttack(s, k, { attItem:"PASS", defItem:"PASS" })).dmg;
+    const gol = E._withState(m, () => E._calcAttack(k, s, { attItem:"PASS", defItem:"PASS" })).dmg - E._withState(m, () => E._calcAttack(k, s, { attItem:"PASS", defItem:"GOLEM" })).dmg;
+    s.hp = 2; const res = round(m, { action:"REMEDY" });
+    ok(str === CFG.STR + CFG.DECREE && res.ev.heal[0] === CFG.REMEDY + CFG.DECREE, `Royal Decree: Tincture +${str} ATK, Remedy heals ${res.ev.heal[0]} (Golem blocks ${gol})`); }
+  // Guy: +1 DEF after a full round as the active card, max +1, reset on leaving
+  { const m = fresh([["guy","wolf","pyrefly"],["roper","wolf","pyrefly"]]); const g = m.p[0].roster[0]; m.p[1].roster[0].hp = 99; g.hp = 99;   // Roper: no charge-up to muddle the DEF check
+    const d0 = E._withState(m, () => E._calcAttack(m.p[1].roster[0], g, { attItem:"PASS", defItem:"PASS" })).dmg;
+    round(m, P); round(m, P);
+    const d2 = E._withState(m, () => E._calcAttack(m.p[1].roster[0], g, { attItem:"PASS", defItem:"PASS" })).dmg;
+    round(m, { action:"SWITCH", target:1 });
+    ok(d2 === Math.max(1, d0 - CFG.TRAVELER_MAX) && g.stay === 0, `Guy: +${CFG.TRAVELER_MAX} DEF max after staying in, reset when he leaves (${d0} → ${d2})`); }
+  // Farin: start of round while active → one Arcana, max 1 in hand
+  { const m = M.create({ teams:[["farin","wolf","pyrefly"],["kirin","roper","pyrefly"]] }); M.submit(m, 0, { replace:0 }); M.submit(m, 1, { replace:0 });
+    const arc = () => ["ARC_SUN","ARC_MOON","ARC_STAR"].reduce((a,k)=>a+H.count(m,0,k),0);
+    const a1 = arc(); m.p[1].roster[0].hp = 99; round(m, P); const a2 = arc();
+    ok(a1 === 1 && a2 === 1, "Farin: an Arcana at the start of the round, max 1 in hand"); }
 }
 
 console.log(fails ? fails + " FAILED" : "ALL PASS");

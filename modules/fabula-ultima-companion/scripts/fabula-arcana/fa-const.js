@@ -90,6 +90,19 @@ const ART = {   // exact library paths (matched by content hash to the duel wind
   gardner: "Fabula Arcana/Character Cards/Gardner.png",
   // batch 5: shadow-free still (Character/Hako/Hako Standard.png with the baked shadow stripped, 11-17)
   hako: "Fabula Arcana/Character Cards/Hako.png",
+  // town NPC cards (11-25): shadow-free stills of the NPC sprites
+  willy: "Fabula Arcana/Character Cards/Willy.png",
+  rume: "Fabula Arcana/Character Cards/Rume.png",
+  pomme: "Fabula Arcana/Character Cards/Pomme.png",
+  canis: "Fabula Arcana/Character Cards/Canis.png",
+  albero: "Fabula Arcana/Character Cards/Albero.png",
+  alcina: "Fabula Arcana/Character Cards/Alcina.png",
+  wagner: "Fabula Arcana/Character Cards/Wagner.png",
+  roselie: "Fabula Arcana/Character Cards/Roselie.png",
+  thomas: "Fabula Arcana/Character Cards/Thomas.png",
+  seigfried: "Fabula Arcana/Character Cards/King Seigfried.png",
+  guy: "Fabula Arcana/Character Cards/Guy.png",
+  farin: "Fabula Arcana/Character Cards/Farin.png",
 };
 export const artUrl = (cid) => (ART[cid] ? FORGE + ART[cid].split("/").map(encodeURIComponent).join("/") : "icons/svg/card-joker.svg");
 export const artFiles = () => ({ ...ART });   // cid → library path (card drops match monster art against these)
