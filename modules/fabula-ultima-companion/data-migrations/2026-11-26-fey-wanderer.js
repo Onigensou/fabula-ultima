@@ -149,7 +149,8 @@ const graceAe = () => templAe(ID.aeGrace, "Fairy's Grace", IMG.robe, [], "Once p
   reactionConfig: {
     name: "Fairy's Grace",
     reaction_config_table: { 0: { reaction_trigger: "creature_takes_damage", reaction_source: "self", reaction_passive_mode: "force",
-      reaction_damage_outcome: "would_reduce_to_zero", condition_formula: "COMBAT_LIVING_MAX_AE_CHARGES_FAIRY_PRESENCE >= 1", reaction_effect_ref: "fg_save" } },
+      // The Fairy itself is in all_party too: it never "saves" itself (its own marker).
+      reaction_damage_outcome: "would_reduce_to_zero", condition_formula: "COMBAT_LIVING_MAX_AE_CHARGES_FAIRY_PRESENCE >= 1 && AE_COUNT_FAIRY_PRESENCE == 0", reaction_effect_ref: "fg_save" } },
     effect_table: table([
       { effect_label: "fg_save", effect_kind: "chain", chain_steps: "fg_cap, fg_card, fg_heal, fg_fairy, fg_dismiss, fg_clear" },
       { effect_label: "fg_cap", effect_kind: "adjust_damage", damage_stage: "incoming", damage_operation: "cap", damage_amount: "CUR_HP - 1", consume_self: true },

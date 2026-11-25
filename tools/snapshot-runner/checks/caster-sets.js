@@ -137,7 +137,7 @@ await safe("sprout ward", async () => {
   out.sprout = { applied: !!ae, rc: ae?.flags?.[NS]?.reactionConfig?.reaction_config_table?.[0]?.reaction_status_filter,
     heal: Object.values(ae?.flags?.[NS]?.reactionConfig?.effect_table ?? {}).find((r) => r.effect_label === "sw_heal")?.grant_amount };
   ok("Sprout Ward lands with its Crisis-triggered heal", out.sprout.applied && out.sprout.rc === "Crisis" && /30/.test(String(out.sprout.heal)), out.sprout);
-  await tok.delete();
+  try { await tok.delete(); } catch { /* headless canvas teardown noise */ }
 });
 
 await safe("fairy sim", async () => {
@@ -161,6 +161,26 @@ await safe("fairy sim", async () => {
   ok("Fairy summoned at conflict start", spawned.length >= 1 || out.lines.some((l) => /summon.*Fairy|Fairy.*summon/i.test(l)), out.fairySim);
   ok("Fey Light heals the hero on its turn end", out.lines.some((l) => /fl_heal/.test(l)) || grants.some((v, i) => i > 0 && v > grants[i - 1]), out.fairySim);
   try { await dummy.delete(); } catch {}
+});
+
+// ── 4. Fairy's Sacrifice save, direct (would-be KO on the hero, Fairy alive) ──
+await safe("fairy save", async () => {
+  const a = fey.hero;
+  const t3 = a.items.find((i) => i.name === "Fairy's Sacrifice");
+  const src = t3?.effects?.find((e) => e.name === "Fairy's Grace")?.toObject();
+  if (!src) throw new Error("no Fairy's Grace template");
+  delete src._id;
+  const grace = (await a.createEmbeddedDocuments("ActiveEffect", [src]))[0];
+  // A living Fairy in the combat is what the condition reads; without a director this is 0,
+  // so check the save twice: no fairy → lethal; then the row shape.
+  await a.update({ "system.props.current_hp": 10 });
+  const r0 = await SE.resolveDamageReactions({ target: a, curHp: 10, rawDamage: 50 });
+  const row = grace.flags?.[NS]?.reactionConfig?.reaction_config_table?.[0];
+  out.save = { noFairyDealt: r0.dealtDamage, cond: row?.condition_formula, outcome: row?.reaction_damage_outcome,
+    chain: Object.values(grace.flags?.[NS]?.reactionConfig?.effect_table ?? {}).map((r) => r.effect_label) };
+  ok("Fairy's Grace: no Fairy alive → no save; row = would-be KO, excludes the Fairy itself", r0.dealtDamage === 50
+    && /FAIRY_PRESENCE >= 1/.test(out.save.cond) && /AE_COUNT_FAIRY_PRESENCE == 0/.test(out.save.cond) && out.save.outcome === "would_reduce_to_zero"
+    && ["fg_cap", "fg_heal", "fg_dismiss", "fg_clear"].every((l) => out.save.chain.includes(l)), out.save);
 });
 
 console.log = oL; console.warn = oW; console.error = oE;
