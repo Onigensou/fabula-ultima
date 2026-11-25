@@ -96,7 +96,9 @@ await safe("veil + asa", async () => {
   const a = sage.hero;
   const rodPsv = a.items.find((i) => i.name === "Keter Rod (Passive)");
   const asa = a.items.find((i) => i.name === "Ain Soph Aur");
-  const ctx = { casterActor: a, reactorActor: a, payload: {}, sourceUuid: null, skill: rodPsv };
+  const td = await a.getTokenDocument({ x: 1400, y: 1400 }); const tdo = td.toObject(); tdo.actorLink = true;
+  const [tok] = await scene.createEmbeddedDocuments("Token", [tdo]);
+  const ctx = { casterActor: a, reactorActor: a, reactorToken: tok, payload: {}, sourceUuid: null, skill: rodPsv };
   const gain = Object.values(rodPsv.system.props.effect_table).find((r) => r.effect_label === "kr_veil");
   for (let i = 0; i < 4; i++) await SE.applyEffectRow(gain, ctx);
   const veil = () => a.effects.find((e) => e.name === "Veil")?.flags?.[NS]?.charges ?? 0;
@@ -105,7 +107,7 @@ await safe("veil + asa", async () => {
   const k1 = SE.reactionRoundCountKey("c", "0", "skill", 1, "iceberg#0");
   out.veil.key = k1;
   // Ain Soph Aur chain: pay 3, drop, cycle +1
-  for (const l of ["asa_pay", "asa_drop", "asa_cycle"]) await SE.applyEffectRow(Object.values(asa.system.props.effect_table).find((r) => r.effect_label === l), { casterActor: a, reactorActor: a, payload: {}, skill: asa }).catch(() => null);
+  for (const l of ["asa_pay", "asa_drop", "asa_cycle"]) await SE.applyEffectRow(Object.values(asa.system.props.effect_table).find((r) => r.effect_label === l), { casterActor: a, reactorActor: a, reactorToken: tok, payload: {}, skill: asa }).catch(() => null);
   await wait(500);
   out.veil.afterAsa = veil(); out.veil.cycle = a.flags?.[NS]?.skillCapCycle;
   ok("Veil caps at 3; Ain Soph Aur spends it and bumps the skill cycle", out.veil.after4 === 3 && out.veil.afterAsa === 0 && Number(out.veil.cycle) >= 1 && k1.endsWith("s:iceberg#0"), out.veil);
