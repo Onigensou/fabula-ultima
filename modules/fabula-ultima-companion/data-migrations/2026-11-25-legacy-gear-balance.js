@@ -56,7 +56,7 @@ const patchRows = (tableObj, byLabel) => {
 
 // spec: { text?, html?, props?, rarity?, passive?: { effect?, reaction? }, aes?: { [name]: (ae) => update|"delete" } }
 const SPECS = {
-  "0b9L1O59jxijKJ1I": { name: "Alpha Regalia", rarity: "Uncommon", text: [`Critical hits deal double damage.`],
+  "0b9L1O59jxijKJ1I": { name: "Alpha Regalia", rarity: "Uncommon", text: [`Your critical hits deal ${B("200%")} damage.`],
     passive: { effect: { au_who: () => selfTargeting("au_who") } } },
   "jnhWaWPLwZcPQ883": { name: "Mana Robe", text: [`${B("50%")} of damage taken is dealt to your MP instead of your HP.`],
     aes: { "Mana Robe": (ae) => {
@@ -70,11 +70,11 @@ const SPECS = {
       };
     } } },
   "fXTiW1mHRFBGSGR8": { name: "Gambler's Dice", rarity: "Common",
-    text: [`When you Fumble, you may reroll. You still gain the Fabula Point. Once per round.`],
+    text: [`When you Fumble, you may reroll once. Once per round. (You still gain the Fabula Point)`],
     aes: { "Gambler's Dice": () => "delete" },
     passive: { effect: { gd_reroll: (r) => ({ ...r, allow_fumble: true, keep_fumble_fp: true }) } } },
   "Hurc7SbzCtjIAaC3": { name: "Copycat",
-    text: [`When another creature uses a consumable, you may pay its IP cost to use a copy. Once per round.`],
+    text: [`When another creature uses a consumable, you may use a copy of it by paying its IP cost. Once per round.`],
     passive: { effect: { cc_copy: (r) => ({ ...r, free_of_cost: false, copy_pays_ip: true,
       menu_description: "Use a copy of the item just used, paying its IP cost." }) } } },
   "6f3U2Cz826kB5ZIp": { name: "Brief Respite",
