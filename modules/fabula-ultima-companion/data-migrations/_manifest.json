@@ -805,6 +805,10 @@
     {
       "key": "2026-11-25-fa-town-duelists",
       "path": "data-migrations/2026-11-25-fa-town-duelists.js"
+    },
+    {
+      "key": "2026-11-25-trio-elite-steals",
+      "path": "data-migrations/2026-11-25-trio-elite-steals.js"
     }
   ]
 }

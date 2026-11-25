@@ -1561,6 +1561,16 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const st = String(payload?.actionSkillType ?? "").toLowerCase();
         return (k === "spell" || st === "spell") ? 1 : 0;
       }
+      // 1 if the action is a SKILL that is not a spell: actionKind "skill" (the BD
+      // stamps Skill and Spell both as "Skill") with a casting item whose skill_type
+      // is not "spell". The Attack and Item kinds read 0. Rakshasa Armor's "attacks
+      // and skills with a Bow/Flail/Sword/Thrown weapon" gate uses it, so a potion
+      // thrown or a spell cast while holding a sword does not take the bonus.
+      case "ACTION_IS_SKILL": {
+        const k  = String(payload?.actionKind ?? "").toLowerCase();
+        const st = String(payload?.actionSkillType ?? "").toLowerCase();
+        return (k === "skill" && st !== "spell") ? 1 : 0;
+      }
       // 1 if the action is an OFFENSIVE spell — a Spell (see ACTION_IS_SPELL)
       // that ALSO rolls a Check (the ⚡ offensive spell in FU; buff/heal spells
       // are isCheck:false). Reads payload.actionIsCheck, stamped on the
