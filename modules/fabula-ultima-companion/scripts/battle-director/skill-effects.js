@@ -2136,7 +2136,7 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
 // gear and the built-in action can share one notion of "already did this to you".
 // (Study itself still uses studyLog; it needs the list of spent targets to grey
 // out picker entries, not just a yes/no, so migrating it is a separate job.)
-const REACTION_MAX_SCOPES = new Set(["round", "battle", "target", "target_round", "target_action", "action"]);
+const REACTION_MAX_SCOPES = new Set(["round", "battle", "target", "target_round", "target_action", "action", "skill"]);
 // Player-facing reason on a capped pill — must name the scope, or "once per
 // target" reads as a bug ("why is this greyed out, it hasn't fired this round?").
 const CAP_REASONS = Object.freeze({
@@ -2146,6 +2146,7 @@ const CAP_REASONS = Object.freeze({
   target_round: "Already used against this target this round",
   target_action: "Already used against this target by this action",
   action:       "Already used for this action",
+  skill:        "Already used for this skill this battle",
 });
 // Inherent action keywords declared on a skill's own `action_keywords` prop
 // (comma/newline list, case-insensitive) — the same parse action-profile.js
@@ -2202,6 +2203,18 @@ function capActionRef(payload) {
 }
 function capRefFor(scope, payload, reactorUuid) {
   if (scope === "action") return String(payload?.damageInstance ?? "").trim();
+  // "skill": N per triggering SKILL (by name) for the whole battle — Keter Rod's
+  // Veil: "an offensive spell you cast for the first time this scene".
+  // The bucket carries the reactor's `skillCapCycle` flag (ADD-summed from AEs):
+  // bumping it re-opens every skill's quota ("every offensive spell counts as
+  // new again" after Ain Soph Aur — its chain stacks a +1 AE).
+  if (scope === "skill") {
+    const name = String(payload?.sourceSkillName ?? "").trim().toLowerCase();
+    if (!name) return "";
+    let cycle = 0;
+    try { cycle = Number((reactorUuid ? globalThis.fromUuidSync?.(reactorUuid) : null)?.flags?.[FLAG_NS]?.skillCapCycle) || 0; } catch { cycle = 0; }
+    return `${name}#${cycle}`;
+  }
   return scope === "target_action" ? capActionRef(payload) : capSubjectRef(payload, reactorUuid);
 }
 // A target-scoped row with NO resolvable subject must not silently collapse every
@@ -2215,6 +2228,7 @@ export function reactionRoundCountKey(carrierUuid, rowKey, scope, round, subject
   if (scope === "target_action") return `${carrierUuid}::action::${subjectRef}`;
   if (scope === "action") return `${carrierUuid}::${rowKey}::a:${subjectRef}`;
   const bucket = scope === "battle" ? "all"
+    : scope === "skill" ? `s:${subjectRef}`
     : scope === "target" ? `t:${subjectRef}`
     : scope === "target_round" ? `t:${subjectRef}@${round}`
     : String(round);
@@ -2237,7 +2251,7 @@ function reactionRoundCapReached(row, carrierUuid, rowKey, payload, reactorUuid 
   const scope = readReactionMaxScope(row);
   const subjectRef = capRefFor(scope, payload, reactorUuid);
   // Target-scoped with nothing to key on: never cap (see CAP_NO_SUBJECT).
-  if ((scope === "target" || scope === "target_round" || scope === "target_action" || scope === "action") && !subjectRef) return false;
+  if ((scope === "target" || scope === "target_round" || scope === "target_action" || scope === "action" || scope === "skill") && !subjectRef) return false;
   return reactionRoundCount(director, carrierUuid, rowKey, scope, subjectRef) >= max;
 }
 // Increment the fire count for a capped row after it actually fires.
@@ -3334,6 +3348,12 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
     cand.appliesToTargetUuids = matchedActors;
     cand.appliesToTokenUuids = matchedTokens;
     cand.appliesToOriginalActorUuids = matchedOriginals;
+    // The fire-time resolver reads payloadAtFire (frozen at CONFIRM): refresh its
+    // target lists too, or ACTION_TARGET_COUNT stays at the pre-mutation count
+    // after an add_target spread (Gevurah Robe: 3 × targets per target).
+    if (cand.payloadAtFire && typeof cand.payloadAtFire === "object") {
+      cand.payloadAtFire = { ...cand.payloadAtFire, targets: allTargetUuids, hitTargets: hitTokenUuids };
+    }
   }
 }
 

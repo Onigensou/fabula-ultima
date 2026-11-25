@@ -902,6 +902,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // same-sign disposition, self excluded). Backs the Guest system's heal
       // gate. Same enumeration as ENEMY_COUNT, mirrored to the ally side.
       case "ALLY_COUNT": return allyActorsOf(actor).length;
+      // Allies (self excluded) carrying at least one debuff status. Backs the
+      // Fey Wanderer Fairy's "every 2 rounds, cleanse instead — if any ally has a
+      // debuff, else heal" split (two rows gated == 0 / >= 1).
+      case "ALLY_DEBUFFED_COUNT": return allyActorsOf(actor).filter((a) => countStatusDebuffs(a) > 0).length;
+      case "ANY_ALLY_HAS_DEBUFF": return allyActorsOf(actor).some((a) => countStatusDebuffs(a) > 0) ? 1 : 0;
       // Side AVERAGE total level, and the enemy Champion head-count. Backs the
       // Run Away objective, whose Group Check DL is a ladder over the level gap
       // (`7 + 3*(GAP >= 1) + 3*(GAP >= 10)` with GAP = ENEMY_AVG − PARTY_AVG),

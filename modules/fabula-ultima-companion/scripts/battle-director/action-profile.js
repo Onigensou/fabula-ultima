@@ -135,6 +135,14 @@ function makeStudiedGate(attacker) {
 // True when the attack MODE zeroes the High Roll: every two-weapon style pass does,
 // except a multi-attack grant that keeps it (a weapon Chain — ctx.multiAttackKeepHr,
 // stamped at TARGET from the grant).
+// A Skill/Spell with `ignore_hr` deals its formula flat — no High Roll added
+// (Keter Rod's Ain Soph Aur: 【50 + your level】). The _Skill Template always had
+// the prop; the Battle Director never read it. Weapons don't carry it.
+function skillIgnoresHr(view) {
+  const v = view?.source?.system?.props?.ignore_hr;
+  return v === true || String(v ?? "").toLowerCase() === "true";
+}
+
 function modeForcesHrZero(ctx) {
   const mode = String(ctx?.attackMode ?? "");
   if (!mode.startsWith("two-weapon")) return false;
@@ -565,7 +573,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
   const massiveCount = isMassive ? Math.max(1, targets.length) : 1;
 
   const rolled = check.required && check.total != null;
-  const effectiveHr = check.grantHrAsZero || modeForcesHrZero(ctx)
+  const effectiveHr = check.grantHrAsZero || modeForcesHrZero(ctx) || skillIgnoresHr(view)
     ? 0
     : (check.isFumble ? 0 : (check.hr ?? 0));
 
@@ -1389,11 +1397,11 @@ export async function computeActionProfile(input) {
       hasHealing: !!healingObj,
       damageResource: primary.resource,
       // Attack-only HR-as-0 (two-weapon OR a free-action grant with hrAsZero).
-      ignoreHR: kind === "Attack" && (check.grantHrAsZero || modeForcesHrZero(ctx)),
+      ignoreHR: (kind === "Attack" && (check.grantHrAsZero || modeForcesHrZero(ctx))) || (kind !== "Attack" && skillIgnoresHr(view)),
       // Human-readable WHY HR is 0 — two-weapon vs the actual grant source
       // (Hawkeye take-aim / Soaring Strike), so the card stops blaming
       // Two-Weapon Fighting for every HR-as-0.
-      hrZeroReason: kind !== "Attack" ? null
+      hrZeroReason: kind !== "Attack" ? (skillIgnoresHr(view) ? "Fixed damage — no High Roll" : null)
         : modeForcesHrZero(ctx) ? (ctx?.attackMode === "two-weapon-multi" ? "Multi-attack forces HR=0" : "Two-Weapon Fighting forces HR=0")
         : check.grantHrAsZero ? `${ctx?.grant?.sourceLabel || "Free action"} treats HR as 0`
         : null,
@@ -1519,9 +1527,8 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   // Skill/Spell damage carries ignoreHR = "no roll happened". effectiveHr zeroes
   // on the same condition (or a fumble).
   const attackIgnoreHR = !!profile._summary?.ignoreHR;
-  const effectiveHr = (kind === "Attack")
-    ? (attackIgnoreHR || check.isFumble ? 0 : (check.hr ?? 0))
-    : (check.isFumble ? 0 : (check.hr ?? 0));
+  // A Skill/Spell's summary ignoreHR is set only by ignore_hr (fixed damage).
+  const effectiveHr = (attackIgnoreHR || check.isFumble) ? 0 : (check.hr ?? 0);
   // Representative in-flight reaction bonus for the headline breakdown — the
   // first hit target's per-target ops (e.g. Bite's grappled +50%). Folded into
   // base / baseParts / finalIfHit so the Damage Preview tooltip itemizes the

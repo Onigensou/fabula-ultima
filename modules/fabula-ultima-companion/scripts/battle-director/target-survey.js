@@ -86,6 +86,7 @@ import {
   applyAreaGate,
   attackRangeBlockedBy,
   getMaxActionTargets,
+  getSpellExtraTargets,
   snapshotEligibleTargets,
   snapshotEligibleTargetsFromDCombat,
   targetsKnockedOut,
@@ -247,6 +248,16 @@ export function resolveTargetPlan({ actor, skill, skillTargetText, eligibleCount
     count = countFrom(text, true);
   } else {
     count = countFrom(text, false);
+  }
+  // Extra targets on offensive SPELLS (Chesed Band: "Offensive spells you cast can
+  // target 1 additional creature"). A fixed count opens up to "up to N+1" so the
+  // caster may still pick fewer; "× T MP" costs follow the real count at CONFIRM.
+  if (actor && (mode === "exact" || mode === "up_to")) {
+    const sp = skill?.system?.props ?? {};
+    const isSpell = String(sp.skill_type ?? "").toLowerCase() === "spell";
+    const isOff = sp.isOffensiveSpell === true || String(sp.isOffensiveSpell ?? "").toLowerCase() === "true";
+    const bonus = isSpell && isOff ? getSpellExtraTargets(actor) : 0;
+    if (bonus > 0) { count += bonus; if (mode === "exact") mode = "up_to"; }
   }
   if (mode !== "all") count = poolClamp(count);
 

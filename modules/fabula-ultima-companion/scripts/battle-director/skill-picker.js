@@ -286,6 +286,8 @@ export async function gatherSkillsForActor(actor, { freeOfCost = false } = {}) {
 // charge cost reads like a real resource ("Adoration: 1/3") instead of the
 // generic internal chargeKey. Unknown keys fall back to "Charge".
 const CHARGE_LABELS = {
+  veil:      "Veil",
+  moondew:   "Moondew",
   adoration: "Adoration",
   grave:     "Grave Points",
   brainwave: "Brainwave",

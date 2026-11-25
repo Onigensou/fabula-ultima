@@ -817,6 +817,14 @@
     {
       "key": "2026-11-26-caster-fillers",
       "path": "data-migrations/2026-11-26-caster-fillers.js"
+    },
+    {
+      "key": "2026-11-26-fey-wanderer",
+      "path": "data-migrations/2026-11-26-fey-wanderer.js"
+    },
+    {
+      "key": "2026-11-26-sage-of-destruction",
+      "path": "data-migrations/2026-11-26-sage-of-destruction.js"
     }
   ]
 }

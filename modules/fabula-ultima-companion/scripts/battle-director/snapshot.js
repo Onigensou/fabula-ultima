@@ -1400,6 +1400,27 @@ export function canonActionLabel(raw) {
 // { cap, reason } where reason = the source AE's name (the dim stamp); cap is
 // Infinity when no AE restricts targeting. Mirrors getBlockedActionLabels' per-AE
 // union — a pure change-row marker the BD reads itself, no CSB template field.
+// Extra max targets on offensive spells — sum of `spell_extra_targets` AE changes
+// (mode 0, plain number). A gear carrier counts only while equipped, the same rule
+// as weapon_category_alias (weapon-alias.js).
+const SPELL_EXTRA_GEAR = new Set(["accessory", "armor", "weapon", "shield"]);
+export function getSpellExtraTargets(actor) {
+  const effects = actor?.appliedEffects ? Array.from(actor.appliedEffects) : (actor?.effects?.contents ?? []);
+  let n = 0;
+  for (const ae of effects) {
+    if (!ae || ae.disabled) continue;
+    const item = ae.parent?.documentName === "Item" ? ae.parent : null;
+    const itype = String(item?.system?.props?.item_type ?? "").toLowerCase();
+    if (SPELL_EXTRA_GEAR.has(itype) && item?.system?.props?.isEquipped !== true) continue;
+    for (const ch of (ae.changes ?? [])) {
+      if (ch?.key !== "spell_extra_targets") continue;
+      const v = Number(ch.value);
+      if (Number.isFinite(v) && v > 0) n += v;
+    }
+  }
+  return n;
+}
+
 export function getMaxActionTargets(actor) {
   // Domination State ("Super Armor") — action-gating debuffs stay applied but
   // stop working. See [[domination.js]].
