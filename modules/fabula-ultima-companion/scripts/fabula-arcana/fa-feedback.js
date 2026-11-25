@@ -37,8 +37,19 @@ export function say(lines) {
 }
 
 // ------------------------------------------------------------------ beaten record (party, so it follows the save)
-// key = the duelist's actor id (duelist setups live on actors today; per-token setups add a token key later).
-export const npcKeyOf = ({ actorId = null } = {}) => actorId || null;
+// key = the duelist's actor id, or for a setup that lives on one token (townsfolk sharing an actor) the token's uuid
+// with the dots swapped out (a dot would split the flag path).
+export const npcKeyOf = ({ actorId = null, tokenUuid = null, perToken = false } = {}) =>
+  perToken && tokenUuid ? `tok_${String(tokenUuid).replace(/\./g, "_")}` : (actorId || null);
+
+// The duelist's prize order (2026-11-25): the first card in `prizes` the challenger doesn't own yet; none left = a friendly
+// match. Old setups with a single `prize` read as a one-card list.
+export function prizeList(cfg) {
+  const C = Catalog()?.CARDS ?? {};
+  const list = Array.isArray(cfg?.prizes) && cfg.prizes.length ? cfg.prizes : cfg?.prize ? [cfg.prize] : [];
+  return list.map(String).filter((c, i, a) => C[c] && a.indexOf(c) === i);
+}
+export const nextPrize = (cfg, owned = []) => prizeList(cfg).find((c) => !owned.includes(c)) ?? null;
 const partyActor = () => { try { return window.oni?.GameState?.partyActor?.() ?? null; } catch { return null; } };
 export function hasBeaten(key) {
   if (!key) return false;

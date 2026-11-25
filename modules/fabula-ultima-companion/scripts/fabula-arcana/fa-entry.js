@@ -13,12 +13,23 @@ import { send } from "./fa-net.js";
 import { status, playUi } from "./fa-client.js";
 import { showChallengeSetup } from "./fa-invite-ui.js";
 import { ownedCards } from "./fa-collection.js";
-import { hasBeaten, npcKeyOf } from "./fa-feedback.js";
+import { hasBeaten, npcKeyOf, prizeList, nextPrize } from "./fa-feedback.js";
 
 const LAYER_ID = "fa-duel-layer", ICON_LAYER_ID = "fa-duel-icons", STYLE_ID = "fa-duel-style";
 const ANIM_OUT_MS = 140;
 
 export const duelistOf = (actor) => gp(actor, `flags.${MODULE_ID}.${FLAG_DUELIST}`, null);
+// A token's own setup wins over its actor's (townsfolk who share one actor: Midgard's residents, villagers, knights).
+// → { cfg, perToken, key } or null; key = the party's "beaten" record for this duelist.
+export function duelistFor(token) {
+  const doc = token?.document ?? token ?? null;
+  const own = gp(doc, `flags.${MODULE_ID}.${FLAG_DUELIST}`, null);
+  if (own) return { cfg: own, perToken: true, key: npcKeyOf({ tokenUuid: doc?.uuid, perToken: true }) };
+  const actor = token?.actor ?? doc?.actor ?? null, cfg = duelistOf(actor);
+  return cfg ? { cfg, perToken: false, key: npcKeyOf({ actorId: actor?.id }) } : null;
+}
+// Is this token in that duel? An NPC is matched by its token (one shared actor stands behind many townsfolk).
+const tokenInSession = (s, t) => (s.npcTokenUuid && t.document?.uuid === s.npcTokenUuid) || s.actorIds.slice(0, s.npcTokenUuid ? 1 : 2).includes(t.actor?.id);
 const hidden = (t) => t?.document?.hidden === true;
 const centerOf = (token, ov = null) => ({ x: (ov?.x ?? token?.document?.x ?? token?.x ?? 0) + (token?.w ?? 0) / 2, y: (ov?.y ?? token?.document?.y ?? token?.y ?? 0) + (token?.h ?? 0) / 2 });
 
@@ -67,6 +78,7 @@ function storyOpen(cfg) {
   try { return !!window.oni?.GameState?.getSwitch?.(sw); } catch { return false; }
 }
 const activeDuelOf = (actorId) => status.sessions.find((s) => s.actorIds.includes(actorId));
+const npcBusy = (t, d) => d?.perToken ? status.sessions.some((s) => s.npcTokenUuid === t.document?.uuid) : !!activeDuelOf(t.actor.id);
 const myDuel = () => status.sessions.find((s) => s.userIds.includes(game.user.id));
 
 // ------------------------------------------------------------------ actions
@@ -86,13 +98,13 @@ const unsay = async (line) => {
   try { const p = await line; if (p?.bubbleId) globalThis.FU?.DialogUI?.control?.(p.bubbleId, "close"); } catch (e) { console.warn(TAG, "close duel line", e); }
 };
 async function duelTalk(token, actor) {
-  const cfg = duelistOf(token?.actor) || {};
-  const beaten = hasBeaten(npcKeyOf({ actorId: token?.actor?.id }));
+  const d = duelistFor(token), cfg = d?.cfg || {};
+  const beaten = hasBeaten(d?.key);
   const line = speak(token, (beaten && cfg.rematchQuote) || cfg.quote || "");
   const ask = globalThis.TeleporterSystem?.askYesNo;
   if (typeof ask !== "function") return true;   // no prompt box loaded: straight in, as before
   const C = Catalog();
-  const prize = cfg.prize && C?.CARDS?.[cfg.prize] && !ownedCards(actor).includes(cfg.prize) ? C.CARDS[cfg.prize].name : null;
+  const next = nextPrize(cfg, ownedCards(actor)), prize = next ? C?.CARDS?.[next]?.name ?? null : null;   // the prize order: first card not owned yet
   const bo = [3, 5].includes(Number(cfg.bestOf)) ? `Best of ${cfg.bestOf}` : "Best of 1";
   const note = `${prize ? `Ante: ${prize} card` : "Friendly match"} · Standard ${C?.CFG?.BUDGET ?? 5}★ · ${bo}`;
   const name = token?.document?.name || token?.actor?.name || "the challenger";
@@ -234,8 +246,8 @@ async function scan() {
     if (!busy && unlocked) {
       const can = await canChallengeNpc();
       for (const t of tokens) {
-        const cfg = duelistOf(t.actor); if (!cfg || !storyOpen(cfg)) continue;
-        if (activeDuelOf(t.actor.id)) continue;
+        const d = duelistFor(t); if (!d || !storyOpen(d.cfg)) continue;
+        if (npcBusy(t, d)) continue;
         if (can && mine.some((m) => m.id !== t.id && near(m, t))) npcMap.set(t.id, () => challengeNpc(t));
         else if (mine.some((m) => m.id !== t.id && inSight(m, t))) markMap.set(t.id, true);
       }
@@ -254,7 +266,7 @@ async function scan() {
     if (!busy) {
       for (const s of status.sessions) {
         for (const t of tokens) {
-          const hit = s.actorIds.includes(t.actor.id) || (s.npcTokenUuid && t.document?.uuid === s.npcTokenUuid);
+          const hit = tokenInSession(s, t);
           if (!hit) continue;
           if (game.user.isGM || mine.some((m) => m.id !== t.id && near(m, t))) watchMap.set(t.id, () => spectate(s.sid));
         }
@@ -276,7 +288,7 @@ function icons(tokens, idleMap = new Map()) {
   const want = new Map();
   for (const id of idleMap.keys()) want.set(id, "idle");
   for (const s of status.sessions) for (const t of tokens) {
-    if (s.actorIds.includes(t.actor.id) || (s.npcTokenUuid && t.document?.uuid === s.npcTokenUuid)) want.set(t.id, "duel");
+    if (tokenInSession(s, t)) want.set(t.id, "duel");
   }
   for (const [id, kind] of want) {
     const had = iconEls.get(id);
@@ -301,14 +313,16 @@ function placeIcons() {
 // ------------------------------------------------------------------ GM: make an NPC a duelist
 export async function setDuelist(actorOrUuid, cfg = {}) {
   if (!game.user?.isGM) throw new Error(`${TAG} GM only.`);
-  const actor = typeof actorOrUuid === "string" ? await fromUuid(actorOrUuid) : actorOrUuid;
-  if (!actor || actor.documentName !== "Actor") throw new Error(`${TAG} actor not found.`);
+  let doc = typeof actorOrUuid === "string" ? await fromUuid(actorOrUuid) : actorOrUuid;
+  if (doc?.document) doc = doc.document;   // a Token placeable → its TokenDocument
+  if (!doc || !["Actor", "Token"].includes(doc.documentName)) throw new Error(`${TAG} actor or token not found.`);
+  const actor = doc;   // the document the setup lives on (a token's own setup wins over its actor's)
   if (cfg === false || cfg?.on === false) return actor.update({ [`flags.${MODULE_ID}.-=${FLAG_DUELIST}`]: null });
   const clean = {
     teams: Array.isArray(cfg.teams) ? cfg.teams : cfg.team ? [cfg.team] : [],
     diff: cfg.diff === "skilled" ? "skilled" : "casual", style: cfg.style ?? null,
     bestOf: [1, 3, 5].includes(Number(cfg.bestOf)) ? Number(cfg.bestOf) : 1,
-    quote: String(cfg.quote ?? ""), prize: cfg.prize ?? null, requiresSwitch: String(cfg.requiresSwitch ?? ""),
+    quote: String(cfg.quote ?? ""), prize: cfg.prize ?? null, prizes: prizeList(cfg), requiresSwitch: String(cfg.requiresSwitch ?? ""),
     // the duel's dialogue (2026-11-25): Not now · NPC won · player won · greeting once the party has beaten them
     declineQuote: String(cfg.declineQuote ?? ""), npcWinQuote: String(cfg.npcWinQuote ?? ""),
     playerWinQuote: String(cfg.playerWinQuote ?? ""), rematchQuote: String(cfg.rematchQuote ?? ""),

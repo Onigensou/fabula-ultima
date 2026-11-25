@@ -13,7 +13,7 @@
 import { TAG, MODULE_ID, FLAG_DUELIST, FLAG_BLOCK, FLAG_TEAMS, SETTING_SESSIONS, Engine, Catalog, hostGM, uid } from "./fa-const.js";
 import { send, on } from "./fa-net.js";
 import { ownedCards, grantCard, grantStarter, canPlay } from "./fa-collection.js";
-import { cardLine, starterLine, say, markBeaten, npcKeyOf } from "./fa-feedback.js";
+import { cardLine, starterLine, say, markBeaten, npcKeyOf, prizeList, nextPrize } from "./fa-feedback.js";
 
 const sessions = new Map();
 const runtime = new Map();              // sid -> { timer, ai:[t,t], inviteTimer }
@@ -231,7 +231,7 @@ async function onGameEnd(s) {
     catch (e) { console.error(TAG, "ante reward", e); }
   }
   // the party has beaten this duelist: next time they greet you with their rematch line
-  if (s.kind === "npc" && s.series.winner === 0) markBeaten(npcKeyOf({ actorId: s.npc?.actorId }));
+  if (s.kind === "npc" && s.series.winner === 0) markBeaten(s.npc?.key ?? npcKeyOf({ actorId: s.npc?.actorId }));
 }
 
 // What the player sees on the map after the exit (fa-client.js playOutro): the NPC's win / loss line over its token,
@@ -369,7 +369,9 @@ async function rematch(s, seat) {
   s.over = false; s.match = null; s.gameKey = null; s.deadline = null; s.reward = null;
   s.series = E().Series.create(s.bestOf); s.clash = [];
   for (const x of s.seats) { x.rematch = false; x.next = false; if (x.kind === "human") { x.ready = false; x.team = null; x.draft = null; } }
-  if (s.kind === "npc" && s.prize) { const a = game.actors.get(s.seats[0].actorId); if (a && ownedCards(a).includes(s.prize.cid)) s.prize = null; }
+  // prize order: the next card in the list not owned yet (just won the first one → the second is up), else a friendly match
+  if (s.kind === "npc") { const a = game.actors.get(s.seats[0].actorId); const next = a ? nextPrize({ prizes: s.prizes || (s.prize ? [s.prize.cid] : []) }, ownedCards(a)) : null;
+    s.prize = next ? { cid: next, label: "Ante card", hint: s.bestOf > 1 ? "Win the series to take it." : "Win the duel to take it." } : null; }
   for (const x of s.seats) if (x.userId) sendInit(s, x.userId);
   pushStatus(); save();
 }
@@ -475,8 +477,9 @@ function closeSession(s) {
 }
 
 // ------------------------------------------------------------------ creating sessions
-function npcConfig(npcActor, practice) {
-  const cfg = foundry.utils.deepClone(practice || npcActor?.getFlag?.(MODULE_ID, FLAG_DUELIST) || {});
+// The duelist setup: a practice / event config, else the token's own setup (townsfolk sharing one actor), else the actor's.
+function npcConfig(npcActor, practice, tokenCfg = null) {
+  const cfg = foundry.utils.deepClone(practice || tokenCfg || npcActor?.getFlag?.(MODULE_ID, FLAG_DUELIST) || {});
   const teams = (Array.isArray(cfg.teams) ? cfg.teams : cfg.team ? [cfg.team] : []).filter((t) => E().isLegalTeam(t));
   cfg.team = teams.length ? teams[Math.floor(Math.random() * teams.length)] : E().randomTeam();
   cfg.bestOf = [1, 3, 5].includes(Number(cfg.bestOf)) ? Number(cfg.bestOf) : 1;
@@ -489,21 +492,26 @@ async function createNpc(userId, { challengerActorId, npcActorId, npcTokenUuid, 
   const actor = game.actors.get(challengerActorId);
   if (!actor) return notify(userId, "Nobody to play with — no character found.", "warn");
   if (inSession(userId)) return notify(userId, "You're already in a card duel.", "warn");
-  let npcActor = npcTokenUuid ? (fromUuidSync(npcTokenUuid)?.actor ?? null) : null;
+  const tokenDoc = npcTokenUuid ? (fromUuidSync(npcTokenUuid) ?? null) : null;
+  let npcActor = tokenDoc?.actor ?? null;
   npcActor = npcActor || game.actors.get(npcActorId) || null;
   if (!npcActor && !practice) return notify(userId, "That challenger couldn't be found.", "warn");
-  const cfg = npcConfig(npcActor, event ? { teams: event.team ? [event.team] : [], diff: event.diff, style: event.style, bestOf: event.bestOf, quote: event.quote } : practice);
+  const tokenCfg = tokenDoc?.getFlag?.(MODULE_ID, FLAG_DUELIST) ?? null;   // a setup on this one token wins over the actor's
+  const cfg = npcConfig(npcActor, event ? { teams: event.team ? [event.team] : [], diff: event.diff, style: event.style, bestOf: event.bestOf, quote: event.quote } : practice, tokenCfg);
   if (!canPlay(ownedCards(actor))) { const given = await grantStarter(actor); if (given.length) say(starterLine(actor.name, given)); }
-  const prizeCid = cfg.prize && Catalog().CARDS[cfg.prize] && !ownedCards(actor).includes(cfg.prize) ? cfg.prize : null;
+  const prizes = event ? [] : prizeList(cfg);
+  const prizeCid = nextPrize({ prizes }, ownedCards(actor));
+  const npcKey = npcKeyOf({ actorId: npcActor?.id ?? null, tokenUuid: npcTokenUuid, perToken: !!tokenCfg });
   const s = {
     sid: uid(), kind: "npc", hostId: game.user.id, createdAt: Date.now(), bestOf: cfg.bestOf, series: E().Series.create(cfg.bestOf),
     seats: [
       { userId, actorId: actor.id, name: actor.name, kind: "human", team: null, ready: false, next: false, lastTeam: null },
-      { userId: null, actorId: npcActor?.id ?? null, name: practice?.name || npcActor?.name || "Challenger", kind: "ai", ai: cfg.ai, team: cfg.team, ready: true, next: true },
+      { userId: null, actorId: npcActor?.id ?? null, name: practice?.name || tokenDoc?.name || npcActor?.name || "Challenger", kind: "ai", ai: cfg.ai, team: cfg.team, ready: true, next: true },
     ],
     spectators: [], match: null, gameKey: null, deadline: null, quote: cfg.quote || "",
     prize: prizeCid ? { cid: prizeCid, label: "Ante card", hint: cfg.bestOf > 1 ? "Win the series to take it." : "Win the duel to take it." } : null,
-    npc: { actorId: npcActor?.id ?? null, tokenUuid: npcTokenUuid ?? null }, pending: false, over: false, reward: null,
+    prizes,   // the prize order; a rematch offers the next card not owned yet
+    npc: { actorId: npcActor?.id ?? null, tokenUuid: npcTokenUuid ?? null, key: npcKey }, pending: false, over: false, reward: null,
     event: event?.reqId ?? null, eventResult: null,
     // the duelist's after-duel lines (fa-entry.js setDuelist), said over its token once the player is back on the map
     lines: event || practice ? null : { npcWin: String(cfg.npcWinQuote ?? ""), playerWin: String(cfg.playerWinQuote ?? "") }, earned: [],
