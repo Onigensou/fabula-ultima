@@ -48,8 +48,7 @@ const ws = hero.effects.filter((e) => e.flags?.[NS]?.innerWellspring || /wellspr
 if (ws.length) await hero.deleteEmbeddedDocuments("ActiveEffect", ws);
 // Strip Hina's own kit (Magic Mirror bounced the Thunderbolt, Absorb MP / Painful Lesson fired):
 // every skill + consumable, keep only gear. The set pieces are added after this.
-const noise = hero.items.filter((i) => { const p = i.system?.props ?? {}; return !!p.skill_type || p.item_type === "consumable" || !!i.system?.container
-  || /Mirror|Life Charm/i.test(i.name); }).map((i) => i.id);
+const noise = hero.items.filter((i) => { const p = i.system?.props ?? {}; return !i.system?.container && (!!p.skill_type || p.item_type === "consumable" || /Mirror|Life Charm/i.test(i.name)); }).map((i) => i.id);
 if (noise.length) await hero.deleteEmbeddedDocuments("Item", noise);
 const add = async (id) => { const s = W(id).toObject(); delete s._id; s.system.props.isEquipped = false; const [top] = await hero.createEmbeddedDocuments("Item", [s]);
   const kids = game.items.filter((i) => i.system?.container === id).map((k) => { const d = k.toObject(); delete d._id; delete d.folder; d.system.container = top.id; return d; });
