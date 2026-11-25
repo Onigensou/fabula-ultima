@@ -9,6 +9,7 @@
 import { MODULE_ID, TAG, Catalog, artUrl, artFiles, EL_COLOR, gp, faUnlocked } from "./fa-const.js";
 import { ownedCards, grantCard } from "./fa-collection.js";
 import { decideDrops, matchCard } from "./fa-drops-core.js";
+import { noteDrops } from "./fa-feedback.js";
 
 export const FLAG_DROP = "faCardDrop";
 export const FLAG_PITY = "faPity";
@@ -48,9 +49,10 @@ export async function rollCardDrops(enemies, recipients, { rng = Math.random } =
       const g = await grantCard(a, d.cid);
       if (!g.ok) continue;
       const c = C[d.cid];
-      out.push({ actorId: a.id, cid: d.cid, name: c.name, img: artUrl(d.cid), el: EL_COLOR[c.el] ?? EL_COLOR.phys, cost: c.cost, pity: !!d.pity });
+      out.push({ actorId: a.id, cid: d.cid, name: c.name, img: artUrl(d.cid), el: EL_COLOR[c.el] ?? EL_COLOR.phys, cost: c.cost, pity: !!d.pity, uuid: g.uuid ?? null });
       console.log(TAG, `card drop: ${a.name} got ${c.name}${d.pity ? " (pity)" : ""}`);
     } catch (err) { console.warn(TAG, "card grant failed", a.name, d.cid, err); }
   }
+  noteDrops(out);   // "Hina obtained the Wolf card!" once the party is back on the map (fa-feedback.js)
   return out;
 }

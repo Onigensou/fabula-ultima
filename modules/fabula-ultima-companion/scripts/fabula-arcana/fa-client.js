@@ -7,8 +7,9 @@
 import { TAG, ASSET_BASE, MODULE_ID, FORGE, FLAG_BLOCK, FLAG_TEAMS } from "./fa-const.js";
 import { showInvitePanel } from "./fa-invite-ui.js";
 import { send, on } from "./fa-net.js";
+import { say } from "./fa-feedback.js";
 
-const W = { sid: null, hostId: null, role: null, el: null, frame: null, queue: [], ready: false, musicGain: null };
+const W = { sid: null, hostId: null, role: null, el: null, frame: null, queue: [], ready: false, musicGain: null, exiting: null, exitSid: null };
 export const status = { sessions: [], hostId: null };
 export const currentDuel = () => (W.sid ? { sid: W.sid, role: W.role } : null);
 
@@ -60,6 +61,64 @@ export function closeWindow({ quiet = false } = {}) {
   if (!quiet) Hooks.callAll("fabulaArcanaWindow", { open: false, sid });
 }
 
+// ------------------------------------------------------------------ the way back to the map (approved storyboard 2026-11-25)
+// "teardown": the duel window already played its exit (cards home, board dimmed, faded to black) → hold black, remove
+//   the window underneath, then lift the black over the map. Movement stays locked until the black is gone.
+// "fade": any other close (left mid-match, cancelled, the host closed it) → a quick fade instead of a snap.
+// A click on the veil skips ahead. Resolves when the map is fully back.
+const EXIT = { HOLD_MS: 250, LIFT_MS: 700, QUICK_IN_MS: 200, QUICK_OUT_MS: 200 };
+const EXIT_LOCK = "fabula-arcana-exit";
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+function lockMove(on) {
+  const rtm = globalThis.FUCompanion?.api?.MovementControlCameraRuntime ?? null;
+  try { if (on) rtm?.lockMovement?.(EXIT_LOCK); else rtm?.unlockMovement?.(EXIT_LOCK); } catch {}
+}
+export function exitWindow(kind = "fade") {
+  if (W.exiting) return W.exiting;
+  if (!W.el) return Promise.resolve();
+  W.exitSid = W.sid;
+  const el0 = W.el;
+  const closeOurs = () => { if (W.el === el0) closeWindow(); else el0.remove(); };   // never a window opened meanwhile
+  W.exiting = (async () => {
+    const teardown = kind === "teardown";
+    lockMove(true);
+    const veil = document.createElement("div");
+    Object.assign(veil.style, { position: "fixed", inset: "0", zIndex: "10001", background: "#000", opacity: teardown ? "1" : "0", pointerEvents: "auto", cursor: "pointer" });
+    let skip = false; veil.addEventListener("pointerdown", (ev) => { ev.stopPropagation(); skip = true; });
+    document.body.appendChild(veil);
+    try {
+      if (!teardown) { veil.style.transition = `opacity ${EXIT.QUICK_IN_MS}ms ease-in`; void veil.offsetWidth; veil.style.opacity = "1"; await wait(EXIT.QUICK_IN_MS); }
+      closeOurs();                         // the duel window goes away under the black; scene music comes back
+      if (teardown && !skip) await wait(EXIT.HOLD_MS);
+      const lift = teardown && !skip ? EXIT.LIFT_MS : EXIT.QUICK_OUT_MS;
+      veil.style.transition = `opacity ${lift}ms cubic-bezier(.2,.7,.3,1)`; void veil.offsetWidth; veil.style.opacity = "0";
+      veil.style.pointerEvents = "none";
+      await wait(lift);
+    } catch (e) { console.warn(TAG, "exit", e); closeOurs(); }
+    finally { veil.remove(); lockMove(false); W.exiting = null; }
+  })();
+  return W.exiting;
+}
+
+// After the exit, on the map: the NPC's parting line over its token (every client sees the bubble), then the
+// System Message line for each card won (fa-feedback.js wording, built by the host).
+const OUTRO_REWARD_DELAY_MS = 900;
+async function playOutro(o) {
+  if (!o) return;
+  let spoke = false;
+  if (o.line) {
+    try {
+      const doc = o.tokenUuid ? fromUuidSync(o.tokenUuid) : null;
+      const tokenId = doc?.parent?.id === canvas?.scene?.id ? doc.id : null;
+      if (tokenId && globalThis.FU?.Dialog?.show) { await globalThis.FU.Dialog.show({ tokenId, text: o.line, broadcast: true }); spoke = true; }
+    } catch (e) { console.warn(TAG, "outro line", e); }
+  }
+  if (Array.isArray(o.rewards) && o.rewards.length) {
+    if (spoke) await wait(OUTRO_REWARD_DELAY_MS);
+    say(o.rewards);
+  }
+}
+
 // The duel page calls window.parent.FabulaArcanaBridge.fromDuel(msg)
 window.FabulaArcanaBridge = {
   fromDuel(msg) {
@@ -71,7 +130,7 @@ window.FabulaArcanaBridge = {
       const q = W.queue.splice(0); for (const m of q) deliver(m);
     }
     send(W.hostId, "duel-in", { msg }, W.sid);
-    if (msg.t === "leave") closeWindow();
+    if (msg.t === "leave") exitWindow(msg.teardown ? "teardown" : "fade");
   },
 };
 
@@ -83,7 +142,15 @@ export function installClient() {
     if (msg.t === "init") msg.vol = vol();
     deliver(msg);
   });
-  on("close", (d, env) => { if (env.sid === W.sid) closeWindow(); });
+  // The host closes the window (after our Leave it also brings the outro: the NPC's line + cards won). Our own Leave has
+  // usually started the exit already; otherwise this fades out. The outro plays once the map is back.
+  on("close", async (d, env) => {
+    const mine = env.sid === W.sid || env.sid === W.exitSid;
+    if (!mine) return;
+    const exit = env.sid === W.sid ? exitWindow("fade") : W.exiting;
+    if (exit) await exit;
+    if (d?.outro) playOutro(d.outro);
+  });
   on("status", (d) => { status.sessions = d.sessions || []; status.hostId = d.hostId || null; Hooks.callAll("fabulaArcanaStatus", status.sessions); });
   on("notify", (d) => ui.notifications?.[d.level === "warn" ? "warn" : "info"]?.(`Fabula Arcana | ${d.text}`));
   // PvP challenge: our own panel with a countdown (fa-invite-ui.js). It closes itself when the time runs out;

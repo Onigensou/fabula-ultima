@@ -8,10 +8,12 @@
 //   Watch      anyone not playing, near a dueling character (or the NPC they challenged): opens the read-only board.
 // While a duel runs, a small cards icon floats over both duelists on every client.
 
-import { TAG, MODULE_ID, FLAG_DUELIST, gp, isCampScene, cameraRuntime, hostGM, faUnlocked } from "./fa-const.js";
+import { TAG, MODULE_ID, FLAG_DUELIST, gp, isCampScene, cameraRuntime, hostGM, faUnlocked, Catalog } from "./fa-const.js";
 import { send } from "./fa-net.js";
 import { status, playUi } from "./fa-client.js";
 import { showChallengeSetup } from "./fa-invite-ui.js";
+import { ownedCards } from "./fa-collection.js";
+import { hasBeaten, npcKeyOf } from "./fa-feedback.js";
 
 const LAYER_ID = "fa-duel-layer", ICON_LAYER_ID = "fa-duel-icons", STYLE_ID = "fa-duel-style";
 const ANIM_OUT_MS = 140;
@@ -69,9 +71,41 @@ const myDuel = () => status.sessions.find((s) => s.userIds.includes(game.user.id
 
 // ------------------------------------------------------------------ actions
 const hostId = () => hostGM()?.id ?? null;
+// The challenge, FF8 / FF9 style (approved 2026-11-25): the NPC says its challenge line (its rematch line once the party
+// has beaten it) over its token, then the parchment Yes / No box asks "Card duel with Willy?" with the ante and rules
+// underneath. Duel! starts it; Not now gets the NPC's decline line. The box is mirrored to the table like a door prompt
+// (a GM can answer for the party); at camp it stays on this player's screen.
+let talking = false;
+const speak = (token, text) => {
+  if (!text || !token?.id) return;
+  try { globalThis.FU?.Dialog?.show?.({ tokenId: token.id, text: String(text), broadcast: true }); } catch (e) { console.warn(TAG, "duel line", e); }
+};
+async function duelTalk(token, actor) {
+  const cfg = duelistOf(token?.actor) || {};
+  const beaten = hasBeaten(npcKeyOf({ actorId: token?.actor?.id }));
+  speak(token, (beaten && cfg.rematchQuote) || cfg.quote || "");
+  const ask = globalThis.TeleporterSystem?.askYesNo;
+  if (typeof ask !== "function") return true;   // no prompt box loaded: straight in, as before
+  const C = Catalog();
+  const prize = cfg.prize && C?.CARDS?.[cfg.prize] && !ownedCards(actor).includes(cfg.prize) ? C.CARDS[cfg.prize].name : null;
+  const bo = [3, 5].includes(Number(cfg.bestOf)) ? `Best of ${cfg.bestOf}` : "Best of 1";
+  const note = `${prize ? `Ante: ${prize} card` : "Friendly match"} · Standard ${C?.CFG?.BUDGET ?? 5}★ · ${bo}`;
+  const name = token?.document?.name || token?.actor?.name || "the challenger";
+  const yes = await ask(["Card duel with ", name, "?"], { labels: { yes: "Duel!", no: "Not now" }, note, place: "low", mirror: !isCampScene(canvas?.scene) });
+  if (!yes) speak(token, cfg.declineQuote || "");
+  return !!yes;
+}
+
 export async function challengeNpc(token, { challenger = null, practice = null } = {}) {
   const actor = challenger ?? (await resolveChallenger());
   if (!actor) return ui.notifications?.warn("Fabula Arcana | Only the party leader can accept a duel here.");
+  if (token && !practice) {
+    if (talking) return;
+    talking = true;
+    let go = false;
+    try { go = await duelTalk(token, actor); } catch (e) { console.warn(TAG, "duel talk", e); go = true; } finally { talking = false; }
+    if (!go) return;
+  }
   const h = hostId() ?? game.user.id;   // no GM online → this client hosts its own NPC duel
   send(h, "challenge-npc", { challengerActorId: actor.id, npcActorId: token?.actor?.id ?? null, npcTokenUuid: token?.document?.uuid ?? null, practice });
 }
@@ -118,6 +152,8 @@ function injectStyles() {
   padding: 3px 7px 3px 6px; border-radius: 999px; background: rgba(251,244,220,0.95); border: 2px solid #c9a44a; color: #5a3417;
   font: 700 12px Signika, sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.35); animation: faBob 1.6s ease-in-out infinite; }
 #${ICON_LAYER_ID} .fa-duel-icon i { color: #b0473a; }
+#${ICON_LAYER_ID} .fa-duel-icon.idle { padding: 2px 5px; font-size: 10px; animation: faIdleIn 220ms ease-out both; opacity: .92; }
+@keyframes faIdleIn { from { opacity: 0; transform: translate(-50%, calc(-100% + 4px)); } }
 @keyframes faBob { 50% { transform: translate(-50%, calc(-100% - 5px)); } }
 `;
   document.head.appendChild(s);
@@ -167,6 +203,12 @@ function near(a, b) {
   const ac = centerOf(a, pos.get(a.id)), bc = centerOf(b, pos.get(b.id));
   return I?.npcInRange ? I.npcInRange(a, ac, I.rectOf(b, bc), b) : Math.hypot(ac.x - bc.x, ac.y - bc.y) <= 140;
 }
+// FF9's card-player mark is seen from across the street, not only at the NPC's feet (there the Card Duel button takes over)
+const IDLE_MARK_GRID = 8;
+function inSight(a, b) {
+  const ac = centerOf(a, pos.get(a.id)), bc = centerOf(b, pos.get(b.id));
+  return Math.hypot(ac.x - bc.x, ac.y - bc.y) <= IDLE_MARK_GRID * (canvas?.grid?.size || 100);
+}
 let queued = false;
 function queue() { if (queued) return; queued = true; requestAnimationFrame(() => requestAnimationFrame(async () => { queued = false; await scan(); })); }
 
@@ -180,14 +222,16 @@ async function scan() {
     const mine = camp && !game.user.isGM ? [cameraRuntime()?.getFollowToken?.()].filter((t) => t?.actor) : tokens.filter((t) => party.has(t.actor.id));
     const busy = !!myDuel();
     const unlocked = faUnlocked();
-    const npcMap = new Map(), pvpMap = new Map(), watchMap = new Map();
+    const npcMap = new Map(), pvpMap = new Map(), watchMap = new Map(), markMap = new Map();
 
-    // NPC duelists
-    if (!busy && unlocked && (await canChallengeNpc())) {
+    // NPC duelists (in reach: the Card Duel button; within sight: the card-player mark)
+    if (!busy && unlocked) {
+      const can = await canChallengeNpc();
       for (const t of tokens) {
         const cfg = duelistOf(t.actor); if (!cfg || !storyOpen(cfg)) continue;
         if (activeDuelOf(t.actor.id)) continue;
-        if (mine.some((m) => m.id !== t.id && near(m, t))) npcMap.set(t.id, () => challengeNpc(t));
+        if (can && mine.some((m) => m.id !== t.id && near(m, t))) npcMap.set(t.id, () => challengeNpc(t));
+        else if (mine.some((m) => m.id !== t.id && inSight(m, t))) markMap.set(t.id, true);
       }
     }
     // Camp: another player's character
@@ -212,21 +256,29 @@ async function scan() {
     }
     duelBtn.apply(npcMap); pvpBtn.apply(pvpMap); watchBtn.apply(watchMap);
     place();
-    icons(tokens);
+    icons(tokens, markMap);
   } catch (e) { console.error(TAG, "scan", e); }
 }
 function place() { duelBtn.place(); pvpBtn.place(); watchBtn.place(); placeIcons(); }
 
-// ------------------------------------------------------------------ overhead "dueling" icon (every client)
-const iconEls = new Map();   // tokenId -> el
-function icons(tokens) {
-  const want = new Set();
+// ------------------------------------------------------------------ overhead icons (every client)
+// "duel": a bobbing pair of cards over anyone dueling right now.
+// "idle": FF9's card-player mark: a small still card over an NPC duelist within sight of the party (8 grid squares).
+//         It gives way to the Card Duel button once the party stands at the NPC's feet.
+const iconEls = new Map();   // tokenId -> el (el.dataset.kind)
+function icons(tokens, idleMap = new Map()) {
+  const want = new Map();
+  for (const id of idleMap.keys()) want.set(id, "idle");
   for (const s of status.sessions) for (const t of tokens) {
-    if (s.actorIds.includes(t.actor.id) || (s.npcTokenUuid && t.document?.uuid === s.npcTokenUuid)) want.add(t.id);
+    if (s.actorIds.includes(t.actor.id) || (s.npcTokenUuid && t.document?.uuid === s.npcTokenUuid)) want.set(t.id, "duel");
   }
-  for (const id of want) if (!iconEls.has(id)) {
-    const el = document.createElement("div"); el.className = "fa-duel-icon"; el.title = "Playing Fabula Arcana";
-    el.innerHTML = `<i class="fas fa-diamond"></i><i class="fas fa-diamond" style="color:#3c6e9f"></i>`;
+  for (const [id, kind] of want) {
+    const had = iconEls.get(id);
+    if (had && had.dataset.kind === kind) continue;
+    had?.remove();
+    const el = document.createElement("div"); el.dataset.kind = kind;
+    if (kind === "duel") { el.className = "fa-duel-icon"; el.title = "Playing Fabula Arcana"; el.innerHTML = `<i class="fas fa-diamond"></i><i class="fas fa-diamond" style="color:#3c6e9f"></i>`; }
+    else { el.className = "fa-duel-icon idle"; el.title = "Plays Fabula Arcana"; el.innerHTML = `<i class="fas fa-diamond"></i>`; }
     layer(ICON_LAYER_ID).appendChild(el); iconEls.set(id, el);
   }
   for (const [id, el] of iconEls) if (!want.has(id)) { el.remove(); iconEls.delete(id); }
@@ -251,6 +303,9 @@ export async function setDuelist(actorOrUuid, cfg = {}) {
     diff: cfg.diff === "skilled" ? "skilled" : "casual", style: cfg.style ?? null,
     bestOf: [1, 3, 5].includes(Number(cfg.bestOf)) ? Number(cfg.bestOf) : 1,
     quote: String(cfg.quote ?? ""), prize: cfg.prize ?? null, requiresSwitch: String(cfg.requiresSwitch ?? ""),
+    // the duel's dialogue (2026-11-25): Not now · NPC won · player won · greeting once the party has beaten them
+    declineQuote: String(cfg.declineQuote ?? ""), npcWinQuote: String(cfg.npcWinQuote ?? ""),
+    playerWinQuote: String(cfg.playerWinQuote ?? ""), rematchQuote: String(cfg.rematchQuote ?? ""),
   };
   return actor.update({ [`flags.${MODULE_ID}.${FLAG_DUELIST}`]: clean });
 }

@@ -26,6 +26,7 @@ import { installClient, currentDuel } from "./fa-client.js";
 import { installEntry, challengeNpc, challengePlayer, openChallenge, spectate, setDuelist } from "./fa-entry.js";
 import { ownedCards, grantCard, grantStarter, cardItemData } from "./fa-collection.js";
 import { cardForEnemy, rollCardDrops, FLAG_DROP } from "./fa-drops.js";
+import { installFeedback } from "./fa-feedback.js";
 
 // The rules, one idea per page (Willy's First Duel opens it; any event can, with Show Tutorial).
 const shot = (n) => `${ASSET_BASE}tutorial/fa-tutorial-${n}.webp`;
@@ -47,7 +48,7 @@ Hooks.once("init", () => {
 
 Hooks.once("ready", () => {
   if (!Engine() || !Catalog()) { console.error(TAG, "rules engine missing (fa-catalog.js / fa-engine.js not loaded)"); return; }
-  installNet(); installHost(); installClient(); installEntry();
+  installNet(); installHost(); installClient(); installEntry(); installFeedback();
   if (isHostGM()) restore();
   // ask the host for anything this client was part of (reload during a duel → the window reopens)
   const h = hostGM();

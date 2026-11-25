@@ -46,12 +46,13 @@ export function cardItemData(cid) {
   };
 }
 
-/** Give `actor` one copy of a card (no-op if it already has one). Returns { ok, created }. */
+/** Give `actor` one copy of a card (no-op if it already has one). Returns { ok, created, uuid } (uuid = the card item, for item links). */
 export async function grantCard(actor, cid) {
   if (!actor) return { ok: false, reason: "no-actor" };
-  if (ownedCards(actor).includes(cid)) return { ok: true, created: false };
-  await actor.createEmbeddedDocuments("Item", [cardItemData(cid)]);
-  return { ok: true, created: true };
+  const have = (actor.items?.contents ?? []).find((it) => cidOf(it) === cid);
+  if (have) return { ok: true, created: false, uuid: have.uuid ?? null };
+  const [doc] = (await actor.createEmbeddedDocuments("Item", [cardItemData(cid)])) ?? [];
+  return { ok: true, created: true, uuid: doc?.uuid ?? null };
 }
 
 // Starter gift (Shipping Plan v1): top a character up to three common (★) cards so they can play.

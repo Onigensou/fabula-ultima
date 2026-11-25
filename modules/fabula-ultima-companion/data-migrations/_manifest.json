@@ -788,6 +788,10 @@
     {
       "key": "2026-11-25-legacy-gear-authoring",
       "path": "data-migrations/2026-11-25-legacy-gear-authoring.js"
+    },
+    {
+      "key": "2026-11-25-fa-duel-dialogue",
+      "path": "data-migrations/2026-11-25-fa-duel-dialogue.js"
     }
   ]
 }

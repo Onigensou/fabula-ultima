@@ -155,6 +155,11 @@
   color: #3a1e06;
 }
 #oni-tp-prompt .oni-tp-msg strong { font-weight: 700; }
+/* askYesNo opts.place "low": below the middle of the screen, clear of the speaker standing at the camera's centre */
+#oni-tp-prompt.tp-low { top: 74%; }
+/* optional small line under the question (askYesNo opts.note), e.g. a card duel's ante and rules */
+#oni-tp-prompt .oni-tp-note { position: relative; margin: 4px 0 0; text-align: center; font-size: 14px; color: #6b4a22; }
+#oni-tp-prompt .oni-tp-note:empty { display: none; }
 /* Yes / No hang off the bottom-right corner */
 #oni-tp-prompt .oni-tp-actions {
   position: absolute;
@@ -179,6 +184,7 @@
   font-weight: 400;
   line-height: 1;
   letter-spacing: .8px;
+  white-space: nowrap;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
   transition: border-color .12s, color .12s, background .12s, box-shadow .12s;
@@ -561,17 +567,24 @@
 
   // The prompt box itself, shared by the operator's live prompt and the
   // read-only copy every other client watches (MirrorPrompt).
-  function buildTpPromptEl(text) {
+  // opts.labels { yes, no } renames the two buttons (default Yes / No); opts.note adds a small line under the question;
+  // opts.place "low" sits the box below the screen's middle (a speaker at the camera's centre stays visible).
+  function buildTpPromptEl(text, { labels = null, note = "", place = "" } = {}) {
     const el = document.createElement("div");
     el.id = "oni-tp-prompt";
+    if (place === "low") el.classList.add("tp-low");
     el.setAttribute("role", "dialog");
     el.innerHTML = `
       <p class="oni-tp-msg"></p>
+      <p class="oni-tp-note"></p>
       <p class="oni-tp-wait"></p>
       <div class="oni-tp-actions">
         <button type="button" class="oni-tp-choice yes">Yes</button>
         <button type="button" class="oni-tp-choice no">No</button>
       </div>`;
+    if (labels?.yes) el.querySelector(".yes").textContent = String(labels.yes);
+    if (labels?.no) el.querySelector(".no").textContent = String(labels.no);
+    if (note) el.querySelector(".oni-tp-note").textContent = String(note);
     const msg = el.querySelector(".oni-tp-msg");
     if (Array.isArray(text)) {
       const strong = document.createElement("strong");
@@ -597,16 +610,16 @@
     setTimeout(() => el.remove(), TP_PROMPT_OUT_MS + 40);
   }
 
-  function showTpPrompt(text, { mirror: mirrored = true } = {}) {
+  function showTpPrompt(text, { mirror: mirrored = true, labels = null, note = "", place = "" } = {}) {
     closeTpPrompt(false);
     ensureStyle();
 
     return new Promise((resolve) => {
-      const { el, yesBtn, noBtn } = buildTpPromptEl(text);
+      const { el, yesBtn, noBtn } = buildTpPromptEl(text, { labels, note, place });
 
       // Everyone else watches this prompt read-only; a GM watcher may answer for us.
       // mirror:false keeps it on this screen only (a camp player's own question).
-      const mirror = !mirrored ? null : globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(TP_MIRROR_KIND, { text }, {
+      const mirror = !mirrored ? null : globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(TP_MIRROR_KIND, { text, labels, note, place }, {
         onAnswer: (value) => entry.finish(value === true),
       }) ?? null;
 
@@ -680,6 +693,8 @@
   // Scene Travel), mirrored to every client the same way. text is a string or
   // [before, bold name, after]. Resolves true / false.
   // opts.mirror false: no watcher copies (a camp player fishing on their own).
+  // opts.labels { yes, no }: other button words ("Duel!" / "Not now"); opts.note: a small line under the question;
+  // opts.place "low": below the screen's middle, so a speaker at the camera's centre stays in view.
   TP.askYesNo = (text, opts) => showTpPrompt(text, opts);
 
   // The bare parchment Yes / No box, for the Event System's Confirm row
@@ -697,7 +712,7 @@
       show(ctx) {
         if (_tpPrompt) return null; // never stack over our own live prompt
         ensureStyle();
-        const { el, yesBtn, noBtn } = buildTpPromptEl(ctx.payload?.text ?? "");
+        const { el, yesBtn, noBtn } = buildTpPromptEl(ctx.payload?.text ?? "", { labels: ctx.payload?.labels, note: ctx.payload?.note, place: ctx.payload?.place });
         el.classList.add("is-watching");
         if (ctx.canOverride) el.classList.add("can-override");
         el.querySelector(".oni-tp-wait").textContent = ctx.canOverride

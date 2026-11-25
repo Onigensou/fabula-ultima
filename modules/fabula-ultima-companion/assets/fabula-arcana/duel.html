@@ -2769,7 +2769,64 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
   requestControl = () => {};
 
   // ---------- top bar ----------
-  const rb = $('#btnRestart'); if (rb){ rb.textContent = 'Leave'; rb.onclick = () => { sfx('cancel'); send({ t:'leave' }); }; }
+  // ---------- exit (approved storyboard 2026-11-25) ----------
+  // After a finished game: the result panel slides out, every card flips face down and goes home (holograms fold into
+  // a scanline), the won card rises and glints, the board dims and the theme fades, then black. The parent window
+  // (fa-client.js exitWindow 'teardown') then removes this window under the black and lifts it over the map.
+  // Leaving at any other moment (team select, mid-match) goes at once; the parent does a short fade.
+  // A click, Esc, Enter or Space skips straight to the black.
+  let EXITING = false;
+  function exitDuel(){
+    if (EXITING) return;
+    EXITING = true;
+    if (!S || S.phase !== 'ended' || RM()) return send({ t:'leave' });
+    const T = [], at = (ms, fn) => T.push(setTimeout(fn, ms));
+    const blk = document.createElement('div');
+    Object.assign(blk.style, { position:'fixed', inset:'0', background:'#000', opacity:'0', zIndex:'100000', pointerEvents:'auto', cursor:'pointer' });
+    document.body.appendChild(blk);
+    let finished = false;
+    const finish = () => { if (finished) return; finished = true; T.forEach(clearTimeout);
+      document.removeEventListener('keydown', onKey, true);
+      blk.style.transition = 'opacity .18s'; blk.style.opacity = '1';
+      setTimeout(() => send({ t:'leave', teardown:true }), 200); };
+    const onKey = e => { if (['Escape','Enter',' '].includes(e.key)){ e.preventDefault(); e.stopPropagation(); finish(); } };
+    blk.addEventListener('pointerdown', e => { e.preventDefault(); finish(); });
+    document.addEventListener('keydown', onKey, true);
+    // 0 ms: the result panel and the end box go
+    document.querySelectorAll('.ovl').forEach(o => o.classList.add('out'));
+    const endBox = document.querySelector('.win.end'); if (endBox){ endBox.style.transition = 'opacity .45s, transform .45s'; endBox.style.opacity = '0'; endBox.style.transform = 'translateY(10px)'; }
+    // 300 ms: cards home, 70 ms apart; theirs up, yours down
+    at(300, () => { sfx('flip', 0.7, 0);
+      document.querySelectorAll('.hand').forEach(h => { h.style.transition = 'opacity .35s'; h.style.opacity = '0'; });
+      [...document.querySelectorAll('.slot')].forEach((el, i) => {
+        const theirs = el.dataset.s === '1', k = Number(el.dataset.i) || 0;
+        setTimeout(() => {
+          const h = el.querySelector('.holo');
+          if (h){ h.style.transformOrigin = '50% 100%'; h.style.transition = 'transform .3s ease-in, opacity .3s ease-in'; h.style.transform = 'translateX(-50%) scaleY(.04)'; h.style.opacity = '0'; }
+          setTimeout(() => { el.style.transition = 'transform .45s cubic-bezier(.5,0,.75,0), opacity .45s ease-in';
+            el.style.transform = `translateY(${theirs ? -140 : 140}%) rotate(${(k - 1) * 8}deg) scale(.85)`; el.style.opacity = '0'; }, 120);
+        }, k * 70 + (theirs ? 35 : 0));
+      });
+    });
+    // 700 ms: the won card rises to the centre and glints (a player who won the ante only)
+    const won = !spectator() && NET.reward && NET.reward.cid && CARDS[NET.reward.cid] ? NET.reward.cid : null;
+    if (won) at(700, () => {
+      const pc = document.createElement('div'); pc.className = 'card';
+      pc.style.cssText = `--ec:var(--e-${CARDS[won].el});position:fixed;left:50%;top:46%;z-index:99999;width:clamp(150px,18vw,210px);transform:translate(-50%,-50%) scale(0);transition:transform .5s cubic-bezier(.2,1.4,.4,1),opacity .4s;pointer-events:none;overflow:hidden`;
+      pc.innerHTML = cardHTML(won) + '<div style="position:absolute;inset:0;background:linear-gradient(110deg,#fff0 30%,#fffc 50%,#fff0 70%);transform:translateX(-130%);transition:transform .6s"></div>';
+      document.body.appendChild(pc); sfx('shard', 0.8, 0);
+      requestAnimationFrame(() => { pc.style.transform = 'translate(-50%,-50%) scale(1)'; });
+      setTimeout(() => { const g = pc.lastElementChild; if (g) g.style.transform = 'translateX(130%)'; }, 380);
+      setTimeout(() => { pc.style.transform = 'translate(-50%,60%) scale(.45)'; pc.style.opacity = '0'; }, 450 + 380);
+    });
+    // 1100 ms: the board dims, the theme fades
+    at(1100, () => { const app = $('#app'); if (app){ app.style.transition = 'filter .4s'; app.style.filter = 'brightness(.45)'; }
+      if (MUS.gain && SND.ctx){ const t = SND.ctx.currentTime; MUS.gain.gain.cancelScheduledValues(t); MUS.gain.gain.setTargetAtTime(0, t, 0.35); } });
+    // 1500 ms: to black, then the parent takes over at 1800 ms
+    at(1500, () => { blk.style.transition = 'opacity .3s ease-in'; blk.style.opacity = '1'; });
+    at(1800, () => { if (finished) return; finished = true; document.removeEventListener('keydown', onKey, true); send({ t:'leave', teardown:true }); });
+  }
+  const rb = $('#btnRestart'); if (rb){ rb.textContent = 'Leave'; rb.onclick = () => { sfx('cancel'); exitDuel(); }; }
   surrender = function(){ if (!S || S.phase === 'ended' || S.phase === 'anim' || spectator()) return; sfx('cancel'); send({ t:'surrender' }); };
   const _sync = syncSurrender;
   syncSurrender = function(){ _sync(); if (spectator()){ const b = $('#btnSurrender'); if (b) b.hidden = true; } };
@@ -3063,7 +3120,7 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
   NET.rematch = { me:false, opp:false, oppLeft:false };
   endButtons = function(){
     const sr = S.series, more = sr && sr.bestOf > 1 && !sr.over, R = NET.rematch;
-    const leave = { id:'ob-leave', label: spectator() ? 'Close' : 'Leave', cancel:true, act:() => send({ t:'leave' }) };
+    const leave = { id:'ob-leave', label: spectator() ? 'Close' : 'Leave', cancel:true, act:() => exitDuel() };
     if (spectator()) return { note:'', btns:[leave] };
     if (more) return { note:'', btns:[
       NET.nextSent ? { id:'ob-next', label:`Waiting for ${NET.oppName}…`, go:true, disabled:true } : { id:'ob-next', label:`Next game (Game ${sr.game + 1})`, go:true, act:() => { NET.nextSent = true; send({ t:'next' }); fillEndButtons(); renderPicker(); } }, leave] };

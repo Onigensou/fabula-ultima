@@ -13,6 +13,7 @@
 import { TAG, MODULE_ID, FLAG_DUELIST, FLAG_BLOCK, FLAG_TEAMS, SETTING_SESSIONS, Engine, Catalog, hostGM, uid } from "./fa-const.js";
 import { send, on } from "./fa-net.js";
 import { ownedCards, grantCard, grantStarter, canPlay } from "./fa-collection.js";
+import { cardLine, starterLine, say, markBeaten, npcKeyOf } from "./fa-feedback.js";
 
 const sessions = new Map();
 const runtime = new Map();              // sid -> { timer, ai:[t,t], inviteTimer }
@@ -221,9 +222,27 @@ async function onGameEnd(s) {
   if (!s.series.over) return;
   s.over = true; releaseSpectators(s);
   if (s.kind === "npc" && s.series.winner === 0 && s.prize) {
-    try { const a = game.actors.get(s.seats[0].actorId); const r = await grantCard(a, s.prize.cid); if (r.ok) s.reward = { cid: s.prize.cid, created: r.created }; }
+    try {
+      const a = game.actors.get(s.seats[0].actorId); const r = await grantCard(a, s.prize.cid);
+      if (r.ok) s.reward = { cid: s.prize.cid, created: r.created, uuid: r.uuid ?? null };
+      // every card won in this session (a rematch resets s.reward), announced on the map after the exit
+      if (r.ok && r.created) (s.earned = s.earned || []).push({ cid: s.prize.cid, uuid: r.uuid ?? null });
+    }
     catch (e) { console.error(TAG, "ante reward", e); }
   }
+  // the party has beaten this duelist: next time they greet you with their rematch line
+  if (s.kind === "npc" && s.series.winner === 0) markBeaten(npcKeyOf({ actorId: s.npc?.actorId }));
+}
+
+// What the player sees on the map after the exit (fa-client.js playOutro): the NPC's win / loss line over its token,
+// then a System Message line per card won. Only an NPC duel the player finished (an event's duel has its own story).
+function outroFor(s, finished) {
+  if (s.kind !== "npc" || s.event) return null;
+  const L = s.lines || {};
+  const line = finished ? (s.series.winner === 0 ? L.playerWin : s.series.winner === 1 ? L.npcWin : "") || "" : "";
+  const rewards = (s.earned || []).map((r) => cardLine("won", s.seats[0].name, r.cid, r.uuid));
+  if (!line && !rewards.length) return null;
+  return { tokenUuid: s.npc?.tokenUuid ?? null, actorId: s.npc?.actorId ?? null, line, rewards };
 }
 
 async function submit(s, seat, choice) {
@@ -356,6 +375,7 @@ async function rematch(s, seat) {
 
 async function leave(s, seat, userId) {
   const t = s.seats[seat], other = s.seats[1 - seat];
+  const finished = !!(s.over && s.series.over);   // decided by play, before this leave concedes anything
   if (s.event && !s.over) {   // leaving an unfinished event duel never counts as a loss
     s.eventResult = s.eventResult === "draw" && (!s.match || s.match.phase === "ended") ? "draw" : "cancel";
     s.eventFrozen = true;
@@ -368,7 +388,7 @@ async function leave(s, seat, userId) {
   // One player leaving ends the duel for everyone (playtest 11-17): the opponent's window closes with it,
   // in the lobby, mid-match or on the result screen, instead of sitting on alone.
   if (other.userId && other.userId !== userId) notify(other.userId, `${t.name} left the duel.`);
-  send(userId, "close", {}, s.sid);
+  send(userId, "close", { outro: seat === 0 ? outroFor(s, finished) : null }, s.sid);
   t.userId = null; t.left = true;
   closeSession(s);
 }
@@ -472,7 +492,7 @@ async function createNpc(userId, { challengerActorId, npcActorId, npcTokenUuid, 
   npcActor = npcActor || game.actors.get(npcActorId) || null;
   if (!npcActor && !practice) return notify(userId, "That challenger couldn't be found.", "warn");
   const cfg = npcConfig(npcActor, event ? { teams: event.team ? [event.team] : [], diff: event.diff, style: event.style, bestOf: event.bestOf, quote: event.quote } : practice);
-  if (!canPlay(ownedCards(actor))) { const given = await grantStarter(actor); if (given.length) notify(userId, `${actor.name} received a starter set of ${given.length} Fabula Arcana card${given.length > 1 ? "s" : ""}.`); }
+  if (!canPlay(ownedCards(actor))) { const given = await grantStarter(actor); if (given.length) say(starterLine(actor.name, given)); }
   const prizeCid = cfg.prize && Catalog().CARDS[cfg.prize] && !ownedCards(actor).includes(cfg.prize) ? cfg.prize : null;
   const s = {
     sid: uid(), kind: "npc", hostId: game.user.id, createdAt: Date.now(), bestOf: cfg.bestOf, series: E().Series.create(cfg.bestOf),
@@ -484,6 +504,8 @@ async function createNpc(userId, { challengerActorId, npcActorId, npcTokenUuid, 
     prize: prizeCid ? { cid: prizeCid, label: "Ante card", hint: cfg.bestOf > 1 ? "Win the series to take it." : "Win the duel to take it." } : null,
     npc: { actorId: npcActor?.id ?? null, tokenUuid: npcTokenUuid ?? null }, pending: false, over: false, reward: null,
     event: event?.reqId ?? null, eventResult: null,
+    // the duelist's after-duel lines (fa-entry.js setDuelist), said over its token once the player is back on the map
+    lines: event || practice ? null : { npcWin: String(cfg.npcWinQuote ?? ""), playerWin: String(cfg.playerWinQuote ?? "") }, earned: [],
   };
   sessions.set(s.sid, s);
   send(userId, "open", { role: "player", hostId: s.hostId }, s.sid);
@@ -538,7 +560,7 @@ async function acceptPvp(s, userId) {
   send(s.seats[0].userId, "invite-result", { ok: true }, s.sid);
   for (const t of s.seats) {
     const a = game.actors.get(t.actorId);
-    if (a && !canPlay(ownedCards(a))) { const g = await grantStarter(a); if (g.length) notify(t.userId, `${a.name} received a starter set of ${g.length} Fabula Arcana cards.`); }
+    if (a && !canPlay(ownedCards(a))) { const g = await grantStarter(a); if (g.length) say(starterLine(a.name, g)); }
   }
   const block = rulesBlocker(s.format, s.seats.map((t) => game.actors.get(t.actorId)).filter(Boolean));
   if (block) {                 // a fresh starter set can't meet these rules: call the duel off on both sides
