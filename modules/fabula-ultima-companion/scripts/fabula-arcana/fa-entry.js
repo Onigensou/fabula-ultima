@@ -76,14 +76,19 @@ const hostId = () => hostGM()?.id ?? null;
 // underneath. Duel! starts it; Not now gets the NPC's decline line. The box is mirrored to the table like a door prompt
 // (a GM can answer for the party); at camp it stays on this player's screen.
 let talking = false;
-const speak = (token, text) => {
-  if (!text || !token?.id) return;
-  try { globalThis.FU?.Dialog?.show?.({ tokenId: token.id, text: String(text), broadcast: true }); } catch (e) { console.warn(TAG, "duel line", e); }
+// resolves to the bubble's payload (its bubbleId closes it on every client: FU.DialogUI.control)
+const speak = async (token, text) => {
+  if (!text || !token?.id) return null;
+  try { return (await globalThis.FU?.Dialog?.show?.({ tokenId: token.id, text: String(text), broadcast: true })) ?? null; } catch (e) { console.warn(TAG, "duel line", e); return null; }
+};
+// The challenge bubble must not hang over the duel window (it sits above it): close it once the party says Duel!
+const unsay = async (line) => {
+  try { const p = await line; if (p?.bubbleId) globalThis.FU?.DialogUI?.control?.(p.bubbleId, "close"); } catch (e) { console.warn(TAG, "close duel line", e); }
 };
 async function duelTalk(token, actor) {
   const cfg = duelistOf(token?.actor) || {};
   const beaten = hasBeaten(npcKeyOf({ actorId: token?.actor?.id }));
-  speak(token, (beaten && cfg.rematchQuote) || cfg.quote || "");
+  const line = speak(token, (beaten && cfg.rematchQuote) || cfg.quote || "");
   const ask = globalThis.TeleporterSystem?.askYesNo;
   if (typeof ask !== "function") return true;   // no prompt box loaded: straight in, as before
   const C = Catalog();
@@ -93,6 +98,7 @@ async function duelTalk(token, actor) {
   const name = token?.document?.name || token?.actor?.name || "the challenger";
   const yes = await ask(["Card duel with ", name, "?"], { labels: { yes: "Duel!", no: "Not now" }, note, place: "low", mirror: !isCampScene(canvas?.scene) });
   if (!yes) speak(token, cfg.declineQuote || "");
+  else await unsay(line);
   return !!yes;
 }
 
