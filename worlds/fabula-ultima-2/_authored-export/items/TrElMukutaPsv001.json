@@ -1,0 +1,68 @@
+{
+  "_id": "TrElMukutaPsv001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795628723113,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "trioSteals": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Mukuta (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "TrElMukutaCrown1",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Max HP <strong>+12%</strong>.</p></li><li><p>Max MP <strong>+12%</strong>.</p></li><li><p>You deal <strong>6%</strong> more damage.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "1.06",
+          "damage_operation": "multiply",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "mk_bonus"
+        }
+      },
+      "id": "TrElMukutaPsv001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Mukuta (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "mk_bonus",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Max HP <strong>+12%</strong>.</p></li><li><p>Max MP <strong>+12%</strong>.</p></li><li><p>You deal <strong>6%</strong> more damage.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.TrElMukutaPsv001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "TrElMukutaPsv001"
+  },
+  "type": "equippableItem"
+}

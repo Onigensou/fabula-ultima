@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Wise, perhaps. Return when you are ready.",
+        "diff": "skilled",
+        "npcWinQuote": "A ruler must win every battle, even the small ones.",
+        "playerWinQuote": "Splendid. Eisendrache owes you yet another debt.",
+        "prize": "seigfried",
+        "prizes": [
+          "seigfried"
+        ],
+        "quote": "You would challenge your king? Very well. Show me your resolve.",
+        "rematchQuote": "You return. Good. A king does not fear a rematch.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "seigfried",
+            "archer",
+            "wolf"
+          ]
+        ]
+      },
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0
     },

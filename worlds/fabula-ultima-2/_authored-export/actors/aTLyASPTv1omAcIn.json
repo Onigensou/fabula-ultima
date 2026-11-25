@@ -33,6 +33,29 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Shy? How cute. I'll be waiting.",
+        "diff": "casual",
+        "npcWinQuote": "Burned already? Come back when you can handle the heat.",
+        "playerWinQuote": "Ooh, you're hotter than I thought. Keep it, you've earned it.",
+        "prize": "roselie",
+        "prizes": [
+          "roselie",
+          "inferex"
+        ],
+        "quote": "Want to play with fire, darling? Let's see how long you last.",
+        "rematchQuote": "Back for more? I do love persistence.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "roselie",
+            "inferex",
+            "pyrefly"
+          ]
+        ]
+      },
       "layoutRef": "d5b317282d1661b5",
       "opp_lucky": 0
     },
@@ -1676,6 +1699,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.4.2"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": true
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -1701,7 +1727,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>When performing <strong>Gadget:</strong> <strong>Alchemy </strong>(<strong>Tinkerer</strong>), you may spends <strong>20</strong> Mind Points to <strong>reroll 1 </strong>of the dices.</p></li><li><p>When performing <strong>Traveling Cook </strong>(<strong>Gourmet</strong>), you may spends <strong>20</strong> Mind Points to change <strong>1 ingredient</strong> into any other type of <strong>ingredient</strong>.</p></li></ul>",
+          "description": "<ul><li><p>When you use <strong>Gadget: Alchemy</strong>, you may spend <strong>20</strong> MP to reroll one die.</p></li><li><p>When you use <strong>Traveling Cook</strong>, you may spend <strong>20</strong> MP to change one ingredient into any other type.</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -2081,6 +2107,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": true
         }
       },
       "folder": null,
@@ -2116,20 +2145,20 @@
             "1": {
               "$deleted": false,
               "chain_steps": "cat_10_mp, cat_10_dmg",
-              "condition_formula": "SL >= 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10))",
+              "condition_formula": "SL >= 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "prompt_number",
               "effect_label": "cat_prompt",
               "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
-              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor(((ACTION_IS_FREE_CAST == 0) * (CUR_MP - ACTION_COST_MP) + (ACTION_IS_FREE_CAST == 1) * (AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS - ACTION_COST_MP)) / 10) * 10 )",
+              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor(((ACTION_IS_FREE_CAST == 0) * (CUR_MP - ACTION_COST_MP) + (ACTION_IS_FREE_CAST == 1) * (AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS - ACTION_COST_MP)) / ((100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100) / 10) * 10 )",
               "prompt_min": "10",
               "prompt_step": "10",
               "prompt_var": "overcharge"
             },
             "2": {
               "$deleted": false,
-              "cost_amount": "VAR_OVERCHARGE",
+              "cost_amount": "ceil((VAR_OVERCHARGE) * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)",
               "cost_operation": "add",
               "cost_resource": "mp",
               "effect_kind": "adjust_cost",
@@ -2146,7 +2175,7 @@
             "4": {
               "$deleted": false,
               "chain_steps": "cat_20_mp, cat_20_dmg",
-              "condition_formula": "SL >= 2 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 20) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 20))",
+              "condition_formula": "SL >= 2 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(20 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(20 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "chain",
@@ -2154,7 +2183,7 @@
             },
             "5": {
               "$deleted": false,
-              "cost_amount": "20",
+              "cost_amount": "ceil((20) * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)",
               "cost_operation": "add",
               "cost_resource": "mp",
               "effect_kind": "adjust_cost",
@@ -2171,7 +2200,7 @@
             "7": {
               "$deleted": false,
               "chain_steps": "cat_30_mp, cat_30_dmg",
-              "condition_formula": "SL >= 3 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 30) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 30))",
+              "condition_formula": "SL >= 3 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(30 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(30 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "chain",
@@ -2179,7 +2208,7 @@
             },
             "8": {
               "$deleted": false,
-              "cost_amount": "30",
+              "cost_amount": "ceil((30) * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)",
               "cost_operation": "add",
               "cost_resource": "mp",
               "effect_kind": "adjust_cost",
@@ -2207,7 +2236,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10))",
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
               "reaction_effect_ref": "cat_root",
               "reaction_passive_mode": "ask",
               "reaction_source": "self",

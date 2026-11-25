@@ -10,6 +10,66 @@
   },
   "effects": [
     {
+      "_id": "GrAuFairyAe00000",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795628702707,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "aeBuffDebuffWhen(2)"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "GrAuFairyAe00000",
+          "originalParentId": "G8fBxPWSabEzD5V6",
+          "originalUuid": "Item.G8fBxPWSabEzD5V6.ActiveEffect.GrAuFairyAe00000"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": "ae"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Fairy Tunic",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "kRkxpl5whCRu0li4",
       "_stats": {
         "compendiumSource": null,
@@ -257,7 +317,9 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "gearAuthoring": true,
+      "gearBalance": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -328,7 +390,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>As long as you are affected by one or more spells with a duration of “Scene”, you gain a <strong>+2</strong> bonus to <strong>Magic Defense</strong>.</li>\n</ul>",
+      "description": "<ul><li><p><strong>+2 MDEF</strong> while you have a buff or debuff.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

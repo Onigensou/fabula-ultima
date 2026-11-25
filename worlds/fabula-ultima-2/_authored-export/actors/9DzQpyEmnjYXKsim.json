@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Suit yourself. The rooms are upstairs.",
+        "diff": "casual",
+        "npcWinQuote": "House wins. Next drink's on you.",
+        "playerWinQuote": "Fair game. Take it, on the house.",
+        "prize": "thomas",
+        "prizes": [
+          "thomas"
+        ],
+        "quote": "A game before bed? Pull up a chair.",
+        "rematchQuote": "Another hand? Sure, the night's still young.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "thomas",
+            "fulgimite",
+            "wolf"
+          ]
+        ]
+      },
       "layoutRef": "36f07356c8e6b280",
       "opp_lucky": 0
     },

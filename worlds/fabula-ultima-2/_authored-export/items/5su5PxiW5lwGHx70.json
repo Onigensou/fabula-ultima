@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": true
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
@@ -35,6 +38,99 @@
       "defense_target_type": "def",
       "description": "<p>When you cast an <strong>instantaneous</strong> spell, if you have an <strong>arcane</strong> weapon equipped, <strong>you may increase the spell's total MP cost</strong> by up to <strong>【SL × 10】</strong> Mind Points. If you do so and the spell deals damage to one or more creatures, it will deal 5 extra damage to each creature for every 10 Mind Points by which you increased its total MP cost.</p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "cat_prompt, cat_mp, cat_dmg",
+          "effect_kind": "chain",
+          "effect_label": "cat_root",
+          "menu_option_descriptions": "Spend 10 MP for +5 damage to each creature|Spend 20 MP for +10 damage to each creature|Spend 30 MP for +15 damage to each creature",
+          "menu_option_labels": "+10 MP → +5 damage|+20 MP → +10 damage|+30 MP → +15 damage",
+          "menu_option_refs": "cat_10, cat_20, cat_30",
+          "menu_subtitle": "Increase the spell's MP cost for extra damage",
+          "menu_title": "Cataclysm — Overcharge"
+        },
+        "1": {
+          "$deleted": false,
+          "chain_steps": "cat_10_mp, cat_10_dmg",
+          "condition_formula": "SL >= 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Not enough MP",
+          "effect_kind": "prompt_number",
+          "effect_label": "cat_prompt",
+          "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
+          "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor(((ACTION_IS_FREE_CAST == 0) * (CUR_MP - ACTION_COST_MP) + (ACTION_IS_FREE_CAST == 1) * (AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS - ACTION_COST_MP)) / ((100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100) / 10) * 10 )",
+          "prompt_min": "10",
+          "prompt_step": "10",
+          "prompt_var": "overcharge"
+        },
+        "2": {
+          "$deleted": false,
+          "cost_amount": "ceil((VAR_OVERCHARGE) * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)",
+          "cost_operation": "add",
+          "cost_resource": "mp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "cat_mp"
+        },
+        "3": {
+          "$deleted": false,
+          "damage_amount": "VAR_OVERCHARGE / 2",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "cat_dmg"
+        },
+        "4": {
+          "$deleted": false,
+          "chain_steps": "cat_20_mp, cat_20_dmg",
+          "condition_formula": "SL >= 2 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(20 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(20 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Not enough MP",
+          "effect_kind": "chain",
+          "effect_label": "cat_20"
+        },
+        "5": {
+          "$deleted": false,
+          "cost_amount": "ceil((20) * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)",
+          "cost_operation": "add",
+          "cost_resource": "mp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "cat_20_mp"
+        },
+        "6": {
+          "$deleted": false,
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "cat_20_dmg"
+        },
+        "7": {
+          "$deleted": false,
+          "chain_steps": "cat_30_mp, cat_30_dmg",
+          "condition_formula": "SL >= 3 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(30 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(30 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Not enough MP",
+          "effect_kind": "chain",
+          "effect_label": "cat_30"
+        },
+        "8": {
+          "$deleted": false,
+          "cost_amount": "ceil((30) * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)",
+          "cost_operation": "add",
+          "cost_resource": "mp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "cat_30_mp"
+        },
+        "9": {
+          "$deleted": false,
+          "damage_amount": "15",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "cat_30_dmg"
+        }
+      },
       "heroic_requirement": "",
       "ignore_hr": false,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/2000.gif",
@@ -42,13 +138,22 @@
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": false,
+      "isReaction": true,
       "isZeroPower": false,
       "level": "1",
       "max_level": "3",
       "name": "Cataclysm",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
+          "reaction_effect_ref": "cat_root",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

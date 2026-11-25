@@ -33,6 +33,29 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Another time, then. The village needs me anyway.",
+        "diff": "skilled",
+        "npcWinQuote": "Patience wins wars, young ones. And card games.",
+        "playerWinQuote": "Well fought. Ruhig is in good hands with you around.",
+        "prize": "albero",
+        "prizes": [
+          "albero",
+          "rgolem"
+        ],
+        "quote": "Hoh, a game of cards? This old man still has a trick or two.",
+        "rematchQuote": "Again? Ho ho, you remind me of my younger days.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "albero",
+            "rgolem",
+            "wolf"
+          ]
+        ]
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false

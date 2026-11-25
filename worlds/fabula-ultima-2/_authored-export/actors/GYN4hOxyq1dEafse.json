@@ -35,6 +35,29 @@
       "damage_taken_mult": 1,
       "draftName": "Pomme (Ruhig)",
       "draftRuhig": "claude-2026-11-20-ruhig",
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Aww! Fine, I'll go practice my throw!",
+        "diff": "casual",
+        "npcWinQuote": "Apple power! Did you see that, Rume?!",
+        "playerWinQuote": "Waaah! Okay, okay, you earned it! Here!",
+        "prize": "pomme",
+        "prizes": [
+          "pomme",
+          "inferex"
+        ],
+        "quote": "Cards?! Yes! Apples beat grapes AND you, let's go!",
+        "rematchQuote": "Rematch! Rematch! I brought extra apples!",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "pomme",
+            "salamander",
+            "inferex"
+          ]
+        ]
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false

@@ -1,0 +1,244 @@
+{
+  "_id": "GrAuBikerPsv0000",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795628699631,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "GrAuBikerManaAe0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "crossScene": false,
+          "directorPermanent": true,
+          "gearAuthoring": "ae"
+        }
+      },
+      "img": null,
+      "name": "Mana Form",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "GrAuBikerSteelAe",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "crossScene": false,
+          "directorPermanent": true,
+          "gearAuthoring": "ae"
+        }
+      },
+      "img": null,
+      "name": "Steel Form",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/equipment/waist/belt-armored-buckle-steel.webp",
+  "name": "Biker Suit (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "HlSNO4jVVSMkSCT7",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>As an action, change into <strong>Steel Form</strong>, <strong>Mana Form</strong> or <strong>Formless</strong>.</p></li><li><p>While Formless, at the start of your turn you may change into Steel Form or Mana Form for free.</p></li><li><p><strong>Formless:</strong> DEF equals your DEX die, MDEF your INS die.</p></li><li><p><strong>Steel Form:</strong> DEF <strong>16</strong>. Spells deal <strong>10</strong> extra damage to you.</p></li><li><p><strong>Mana Form:</strong> MDEF <strong>16</strong>. Attacks deal <strong>10</strong> extra damage to you.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "bk_free",
+          "menu_option_descriptions": "DEF 16. Spells deal 10 extra damage to you.|MDEF 16. Attacks deal 10 extra damage to you.",
+          "menu_option_labels": "Steel Form|Mana Form",
+          "menu_option_refs": "bk_steel, bk_mana",
+          "menu_subtitle": "Change form for free.",
+          "menu_title": "Biker Suit"
+        },
+        "1": {
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "incoming",
+          "effect_kind": "adjust_damage",
+          "effect_label": "bk_spellhit"
+        },
+        "2": {
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "incoming",
+          "effect_kind": "adjust_damage",
+          "effect_label": "bk_atkhit"
+        },
+        "3": {
+          "chain_steps": "bk_put_steel, bk_drop_mana",
+          "effect_kind": "chain",
+          "effect_label": "bk_steel"
+        },
+        "4": {
+          "chain_steps": "bk_put_mana, bk_drop_steel",
+          "effect_kind": "chain",
+          "effect_label": "bk_mana"
+        },
+        "5": {
+          "chain_steps": "bk_drop_steel, bk_drop_mana",
+          "effect_kind": "chain",
+          "effect_label": "bk_formless"
+        },
+        "6": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Item.GrAuBikerPsv0000.ActiveEffect.GrAuBikerSteelAe",
+          "effect_kind": "apply_ae",
+          "effect_label": "bk_put_steel",
+          "target_ref": "self"
+        },
+        "7": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Item.GrAuBikerPsv0000.ActiveEffect.GrAuBikerManaAe0",
+          "effect_kind": "apply_ae",
+          "effect_label": "bk_put_mana",
+          "target_ref": "self"
+        },
+        "8": {
+          "ae_template_ref": "Steel Form",
+          "condition_formula": "AE_COUNT_STEEL_FORM > 0",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "bk_drop_steel",
+          "target_ref": "self"
+        },
+        "9": {
+          "ae_template_ref": "Mana Form",
+          "condition_formula": "AE_COUNT_MANA_FORM > 0",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "bk_drop_mana",
+          "target_ref": "self"
+        }
+      },
+      "id": "GrAuBikerPsv0000",
+      "img": "icons/equipment/waist/belt-armored-buckle-steel.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Biker Suit (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "AE_COUNT_STEEL_FORM == 0 && AE_COUNT_MANA_FORM == 0",
+          "reaction_effect_ref": "bk_free",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        },
+        "1": {
+          "condition_formula": "AE_COUNT_STEEL_FORM > 0 && ACTION_IS_SPELL == 1",
+          "reaction_effect_ref": "bk_spellhit",
+          "reaction_passive_mode": "on",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_targeted_by_action"
+        },
+        "2": {
+          "condition_formula": "AE_COUNT_MANA_FORM > 0 && ACTION_IS_ATTACK == 1",
+          "reaction_effect_ref": "bk_atkhit",
+          "reaction_passive_mode": "on",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_targeted_by_action"
+        },
+        "3": {
+          "reaction_effect_ref": "bk_formless",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_end"
+        },
+        "4": {
+          "reaction_effect_ref": "bk_formless",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_unequips_item"
+        }
+      },
+      "skill_description": "<ul><li><p>As an action, change into <strong>Steel Form</strong>, <strong>Mana Form</strong> or <strong>Formless</strong>.</p></li><li><p>While Formless, at the start of your turn you may change into Steel Form or Mana Form for free.</p></li><li><p><strong>Formless:</strong> DEF equals your DEX die, MDEF your INS die.</p></li><li><p><strong>Steel Form:</strong> DEF <strong>16</strong>. Spells deal <strong>10</strong> extra damage to you.</p></li><li><p><strong>Mana Form:</strong> MDEF <strong>16</strong>. Attacks deal <strong>10</strong> extra damage to you.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GrAuBikerPsv0000"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GrAuBikerPsv0000"
+  },
+  "type": "equippableItem"
+}

@@ -12,6 +12,10 @@
     "custom-system-builder": {
       "version": "3.2.4"
     },
+    "fabula-ultima-companion": {
+      "gearAuthoring": true,
+      "gearBalance": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "accessory",
@@ -79,7 +83,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>You may score a <strong>Critical Success&nbsp;</strong>even when your roll is lower than 6</li>\n<li>When you roll a <strong>Fumble,&nbsp;</strong>You may choose to reroll <strong>once.</strong></li>\n</ul>",
+      "description": "<ul><li><p>When you Fumble, you may reroll once. Once per round. (You still gain the Fabula Point)</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -109,7 +113,7 @@
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Uncommon",
+      "item_rarity": "Common",
       "item_type": "accessory",
       "mimic_ef": "100",
       "monster_ef": "100",

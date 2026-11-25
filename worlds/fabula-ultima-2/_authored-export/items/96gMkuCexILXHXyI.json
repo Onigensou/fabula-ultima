@@ -188,7 +188,9 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "gearAuthoring": true,
+      "gearBalance": true
     },
     "fucompanion": {
       "itemMigratorBackup": {

@@ -13,6 +13,28 @@
       "version": "4.5.0"
     },
     "fabula-ultima-companion": {
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "No sweat. The road's long, we'll meet again.",
+        "diff": "skilled",
+        "npcWinQuote": "Ha! Experience wins it.",
+        "playerWinQuote": "Nice! Haven't lost like that since Artia. It's yours.",
+        "prize": "guy",
+        "prizes": [
+          "guy"
+        ],
+        "quote": "Cards? I've played these on three continents. Deal me in.",
+        "rematchQuote": "Round two? Let's go!",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "guy",
+            "roper",
+            "archer"
+          ]
+        ]
+      },
       "layoutRef": "13564577cf6c2a2f"
     },
     "theatre": {

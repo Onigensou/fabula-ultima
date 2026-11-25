@@ -8,9 +8,81 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "GrAuOnionAe00000",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795628708214,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_hp",
+          "mode": 2,
+          "priority": 20,
+          "value": "aeClassCount(2)"
+        },
+        {
+          "key": "max_mp",
+          "mode": 2,
+          "priority": 20,
+          "value": "aeClassCount(2)"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "GrAuOnionAe00000",
+          "originalParentId": "rp6c8fADXzWLAt68",
+          "originalUuid": "Item.rp6c8fADXzWLAt68.ActiveEffect.GrAuOnionAe00000"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": "ae"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Ring of Onions",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": true,
+      "gearBalance": true
     },
     "fucompanion": {
       "itemMigratorBackup": {

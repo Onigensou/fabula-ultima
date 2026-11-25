@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Afraid of a little magic? Understandable.",
+        "diff": "casual",
+        "npcWinQuote": "See, Gardner? Magic Defense wins again!",
+        "playerWinQuote": "Impossible… Gardner will never let me hear the end of this.",
+        "prize": "nullis",
+        "prizes": [
+          "nullis"
+        ],
+        "quote": "Magic Defense is the true defense. My deck will prove it!",
+        "rematchQuote": "Again? My wards are ready this time.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "nullis",
+            "gardner",
+            "manaray"
+          ]
+        ]
+      },
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0
     }

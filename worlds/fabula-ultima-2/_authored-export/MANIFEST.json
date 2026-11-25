@@ -2771,6 +2771,12 @@
         "effects": 0
       },
       {
+        "id": "GrAuAlphaRegPsv0",
+        "name": "Alpha Regalia (Passive)",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "KoC4PHdQrp7r4rM9",
         "name": "Amber Pendant",
         "type": "equippableItem",
@@ -3113,6 +3119,24 @@
         "effects": 0
       },
       {
+        "id": "TrElAsuraBlade01",
+        "name": "Asura Blade",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "TrElAsuraBldPsv1",
+        "name": "Asura Blade (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "TrElAsuraStrike1",
+        "name": "Asura Strike",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "NzmcGwUf0XAzSHjl",
         "name": "Atmokinesis",
         "type": "equippableItem",
@@ -3197,6 +3221,12 @@
         "effects": 2
       },
       {
+        "id": "GrAuAvalonPsv000",
+        "name": "Avalon (Passive)",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "i2iiWtzT0FMQHRqj",
         "name": "Avatar of Vengeance",
         "type": "equippableItem",
@@ -3249,6 +3279,12 @@
         "name": "Ball Gag",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "GrAuBallGagPsv00",
+        "name": "Ball Gag (Passive)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "bDcB3B3MJFkuK8em",
@@ -3565,6 +3601,12 @@
       {
         "id": "HlSNO4jVVSMkSCT7",
         "name": "Biker Suit",
+        "type": "equippableItem",
+        "effects": 3
+      },
+      {
+        "id": "GrAuBikerPsv0000",
+        "name": "Biker Suit (Passive)",
         "type": "equippableItem",
         "effects": 2
       },
@@ -4011,6 +4053,12 @@
         "name": "Brief Respite",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "GrAuBriefPsv0000",
+        "name": "Brief Respite (Passive)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "Kk5SQoxbLgGWu9m6",
@@ -4613,6 +4661,12 @@
         "effects": 0
       },
       {
+        "id": "GrAuCopycatPsv00",
+        "name": "Copycat (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "6pz9dnHgIYwPvJxW",
         "name": "Corpse Explosion",
         "type": "equippableItem",
@@ -5057,6 +5111,12 @@
         "effects": 0
       },
       {
+        "id": "GrAuDefMatrixPsv",
+        "name": "Defense Matrix (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "cuogI34amIfQE3D5",
         "name": "Defensive Mastery",
         "type": "equippableItem",
@@ -5205,6 +5265,12 @@
         "name": "Dominatrix Leotard",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "GrAuDominaPsv000",
+        "name": "Dominatrix Leotard (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "2sLJqsT2XTEZtewC",
@@ -5747,6 +5813,12 @@
         "effects": 2
       },
       {
+        "id": "GrAuEnforcerPsv0",
+        "name": "Enforcer Uniform (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "JJoFipvJxSFs9Bk1",
         "name": "Engineer Jacket",
         "type": "equippableItem",
@@ -5918,7 +5990,7 @@
         "id": "G8fBxPWSabEzD5V6",
         "name": "Fairy Tunic",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "T0HplvOxcpR0NdWX",
@@ -5943,6 +6015,12 @@
         "name": "False Idol",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "GrAuFalseIdolPsv",
+        "name": "False Idol (Passive)",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "4Qh8e8vVf8yOwaSg",
@@ -6421,6 +6499,12 @@
       {
         "id": "fXTiW1mHRFBGSGR8",
         "name": "Gambler's Dice",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "GrAuGamblerPsv00",
+        "name": "Gambler's Dice (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7323,6 +7407,12 @@
         "name": "Hekat Shield",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "GrAuHekatPsv0000",
+        "name": "Hekat Shield (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "yo62fJfnUWRMWfc5",
@@ -8453,6 +8543,12 @@
         "effects": 0
       },
       {
+        "id": "GrAuLilDevilPsv0",
+        "name": "Little Devil (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "OSaOzEBWrArAvd3a",
         "name": "Lobster Claw",
         "type": "equippableItem",
@@ -8936,7 +9032,7 @@
         "id": "jnhWaWPLwZcPQ883",
         "name": "Mana Robe",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "ZpD1shMannaCake0",
@@ -9667,6 +9763,18 @@
       {
         "id": "fnd9BxHv1albIMpM",
         "name": "Mudfish",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "TrElMukutaCrown1",
+        "name": "Mukuta",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
+        "id": "TrElMukutaPsv001",
+        "name": "Mukuta (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10793,6 +10901,18 @@
         "effects": 0
       },
       {
+        "id": "TrElRakshArmor01",
+        "name": "Rakshasa Armor",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
+        "id": "TrElRakshArmPsv1",
+        "name": "Rakshasa Armor (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "3kBlL1O7rULlGKWg",
         "name": "Rampart",
         "type": "equippableItem",
@@ -11168,7 +11288,7 @@
         "id": "rp6c8fADXzWLAt68",
         "name": "Ring of Onions",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "8o1tS1YwcrSoe4et",
@@ -12002,7 +12122,7 @@
         "id": "g0S7SNOw5EJcJd1T",
         "name": "Slimy Jacket",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "uGTrNO3kuQNIFGrg",
@@ -13487,6 +13607,12 @@
         "effects": 1
       },
       {
+        "id": "GrAuBikerTransfo",
+        "name": "Transform",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "GqR1i9GNAx9qs6d1",
         "name": "Transquilizer Bullet",
         "type": "equippableItem",
@@ -14228,7 +14354,7 @@
         "id": "oGop1MLCHPzdpdR5",
         "name": "Witch Hat",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "xFcOrEIikOsnOMne",
@@ -15464,6 +15590,10 @@
             "name": "Ascension"
           },
           {
+            "id": "TrElAsuraLoot001",
+            "name": "Asura Blade"
+          },
+          {
             "id": "NFruWlBHrgfNSJmM",
             "name": "Asura Strike"
           },
@@ -16281,6 +16411,10 @@
           {
             "id": "HZP2Hs14kB0EgMSD",
             "name": "Hekat Shield"
+          },
+          {
+            "id": "oB0A3kA2MRaJPcHq",
+            "name": "Hekat Shield (Passive)"
           },
           {
             "id": "vBIDWhluGCjtwowh",
@@ -17939,6 +18073,10 @@
             "name": "Mudra Lance"
           },
           {
+            "id": "TrElDevaLoot0001",
+            "name": "Mukuta"
+          },
+          {
             "id": "DvRahuEclipse001",
             "name": "Rahu's Eclipse"
           },
@@ -19330,6 +19468,10 @@
             "name": "Enforcer Uniform"
           },
           {
+            "id": "TqvTh3S9pqProxGM",
+            "name": "Enforcer Uniform (Passive)"
+          },
+          {
             "id": "JAkIm3el42hfAUlX",
             "name": "Ferula"
           },
@@ -19344,6 +19486,10 @@
           {
             "id": "pTyuCsh5KMT74YLZ",
             "name": "Gambler's Dice"
+          },
+          {
+            "id": "pOtba2ec5ITzN9Vg",
+            "name": "Gambler's Dice (Passive)"
           },
           {
             "id": "cMapomI2wsoR1Gwn",
@@ -20353,6 +20499,10 @@
             "name": "Biker Suit"
           },
           {
+            "id": "KegNU7Gr3rn8BgI8",
+            "name": "Biker Suit (Passive)"
+          },
+          {
             "id": "kViMMmHc53C7FVIR",
             "name": "Black Mage Wand"
           },
@@ -20387,6 +20537,10 @@
           {
             "id": "E0SW4DBtM1iXl0Xn",
             "name": "Dominatrix Leotard"
+          },
+          {
+            "id": "TsriMkLUAO9pGqQM",
+            "name": "Dominatrix Leotard (Passive)"
           },
           {
             "id": "SmphlpFrfp2qc9dZ",
@@ -20431,6 +20585,10 @@
           {
             "id": "Z4mYkx5ZIhyNoi0o",
             "name": "Little Devil"
+          },
+          {
+            "id": "toRMWSdhBKogNvk9",
+            "name": "Little Devil (Passive)"
           },
           {
             "id": "JAvLqsR4vcIw2KZC",
@@ -20503,6 +20661,10 @@
           {
             "id": "oihNHedO9tzkRLgk",
             "name": "Tommy Gun"
+          },
+          {
+            "id": "4cMqZcFdlRnSwcYV",
+            "name": "Transform"
           },
           {
             "id": "16wzaZ1ujPtCUJOj",
@@ -24529,6 +24691,10 @@
           {
             "id": "RkRainOfArrows01",
             "name": "Rain of Arrows"
+          },
+          {
+            "id": "TrElRakshLoot001",
+            "name": "Rakshasa Armor"
           },
           {
             "id": "RkRendingOrbit01",

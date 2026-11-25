@@ -1,0 +1,68 @@
+{
+  "_id": "GrAuDefMatrixPsv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795628702954,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+  "name": "Defense Matrix (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "4OH9H2YYxr9KhhBx",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>At the start of your turn, gain <strong>5</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "set_resource",
+          "effect_label": "dm_shield",
+          "grant_amount": "5",
+          "grant_resource": "shield",
+          "target_ref": "self"
+        }
+      },
+      "id": "GrAuDefMatrixPsv",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Defense Matrix (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "dm_shield",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        }
+      },
+      "skill_description": "<ul><li><p>At the start of your turn, gain <strong>5</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GrAuDefMatrixPsv"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GrAuDefMatrixPsv"
+  },
+  "type": "equippableItem"
+}

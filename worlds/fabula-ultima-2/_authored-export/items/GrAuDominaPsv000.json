@@ -1,0 +1,83 @@
+{
+  "_id": "GrAuDominaPsv000",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795628697066,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bra.png",
+  "name": "Dominatrix Leotard (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "V3R1cSiLgIfXVgRj",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Flail attacks deal <strong>5</strong> extra damage.</p></li><li><p>Critical hits with flails inflict <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "dl_dmg"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Charmed",
+          "effect_kind": "apply_ae",
+          "effect_label": "dl_charm",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "id": "GrAuDominaPsv000",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bra.png",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Dominatrix Leotard (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "USED_WEAPON_CATEGORY_IS_FLAIL == 1 && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "dl_dmg",
+          "reaction_passive_mode": "on",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "1": {
+          "condition_formula": "USED_WEAPON_CATEGORY_IS_FLAIL == 1 && DAMAGE_IS_HP == 1 && ATTACK_IS_CRIT == 1",
+          "reaction_effect_ref": "dl_charm",
+          "reaction_passive_mode": "on",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Flail attacks deal <strong>5</strong> extra damage.</p></li><li><p>Critical hits with flails inflict <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a>.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GrAuDominaPsv000"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GrAuDominaPsv000"
+  },
+  "type": "equippableItem"
+}

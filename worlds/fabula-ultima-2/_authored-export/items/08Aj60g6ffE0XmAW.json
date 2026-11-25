@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": true
     }
   },
   "folder": "5uQIy5BCy7UEVfcT",
@@ -59,7 +62,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Whenever you deals damage to an <strong>ally, </strong>You gain <strong>Zero Power </strong>equal to the 【<strong>Damage Dealt divided by 10</strong>】<em>(Round Up)</em></p></li></ul>",
+      "description": "<ul><li><p>When you damage an ally, gain <a class=\"content-link\" data-uuid=\"JournalEntry.J1BPPuvKwIi5WqRa\" data-id=\"J1BPPuvKwIi5WqRa\" data-type=\"JournalEntry\">Zero Power</a> equal to <strong>【damage ÷ 10】</strong>, rounded up.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -33,6 +33,29 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "No worries. The forge won't heat itself.",
+        "diff": "casual",
+        "npcWinQuote": "Ha! Struck while the iron was hot.",
+        "playerWinQuote": "Clean work. Here, you've earned this one.",
+        "prize": "canis",
+        "prizes": [
+          "canis",
+          "rgolem"
+        ],
+        "quote": "A duel? Sure. Let's see if your deck's tempered better than my blades.",
+        "rematchQuote": "Back again? I re-forged my whole strategy.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "canis",
+            "obsidrax",
+            "rgolem"
+          ]
+        ]
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false

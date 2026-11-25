@@ -8,9 +8,74 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "GrAuWitchHatAe00",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795628705095,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.cataclysm_cost_discount",
+          "mode": 2,
+          "priority": null,
+          "value": "${isEquipped ? 50 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "GrAuWitchHatAe00",
+          "originalParentId": "oGop1MLCHPzdpdR5",
+          "originalUuid": "Item.oGop1MLCHPzdpdR5.ActiveEffect.GrAuWitchHatAe00"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": "ae"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Witch Hat",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.4.2"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -79,7 +144,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>Whenever you increase a spells total MP cost with the【📜Cataclysm】skill, you may <strong>reduce </strong>the <strong>increased MP usage </strong>by 50%</li></ul>",
+      "description": "<ul><li><p>When you overcharge a spell with <strong>【📜Cataclysm】</strong>, the extra MP cost is halved.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

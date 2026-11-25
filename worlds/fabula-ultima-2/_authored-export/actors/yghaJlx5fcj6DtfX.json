@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Another time, then. I'll keep my cards ready.",
+        "diff": "skilled",
+        "npcWinQuote": "Royal victory! Don't tell Father I enjoyed that so much.",
+        "playerWinQuote": "You're wonderful at this! Please, take my card.",
+        "prize": "hilde",
+        "prizes": [
+          "hilde"
+        ],
+        "quote": "A duel? How delightful. I shan't hold back, you know.",
+        "rematchQuote": "Shall we play again? I've been looking forward to it.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "hilde",
+            "salamander",
+            "sylph"
+          ]
+        ]
+      },
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0
     },

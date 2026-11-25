@@ -1275,12 +1275,78 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "GrAuFairyAe00000",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1795628702835,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeBuffDebuffWhen(2)"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "GrAuFairyAe00000",
+              "originalParentId": "CLccD9KpXeEQy6hI",
+              "originalUuid": "Actor.BqBoJEye80GAm9fX.Item.CLccD9KpXeEQy6hI.ActiveEffect.GrAuFairyAe00000"
+            },
+            "fabula-ultima-companion": {
+              "gearAuthoring": "ae"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Fairy Tunic",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "core": {
           "sourceId": "Item.G8fBxPWSabEzD5V6"
         },
         "custom-system-builder": {
           "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": true,
+          "gearBalance": true
         }
       },
       "folder": "cSLVeZ3TavIe40F1",
@@ -1299,7 +1365,7 @@
           "def_bonus": "+1",
           "defense": "0",
           "defense_include_dex": true,
-          "description": "<ul><li>As long as you are affected by one or more spells with a duration of “Scene”, you gain a <strong>+2</strong> bonus to <strong>Magic Defense</strong>.</li></ul>",
+          "description": "<ul><li><p><strong>+2 MDEF</strong> while you have a buff or debuff.</p></li></ul>",
           "id": "CLccD9KpXeEQy6hI",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
           "initiative": "-2",

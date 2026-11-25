@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "No harm done! My door's always open, friend!",
+        "diff": "casual",
+        "npcWinQuote": "Ha ha! Don't look so glum, it's only cards!",
+        "playerWinQuote": "Splendid play! A deal's a deal. Take it with my blessing!",
+        "prize": "wagner",
+        "prizes": [
+          "wagner"
+        ],
+        "quote": "Ho ho! A duel? Nothing warms the heart like a friendly game!",
+        "rematchQuote": "Back for round two? Wonderful, wonderful!",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "wagner",
+            "roper",
+            "scorpion"
+          ]
+        ]
+      },
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0
     }

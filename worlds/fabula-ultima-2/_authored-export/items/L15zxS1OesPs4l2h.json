@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "3.2.4"
     },
+    "fabula-ultima-companion": {
+      "gearAuthoring": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "accessory",
@@ -79,7 +82,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>Whenever an effect would cause a creature to gain <strong>HP</strong> or <strong>MP</strong>, they lose that much <strong>HP</strong> or <strong>MP</strong> instead</li>\n</ul>",
+      "description": "<ul><li><p>During battle, whenever any creature would recover HP or MP, it loses that much instead.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

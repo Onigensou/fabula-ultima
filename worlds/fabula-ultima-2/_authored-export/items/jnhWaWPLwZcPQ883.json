@@ -10,6 +10,93 @@
   },
   "effects": [
     {
+      "_id": "GrAuManaRobeAe00",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795628693578,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "GrAuManaRobeAe00",
+          "originalParentId": "jnhWaWPLwZcPQ883",
+          "originalUuid": "Item.jnhWaWPLwZcPQ883.ActiveEffect.GrAuManaRobeAe00"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": "ae",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "mr_soak, mr_drain",
+                "effect_kind": "chain",
+                "effect_label": "mr_root"
+              },
+              "1": {
+                "damage_amount": "min(floor(INCOMING_DAMAGE / 2), CUR_MP)",
+                "damage_operation": "subtract",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "mr_soak"
+              },
+              "2": {
+                "consume_amount": "min(floor(INCOMING_DAMAGE / 2), CUR_MP)",
+                "consume_resource": "mp",
+                "effect_kind": "consume_resource",
+                "effect_label": "mr_drain",
+                "on_empty": "drain",
+                "target_ref": "self"
+              }
+            },
+            "name": "Mana Robe",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "CUR_MP > 0 && INCOMING_DAMAGE > 1",
+                "reaction_effect_ref": "mr_root",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": null,
+      "name": "Mana Robe",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "pFlKhJrUlLQzTN6v",
       "_stats": {
         "compendiumSource": null,
@@ -257,7 +344,9 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "gearAuthoring": true,
+      "gearBalance": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -328,7 +417,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li data-pm-slice=\"1 1 [\">Damage is dealt to your MP instead of your HP. If your MP is 0, then your HP is reduce as normal.</li>\n</ul>",
+      "description": "<ul><li><p><strong>50%</strong> of damage taken is dealt to your MP instead of your HP.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

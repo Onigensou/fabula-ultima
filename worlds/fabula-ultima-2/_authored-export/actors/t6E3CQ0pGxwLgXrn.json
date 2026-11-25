@@ -3423,7 +3423,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Bandit Archer</strong> · Physical · ★ · Striker</p><p>ATK 3 · HP 8 · DEF 1 · SPD 2</p><p><strong>Double Strafe:</strong> Whenever it attacks, it also deals 1 damage to a random benched enemy (ignores DEF, items and elements).</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Bandit Archer</strong> · Physical · ★ · Striker</p><p>ATK 3 · HP 8 · DEF 1 · SPD 2</p><p><strong>Double Strafe:</strong> When this unit attacks: deal 1 Piercing DMG to a random enemy Bench card.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -6155,7 +6155,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Wolf</strong> · Physical · ★ · Combo</p><p>ATK 3 · HP 10 · DEF 0 · SPD 2</p><p><strong>Howl:</strong> When it Passes, its attack this round gets +1 ATK.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Wolf</strong> · Physical · ★ · Combo</p><p>ATK 3 · HP 10 · DEF 0 · SPD 2</p><p><strong>Howl:</strong> When this unit Passes: +1 ATK this round.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -6382,7 +6382,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Salamander</strong> · Fire · ★ · Guardian</p><p>ATK 3 · HP 10 · DEF 1 · SPD 2</p><p><strong>Pyrophagy:</strong> The first Fire attack that would damage it deals 2 less. Once per match.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Salamander</strong> · Fire · ★ · Guardian</p><p>ATK 3 · HP 10 · DEF 1 · SPD 2</p><p><strong>Pyrophagy:</strong> The first Fire attack against this unit deals −2 DMG. Once per Match.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -10340,6 +10340,66 @@
           "type": "base"
         },
         {
+          "_id": "GrAuSlimyAe00000",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1795628709412,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "condition_poisoned",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "GrAuSlimyAe00000",
+              "originalParentId": "pB5jPDL9EJDqFCTy",
+              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.pB5jPDL9EJDqFCTy.ActiveEffect.GrAuSlimyAe00000"
+            },
+            "fabula-ultima-companion": {
+              "gearAuthoring": "ae"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Slimy Jacket",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "tXb9KrekbOXwDp8x",
           "_stats": {
             "compendiumSource": null,
@@ -10513,7 +10573,9 @@
               "actorUuid": "Actor.t6E3CQ0pGxwLgXrn",
               "source": "Actor-owned Item"
             }
-          }
+          },
+          "gearAuthoring": true,
+          "gearBalance": true
         },
         "fucompanion": {
           "itemMigratorBackup": {

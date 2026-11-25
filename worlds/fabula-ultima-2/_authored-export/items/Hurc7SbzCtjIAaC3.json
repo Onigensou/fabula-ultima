@@ -12,6 +12,10 @@
     "custom-system-builder": {
       "version": "3.2.4"
     },
+    "fabula-ultima-companion": {
+      "gearAuthoring": true,
+      "gearBalance": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "accessory",
@@ -79,7 +83,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>When someone other than you uses a&nbsp;<strong>Consumable&nbsp;</strong>item, you copy that item and use it immediately without paying any&nbsp;<strong>IP. </strong>This effect trigger <strong>once </strong>per round</li></ul>",
+      "description": "<ul><li><p>When another creature uses a consumable, you may use a copy of it by paying its IP cost. Once per round.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -1,0 +1,70 @@
+{
+  "_id": "GrAuGamblerPsv00",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795628693670,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dice.png",
+  "name": "Gambler's Dice (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "fXTiW1mHRFBGSGR8",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When you Fumble, you may reroll once. Once per round. (You still gain the Fabula Point)</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "allow_fumble": true,
+          "effect_kind": "check_reroll",
+          "effect_label": "gd_reroll",
+          "keep_fumble_fp": true
+        }
+      },
+      "id": "GrAuGamblerPsv00",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dice.png",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Gambler's Dice (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_FUMBLE == 1",
+          "reaction_effect_ref": "gd_reroll",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "skill_description": "<ul><li><p>When you Fumble, you may reroll once. Once per round. (You still gain the Fabula Point)</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GrAuGamblerPsv00"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GrAuGamblerPsv00"
+  },
+  "type": "equippableItem"
+}

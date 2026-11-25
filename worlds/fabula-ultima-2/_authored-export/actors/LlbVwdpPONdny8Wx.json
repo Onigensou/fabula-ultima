@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Fizzle. Okay, maybe later!",
+        "diff": "casual",
+        "npcWinQuote": "Kaboom! I win!",
+        "playerWinQuote": "Ow… you blew me away. Here!",
+        "prize": "inferex",
+        "prizes": [
+          "inferex"
+        ],
+        "quote": "Cards? Boom! I mean… yes, let's play!",
+        "rematchQuote": "Ready for another blast?",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "cryo",
+            "gorger",
+            "inferex"
+          ]
+        ]
+      },
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0
     }

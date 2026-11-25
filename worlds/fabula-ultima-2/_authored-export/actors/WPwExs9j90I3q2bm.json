@@ -1113,6 +1113,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.4.2"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": true
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -1131,7 +1134,7 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": false,
-          "description": "<ul><li><p>When performing <strong>Gadget:</strong> <strong>Alchemy </strong>(<strong>Tinkerer</strong>), you may spends <strong>20</strong> Mind Points to <strong>reroll 1 </strong>of the dices.</p></li><li><p>When performing <strong>Traveling Cook </strong>(<strong>Gourmet</strong>), you may spends <strong>20</strong> Mind Points to change <strong>1 ingredient</strong> into any other type of <strong>ingredient</strong>.</p></li></ul>",
+          "description": "<ul><li><p>When you use <strong>Gadget: Alchemy</strong>, you may spend <strong>20</strong> MP to reroll one die.</p></li><li><p>When you use <strong>Traveling Cook</strong>, you may spend <strong>20</strong> MP to change one ingredient into any other type.</p></li></ul>",
           "details_roller": "Show",
           "initiative": "0",
           "magic_defense": "0",

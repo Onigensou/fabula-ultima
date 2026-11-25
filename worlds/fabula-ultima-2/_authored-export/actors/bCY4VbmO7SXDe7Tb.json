@@ -33,6 +33,29 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Leaving already? How very sensible of you.",
+        "diff": "casual",
+        "npcWinQuote": "As expected. Grapes and grace, always victorious.",
+        "playerWinQuote": "Hmph! A lucky draw. Take the card before I change my mind.",
+        "prize": "rume",
+        "prizes": [
+          "rume",
+          "roper"
+        ],
+        "quote": "A card duel? With me? Very well. Do try to keep up.",
+        "rematchQuote": "You again? Fine. This time I'm serious. Grape-juice serious.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "rume",
+            "sylph",
+            "roper"
+          ]
+        ]
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false

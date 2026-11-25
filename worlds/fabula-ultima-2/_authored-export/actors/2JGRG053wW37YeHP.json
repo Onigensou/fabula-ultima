@@ -33,6 +33,29 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Then the night stays quiet.",
+        "diff": "casual",
+        "npcWinQuote": "The shadows favored me.",
+        "playerWinQuote": "You shine brighter than I expected. Take it.",
+        "prize": "succubus",
+        "prizes": [
+          "succubus",
+          "roo"
+        ],
+        "quote": "A quiet game in the dark… I accept.",
+        "rematchQuote": "Return, then. The night is long.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "hellhound",
+            "roo",
+            "succubus"
+          ]
+        ]
+      },
       "isAlchemist": true,
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0

@@ -1,0 +1,158 @@
+{
+  "_id": "GrAuBriefPsv0000",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795628705776,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "GrAuBriefAe00000",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "chargeKey": "brief-respite",
+          "charges": 0,
+          "chargesMax": 999,
+          "gearAuthoring": "ae",
+          "lifetimeMode": "persistent_counter"
+        }
+      },
+      "img": null,
+      "name": "Brief Respite",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/equipment/neck/amulet-carved-stone-spiral-blue.webp",
+  "name": "Brief Respite (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "6f3U2Cz826kB5ZIp",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>After spending MP on a spell or skill, gain <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to <strong>50%</strong> of the MP spent. Once per turn.</p></li><li><p>The Shield lasts until the start of your next turn.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "br_mark, br_shield",
+          "effect_kind": "chain",
+          "effect_label": "br_root"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "max(0, floor(ACTION_EFFECTIVE_COST_MP / 2) - CUR_SHIELD)",
+          "ae_template_ref": "Item.GrAuBriefPsv0000.ActiveEffect.GrAuBriefAe00000",
+          "effect_kind": "apply_ae",
+          "effect_label": "br_mark",
+          "target_ref": "self"
+        },
+        "2": {
+          "effect_kind": "set_resource",
+          "effect_label": "br_shield",
+          "grant_amount": "floor(ACTION_EFFECTIVE_COST_MP / 2)",
+          "grant_resource": "shield",
+          "target_ref": "self"
+        },
+        "3": {
+          "consume_amount": "min(CUR_SHIELD, AE_CHARGES_BRIEF_RESPITE)",
+          "consume_resource": "shield",
+          "effect_kind": "consume_resource",
+          "effect_label": "br_drop",
+          "on_empty": "drain",
+          "target_ref": "self"
+        },
+        "4": {
+          "ae_template_ref": "Brief Respite",
+          "count": "all",
+          "effect_kind": "remove_ae",
+          "effect_label": "br_unmark",
+          "target_ref": "self"
+        }
+      },
+      "id": "GrAuBriefPsv0000",
+      "img": "icons/equipment/neck/amulet-carved-stone-spiral-blue.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Brief Respite (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_EFFECTIVE_COST_MP > 1 && ACTION_IS_FREE_CAST == 0 && ACTION_IS_ATTACK == 0",
+          "reaction_effect_ref": "br_root",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "1": {
+          "condition_formula": "AE_CHARGES_BRIEF_RESPITE > 0 && CUR_SHIELD > 0",
+          "reaction_effect_ref": "br_drop",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        },
+        "2": {
+          "condition_formula": "AE_COUNT_BRIEF_RESPITE > 0",
+          "reaction_effect_ref": "br_unmark",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        }
+      },
+      "skill_description": "<ul><li><p>After spending MP on a spell or skill, gain <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to <strong>50%</strong> of the MP spent. Once per turn.</p></li><li><p>The Shield lasts until the start of your next turn.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GrAuBriefPsv0000"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GrAuBriefPsv0000"
+  },
+  "type": "equippableItem"
+}

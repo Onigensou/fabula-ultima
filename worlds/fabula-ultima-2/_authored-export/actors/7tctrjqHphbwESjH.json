@@ -4268,6 +4268,76 @@
       "type": "equippableItem"
     },
     {
+      "_id": "pOtba2ec5ITzN9Vg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795628694940,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": "created"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dice.png",
+      "name": "Gambler's Dice (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "pTyuCsh5KMT74YLZ",
+        "props": {
+          "cost": "",
+          "description": "<ul><li><p>When you Fumble, you may reroll once. Once per round. (You still gain the Fabula Point)</p></li></ul>",
+          "effect_table": {
+            "0": {
+              "allow_fumble": true,
+              "effect_kind": "check_reroll",
+              "effect_label": "gd_reroll",
+              "keep_fumble_fp": true
+            }
+          },
+          "id": "GrAuGamblerPsv00",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dice.png",
+          "isCheck": false,
+          "isReaction": true,
+          "max_level": 1,
+          "name": "Gambler's Dice (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_FUMBLE == 1",
+              "reaction_effect_ref": "gd_reroll",
+              "reaction_max_per_round": "1",
+              "reaction_max_scope": "round",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
+          "skill_description": "<ul><li><p>When you Fumble, you may reroll once. Once per round. (You still gain the Fabula Point)</p></li></ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "uuid": "Item.GrAuGamblerPsv00"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "GrAuGamblerPsv00"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "pReyQxWCgrVY13gW",
       "_stats": {
         "compendiumSource": "Item.aITJntRz2m10Rgeo",
@@ -4321,6 +4391,10 @@
         },
         "custom-system-builder": {
           "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": true,
+          "gearBalance": true
         }
       },
       "folder": "5uQIy5BCy7UEVfcT",
@@ -4339,10 +4413,11 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": false,
-          "description": "<ul><li>You may score a <strong>Critical Success&nbsp;</strong>even when your roll is lower than 6</li><li>When you roll a <strong>Fumble,&nbsp;</strong>You may choose to reroll <strong>once.</strong></li></ul>",
+          "description": "<ul><li><p>When you Fumble, you may reroll once. Once per round. (You still gain the Fabula Point)</p></li></ul>",
           "details_roller": "Show",
           "flavor_text": "<blockquote>\n<p>This was once an ace gambler lucky dice, which they lost in a decisive showdown against an archrival.</p>\n</blockquote>",
           "initiative": "0",
+          "item_rarity": "Common",
           "magic_defense": "0",
           "magic_defense_include_ins": false,
           "mdef_bonus": "",
@@ -4769,6 +4844,75 @@
         "templateSystemUniqueVersion": 1853581118,
         "unique": false,
         "uniqueId": "QvUsAoeaebjrKAHi"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "TqvTh3S9pqProxGM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795628711878,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": "created"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/suit.png",
+      "name": "Enforcer Uniform (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "YNO4CsjJfzVoTg8M",
+        "props": {
+          "cost": "",
+          "description": "<ul><li><p>Sword and firearm attacks deal <strong>5</strong> extra damage.</p></li></ul>",
+          "effect_table": {
+            "0": {
+              "damage_amount": "5",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "eu_dmg"
+            }
+          },
+          "id": "GrAuEnforcerPsv0",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/suit.png",
+          "isCheck": false,
+          "isReaction": true,
+          "max_level": 1,
+          "name": "Enforcer Uniform (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "(USED_WEAPON_CATEGORY_IS_SWORD == 1 || USED_WEAPON_CATEGORY_IS_FIREARM == 1) && DAMAGE_IS_HP == 1",
+              "reaction_effect_ref": "eu_dmg",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "skill_description": "<ul><li><p>Sword and firearm attacks deal <strong>5</strong> extra damage.</p></li></ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "uuid": "Item.GrAuEnforcerPsv0"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "GrAuEnforcerPsv0"
       },
       "type": "equippableItem"
     },
@@ -5528,6 +5672,9 @@
         },
         "custom-system-builder": {
           "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": true
         }
       },
       "folder": "cSLVeZ3TavIe40F1",
@@ -5546,7 +5693,7 @@
           "def_bonus": "+1",
           "defense": "0",
           "defense_include_dex": true,
-          "description": "<ul>\n<li>Your attacks with a&nbsp;<strong>Sword&nbsp;</strong>or&nbsp;<strong>Firearm&nbsp;</strong>weapon deal&nbsp;<strong>5 bonus damage</strong></li>\n</ul>",
+          "description": "<ul><li><p>Sword and firearm attacks deal <strong>5</strong> extra damage.</p></li></ul>",
           "initiative": "0",
           "isSet": true,
           "magic_defense": "0",

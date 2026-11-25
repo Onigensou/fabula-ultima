@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Sweet dreams, then.",
+        "diff": "casual",
+        "npcWinQuote": "Mm, I win. Sleep well anyway.",
+        "playerWinQuote": "My, my. You've earned a card… and a good night's rest.",
+        "prize": "succubus",
+        "prizes": [
+          "succubus"
+        ],
+        "quote": "A little game before bed, traveler?",
+        "rematchQuote": "Can't sleep? Another game, then.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "succubus",
+            "sylph",
+            "manaray"
+          ]
+        ]
+      },
       "layoutRef": "36f07356c8e6b280",
       "opp_lucky": 0
     },

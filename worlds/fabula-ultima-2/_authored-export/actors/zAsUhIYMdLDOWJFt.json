@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Then stop wasting my time.",
+        "diff": "skilled",
+        "npcWinQuote": "As expected.",
+        "playerWinQuote": "…Hm. Not bad. Take it.",
+        "prize": "geist",
+        "prizes": [
+          "geist"
+        ],
+        "quote": "…Cards. Fine. Make it quick.",
+        "rematchQuote": "You again. One more.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "geist",
+            "hellhound",
+            "roo"
+          ]
+        ]
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false

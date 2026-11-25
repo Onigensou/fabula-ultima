@@ -1,0 +1,174 @@
+{
+  "_id": "GrAuBallGagPsv00",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795628698632,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "GrAuBallGagAe000",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 0,
+          "value": "Spell"
+        }
+      ],
+      "description": "<p>This creature cannot use the <strong>【Spell】</strong>Action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "yGEBOqxYc6Wh26IW",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.yGEBOqxYc6Wh26IW"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-silence",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "silence",
+          "crossScene": false,
+          "directorPermanent": true,
+          "equipLock": "Ball Gag",
+          "gearAuthoring": "ae",
+          "uncleansable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Silence.png",
+      "name": "Silence",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "xuwAn7u126GfFweU"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/pac.png",
+  "name": "Ball Gag (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Ef9i1q5WWmWw0ZcI",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>You are permanently <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\">Silenced</a>.</p></li><li><p>When an attack damages you, recover <strong>5</strong> HP.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Item.GrAuBallGagPsv00.ActiveEffect.GrAuBallGagAe000",
+          "effect_kind": "apply_ae",
+          "effect_label": "bg_silence",
+          "ignore_condition_immunity": true,
+          "target_ref": "self"
+        },
+        "1": {
+          "effect_kind": "grant",
+          "effect_label": "bg_heal",
+          "grant_amount": "5",
+          "grant_resource": "hp",
+          "target_ref": "self"
+        }
+      },
+      "id": "GrAuBallGagPsv00",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/pac.png",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Ball Gag (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "bg_silence",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "reaction_effect_ref": "bg_silence",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "creature_equips_item"
+        },
+        "2": {
+          "condition_formula": "ACTION_IS_ATTACK == 1",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "bg_heal",
+          "reaction_passive_mode": "force",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        }
+      },
+      "skill_description": "<ul><li><p>You are permanently <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\">Silenced</a>.</p></li><li><p>When an attack damages you, recover <strong>5</strong> HP.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GrAuBallGagPsv00"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GrAuBallGagPsv00"
+  },
+  "type": "equippableItem"
+}

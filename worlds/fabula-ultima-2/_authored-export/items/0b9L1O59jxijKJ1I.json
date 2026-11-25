@@ -12,6 +12,10 @@
     "custom-system-builder": {
       "version": "3.2.4"
     },
+    "fabula-ultima-companion": {
+      "gearAuthoring": true,
+      "gearBalance": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "accessory",
@@ -78,7 +82,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>All ally <strong>Attacks&nbsp;</strong>with&nbsp;<strong>Critical Success&nbsp;</strong>deals&nbsp;<strong>200%&nbsp;</strong>damage</li>\n</ul>",
+      "description": "<ul><li><p>Your critical hits deal <strong>200%</strong> damage.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -105,7 +109,7 @@
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Common",
+      "item_rarity": "Uncommon",
       "item_type": "accessory",
       "mimic_ef": "100",
       "monster_ef": "100",

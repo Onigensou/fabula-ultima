@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "That's fine, sweetie. Come back when you're hungry.",
+        "diff": "casual",
+        "npcWinQuote": "Oh my, did I win? Don't sulk, I'll make you something warm.",
+        "playerWinQuote": "Wonderful! You've grown so strong. Take this with you.",
+        "prize": "alcina",
+        "prizes": [
+          "alcina"
+        ],
+        "quote": "Oh, a little game? Alright, but go easy on me, dear.",
+        "rematchQuote": "Another round? Sit down, I'll bring some tea.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "alcina",
+            "kirin",
+            "sylph"
+          ]
+        ]
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false

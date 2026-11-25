@@ -85,7 +85,7 @@
       "skill_animation_mode": "custom",
       "skill_information": "",
       "skill_range": "Range",
-      "skill_target": "Up to (1 + 98 * HAS_SKILL_PILLAGE) creatures",
+      "skill_target": "Up to (1 + 98 * HAS_SKILL_PILLAGE) enemies",
       "skill_type": "Active",
       "type_damage": "",
       "use_optional_params": false,

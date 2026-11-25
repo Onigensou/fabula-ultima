@@ -67,6 +67,7 @@
       "hand_slots": "Two-handed",
       "isMartial": false,
       "item_cost": "2550",
+      "item_rarity": "Rare",
       "item_type": "weapon",
       "name": "Heat HANDS Replica",
       "rolled_atr1": "MIG",

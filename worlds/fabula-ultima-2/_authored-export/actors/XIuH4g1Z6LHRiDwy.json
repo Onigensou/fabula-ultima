@@ -13,6 +13,28 @@
       "version": "4.5.0"
     },
     "fabula-ultima-companion": {
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Oh… the stars said that might happen too.",
+        "diff": "skilled",
+        "npcWinQuote": "The cards foretold it. Sorry, it's fate!",
+        "playerWinQuote": "Your star burns brighter today. Take this, for luck.",
+        "prize": "farin",
+        "prizes": [
+          "farin"
+        ],
+        "quote": "The stars said I'd meet a challenger today. Shall we?",
+        "rematchQuote": "Let me read your fortune again… with a duel!",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "farin",
+            "sylph",
+            "skizzik"
+          ]
+        ]
+      },
       "layoutRef": "13564577cf6c2a2f"
     },
     "theatre": {

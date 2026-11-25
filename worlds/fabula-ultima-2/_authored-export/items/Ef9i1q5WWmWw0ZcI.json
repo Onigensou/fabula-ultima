@@ -12,6 +12,10 @@
     "custom-system-builder": {
       "version": "3.2.4"
     },
+    "fabula-ultima-companion": {
+      "gearAuthoring": true,
+      "gearBalance": true
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "accessory",
@@ -78,7 +82,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You are always <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\">Silence</a></p></li><li>Whenever you takes damage from an&nbsp;<strong>Attack,&nbsp;</strong>You gain <strong>5&nbsp;HP</strong></li></ul>",
+      "description": "<ul><li><p>You are permanently <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\">Silenced</a>.</p></li><li><p>When an attack damages you, recover <strong>5</strong> HP.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -105,7 +109,7 @@
       "item_def_bonus": "+1",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Common",
+      "item_rarity": "Uncommon",
       "item_type": "accessory",
       "mimic_ef": "100",
       "monster_ef": "100",

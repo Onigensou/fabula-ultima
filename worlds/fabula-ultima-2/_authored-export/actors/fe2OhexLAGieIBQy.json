@@ -33,6 +33,29 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Come back when you're buying.",
+        "diff": "casual",
+        "npcWinQuote": "Sharp deck beats a dull one.",
+        "playerWinQuote": "Hm. Good edge on you. Take a card.",
+        "prize": "roper",
+        "prizes": [
+          "roper",
+          "scorpion"
+        ],
+        "quote": "Test your arm on cards before you test it on my blades?",
+        "rematchQuote": "Back to sharpen up?",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "scorpion",
+            "archer",
+            "roper"
+          ]
+        ]
+      },
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0
     }

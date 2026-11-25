@@ -834,7 +834,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Pyrefly</strong> · Fire · ★ · Combo</p><p>ATK 2 · HP 8 · DEF 0 · SPD 4</p><p><strong>Funeral Pyre:</strong> Its damaging attack puts Burn on the target. Its next attack on a Burning target consumes it for +4 ATK.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Pyrefly</strong> · Fire · ★ · Combo</p><p>ATK 2 · HP 8 · DEF 0 · SPD 4</p><p><strong>Funeral Pyre:</strong> After this unit&#39;s attack deals damage: the target gains Burn. This unit&#39;s next attack on a Burning card uses up Burn for +4 ATK.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -1808,7 +1808,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Salamander</strong> · Fire · ★ · Guardian</p><p>ATK 3 · HP 10 · DEF 1 · SPD 2</p><p><strong>Pyrophagy:</strong> The first Fire attack that would damage it deals 2 less. Once per match.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Salamander</strong> · Fire · ★ · Guardian</p><p>ATK 3 · HP 10 · DEF 1 · SPD 2</p><p><strong>Pyrophagy:</strong> The first Fire attack against this unit deals −2 DMG. Once per Match.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -3727,7 +3727,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Blanche</strong> · Physical · ★★★ · Support</p><p>ATK 3 · HP 12 · DEF 2 · SPD 2</p><p><strong>Give me tips or 5 stars:</strong> When Blanche Passes as your active card, your benched ally with the lowest HP heals 2 HP (before attacks).</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Blanche</strong> · Physical · ★★★ · Support</p><p>ATK 3 · HP 12 · DEF 2 · SPD 2</p><p><strong>Give me tips or 5 stars:</strong> When this unit Passes: heal 2 HP to your Bench card with the lowest HP.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -5186,6 +5186,8 @@
               "source": "World Item"
             }
           },
+          "gearAuthoring": true,
+          "gearBalance": true,
           "orbment": {
             "baseProps": [],
             "linkGroup": [
@@ -6665,6 +6667,92 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": true,
         "uniqueId": "7ApZzLcwZfDZz0nE"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "oB0A3kA2MRaJPcHq",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795628710720,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": "created"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "name": "Hekat Shield (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "HZP2Hs14kB0EgMSD",
+        "props": {
+          "cost": "",
+          "description": "<ul>\n<li>You have <strong>Resistance</strong> to damage dealt by spells. When a spell deals damage to<br>you, you recover <strong>5</strong> Mind Points.</li>\n</ul>",
+          "effect_table": {
+            "0": {
+              "damage_amount": "0.5",
+              "damage_operation": "multiply",
+              "damage_round": "down",
+              "damage_stage": "incoming",
+              "effect_kind": "adjust_damage",
+              "effect_label": "hk_resist"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "hk_mp",
+              "grant_amount": "5",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "id": "GrAuHekatPsv0000",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+          "isCheck": false,
+          "isReaction": true,
+          "max_level": 1,
+          "name": "Hekat Shield (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_IS_SPELL == 1",
+              "reaction_effect_ref": "hk_resist",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_targeted_by_action"
+            },
+            "1": {
+              "condition_formula": "ACTION_IS_SPELL == 1",
+              "reaction_cause_filter": "damage",
+              "reaction_effect_ref": "hk_mp",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_lose_resource"
+            }
+          },
+          "skill_description": "<ul>\n<li>You have <strong>Resistance</strong> to damage dealt by spells. When a spell deals damage to<br>you, you recover <strong>5</strong> Mind Points.</li>\n</ul>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "uuid": "Item.GrAuHekatPsv0000"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "GrAuHekatPsv0000"
       },
       "type": "equippableItem"
     },
@@ -9402,7 +9490,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Hellhound</strong> · Dark · ★ · Hunter</p><p>ATK 4 · HP 8 · DEF 0 · SPD 3</p><p><strong>On the Hunt:</strong> +1 ATK against a monster at half its max HP or less.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Hellhound</strong> · Dark · ★ · Hunter</p><p>ATK 4 · HP 8 · DEF 0 · SPD 3</p><p><strong>On the Hunt:</strong> +1 ATK against cards at half HP or less.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",

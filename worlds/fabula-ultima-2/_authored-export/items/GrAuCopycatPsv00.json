@@ -1,0 +1,73 @@
+{
+  "_id": "GrAuCopycatPsv00",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795628696001,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Copycat.gif",
+  "name": "Copycat (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Hurc7SbzCtjIAaC3",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When another creature uses a consumable, you may use a copy of it by paying its IP cost. Once per round.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "action_ref": "trigger_item",
+          "copy_pays_ip": true,
+          "effect_kind": "free_action",
+          "effect_label": "cc_copy",
+          "free_of_cost": false,
+          "menu_description": "Use a copy of the item just used, paying its IP cost.",
+          "menu_label": "Copycat — use a copy"
+        }
+      },
+      "id": "GrAuCopycatPsv00",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Copycat.gif",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Copycat (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "SUBJECT_IS_SELF == 0",
+          "reaction_effect_ref": "cc_copy",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "round",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "all",
+          "reaction_trigger": "creature_completes_item"
+        }
+      },
+      "skill_description": "<ul><li><p>When another creature uses a consumable, you may use a copy of it by paying its IP cost. Once per round.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GrAuCopycatPsv00"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GrAuCopycatPsv00"
+  },
+  "type": "equippableItem"
+}

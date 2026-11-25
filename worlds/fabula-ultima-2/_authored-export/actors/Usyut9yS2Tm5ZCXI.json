@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Understood. Back to my post.",
+        "diff": "skilled",
+        "npcWinQuote": "Ha! Knight's training pays off.",
+        "playerWinQuote": "Well fought. Take it, I'll earn another.",
+        "prize": "brucev",
+        "prizes": [
+          "brucev"
+        ],
+        "quote": "I'm on duty, but… one quick duel won't hurt. Draw!",
+        "rematchQuote": "Again? The captain's not looking. Let's go.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "brucev",
+            "roper",
+            "wolf"
+          ]
+        ]
+      },
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0
     },

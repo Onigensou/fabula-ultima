@@ -1,0 +1,69 @@
+{
+  "_id": "GrAuEnforcerPsv0",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795628710794,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "gearAuthoring": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/suit.png",
+  "name": "Enforcer Uniform (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "2MAkZpclKVJH9Hvx",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Sword and firearm attacks deal <strong>5</strong> extra damage.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "eu_dmg"
+        }
+      },
+      "id": "GrAuEnforcerPsv0",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/suit.png",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Enforcer Uniform (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "(USED_WEAPON_CATEGORY_IS_SWORD == 1 || USED_WEAPON_CATEGORY_IS_FIREARM == 1) && DAMAGE_IS_HP == 1",
+          "reaction_effect_ref": "eu_dmg",
+          "reaction_passive_mode": "on",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Sword and firearm attacks deal <strong>5</strong> extra damage.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.GrAuEnforcerPsv0"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GrAuEnforcerPsv0"
+  },
+  "type": "equippableItem"
+}

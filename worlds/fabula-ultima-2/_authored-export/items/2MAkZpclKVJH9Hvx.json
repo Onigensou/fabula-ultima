@@ -257,7 +257,8 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "gearAuthoring": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -327,7 +328,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>Your attacks with a&nbsp;<strong>Sword&nbsp;</strong>or&nbsp;<strong>Firearm&nbsp;</strong>weapon deal&nbsp;<strong>5 bonus damage</strong></li></ul>",
+      "description": "<ul><li><p>Sword and firearm attacks deal <strong>5</strong> extra damage.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

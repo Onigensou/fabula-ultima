@@ -2120,6 +2120,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "gearAuthoring": true
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -2156,20 +2159,20 @@
             "1": {
               "$deleted": false,
               "chain_steps": "cat_10_mp, cat_10_dmg",
-              "condition_formula": "SL >= 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10))",
+              "condition_formula": "SL >= 1 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "prompt_number",
               "effect_label": "cat_prompt",
               "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
-              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor(((ACTION_IS_FREE_CAST == 0) * (CUR_MP - ACTION_COST_MP) + (ACTION_IS_FREE_CAST == 1) * (AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS - ACTION_COST_MP)) / 10) * 10 )",
+              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor(((ACTION_IS_FREE_CAST == 0) * (CUR_MP - ACTION_COST_MP) + (ACTION_IS_FREE_CAST == 1) * (AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS - ACTION_COST_MP)) / ((100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100) / 10) * 10 )",
               "prompt_min": "10",
               "prompt_step": "10",
               "prompt_var": "overcharge"
             },
             "2": {
               "$deleted": false,
-              "cost_amount": "VAR_OVERCHARGE",
+              "cost_amount": "ceil((VAR_OVERCHARGE) * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)",
               "cost_operation": "add",
               "cost_resource": "mp",
               "effect_kind": "adjust_cost",
@@ -2186,7 +2189,7 @@
             "4": {
               "$deleted": false,
               "chain_steps": "cat_20_mp, cat_20_dmg",
-              "condition_formula": "SL >= 2 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 20) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 20))",
+              "condition_formula": "SL >= 2 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(20 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(20 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "chain",
@@ -2194,7 +2197,7 @@
             },
             "5": {
               "$deleted": false,
-              "cost_amount": "20",
+              "cost_amount": "ceil((20) * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)",
               "cost_operation": "add",
               "cost_resource": "mp",
               "effect_kind": "adjust_cost",
@@ -2211,7 +2214,7 @@
             "7": {
               "$deleted": false,
               "chain_steps": "cat_30_mp, cat_30_dmg",
-              "condition_formula": "SL >= 3 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 30) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 30))",
+              "condition_formula": "SL >= 3 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(30 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(30 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "chain",
@@ -2219,7 +2222,7 @@
             },
             "8": {
               "$deleted": false,
-              "cost_amount": "30",
+              "cost_amount": "ceil((30) * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)",
               "cost_operation": "add",
               "cost_resource": "mp",
               "effect_kind": "adjust_cost",
@@ -2247,7 +2250,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + 10) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + 10))",
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_DURATION == 0 && ((ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)) || (ACTION_IS_FREE_CAST == 1 && AE_CHARGES_BIMAGUS_ENCORE + (AE_COUNT_BIMAGUS_ENCORE == 0) * AE_CHARGES_BIMAGUS >= ACTION_COST_MP + ceil(10 * (100 - FLAG_CATACLYSM_COST_DISCOUNT) / 100)))",
               "reaction_effect_ref": "cat_root",
               "reaction_passive_mode": "ask",
               "reaction_source": "self",
@@ -4501,7 +4504,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Hina</strong> · Light · ★★★ · Support</p><p>ATK 4 · HP 11 · DEF 1 · SPD 1</p><p><strong>Foretell:</strong> While Hina is your active card, the opponent&#39;s card flips face up for you the moment it is placed, and you always get 10 more seconds after it lands. You may also play first without looking. Both sides Foretelling = a normal round.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Hina</strong> · Light · ★★★ · Support</p><p>ATK 4 · HP 11 · DEF 1 · SPD 1</p><p><strong>Foretell:</strong> While active: you see the opponent&#39;s card as soon as it&#39;s placed, and get 10 extra seconds.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -6490,7 +6493,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Kirin</strong> · Bolt · ★★ · Punisher</p><p>ATK 2 · HP 10 · DEF 1 · SPD 2</p><p><strong>Lightning Charge:</strong> When an attack damages it, it charges: +3 ATK on its attack next round.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Kirin</strong> · Bolt · ★★ · Punisher</p><p>ATK 2 · HP 10 · DEF 1 · SPD 2</p><p><strong>Lightning Charge:</strong> After this unit takes attack damage: +3 ATK next round.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -6669,7 +6672,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Salamander</strong> · Fire · ★ · Guardian</p><p>ATK 3 · HP 10 · DEF 1 · SPD 2</p><p><strong>Pyrophagy:</strong> The first Fire attack that would damage it deals 2 less. Once per match.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Salamander</strong> · Fire · ★ · Guardian</p><p>ATK 3 · HP 10 · DEF 1 · SPD 2</p><p><strong>Pyrophagy:</strong> The first Fire attack against this unit deals −2 DMG. Once per Match.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -10179,7 +10182,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Wolf</strong> · Physical · ★ · Combo</p><p>ATK 3 · HP 10 · DEF 0 · SPD 2</p><p><strong>Howl:</strong> When it Passes, its attack this round gets +1 ATK.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Wolf</strong> · Physical · ★ · Combo</p><p>ATK 3 · HP 10 · DEF 0 · SPD 2</p><p><strong>Howl:</strong> When this unit Passes: +1 ATK this round.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -10472,7 +10475,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Hellhound</strong> · Dark · ★ · Hunter</p><p>ATK 4 · HP 8 · DEF 0 · SPD 3</p><p><strong>On the Hunt:</strong> +1 ATK against a monster at half its max HP or less.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Hellhound</strong> · Dark · ★ · Hunter</p><p>ATK 4 · HP 8 · DEF 0 · SPD 3</p><p><strong>On the Hunt:</strong> +1 ATK against cards at half HP or less.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -10850,7 +10853,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><strong>Princess Hilde</strong> · Light · ★★★ · Support</p><p>ATK 2 · HP 14 · DEF 1 · SPD 3</p><p><strong>Royal Grace:</strong> When Princess Hilde Passes, your side gains Regen for 4 rounds, starting next round: at the end of each round, your active card (not Hilde) heals 3 HP. Passing again restarts it.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "description": "<p><strong>Princess Hilde</strong> · Light · ★★★ · Support</p><p>ATK 2 · HP 14 · DEF 1 · SPD 3</p><p><strong>Royal Grace:</strong> When this unit Passes: your side gains Regen from next round. Duration (Rounds): 4.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",

@@ -35,30 +35,23 @@
       "damage_taken_mult": 1,
       "faDuelist": {
         "bestOf": 1,
+        "declineQuote": "O-oh. Okay. I'll just… polish my trinkets.",
         "diff": "casual",
+        "npcWinQuote": "I w-won? I actually won! Wait till my collection hears about this!",
+        "playerWinQuote": "W-well played… the card is yours. Fair and square!",
         "prize": "hilde",
+        "prizes": [
+          "hilde",
+          "willy"
+        ],
         "quote": "Y-you want a d-duel? Beat me and the Princess is yours!",
+        "rematchQuote": "B-back for more? I studied my deck all night!",
         "requiresSwitch": "Fabula Arcana Unlocked",
         "style": null,
         "teams": [
           [
+            "willy",
             "hilde",
-            "wolf",
-            "pyrefly"
-          ],
-          [
-            "hilde",
-            "wolf",
-            "skizzik"
-          ],
-          [
-            "hilde",
-            "archer",
-            "wolf"
-          ],
-          [
-            "hilde",
-            "scorpion",
             "wolf"
           ]
         ]

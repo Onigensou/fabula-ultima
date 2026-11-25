@@ -33,6 +33,28 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "declineQuote": "Hah! Even you know a wall when you see one.",
+        "diff": "casual",
+        "npcWinQuote": "Solid as steel! Take that, Nullis!",
+        "playerWinQuote": "My armor… cracked? Fine, take the card.",
+        "prize": "gardner",
+        "prizes": [
+          "gardner"
+        ],
+        "quote": "Real defense is armor! Face my deck!",
+        "rematchQuote": "Back for another round? My shield's waiting.",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "gardner",
+            "nullis",
+            "obsidrax"
+          ]
+        ]
+      },
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0
     }
