@@ -155,6 +155,11 @@
             case "cameraPan":
               if (row.mode === "token" && !String(row.name ?? "").trim()) add("warn", "Camera Pan to a named token, with no name.");
               else if (row.mode === "token" && !hasToken(scene, row.name)) add("warn", `Camera Pan to "${row.name}", but no token on this scene has that name. The camera would stay put.`);
+              else if (row.mode === "point") {
+                const d = scene.dimensions ?? {}, x = Number(row.x), y = Number(row.y);
+                if (!Number.isFinite(x) || !Number.isFinite(y)) add("warn", "Camera Pan to a map point with no x / y.");
+                else if (d.sceneWidth && (x < 0 || y < 0 || x > d.sceneWidth || y > d.sceneHeight)) add("warn", `Camera Pan to map point (${x}, ${y}), outside this map (${d.sceneWidth} x ${d.sceneHeight}).`);
+              }
               break;
             case "setToken": {
               const names = String(row.name ?? "").split(",").map(s => s.trim()).filter(Boolean);

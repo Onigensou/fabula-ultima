@@ -61,6 +61,7 @@
     ["offset", "Offset from the current view"],
     ["source", "This event's tile / token"],
     ["token", "A named token"],
+    ["point", "A point on the map"],
     ["twoShot", "Two-shot: the party and a named token (no name: the party alone, held)"],
     ["party", "Back to the party"]
   ];
@@ -176,7 +177,12 @@
     }
 
     let point = null;
-    if (data.mode === "source") {
+    if (data.mode === "point") {
+      // Map pixels measured on the scene's own image (its top-left = 0, 0), the
+      // same numbers a cutscene mockup uses: the scene's padding is added here.
+      const d = canvas.dimensions;
+      point = { x: (d?.sceneX ?? 0) + Logic.toNumber(data.x, 0), y: (d?.sceneY ?? 0) + Logic.toNumber(data.y, 0) };
+    } else if (data.mode === "source") {
       point = centerOfDocument(canvas.scene?.tiles?.get(sourceId) ?? canvas.scene?.tokens?.get(sourceId));
     } else if (data.mode === "token") {
       const token = findTokenByName(data.name);
@@ -316,6 +322,8 @@
       dx: 0,
       dy: -200,
       name: "",
+      x: 0,
+      y: 0,
       zoom: 0,
       seconds: DEFAULT_SECONDS,
       motion: "smooth",
@@ -323,6 +331,7 @@
     },
     summary: (row) => {
       const label = TARGETS.find(([value]) => value === row?.mode)?.[1] ?? "";
+      if (row?.mode === "point") return `Map point (${Logic.toNumber(row?.x, 0)}, ${Logic.toNumber(row?.y, 0)})${Logic.toNumber(row?.zoom, 0) > 0 ? " at zoom " + row.zoom : ""}`;
       return row?.mode === "twoShot" ? (String(row?.name ?? "").trim() ? `Two-shot: the party and "${String(row.name).trim()}"` : "The party, held at this zoom") : label;
     },
     execute: async (row, context) => {
@@ -333,6 +342,8 @@
         dx: Logic.toNumber(row?.dx, 0),
         dy: Logic.toNumber(row?.dy, 0),
         name: String(row?.name ?? ""),
+        x: Logic.toNumber(row?.x, 0),
+        y: Logic.toNumber(row?.y, 0),
         partyTokenId: context?.tokenId ?? null,
         zoom: Logic.toNumber(row?.zoom, 0),
         durationMs,
@@ -362,6 +373,14 @@
            </div>`,
           "In map pixels. Negative Y is up, negative X is left."
         )}</div>`,
+        `<div class="oni-event-row-cam-point">${kit.field(
+          "Map point (px)",
+          `<div class="oni-event-inline-row">
+             <span>X</span>${kit.numberInput("oni-event-row-cam-x", Logic.toNumber(row.x, 0), { step: 10 })}
+             <span>Y</span>${kit.numberInput("oni-event-row-cam-y", Logic.toNumber(row.y, 0), { step: 10 })}
+           </div>`,
+          "Measured on the map image itself: 0, 0 is its top-left corner (the scene's padding doesn't count). The camera centres here."
+        )}</div>`,
         `<div class="oni-event-row-cam-token">${kit.field(
           "Token name",
           `<input type="text" class="oni-event-row-cam-name" value="${kit.escapeHTML(row.name ?? "")}" placeholder="Name of a token on this scene" />`
@@ -386,6 +405,7 @@
       const modeEl = body.querySelector(".oni-event-row-cam-mode");
       const sync = () => {
         body.querySelector(".oni-event-row-cam-offset").hidden = modeEl.value !== "offset";
+        body.querySelector(".oni-event-row-cam-point").hidden = modeEl.value !== "point";
         body.querySelector(".oni-event-row-cam-token").hidden = !(modeEl.value === "token" || modeEl.value === "twoShot");
       };
       modeEl.addEventListener("change", sync);
@@ -398,6 +418,8 @@
       dx: kit.readNumber(rowEl, ".oni-event-row-cam-dx", 0),
       dy: kit.readNumber(rowEl, ".oni-event-row-cam-dy", 0),
       name: kit.readText(rowEl, ".oni-event-row-cam-name", "").trim(),
+      x: kit.readNumber(rowEl, ".oni-event-row-cam-x", 0),
+      y: kit.readNumber(rowEl, ".oni-event-row-cam-y", 0),
       zoom: kit.readNumber(rowEl, ".oni-event-row-cam-zoom", 0),
       seconds: Math.min(MAX_SECONDS, Math.max(0, kit.readNumber(rowEl, ".oni-event-row-cam-seconds", DEFAULT_SECONDS))),
       motion: pickMotion(kit.readText(rowEl, ".oni-event-row-cam-motion", "smooth")),

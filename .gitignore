@@ -83,6 +83,8 @@
 !/tools/dungeon-links/**
 !/tools/skill-regression/
 !/tools/skill-regression/**
+!/tools/cutscene-port/
+!/tools/cutscene-port/**
 # forge-mirror: the sync tool is shared; the mirror itself (/forge-mirror/, ~1.2 GB of
 # Forge files plus manifest/config) is per machine and stays ignored by the /* rule above.
 !/tools/forge-mirror/
