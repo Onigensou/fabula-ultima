@@ -320,7 +320,10 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
     `sourceActorUuid` and `subjectActorUuid` are the REACTOR (see
     `TARGETED_PAYLOAD_KEYS`); the incoming creature is `attackerActorUuid`, and
     `target_ref: "trigger_attacker"` is how an effect row reaches it.
-    `TARGET_SPECIES_IS_*` there reads the WEARER. *(Pantie.)*
+    `TARGET_SPECIES_IS_*` there reads the WEARER. *(Pantie.)* Its HP is
+    **`ATTACKER_CURRENT_HP` / `ATTACKER_MAX_HP`**; compare HP percentages by
+    cross-multiplying (`ATTACKER_CURRENT_HP * MAX_HP < CUR_HP * ATTACKER_MAX_HP`)
+    so an unresolved creature (0/0) fails closed. *(Dullahan Armor.)*
 
 - **G7 — "Once per target" is `reaction_max_per_round` + `reaction_max_scope`,
   not a bespoke ledger.** Scope selects the bucket the quota counts into:

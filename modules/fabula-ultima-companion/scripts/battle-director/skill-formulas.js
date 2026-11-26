@@ -8,7 +8,7 @@
 // reactor itself. Prev: ALLY_COUNT / ANY_ALLY_IN_CRISIS for the Guest system;
 // TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT; pow(); ALL_TARGETS_HIT).
 // Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 12;
+export const SKILL_FORMULAS_SCHEMA = 13; // 13: ATTACKER_CURRENT_HP / ATTACKER_MAX_HP
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -1304,6 +1304,22 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (!subjectUuid) return 0;
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
+      }
+      // Current / Max HP of the creature ACTING ON the reactor — the HP twins of
+      // ATTACKER_SPECIES_IS_<X>. On `creature_targeted_by_action` the payload
+      // SUBJECT is the reactor itself, so TARGET_CURRENT_HP would read the wearer;
+      // these read `attackerActorUuid` (or `causeActorUuid`). First user: Dullahan
+      // Armor's "creatures with a lower HP percentage than yours deal less damage
+      // to you" (`ATTACKER_CURRENT_HP * MAX_HP < CUR_HP * ATTACKER_MAX_HP`).
+      // Unresolvable attacker → 0, so a cross-multiplied "<" gate fails closed.
+      case "ATTACKER_CURRENT_HP":
+      case "ATTACKER_MAX_HP": {
+        const attackerUuid = String(payload?.attackerActorUuid ?? payload?.causeActorUuid ?? "").trim();
+        if (!attackerUuid) return 0;
+        const attacker = _resolveActorByUuidSync(attackerUuid);
+        if (!attacker) return 0;
+        const key = name === "ATTACKER_CURRENT_HP" ? "current_hp" : "max_hp";
+        return Number(attacker?.system?.props?.[key] ?? 0) || 0;
       }
       // Total Max HP of the ACTION's targets (payload.targets, the token list every
       // chain step of the action sees). TARGET_MAX_HP needs a per-target subject,
