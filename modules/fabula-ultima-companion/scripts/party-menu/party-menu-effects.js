@@ -181,7 +181,7 @@ function sourceOf(eff, actor) {
 }
 
 function describeSource(item, hosted) {
-  return { name: item.name, kind: itemKind(item), description: textOf(item.system?.props?.description), hosted };
+  return { name: item.name, kind: itemKind(item), img: item.img ?? "", description: textOf(item.system?.props?.description), hosted };
 }
 
 // ── amounts (dry apply) ───────────────────────────────────────────────────────
@@ -316,7 +316,8 @@ function amountsOf(eff, change, ctx) {
     const n = typeof value === "number" ? value : Number(value);
     const numeric = value !== "" && value != null && typeof value !== "boolean" && Number.isFinite(n);
     const shown = namesFor(value) ?? str(value);
-    const base = { key, label, mode: change.mode };
+    // `n` / `raw`: the resolved value, for the Status page's Battle tab totals (Multiply ×1.10 = +10%).
+    const base = { key, label, mode: change.mode, n: numeric ? n : null, raw: str(value) };
     switch (change.mode) {
       case MODES.ADD:
         if (!numeric) return { ...base, ...present(key, change.mode, null, shown), active: value != null && str(value) !== "" && !Number.isNaN(value) };

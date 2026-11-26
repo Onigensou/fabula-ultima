@@ -36,6 +36,7 @@ import { bondsView, BONDS_CSS } from "./party-menu-view-bonds.js";
 import { bestiaryView, BESTIARY_CSS, pickBestiaryEntry } from "./party-menu-view-bestiary.js";
 import { configView, CONFIG_CSS } from "./party-menu-view-config.js";
 import { attachScrollbars } from "./party-menu-scrollbar.js";
+import { wireStatTips } from "./party-menu-stats.js";
 import { wireLinkTips, hideLinkTip, removeLinkTip } from "./party-menu-linktip.js";
 import { companionsOf, typeSection, aiPanel } from "./party-menu-companions.js";
 import { gateState } from "../levelup-system/levelup-gate.js";
@@ -375,6 +376,7 @@ function render() {
     if (el) el.scrollTop = top;
   }
   attachScrollbars(_root);
+  wireStatTips(_root);   // Status subtabs' hover card (once per root; reads the latest render's rows)
   _root.querySelector(".pm-picker-list .is-cursor")?.scrollIntoView({ block: "nearest" });
   if (searchHadFocus || S.picker?.focusSearch || S.focusSearch) {
     const inp = _root.querySelector(".pm-search");
@@ -1589,8 +1591,8 @@ function ensureStyles() {
 #${ROOT_ID} .pm-anim-pop .pm-picker-veil { animation: pm-fade 120ms linear var(--pm-tp, 0ms) both; }
 @media (prefers-reduced-motion: reduce) { #${ROOT_ID} .pm-stage[class*="pm-anim-"] * { animation: none !important; } }
 /* drawn scrollbar (party-menu-scrollbar.js): the native one is hidden on these boxes */
-#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody, .pm-aiwin) { scrollbar-width: none; }
-#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody, .pm-aiwin)::-webkit-scrollbar { width: 0; height: 0; }
+#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody, .pm-aiwin, .pm-btwrap) { scrollbar-width: none; }
+#${ROOT_ID} :is(.pm-skill-list, .pm-scroll, .pm-picker-list, .pm-effcard, .pm-cmpbody, .pm-aiwin, .pm-btwrap)::-webkit-scrollbar { width: 0; height: 0; }
 /* quiet at rest (thin ink thumb, no track); widens and warms to gold under the pointer */
 #${ROOT_ID} .pm-sbar { position: absolute; z-index: 3; width: 5px; border-radius: 3px; cursor: pointer;
   background: transparent; transition: width .15s ease, background-color .15s ease; }
@@ -1640,6 +1642,71 @@ function ensureStyles() {
 #${ROOT_ID} .pm-effamts b { text-align: right; font-variant-numeric: tabular-nums; }
 #${ROOT_ID} .pm-effsrc li.is-total { border-bottom: 0; font-weight: 700; color: var(--accent); }
 #${ROOT_ID} .pm-effcard .pm-desc { font-size: 13px; }
+/* status subtabs (party-menu-stats.js) — ported from the approved mockup (2026-11-26, round 9).
+   Read-only stat sheet: each section = one full-width header, rows flowing into two columns.
+   Icon rules use :is(i, svg): Foundry renders Font Awesome as <i>, the mockup's FA script as <svg>. */
+#${ROOT_ID} .pm-effpanel .pm-tabs { padding-left: 12px; align-items: center; gap: 4px 13px; }
+#${ROOT_ID} .pm-btwrap { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 2px 16px 0 8px; display: flex; flex-direction: column; gap: 12px; }
+#${ROOT_ID} .pm-btwrap-host { position: relative; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+#${ROOT_ID} .pm-btblock { min-width: 0; }
+#${ROOT_ID} .pm-bthead, #${ROOT_ID} .pm-btrow { display: grid; grid-template-columns: minmax(0, 1fr) 42px 52px; gap: 0 6px; }
+#${ROOT_ID} .pm-bthead { align-items: end; padding: 0 0 3px; margin-bottom: 2px;
+  background: linear-gradient(90deg, rgba(92,66,30,.55), rgba(92,66,30,.15) 70%, transparent) bottom / 100% 1px no-repeat; }
+#${ROOT_ID} .pm-bthead .pm-btttl { display: flex; align-items: center; gap: 7px; color: var(--ink-soft); font-weight: 700; font-size: 12.5px; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; }
+#${ROOT_ID} .pm-bthead .pm-btttl :is(i, svg) { width: 14px; text-align: center; color: var(--gold-3); }
+#${ROOT_ID} .pm-bthead .pm-btcol { text-align: right; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); opacity: .75; }
+#${ROOT_ID} .pm-btrow { align-items: baseline; padding: 0 2px; line-height: 1.32; border-radius: 4px; cursor: default; }
+#${ROOT_ID} .pm-btrow:hover { background: rgba(255,255,255,.35); }
+#${ROOT_ID} .pm-btrow.is-all { font-weight: 700; }
+#${ROOT_ID} .pm-btlabel { font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+#${ROOT_ID} .pm-btlabel :is(i, svg) { width: 13px; text-align: center; font-size: 12px; color: var(--ink-soft); opacity: .8; flex: 0 0 auto; }
+#${ROOT_ID} .pm-btv { text-align: right; font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#${ROOT_ID} .pm-btv.is-zero { color: var(--ink-dim); font-weight: 600; }
+#${ROOT_ID} .pm-btv.is-na { color: transparent; }
+#${ROOT_ID} .pm-btv.is-up { color: #2f7a2a; }
+#${ROOT_ID} .pm-btv.is-guard { color: var(--mp); }
+#${ROOT_ID} .pm-btv.is-bad { color: var(--low); }
+#${ROOT_ID} .pm-btv.is-rule { font-weight: 600; color: var(--ink); }
+#${ROOT_ID} .pm-btv.is-span { grid-column: span 2; }
+#${ROOT_ID} .pm-if { display: inline-block; margin-left: 3px; padding: 0 4px; border-radius: 999px; font-size: 9.5px; font-weight: 700; line-height: 1.45;
+  color: #9a4d00; background: rgba(240,170,70,.18); box-shadow: inset 0 0 0 1px rgba(170,95,20,.35); vertical-align: 2px; }
+#${ROOT_ID} .pm-btnote { margin-top: auto; padding: 6px 0 2px; border-top: 1px solid rgba(92,66,30,.3); font-size: 12px; color: var(--ink-soft); line-height: 1.4; }
+#${ROOT_ID} .pm-btnote .pm-grade { font-size: 11px !important; }
+#${ROOT_ID} .pm-btsplit .pm-bthead { grid-template-columns: minmax(0, 1fr) 42px 52px 22px minmax(0, 1fr) 42px 52px; }
+#${ROOT_ID} .pm-btsplitrows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 22px; grid-auto-flow: column; }
+/* Resistance: three columns of "status · grade" */
+#${ROOT_ID} .pm-btsplit.is-res .pm-bthead { grid-template-columns: minmax(0, 1fr); }
+#${ROOT_ID} .pm-btsplit.is-res .pm-btsplitrows { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 18px; }
+#${ROOT_ID} .pm-btsplit.is-res .pm-btrow { grid-template-columns: minmax(0, 1fr) 30px; }
+#${ROOT_ID} .pm-btsplit.is-res .pm-btlabel { font-size: 14px; gap: 6px; }
+#${ROOT_ID} .pm-sticon { width: 20px; height: 20px; flex: 0 0 auto; border: 0; border-radius: 3px; object-fit: contain; }
+#${ROOT_ID} .pm-sticon.is-blank { display: inline-block; }
+/* Weapons: the unit-inspect study card's weapon gauges (inspect-render.js .fui-wg*), plus a name column */
+#${ROOT_ID} .fui-wgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px 22px; grid-auto-flow: column; grid-template-rows: repeat(5, auto); padding: 2px 0 0; }
+#${ROOT_ID} .fui-wg { display: grid; grid-template-columns: 15px 66px minmax(0, 1fr) 40px; align-items: center; gap: 6px; height: 21px; border-radius: 3px; cursor: default; }
+#${ROOT_ID} .fui-wg:hover { background: rgba(255,255,255,.35); }
+#${ROOT_ID} .fui-wgi { display: flex; align-items: center; justify-content: center; font-size: 11.5px; color: var(--ink-soft); }
+#${ROOT_ID} .fui-wgn { font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#${ROOT_ID} .fui-wgb { position: relative; height: 6px; border-radius: 3px; background: rgba(59,42,25,.1); }
+#${ROOT_ID} .fui-wgb::after { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: rgba(59,42,25,.35); }
+#${ROOT_ID} .fui-wgb > i { position: absolute; top: 0; bottom: 0; border-radius: 3px; }
+#${ROOT_ID} .fui-wg b { font-size: 13px; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; color: #a89a84; }
+#${ROOT_ID} .fui-wg.up .fui-wgb > i { background: linear-gradient(90deg, #f26b5b, #c0261c); }
+#${ROOT_ID} .fui-wg.up b, #${ROOT_ID} .fui-wg.up .fui-wgi { color: #a3261b; }
+#${ROOT_ID} .fui-wg.down .fui-wgb > i { background: linear-gradient(270deg, #5aa8ff, #2e64a8); }
+#${ROOT_ID} .fui-wg.down b, #${ROOT_ID} .fui-wg.down .fui-wgi { color: #2e64a8; }
+/* hover card: the same parchment window, small */
+#${ROOT_ID} .pm-bttip { position: absolute; z-index: 30; width: 280px; padding: 9px 12px 8px; pointer-events: none; font-size: 13px; }
+#${ROOT_ID} .pm-bttip::after { display: none; }
+#${ROOT_ID} .pm-bttip .pm-tipname { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+#${ROOT_ID} .pm-bttip .pm-effsrc { margin: 0; }
+#${ROOT_ID} .pm-bttip .pm-effsrc li { align-items: center; }
+#${ROOT_ID} .pm-bttip .pm-effsrc li.is-off { opacity: .6; }
+#${ROOT_ID} .pm-bttip .pm-tipdim { color: var(--ink-soft); font-weight: 600; }
+#${ROOT_ID} .pm-srcname { display: flex; align-items: center; gap: 6px; min-width: 0; }
+#${ROOT_ID} .pm-srcico { width: 20px; height: 20px; flex: 0 0 auto; border: 1px solid var(--edge); border-radius: 4px; object-fit: cover; }
+#${ROOT_ID} .pm-srcico.is-blank { display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: var(--gold-3); background: rgba(59,42,25,.08); }
+#${ROOT_ID} .pm-bttip p { margin: 4px 0 0; color: var(--ink-soft); font-size: 12px; line-height: 1.35; }
 /* a guest's / summon's AI, under its action list on the Ability page */
 #${ROOT_ID} .pm-aiwin { flex: 0 1 auto; min-height: 0; max-height: 48%; overflow-y: auto; margin-bottom: 8px; padding: 0 16px 8px 0;
   border-bottom: 1px solid rgba(92,66,30,.35); }

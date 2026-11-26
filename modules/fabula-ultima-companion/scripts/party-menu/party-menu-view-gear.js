@@ -19,11 +19,14 @@
 import {
   equipSlotsOf, equipCandidates, equipRefusal, setEquipSlot, itemSummary, statusOf,
 } from "./party-menu-inventory.js";
-import { esc, safeHtml, play, SND, img, STAT, bar, portraitStrip, gridStep } from "./party-menu-ui.js";
+import { esc, safeHtml, play, SND, img, STAT, bar, portraitStrip, gridStep, kbd } from "./party-menu-ui.js";
 import { effectRowsOf } from "./party-menu-effects.js";
 import { previewEquip, peekPreview } from "./party-menu-gear-preview.js";
 import { vitalsOf } from "./party-menu-core.js";
 import { setBonusHTML } from "../linked-text/lt-setbonus.js";
+import { STAT_TABS, battleTab, resTab, wpnTab, socTab } from "./party-menu-stats.js";
+
+const STAT_TAB_RENDER = { bt: battleTab, res: resTab, wpn: wpnTab, soc: socTab };
 
 const EQUIP_REASONS = {
   "not-granted": "The GM hasn't opened the Equip menu to players.",
@@ -412,7 +415,9 @@ export const statusView = {
   title: "Status",
   usesCharacter: true,
 
-  enter(ctx) { ctx.S.v = { eff: 0 }; },
+  // The subtab (Effects | Battle | Resistance | Weapons | Social) is kept across
+  // characters and re-entries, so Q / E compares the same page for each member.
+  enter(ctx) { ctx.S.v = { eff: 0 }; ctx.S.statusTab ??= "eff"; },
 
   nav(ctx) { return { crumbs: [`Status · ${ctx.actor()?.name ?? ""}`], actions: [] }; },
 
@@ -452,6 +457,12 @@ export const statusView = {
         ${rowChips(r)}${ctx.S.pinned === r.key ? ctx.pinMark : ""}</div>`;
     }).join("") || `<div class="pm-empty">No active effects.</div>`;
     const sel = rows[v.eff];
+    const tab = STAT_TAB_RENDER[ctx.S.statusTab] ? ctx.S.statusTab : "eff";
+    const tabs = `<div class="pm-tabs">${STAT_TABS.map((t) => `<span class="pm-tab pm-hit ${t.id === tab ? "is-on" : ""}" data-action="st-tab" data-tab="${t.id}"><i class="fas ${t.icon}"></i>${t.label}</span>`).join("")}${kbd("Tab")}</div>`;
+    const panel = tab === "eff"
+      ? `<div class="pm-skill-list pm-onecol pm-efflist">${list}</div>
+            ${sel ? `<div class="pm-effcard" data-keep-scroll="eff|${esc(actor.id)}|${esc(sel.key)}">${ctx.S.pinned === sel.key ? ctx.pinCorner() : ""}${effectCard(sel)}</div>` : ""}`
+      : STAT_TAB_RENDER[tab](actor);
     return `
       <div class="pm-ability">
         ${ctx.nav()}
@@ -465,9 +476,8 @@ export const statusView = {
             <dl class="pm-facts pm-stfacts">${facts.map(([k, x]) => `<dt>${esc(k)}</dt><dd>${esc(x)}</dd>`).join("")}</dl>
           </div></div>
           <div class="pm-win pm-skills pm-effpanel">
-            <div class="pm-label">Active effects</div>
-            <div class="pm-skill-list pm-onecol pm-efflist">${list}</div>
-            ${sel ? `<div class="pm-effcard" data-keep-scroll="eff|${esc(actor.id)}|${esc(sel.key)}">${ctx.S.pinned === sel.key ? ctx.pinCorner() : ""}${effectCard(sel)}</div>` : ""}
+            ${tabs}
+            ${panel}
           </div>
         </div>
       </div>`;
@@ -477,6 +487,14 @@ export const statusView = {
     const v = ctx.S.v;
     if (k === "q" || k === "Q" || k === "PageUp" || k === "ArrowLeft") return ctx.cycleCharacter(-1);
     if (k === "e" || k === "E" || k === "PageDown" || k === "ArrowRight") return ctx.cycleCharacter(1);
+    if (k === "Tab") {
+      const ids = STAT_TABS.map((t) => t.id);
+      ctx.S.statusTab = ids[(ids.indexOf(ctx.S.statusTab ?? "eff") + 1) % ids.length];
+      ctx.S.pinned = null;
+      play(SND.move, 0.4); ctx.render(); return;
+    }
+    // The stat subtabs are read-only sheets: only Effects has a list to move through.
+    if ((ctx.S.statusTab ?? "eff") !== "eff") { if (k === "Escape") ctx.back(); return; }
     const rows = effectRowsOf(ctx.actor());
     const n = rows.length;
     // The pin travels with the keys.
@@ -490,6 +508,11 @@ export const statusView = {
   // A click pins the effect's card (clicking the pinned row releases it), so the
   // pointer can reach the card without hovering other rows on the way.
   async click(ctx, a, el) {
+    if (a === "st-tab") {
+      const id = el.dataset.tab;
+      if (id && id !== ctx.S.statusTab) { ctx.S.statusTab = id; ctx.S.pinned = null; play(SND.move, 0.4); ctx.render(); }
+      return;
+    }
     if (a !== "st-eff") return;
     const i = Number(el.dataset.index);
     const row = effectRowsOf(ctx.actor())[i];
