@@ -142,11 +142,13 @@ const freshEffect = (base) => {
 const pctEffect = (id, name, key, mult) => ({
   _id: id, name, img: ICON.crown, transfer: true, disabled: false, statuses: [], description: "",
   duration: {}, origin: null, sort: 0, tint: "#ffffff", type: "base", system: {},
-  // MULTIPLY after every flat add (priority 50, as Crippled); the round-up hook keeps it whole.
-  changes: [{ key, mode: 1, priority: 50, value: `\${isEquipped ? ${mult} : 1}$` }],
+  // Default MULTIPLY priority: the % applies to the sheet's base and adds together with
+  // other Max HP / MP % sources (shared/stat-rules.js rule 1, floored). Was priority 50
+  // + roundUp until 2026-11-26-mukuta-pct-rule (a one-time migration, so this edit only
+  // shapes fresh worlds).
+  changes: [{ key, mode: 1, value: `\${isEquipped ? ${mult} : 1}$` }],
   flags: {
     "custom-system-builder": { isFromTemplate: false },
-    [M]: { roundUp: [key] },
     statuscounter: { config: { multiplyEffect: true, type: "default" }, value: 1, visible: false },
   },
 });
