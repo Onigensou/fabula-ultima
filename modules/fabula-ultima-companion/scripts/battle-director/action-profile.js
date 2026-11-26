@@ -17,7 +17,7 @@
 import { log, warn } from "./logger.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
-  resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
+  resolveAccuracyParts, resolveOutgoingDamageParts, resolveOutgoingPct, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
   applyCritDamage, resolveIncomingReduction, applyHealReceiving, applyMpReceiving, normalizeDamageType, applyAdjustOp,
   shouldReverseHeal,
 } from "./skill-formulas.js";
@@ -272,6 +272,8 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
       // across its shots like the outgoing parts (applyVolleyToPrimary).
       grantDamageBonus: grantDb,
       outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
+      // Damage % (damage_outgoing_percentage_*), added together; folded into atkDmgMult.
+      outgoingPct: resolveOutgoingPct({ actor: liveAttacker, props, kind: rangeKind, elementType: element }),
       // overriddenElement drives the HEADLINE damage element (projectProfileToActionResult's
       // ladder reads it before nativeElement) — so a grant element override (Ripples: the
       // free attack "becomes the ally's element") must surface here too, else the per-target
@@ -343,6 +345,9 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
     mode: "damage", element, resource: isMpDamage ? "mp" : resourceForKeywords(keywords), isMpDamage,
     damageBonus,
     outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
+    // Damage % — same skip rule as the flat outgoing parts (MP damage / lifted flat damage).
+    outgoingPct: (isMpDamage || ar?._damageViaProfile) ? 0
+      : resolveOutgoingPct({ actor: liveAttacker, props, kind: dmgKind, elementType: element }),
     rangeKind: null, weaponKey,
     pierce: keywords.includes("pierce"),
     keywords,
@@ -599,9 +604,16 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
   // on a Volley Chain the attack's damage is shared over its shots, so each
   // shot's HR + weapon bonus is ×M/N (the shared flats are ×M in volleyPrimary).
   const _carrier = kind === "Attack" ? carrierDamageMults(weapon, primary.volley) : { shotMult: 1 };
-  const atkDmgMult = (Number(_fns.damage_dealt_mult_all) || 1) * (Number(_fns[_dealtKey]) || 1) * _carrier.shotMult;
+  // Damage % (shared/stat-rules.js rule 2): the attacker's damage_outgoing_percentage_*
+  // family, already summed by the primary builder — ×(1 + pct/100), never below 0.
+  const _outPct = Number(primary.outgoingPct) || 0;
+  const _outPctMult = Math.max(0, 1 + _outPct / 100);
+  const atkDmgMult = (Number(_fns.damage_dealt_mult_all) || 1) * (Number(_fns[_dealtKey]) || 1) * _carrier.shotMult * _outPctMult;
   const atkMultSource = () => {
     if (_carrier.shotMult !== 1) return `${weapon?.name ?? "Attack"} ×${weapon?.damageMult}${primary.volley ? ` ÷ ${primary.volley.shots} shots` : ""}`;
+    if (_outPct !== 0 && (Number(_fns.damage_dealt_mult_all) || 1) === 1 && (Number(_fns[_dealtKey]) || 1) === 1) {
+      return `Damage ${_outPct > 0 ? "+" : ""}${_outPct}%`;
+    }
     const aes = liveAttacker?.appliedEffects ?? liveAttacker?.effects?.contents ?? [];
     for (const ae of aes) {
       if (ae?.disabled) continue;

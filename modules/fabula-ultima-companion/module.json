@@ -467,6 +467,7 @@
   "esmodules": [
     "scripts/shared/third-party-leak-fixes.js",
     "scripts/shared/hp-floor.js",
+    "scripts/shared/stat-rules.js",
     "scripts/csb-extensions/csb-pattern-condition-guard.js",
     "scripts/shared/playlist-loop-points.js",
     "scripts/shared/exp-core.js",

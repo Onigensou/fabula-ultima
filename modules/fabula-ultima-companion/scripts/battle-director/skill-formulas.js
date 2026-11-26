@@ -34,6 +34,7 @@ import { log, warn } from "./logger.js";
 import { aliasCategories } from "./weapon-alias.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { orbmentReduction } from "../orbment/orbment-dr.js";
+import { effectiveReductionPct, outgoingPct } from "../shared/stat-rules.js";
 import { bossStage } from "./boss-rules/boss-rules.js";
 import { companionOf } from "../shared/companion-rule.js";
 import { wornItem } from "../shared/equipped-gear.js";
@@ -4322,6 +4323,17 @@ export function resolveOutgoingDamageParts({ actor = null, props = null, kind = 
   return parts;
 }
 
+// ── Outgoing Damage % (attacker side) ──────────────────────────────────
+// The `damage_outgoing_percentage_*` family (All + melee/ranged + spell +
+// element), ADDED together (shared/stat-rules.js). Returns a percent; the
+// caller folds ×(1 + pct/100) into its attacker damage multiplier.
+// `kind`: "melee" | "ranged" | "spell" | "item" | null.
+export function resolveOutgoingPct({ actor = null, props = null, kind = null, elementType = null } = {}) {
+  const p = props ?? actor?.system?.props ?? null;
+  const k = String(kind ?? "").toLowerCase();
+  return outgoingPct(p, { range: k === "melee" || k === "ranged" ? k : null, isSpell: k === "spell", element: elementType });
+}
+
 // ── Outgoing restore modifier ──────────────────────────────────────────
 // The heal/restore counterpart to resolveOutgoingDamageParts: a SINGLE source
 // of truth for "+X to a resource you restore", read by BOTH the card preview
@@ -4662,13 +4674,15 @@ export function resolveIncomingReduction({ actor = null, props = null, elementTy
 
   let v = base - flat;
 
-  // % reduction (sum the family, then 1 − pct/100).
+  // % reduction: sum the family (Orbment included), then the quiet diminishing
+  // curve (shared/stat-rules.js — exact to 30%, never 100%), then 1 − pct/100.
   let pct = 0;
   pct += _mnum(p.damage_receiving_percentage_all);
   if (r === "melee")  pct += _mnum(p.damage_receiving_percentage_melee);
   if (r === "ranged") pct += _mnum(p.damage_receiving_percentage_range);
   if (el && !isNullElement(el)) pct += _mnum(p[`damage_receiving_percentage_${el}`]);
   pct += orb.pct;
+  pct = effectiveReductionPct(pct);
   if (pct !== 0) {
     const mult = Math.max(0, 1 - pct / 100);
     const before = Math.ceil(Math.max(0, v));

@@ -234,8 +234,20 @@
     return total;
   }
 
-  // No outgoing-% key on sheet yet — placeholder returns 1.0
-  function getAttackerPctOutgoingMultiplier(_attackerProps) { return 1.0; }
+  // ── ATTACKER OUTGOING % ───────────────────────────────────────────
+  // Damage % (damage_outgoing_percentage_all / _melee / _ranged / _spell /
+  // _{element}), ADDED together — the shared rule in scripts/shared/stat-rules.js
+  // (published on globalThis because this file can't import), so this path and
+  // the Battle Director can never disagree.
+  function getAttackerPctOutgoingMultiplier(attackerProps, { elementType, attackRange, isSpellish } = {}) {
+    const rules = globalThis.FUStatRules;
+    if (!attackerProps || !rules?.outgoingPct) return 1.0;
+    const pct = rules.outgoingPct(attackerProps, {
+      range: normalizeAttackRange(attackRange), isSpell: !!isSpellish,
+      element: elementType && elementType !== "elementless" ? elementType : null,
+    });
+    return Math.max(0, 1 + pct / 100);
+  }
 
   // ── TARGET RECEIVING FLAT REDUCTION ──────────────────────────────
   // Sheet keys: damage_receiving_mod_all, _melee, _range (NOT _ranged), _{element}
@@ -252,16 +264,22 @@
 
   // ── TARGET RECEIVING % MULTIPLIER ────────────────────────────────
   // Sheet keys: damage_receiving_percentage_all, _melee, _range, _{element}
-  // Interpretation: "reduce by X%" → multiplier = 1 − X/100
-  function getTargetPctMultiplier(targetProps, { elementType, attackRange }) {
-    if (!targetProps) return 1;
-    let totalPct = _prop(targetProps, "damage_receiving_percentage_all");
-    const range = normalizeAttackRange(attackRange);
-    if (range === "melee")  totalPct += _prop(targetProps, "damage_receiving_percentage_melee");
-    if (range === "ranged") totalPct += _prop(targetProps, "damage_receiving_percentage_range");
-    if (elementType && elementType !== "elementless")
-      totalPct += _prop(targetProps, `damage_receiving_percentage_${elementType}`);
-    return Math.max(0, 1 - (totalPct / 100));
+  // Interpretation: "reduce by X%" → multiplier = 1 − X/100. The family (plus any
+  // `extraPct`, e.g. Orbment) is summed FIRST, then run through the quiet
+  // diminishing curve (stat-rules.js effectiveReductionPct: exact to 30%, never 100%).
+  function getTargetPctMultiplier(targetProps, { elementType, attackRange }, extraPct = 0) {
+    let totalPct = _num(extraPct);
+    if (targetProps) {
+      totalPct += _prop(targetProps, "damage_receiving_percentage_all");
+      const range = normalizeAttackRange(attackRange);
+      if (range === "melee")  totalPct += _prop(targetProps, "damage_receiving_percentage_melee");
+      if (range === "ranged") totalPct += _prop(targetProps, "damage_receiving_percentage_range");
+      if (elementType && elementType !== "elementless")
+        totalPct += _prop(targetProps, `damage_receiving_percentage_${elementType}`);
+    }
+    const curve = globalThis.FUStatRules?.effectiveReductionPct;
+    const pct = typeof curve === "function" ? curve(totalPct) : totalPct;
+    return Math.max(0, 1 - (pct / 100));
   }
 
   // ── AFFINITY ──────────────────────────────────────────────────────
@@ -377,7 +395,7 @@
     x += outgoingFlat;
     log.push({ step: 1, label: "Outgoing Flat", add: outgoingFlat, sheetFlat, actionBonus: _num(actionBonusFlat), value: x });
 
-    const sheetPctMult = getAttackerPctOutgoingMultiplier(attackerProps);
+    const sheetPctMult = getAttackerPctOutgoingMultiplier(attackerProps, ctx);
     const outgoingMult = Math.max(0, _num(actionOutgoingMult, 1)) * sheetPctMult;
     x *= outgoingMult;
     log.push({ step: 2, label: "Outgoing %", mult: outgoingMult, value: x });
@@ -393,7 +411,8 @@
     x -= targetFlat;
     log.push({ step: 3, label: "Target Flat Reduction", sub: targetFlat, orbment: orbDr.flat, value: x });
 
-    const targetPctMult = ignoreDR ? 1 : getTargetPctMultiplier(targetProps, ctx) * Math.max(0, 1 - orbDr.pct / 100);
+    // Orbment % joins the sum BEFORE the curve (same as the Battle Director).
+    const targetPctMult = ignoreDR ? 1 : getTargetPctMultiplier(targetProps, ctx, orbDr.pct);
     x *= targetPctMult;
     log.push({ step: 4, label: "Target % Mod", mult: targetPctMult, value: x });
 
