@@ -1,0 +1,24 @@
+{
+  "_comment": "PAPER EQUIPMENT — Dullahan Armor as SHIPPED v1.0.684: DEF 13 / MDEF 11; +5 damage to / -5 damage from creatures with a lower HP % than the wearer. Registry: lib/reactions.js \"Dullahan Armor Flat (Passive)\".",
+  "name": "Dullahan Armor",
+  "system": {
+    "props": {
+      "item_type": "armor",
+      "item_rarity": "Rare",
+      "isMartial": true,
+      "item_baseDef": "13",
+      "item_baseMdef": "11",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_cost": "3200"
+    }
+  },
+  "items": [
+    {
+      "name": "Dullahan Armor Flat (Passive)",
+      "props": {
+        "skill_type": "Passive"
+      }
+    }
+  ]
+}

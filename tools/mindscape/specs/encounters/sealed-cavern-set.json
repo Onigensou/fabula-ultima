@@ -1,0 +1,127 @@
+{
+  "_comment": "Sealed Cavern (Valley_Map010) spawn groups, one per Encounter row (12 rows; the Carlbero solo row excluded like the house set excludes solo bosses). Party level = the group highest Nox level (Exec 48, Priest/Wraith 46, Ghoul/Viper 45, Hound 44); guest rows use 45. Built 2026-11-26 to price Dullahan Armor where it drops.",
+  "encounters": [
+    {
+      "id": "sc-1",
+      "dungeon": "Sealed Cavern",
+      "level": 45,
+      "enemies": [
+        "Nox Ghoul",
+        "Nox Ghoul",
+        "Nox Hound",
+        "Nox Hound"
+      ]
+    },
+    {
+      "id": "sc-2",
+      "dungeon": "Sealed Cavern",
+      "level": 45,
+      "enemies": [
+        "Nox Hound",
+        "Nox Viper",
+        "Nox Hound"
+      ]
+    },
+    {
+      "id": "sc-3",
+      "dungeon": "Sealed Cavern",
+      "level": 46,
+      "enemies": [
+        "Nox Ghoul",
+        "Nox Wraith",
+        "Nox Ghoul"
+      ]
+    },
+    {
+      "id": "sc-4",
+      "dungeon": "Sealed Cavern",
+      "level": 45,
+      "enemies": [
+        "Nox Ghoul",
+        "Nox Viper",
+        "Nox Ghoul"
+      ]
+    },
+    {
+      "id": "sc-5",
+      "dungeon": "Sealed Cavern",
+      "level": 46,
+      "enemies": [
+        "Nox Hound",
+        "Nox Wraith",
+        "Nox Ghoul"
+      ]
+    },
+    {
+      "id": "sc-6",
+      "dungeon": "Sealed Cavern",
+      "level": 46,
+      "enemies": [
+        "Nox Hound",
+        "Nox Priest",
+        "Nox Hound"
+      ]
+    },
+    {
+      "id": "sc-7",
+      "dungeon": "Sealed Cavern",
+      "level": 46,
+      "enemies": [
+        "Nox Ghoul",
+        "Nox Priest",
+        "Nox Hound"
+      ]
+    },
+    {
+      "id": "sc-8",
+      "dungeon": "Sealed Cavern",
+      "level": 48,
+      "enemies": [
+        "Nox Hound",
+        "Nox Executioner",
+        "Nox Hound"
+      ]
+    },
+    {
+      "id": "sc-9",
+      "dungeon": "Sealed Cavern",
+      "level": 48,
+      "enemies": [
+        "Nox Ghoul",
+        "Nox Executioner",
+        "Nox Ghoul"
+      ]
+    },
+    {
+      "id": "sc-10",
+      "dungeon": "Sealed Cavern",
+      "level": 45,
+      "enemies": [
+        "Obsidrax",
+        "Nox Viper",
+        "Obsidrax"
+      ]
+    },
+    {
+      "id": "sc-11",
+      "dungeon": "Sealed Cavern",
+      "level": 45,
+      "enemies": [
+        "Nox Hound",
+        "Kurona",
+        "Kurona",
+        "Nox Hound"
+      ]
+    },
+    {
+      "id": "sc-12",
+      "dungeon": "Sealed Cavern",
+      "level": 45,
+      "enemies": [
+        "Nox Ghoul",
+        "Roo",
+        "Nox Ghoul"
+      ]
+    }
+  ]
+}

@@ -593,6 +593,7 @@ function noteCrisis(state, c) {
 function riderCtx(state, actor, action, victim) {
   return {
     sourceAction: action.name,
+    attacker: actor,
     victim,
     victimInCrisis: victim.hp > 0 && victim.hp <= victim.maxHp / 2,
     attackerInCrisis: actor.hp > 0 && actor.hp <= actor.maxHp / 2,
@@ -616,8 +617,13 @@ function applyTakeHitReactions(state, attacker, victim, out, element) {
   let dmg = out.damage;
   for (const r of RX.collect(victim, RX.TRIGGERS.ON_TAKE_HIT, ctx)) {
     if (r.effect?.kind !== "damage_taken_mult") continue;
-    const f = Number(r.effect.factor);
+    const f = typeof r.effect.factor === "function" ? Number(r.effect.factor({ ...ctx, damage: dmg })) : Number(r.effect.factor);
     dmg = Math.max(0, Math.ceil(dmg * (Number.isFinite(f) ? f : 1)));
+  }
+  // Flat incoming reduction (live: creature_targeted_by_action incoming subtract N).
+  for (const r of RX.collect(victim, RX.TRIGGERS.ON_TAKE_HIT, { ...ctx, damage: dmg })) {
+    if (r.effect?.kind !== "damage_taken_add") continue;
+    dmg = Math.max(0, dmg + (Number(r.effect.amount) || 0));
   }
   for (const r of RX.collect(victim, RX.TRIGGERS.ON_TAKE_HIT, { ...ctx, damage: dmg })) {
     if (r.effect?.kind !== "survive_at_one") continue;
@@ -677,7 +683,7 @@ function damageMultiplierFor(state, actor, action, victim) {
   const ctx = riderCtx(state, actor, action, victim);
   let mult = 1;
   for (const r of RX.collect(actor, RX.TRIGGERS.ON_DEAL_DAMAGE, ctx)) {
-    if (r.effect?.kind === "damage_mult") mult *= Number(r.effect.factor) || 1;
+    if (r.effect?.kind === "damage_mult") mult *= (typeof r.effect.factor === "function" ? Number(r.effect.factor(ctx)) : Number(r.effect.factor)) || 1;
   }
   return mult;
 }

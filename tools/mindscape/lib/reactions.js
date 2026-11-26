@@ -121,6 +121,18 @@ function evenRoundBasicAttack(ctx) {
 // an efficiency axis modelled twice is an efficiency axis that can disagree
 // with itself.
 
+// HP-% gap in points: wearer's HP % minus the other creature's (> 0 = the other is lower).
+function dullahanGap(wearer, other) {
+  const pct = (c) => (c && Number(c.maxHp) > 0 ? (Number(c.hp) / Number(c.maxHp)) * 100 : null);
+  const w = pct(wearer), o = pct(other);
+  return w == null || o == null ? 0 : w - o;
+}
+// Proposal ladder: 10 % at any positive gap, +1 % per full 10 points, capped at 15 %.
+function dullahanPct(gap) {
+  if (!(gap > 0)) return 0;
+  return Math.min(15, 10 + Math.floor(gap / 10));
+}
+
 const REACTION_REGISTRY = Object.freeze({
   // ── Skizzik ───────────────────────────────────────────────────────────────
   "Lightning Counter": {
@@ -387,6 +399,40 @@ const REACTION_REGISTRY = Object.freeze({
       gate: (ctx) => String(ctx?.element ?? "").toLowerCase() === "fire",
       effect: { kind: "damage_mult", factor: 1.1 },
       note: "the wearer's Fire damage × 1.1",
+    },
+  ],
+  // Dullahan Armor (Rare martial, Sealed Cavern steal, 2026-11-26). Gate = the other
+  // creature's HP % is strictly LOWER than the wearer's. Live: creature_will_deal_damage
+  // outgoing + creature_targeted_by_action incoming, cross-multiplied HP gates.
+  //   "Dullahan Armor Flat (Passive)" — what shipped in v1.0.684: +5 dealt / −5 taken.
+  //   "Dullahan Armor (Passive)"      — proposal 2026-11-26: ±10 %, +1 % per 10 points of
+  //                                     HP-% gap, cap ±15 % (reached at a 50-point gap).
+  "Dullahan Armor Flat (Passive)": [
+    {
+      trigger: TRIGGERS.ON_DEAL_DAMAGE,
+      gate: (ctx) => dullahanGap(ctx?.attacker, ctx?.victim) > 0,
+      effect: { kind: "damage_add", amount: 5 },
+      note: "+5 vs a creature with a lower HP % than the wearer",
+    },
+    {
+      trigger: TRIGGERS.ON_TAKE_HIT,
+      gate: (ctx) => dullahanGap(ctx?.victim, ctx?.attacker) > 0,
+      effect: { kind: "damage_taken_add", amount: -5 },
+      note: "−5 from a creature with a lower HP % than the wearer",
+    },
+  ],
+  "Dullahan Armor (Passive)": [
+    {
+      trigger: TRIGGERS.ON_DEAL_DAMAGE,
+      gate: (ctx) => dullahanGap(ctx?.attacker, ctx?.victim) > 0,
+      effect: { kind: "damage_mult", factor: (ctx) => 1 + dullahanPct(dullahanGap(ctx?.attacker, ctx?.victim)) / 100 },
+      note: "× (1 + 10..15 %) vs a lower HP % (gap-scaled)",
+    },
+    {
+      trigger: TRIGGERS.ON_TAKE_HIT,
+      gate: (ctx) => dullahanGap(ctx?.victim, ctx?.attacker) > 0,
+      effect: { kind: "damage_taken_mult", factor: (ctx) => 1 - dullahanPct(dullahanGap(ctx?.victim, ctx?.attacker)) / 100 },
+      note: "× (1 − 10..15 %) from a lower HP % (gap-scaled)",
     },
   ],
   // Legendary Arcane weapon (2026-09-14): a hit with the weapon gives the target 1

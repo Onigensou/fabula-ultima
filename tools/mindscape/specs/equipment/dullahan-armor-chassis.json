@@ -1,0 +1,17 @@
+{
+  "_comment": "PAPER EQUIPMENT — Dullahan Armor CHASSIS ONLY (2026-11-26): Rare martial, DEF 13 / MDEF 11, no passive. Reads what the stats alone are worth.",
+  "name": "Dullahan Armor",
+  "system": {
+    "props": {
+      "item_type": "armor",
+      "item_rarity": "Rare",
+      "isMartial": true,
+      "item_baseDef": "13",
+      "item_baseMdef": "11",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_cost": "3200"
+    }
+  },
+  "items": []
+}
