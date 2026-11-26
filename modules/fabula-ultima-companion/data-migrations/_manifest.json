@@ -841,6 +841,10 @@
     {
       "key": "2026-11-26-mukuta-pct-rule",
       "path": "data-migrations/2026-11-26-mukuta-pct-rule.js"
+    },
+    {
+      "key": "2026-11-26-dullahan-pct",
+      "path": "data-migrations/2026-11-26-dullahan-pct.js"
     }
   ]
 }

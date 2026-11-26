@@ -127,10 +127,10 @@ function dullahanGap(wearer, other) {
   const w = pct(wearer), o = pct(other);
   return w == null || o == null ? 0 : w - o;
 }
-// Proposal ladder: 10 % at any positive gap, +1 % per full 10 points, capped at 15 %.
+// Approved ladder (2026-11-26): 5 % at any positive gap, +1 % per full 10 points, capped at 10 %.
 function dullahanPct(gap) {
   if (!(gap > 0)) return 0;
-  return Math.min(15, 10 + Math.floor(gap / 10));
+  return Math.min(10, 5 + Math.floor(gap / 10));
 }
 
 const REACTION_REGISTRY = Object.freeze({
@@ -405,8 +405,8 @@ const REACTION_REGISTRY = Object.freeze({
   // creature's HP % is strictly LOWER than the wearer's. Live: creature_will_deal_damage
   // outgoing + creature_targeted_by_action incoming, cross-multiplied HP gates.
   //   "Dullahan Armor Flat (Passive)" — what shipped in v1.0.684: +5 dealt / −5 taken.
-  //   "Dullahan Armor (Passive)"      — proposal 2026-11-26: ±10 %, +1 % per 10 points of
-  //                                     HP-% gap, cap ±15 % (reached at a 50-point gap).
+  //   "Dullahan Armor (Passive)"      — approved 2026-11-26: ±5 %, +1 % per 10 points of
+  //                                     HP-% gap, cap ±10 % (reached at a 50-point gap).
   "Dullahan Armor Flat (Passive)": [
     {
       trigger: TRIGGERS.ON_DEAL_DAMAGE,
