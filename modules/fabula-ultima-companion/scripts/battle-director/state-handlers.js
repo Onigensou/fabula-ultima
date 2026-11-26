@@ -2653,17 +2653,20 @@ async function maybeRunBreakFree(director, snap) {
 // Turn-start recovery checks (Stunned, Sleep): any AE with a `recoveryCheck` flag
 // rolls its Check for the acting creature. Token-first actor resolution, same as
 // the break-free above (an unlinked NPC's status lives on its synthetic actor).
+// Returns true when a status is still on after its check: the turn is lost.
 async function maybeRunRecoveryChecks(director, snap) {
   try {
-    if (!snap?.actorUuid && !snap?.tokenUuid) return;
-    if (director?.ctx?.endOfCombat) return;
+    if (!snap?.actorUuid && !snap?.tokenUuid) return false;
+    if (director?.ctx?.endOfCombat) return false;
     let actor = null;
     if (snap.tokenUuid) actor = (await fromUuid(snap.tokenUuid).catch(() => null))?.actor ?? null;
     if (!actor && snap.actorUuid) actor = await fromUuid(snap.actorUuid).catch(() => null);
-    if (!actor || !recoveryStatusesOn(actor).length) return;
-    await runRecoveryChecks(actor, { name: snap.name });
+    if (!actor || !recoveryStatusesOn(actor).length) return false;
+    const rc = await runRecoveryChecks(actor, { name: snap.name });
+    return rc.blocked;
   } catch (e) {
     warn("Recovery check: maybeRunRecoveryChecks threw", e);
+    return false;
   }
 }
 
@@ -3120,9 +3123,12 @@ const TurnStart = {
     await maybeRunBreakFree(director, snap);
 
     // Stunned / Sleep recovery check (status-recovery.js) — free and automatic.
-    // Must run before the turn_start window below: a pass deletes the status,
-    // so its own "skip this turn" row never fires and the creature acts.
-    await maybeRunRecoveryChecks(director, snap);
+    // A pass deletes the status and the turn goes on. A fail loses the turn: the
+    // turn_start window still runs (turn-start ticks, other creatures' reactions),
+    // then the turn goes straight to CLEANUP → TURN_END instead of DECLARE, which
+    // spends the activation and ticks the status's lifetime.
+    const _recoveryLost = await maybeRunRecoveryChecks(director, snap);
+    if (_recoveryLost) log(`TURN_START: ${snap?.name ?? "?"} cannot act (recovery check failed) — turn lost`);
 
     await cue.untilInput();
 
@@ -3132,7 +3138,7 @@ const TurnStart = {
     // turn matches. Payload carries the acting actor's uuid for those
     // filters. After standalone resolves → DECLARE.
     director.ctx.standaloneTrigger = "turn_start";
-    director.ctx.standaloneAfter   = STATES.DECLARE;
+    director.ctx.standaloneAfter   = _recoveryLost ? STATES.CLEANUP : STATES.DECLARE;
     director.ctx.standalonePayload = {
       actingActorUuid: snap?.actorUuid,
       actingTokenUuid: snap?.tokenUuid,

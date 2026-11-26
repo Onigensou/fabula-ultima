@@ -16,7 +16,8 @@
  *   recoveryCheck {attr1, attr2, dl}  status-recovery.js (TURN_START + turn-less summons)
  *   noReapply: true                   skill-effects apply_ae
  *   change disable_action = "All"     reaction gate + menus (snapshot.js expandAllLabels)
- *   turn_start force row modify_turns −1  skips the turn when the check failed
+ * A failed check ends the turn in the engine (TURN_START → CLEANUP); Sleep's old
+ * turn_start modify_turns row is removed.
  *
  * Writes:
  *   1. "Stunned" AE on the Debuff library (fixed id StunnedAE0000001, status
@@ -62,19 +63,6 @@ const journalText = (icon, rules, basicId, basicLabel) =>
   `<p><img style="display:block;margin-left:auto;margin-right:auto" src="${BF}${icon}" alt="" width="21" height="21" /></p>\n${rules}\n`
   + `<p><strong>Basic Condition:</strong></p>\n<p>${jlink(basicId, basicLabel)}</p>`;
 
-// The turn_start "skip this turn" row (runs only if the recovery check failed — a
-// pass deleted the AE before the turn_start window) and Sleep's wake row.
-function skipRow(label) {
-  return {
-    condition_formula: "", reaction_action_intent: "", reaction_action_kind: "", reaction_action_target: "",
-    reaction_cause_filter: "", reaction_damage_source: "", reaction_effect_ref: label, reaction_max_per_round: "",
-    reaction_max_scope: "", reaction_origin_filter: "", reaction_ownership: "", reaction_passive_mode: "force",
-    reaction_passive_target: "", reaction_requires_weapon_used: false, reaction_resource_filter: "", reaction_responder: "",
-    reaction_source: "self", reaction_source_skill: "", reaction_status_filter: "", reaction_subject_kind: "",
-    reaction_trigger: "turn_start", requires_skill: "",
-  };
-}
-
 const STUNNED = {
   _id: STUN_AE_ID,
   name: "Stunned",
@@ -90,10 +78,6 @@ const STUNNED = {
       charges: 1, chargesMax: 1, lifetimeMode: "target_turn_end",
       recoveryCheck: { attr1: "MIG", attr2: "WLP", dl: 10 },
       noReapply: true,
-      reactionConfig: {
-        effect_table: { 0: { effect_kind: "modify_turns", effect_label: "stun_skip", turns_delta: "-1", turns_floor: "0" } },
-        reaction_config_table: { 0: skipRow("stun_skip") },
-      },
     },
     // Same shape as Corroded / Armor Break: CSB keeps the fixed id only with these,
     // and Convenient Effects resolves the status through them.
@@ -123,14 +107,25 @@ function sleepUpdate(e, library) {
   const rc = f.recoveryCheck ?? {};
   if (rc.attr1 !== "INS" || rc.attr2 !== "WLP" || Number(rc.dl) !== 10) { upd[`flags.${M}.recoveryCheck`] = { attr1: "INS", attr2: "WLP", dl: 10 }; n++; }
   if (f.noReapply !== true) { upd[`flags.${M}.noReapply`] = true; n++; }
-  // Wake row: find the creature_lose_resource row by trigger, not by index.
+  // Rows found by trigger / label, not by index. The old turn_start "sleep_skip"
+  // (modify_turns −1) goes: the engine now ends the turn itself on a failed check,
+  // and modify_turns at turn start only cut a LATER activation (a multi-turn boss
+  // lost an extra turn; nobody else lost anything).
   const rows = f.reactionConfig?.reaction_config_table ?? {};
   for (const [k, r] of Object.entries(rows)) {
+    if (r?.reaction_trigger === "turn_start" && r?.reaction_effect_ref === "sleep_skip") {
+      upd[`flags.${M}.reactionConfig.reaction_config_table.-=${k}`] = null;
+      n++;
+      continue;
+    }
     if (r?.reaction_trigger !== "creature_lose_resource") continue;
     if (String(r.condition_formula ?? "").trim() !== WAKE_GATE) {
       upd[`flags.${M}.reactionConfig.reaction_config_table.${k}.condition_formula`] = WAKE_GATE;
       n++;
     }
+  }
+  for (const [k, row] of Object.entries(f.reactionConfig?.effect_table ?? {})) {
+    if (row?.effect_label === "sleep_skip") { upd[`flags.${M}.reactionConfig.effect_table.-=${k}`] = null; n++; }
   }
   if (library) {
     if (Number(f.charges) !== 3) { upd[`flags.${M}.charges`] = 3; n++; }

@@ -5,17 +5,17 @@
 //   flags["fabula-ultima-companion"].recoveryCheck = { attr1: "MIG", attr2: "WLP", dl: 10 }
 // gets a free, automatic Check for its bearer:
 //   - creatures with turns (PCs, monsters, guests, summons with turns): at TURN_START,
-//     after the Grappled break-free and BEFORE the turn_start reaction window. A pass
-//     deletes the AE, so the status's own turn_start "skip the turn" row never fires
-//     and the creature acts normally. A fail leaves it; the row skips the turn and the
-//     status's lifetime (target_turn_end charges) runs out as usual.
+//     after the Grappled break-free. A pass deletes the AE and the creature acts
+//     normally. A fail leaves it and loses the turn: TURN_START routes the turn_start
+//     window to CLEANUP instead of DECLARE (state-handlers.js), so the activation is
+//     spent and the status's lifetime (target_turn_end charges) ticks as usual.
 //   - turn-less summons (phantasms, Numen, companions: 0 turns a round, they act only
 //     through a free_action grant): when that grant is about to run. A fail skips the
 //     granted action and spends one charge, since their own turn never comes to tick it.
 //
-// The skip and the "no reactions" part are NOT here: the skip is the status's own
-// turn_start row (modify_turns −1), reactions are blocked by its disable_action
-// change through the shared reaction gate (skill-effects getReactionGate).
+// "No reactions" is NOT here: the status's disable_action "All" change blocks them
+// through the shared reaction gate (skill-effects getReactionGate), and blocks every
+// action menu while it is on.
 //
 // No-reapply (`noReapply: true` on the same flags) lives in apply_ae.
 
