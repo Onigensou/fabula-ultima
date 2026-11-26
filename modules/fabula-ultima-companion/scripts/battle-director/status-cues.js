@@ -12,6 +12,7 @@
 //   silence   speech bubble beside the head with "…" filling in
 //   provoked  throbbing red anger vein at the temple (taunts too)
 //   sleep     three Zs drifting up from the head
+//   stun      three yellow stars circling the head (Stunned, 2026-11-27)
 //   berserk   red rage aura: a throbbing red underglow, red streaks ripping up off the body + red wash
 //   armorbreak / magicbreak   beside the chest on the unit's back side, just outside the
 //             frame: the word DEF / MDEF + a small bobbing down arrow, no tile or frame,
@@ -164,6 +165,11 @@ function ensureStyles() {
   text-shadow: 1px 0 0 #34407a, -1px 0 0 #34407a, 0 1px 0 #34407a, 0 -1px 0 #34407a, 0 0 4px rgba(52,64,122,.7); }
 @keyframes fuCueZ { 0% { opacity: 0; transform: translate(0,0) rotate(-8deg) scale(.6); } 20% { opacity: 1; }
   100% { opacity: 0; transform: translate(calc(26px * var(--k)), calc(-38px * var(--k))) rotate(10deg) scale(1.15); } }
+/* stunned: three yellow stars circling the head (an ellipse; the front of the loop is larger) */
+.fu-cue .stn b { left: 0; top: 0; margin: calc(-7px * var(--k)); font: 900 calc(14px * var(--k))/1 "Signika", sans-serif; color: #ffd84a;
+  text-shadow: 1px 0 0 #6b4a00, -1px 0 0 #6b4a00, 0 1px 0 #6b4a00, 0 -1px 0 #6b4a00, 0 0 5px rgba(255,210,60,.8);
+  animation: fuCueStar 1.5s linear infinite; }
+@keyframes fuCueStar { 0% { transform: translate(calc(16px * var(--k)), 0) scale(.85); opacity: .8; } 12.5% { transform: translate(calc(11.3px * var(--k)), calc(3.5px * var(--k))) scale(1.06); opacity: .94; } 25% { transform: translate(0, calc(5px * var(--k))) scale(1.15); opacity: 1; } 37.5% { transform: translate(calc(-11.3px * var(--k)), calc(3.5px * var(--k))) scale(1.06); opacity: .94; } 50% { transform: translate(calc(-16px * var(--k)), 0) scale(.85); opacity: .8; } 62.5% { transform: translate(calc(-11.3px * var(--k)), calc(-3.5px * var(--k))) scale(.64); opacity: .66; } 75% { transform: translate(0, calc(-5px * var(--k))) scale(.55); opacity: .6; } 87.5% { transform: translate(calc(11.3px * var(--k)), calc(-3.5px * var(--k))) scale(.64); opacity: .66; } 100% { transform: translate(calc(16px * var(--k)), 0) scale(.85); opacity: .8; } }
 /* armor break / magic break: the word DEF / MDEF + a small down arrow that bobs (a status
    visual beside the body, not an icon tile). --c = the word's font size. */
 .fu-cue .brk { display: flex; align-items: center; gap: calc(var(--c) * .08); white-space: nowrap;
@@ -369,6 +375,11 @@ function cueHTML(token, cues, w, H) {
   if (cues.has("sleep")) {
     h += `<span class="zz" style="left:${px(hx + 8 * k)};top:${px(hy - 22 * k)}">`
       + [0, 1, 2].map((i) => `<b style="--z:${px((12 + i * 5) * k)};animation-delay:-${(i * 0.8).toFixed(1)}s">Z</b>`).join("")
+      + `</span>`;
+  }
+  if (cues.has("stun")) {
+    h += `<span class="stn" style="left:${px(hx)};top:${px(hy - 14 * k)}">`
+      + [0, 1, 2].map((i) => `<b style="animation-delay:-${(i * 0.5).toFixed(1)}s">★</b>`).join("")
       + `</span>`;
   }
   h += sfCueHTML(id, cues, w, H, rng, px);   // Spell Fencer rhythm auras (spell-fencer-cues.js)

@@ -101,6 +101,10 @@ const DATA = [
   ["Paralyzed",   "GqqgHkKOs0hkghdG", BF + "Paralyze.png",               "status"],
   ["Petrify",     "thBevyZDOURijH8I", SK + "BLU/peripheral_synthesis.png","status"],
   ["Silence",     "Q8FTFPsXVpNj2zxT", BF + "Silence.png",                "status"],
+  // Sleep + Stunned (2026-11-27): turn-start recovery checks (status-recovery.js).
+  // Stunned's journal is created by data-migrations/2026-11-27-stunned-sleep.js.
+  ["Sleep",       "rXZqaRSx0ctgqepa", BF + "Sleep.png",                  "status"],
+  ["Stunned",     "StunnedKeyword01", BF + "Stun.png",                   "status"],
   ["Stagger",     "IBN7DtvWLFDo8jNh", BF + "Dark.png",                   "status"],
   ["Suppress",    "NTvswy65a5N2fh09", SK + "05_SCH/art_of_war.png",      "status"],
   ["Turbulence",  "vzkQ7MNkmqRDJIXV", SK + "BLU/alpine_draft.png",       "status"],
@@ -254,6 +258,8 @@ const DESC = {
   "GqqgHkKOs0hkghdG": "<p>❌ Disable the use of <strong>【Skill】</strong>Action</p><p><strong>Basic Condition:</strong></p><p>Slow</p>",
   "thBevyZDOURijH8I": "<p>Gain vulnerability to <strong>Earth</strong> damage. This creature is treated as <strong>Construct.</strong></p><p><em>(This debuff cannot overrides Immunity or Absorption)</em></p>",
   "Q8FTFPsXVpNj2zxT": "<p>❌ This creature cannot use the <strong>【Spell】</strong>Action.</p><p><strong>Basic Condition:</strong></p><p>Dazed</p>",
+  "rXZqaRSx0ctgqepa": "<p>❌ Cannot act or perform reactions.</p><p>At the start of your turn, roll <strong>【INS + WLP】</strong> DL 10. On a success, Sleep ends.</p><p>Taking damage ends Sleep.</p><p>Lasts 3 rounds. Cannot be reapplied while active.</p><p><strong>Basic Condition:</strong></p><p>Dazed</p>",
+  "StunnedKeyword01": "<p>❌ Cannot act or perform reactions.</p><p>At the start of your turn, roll <strong>【MIG + WLP】</strong> DL 10. On a success, Stunned ends and you act normally.</p><p>Lasts until the end of your next turn. Cannot be reapplied while active.</p><p><strong>Basic Condition:</strong></p><p>Weak</p>",
   "IBN7DtvWLFDo8jNh": "<p>❌This creature cannot use the <strong>【Guard】</strong>Action.</p><p><strong>Basic Condition:</strong></p><p>Weak</p>",
   "NTvswy65a5N2fh09": "<p>Disable the effect of <strong>Passive </strong>Skill</p><p><em>(Skill which grant you benefit without the need to perform any Action or Attack are considered Passive eg. Melee Weapon Mastery, Resourceful, Dark Blood etc.)</em></p><p><strong>Basic Condition:</strong></p><p>Shaken</p>",
   "vzkQ7MNkmqRDJIXV": "<p>Gain vulnerability to <strong>Air</strong> damage.</p><p><em>(This debuff cannot overrides Immunity or Absorption)</em></p>",

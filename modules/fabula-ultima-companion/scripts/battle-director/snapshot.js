@@ -1365,6 +1365,11 @@ const ACTION_LABEL_INTENT = Object.freeze({
   Attack: "harmful", Hinder: "harmful",
   Guard: "aid", Study: "neutral", Objective: "neutral", Equipment: "neutral",
 });
+// `disable_action: All` → every gateable label (Stunned / Sleep).
+export function expandAllLabels(list) {
+  return list.some((l) => String(l).trim().toLowerCase() === "all") ? [...GATEABLE_ACTION_LABELS] : list;
+}
+
 export function canonActionLabel(raw) {
   const k = String(raw ?? "").trim().toLowerCase();
   return _ACTION_LABEL_CANON.get(k) ?? String(raw ?? "").trim();
@@ -1460,6 +1465,9 @@ export function skillTargetIsUpTo(skillTargetText) {
 //   key "disable_action"      value = comma-list of labels to BLOCK
 //                             (Frightened→Attack, Silence→Spell, Confused→Objective,
 //                              Disarmed→Equipment)
+//                             "All" = every GATEABLE label (Stunned, Sleep: cannot
+//                             act or react; the turn itself is skipped by the
+//                             status's own turn_start row)
 //   key "enable_action_only"  value = comma-list of the ONLY allowed labels;
 //                             every other GATEABLE label is blocked
 //                             (Berserk→Attack = "disable all except Attack")
@@ -1491,7 +1499,7 @@ export function getBlockedActionLabels(actor) {
     const reason = String(ae?.name ?? "").trim() || "Disabled";
     for (const ch of (ae?.changes ?? [])) {
       if (ch?.key === "disable_action") {
-        for (const lbl of splitList(ch.value)) add(lbl, reason);
+        for (const lbl of expandAllLabels(splitList(ch.value))) add(lbl, reason);
       } else if (ch?.key === "disable_action_while_grappling") {
         holds ??= grappleHoldCount(actor);   // read once, only when a lockout row exists
         for (const lbl of grappleLockoutLabels(ch.value, holds)) add(lbl, reason);
@@ -1566,7 +1574,7 @@ export function getActionLabelBlockers(actor) {
     const slug = _gatingSlug(ae?.name) || "__unnamed__";
     for (const ch of (ae?.changes ?? [])) {
       if (ch?.key === "disable_action") {
-        for (const lbl of splitList(ch.value)) add(lbl, reason, slug);
+        for (const lbl of expandAllLabels(splitList(ch.value))) add(lbl, reason, slug);
       } else if (ch?.key === "disable_action_while_grappling") {
         holds ??= grappleHoldCount(actor);
         for (const lbl of grappleLockoutLabels(ch.value, holds)) add(lbl, reason, slug);

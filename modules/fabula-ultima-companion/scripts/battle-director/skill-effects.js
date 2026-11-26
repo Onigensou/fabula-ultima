@@ -3420,7 +3420,7 @@ function isTruthyRowFlag(v) {
   return v === true || String(v ?? "").trim().toLowerCase() === "true";
 }
 
-export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, subjectSnapshot = null, isDamage = false, damageInstance = null, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [], chainStrike = null, chainStrikes = null, chainRepeat = false, extra = null }) {
+export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, subjectSnapshot = null, isDamage = false, damageInstance = null, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [], chainStrike = null, chainStrikes = null, chainRepeat = false, skillTags = null, extra = null }) {
   if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
   if (direction !== "loss" && direction !== "recover") return;
   if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
@@ -3491,6 +3491,12 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
       // generic AFFECTED_BY_<TAG> reaction identifier: "react when the damage
       // was amplified by a <tag> effect." Empty for tick/heal/unhexed lines.
       appliedEffectTags: Array.isArray(appliedEffectTags) ? appliedEffectTags : [],
+      // The `skill_tags` of the skill/spell behind this change, so a resource
+      // reaction can gate on SKILL_HAS_TAG_<X> like an action trigger does.
+      // Sleep's wake row reads SKILL_HAS_TAG_DREAM: "dream" damage (Nightmare)
+      // hurts without waking the sleeper. Read from the origin document when the
+      // caller does not pass it.
+      skillTags: skillTags != null ? String(skillTags) : skillTagsOfOrigin(originUuid),
       // A Chain action emits one ledger line per landed strike. A target's
       // repeat lines (`chainRepeat`) fire automatic reactions only
       // (dispatchReactionMenu).
@@ -3501,6 +3507,16 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
       ...(extra && typeof extra === "object" ? extra : {}),
     },
   });
+}
+
+// `skill_tags` of the item a resource change came from, or "" when there is
+// none. Sync (fromUuidSync) so the trigger push stays synchronous.
+function skillTagsOfOrigin(originUuid) {
+  if (!originUuid) return "";
+  try {
+    const doc = globalThis.fromUuidSync?.(String(originUuid));
+    return String(doc?.system?.props?.skill_tags ?? "");
+  } catch { return ""; }
 }
 
 // Collect the `system.tags` of every ACTIVE Active Effect on `actor` that
@@ -8377,6 +8393,19 @@ async function applyApplyAeEffect(row, ctx) {
     // charges by ae_initial_charges (or the template's charges value) up
     // to ae_initial_charges_max (or the existing AE's chargesMax). If no
     // existing AE, fall through to create a fresh one with the normal path.
+    // `noReapply` (template flag) — "cannot be reapplied while active" (Stunned,
+    // Sleep; user 2026-11-26). Landing it on a creature that already has it does
+    // nothing: no new instance, no refreshed duration, whatever the row's duplicate
+    // mode. A `remove` row still removes it (Sleep's own wake row is one).
+    if (template.flags?.[FLAG_NS]?.noReapply === true && baseMode !== "remove") {
+      const already = findDuplicateAe(actor, template, null);
+      if (already) {
+        log(`skill-effects.apply_ae: ${actor.name} already has "${template.name}" — cannot be reapplied while active`);
+        applied.push({ actorUuid: actor.uuid, aeId: already.id, name: already.name, skipped: "no-reapply" });
+        continue;
+      }
+    }
+
     if (baseMode === "add_charges") {
       const rowChargesAdd = evalCharge(row.ae_initial_charges);
       const rowChargesMax = evalCharge(row.ae_initial_charges_max);

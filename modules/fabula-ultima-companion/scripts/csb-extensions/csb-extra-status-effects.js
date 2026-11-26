@@ -26,6 +26,7 @@
 (() => {
     const TAG = '[CSB-ExtraStatus]';
     const ICON = 'https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/';
+    const BUFF = 'https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/';
 
     // Added 2026-11-10: Armor Break / Magic Break (DEF / M.DEF x0.75, rounded up).
     const EXTRA = [
@@ -34,6 +35,9 @@
         // Added 2026-11-20: Corroded (Nox Viper, −2 DEF a stack; AE seeded by
         // data-migrations/2026-11-20-nox-legion-author.js).
         { id: 'CorrodedStatId01', name: 'Corroded',    img: ICON + '14_SMN/bio.png',              linkedEffectId: 'CorrodedAE000001' },
+        // Added 2026-11-27: Stunned (turn-start MIG+WLP DL 10 recovery check; AE
+        // seeded by data-migrations/2026-11-27-stunned-sleep.js).
+        { id: 'StunnedStatId001', name: 'Stunned',     img: BUFF + 'Stun.png',                    linkedEffectId: 'StunnedAE0000001' },
     ];
 
     Hooks.once('setup', () => {

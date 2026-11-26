@@ -33,7 +33,7 @@ export const DEBUFF_SLUGS = new Set([
   "frightened", "grappled", "hypothermia", "isolate", "obscure", "oil", "panic",
   "paralyzed", "petrify", "poisoned", "shaken", "silence", "slow", "stagger", "suppress",
   "turbulence", "weak", "wet", "wither", "zombie",
-  "sleep", "frozen", "provoked",
+  "sleep", "frozen", "provoked", "stunned",
   "crisis",   // public in FU; enemy passives (Predator) key off it
 ]);
 
@@ -52,7 +52,7 @@ const ALIASES = {
 // Status → token cue id. Everything not listed draws nothing on the token.
 export const STATUS_CUES = Object.freeze({
   burn: "burn", blind: "blind", envenomed: "poison", wet: "wet",
-  paralyzed: "paralyze", silence: "silence", provoked: "provoked", sleep: "sleep",
+  paralyzed: "paralyze", silence: "silence", provoked: "provoked", sleep: "sleep", stunned: "stun",
   "armor break": "armorbreak", "magic break": "magicbreak",
   berserk: "berserk",       // red rage aura (Jill Temper Tantrum, 2026-11-16): lasts exactly as long as the status
   crippled: "armorbreak",   // Rakshasa's own DEF cut (×0.5, kept apart for its fight): same DEF cue

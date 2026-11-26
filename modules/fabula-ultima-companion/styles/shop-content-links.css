@@ -373,6 +373,11 @@
   content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
   background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/17_PCT/Fire_in_Red.png") center/contain no-repeat;
 }
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.StunnedKeyword01"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.StunnedKeyword01"]::before { /* Stunned */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Stun.png") center/contain no-repeat;
+}
 .fu-preview-desc a.content-link[data-uuid="JournalEntry.rXZqaRSx0ctgqepa"]::before,
 .fu-skill-desc   a.content-link[data-uuid="JournalEntry.rXZqaRSx0ctgqepa"]::before { /* Sleep */
   content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;

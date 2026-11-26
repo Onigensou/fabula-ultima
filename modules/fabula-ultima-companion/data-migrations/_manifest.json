@@ -845,6 +845,10 @@
     {
       "key": "2026-11-26-dullahan-pct",
       "path": "data-migrations/2026-11-26-dullahan-pct.js"
+    },
+    {
+      "key": "2026-11-27-stunned-sleep",
+      "path": "data-migrations/2026-11-27-stunned-sleep.js"
     }
   ]
 }

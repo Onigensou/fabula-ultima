@@ -82,6 +82,7 @@ import { STANDALONE_TRIGGERS, phaseOf } from "./director-triggers.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, topIsResolveDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 // Grappled (Advanced Debuff) — turn-start break-free helpers.
 import { isGrappled, breakFree } from "./grappled.js";
+import { recoveryStatusesOn, runRecoveryChecks } from "./status-recovery.js";
 import { escapeDlFacing } from "./snapshot.js";
 import { targetsFilteredToNothing, shouldForfeitFreeAction } from "./free-action-lock-gate.js";
 // Boss "Super Armor" — Domination State / Ultima actions (Domination /
@@ -2649,6 +2650,23 @@ async function maybeRunBreakFree(director, snap) {
   }
 }
 
+// Turn-start recovery checks (Stunned, Sleep): any AE with a `recoveryCheck` flag
+// rolls its Check for the acting creature. Token-first actor resolution, same as
+// the break-free above (an unlinked NPC's status lives on its synthetic actor).
+async function maybeRunRecoveryChecks(director, snap) {
+  try {
+    if (!snap?.actorUuid && !snap?.tokenUuid) return;
+    if (director?.ctx?.endOfCombat) return;
+    let actor = null;
+    if (snap.tokenUuid) actor = (await fromUuid(snap.tokenUuid).catch(() => null))?.actor ?? null;
+    if (!actor && snap.actorUuid) actor = await fromUuid(snap.actorUuid).catch(() => null);
+    if (!actor || !recoveryStatusesOn(actor).length) return;
+    await runRecoveryChecks(actor, { name: snap.name });
+  } catch (e) {
+    warn("Recovery check: maybeRunRecoveryChecks threw", e);
+  }
+}
+
 // Minimal HTML escape for chat flavor (actor names are trusted-ish but
 // keep them inert in markup).
 function escapeHtmlMin(s) {
@@ -3100,6 +3118,11 @@ const TurnStart = {
     // checkpoint so a mid-prompt F5 rewinds to this TURN_START and re-offers
     // it (idempotent: a successful break already removed the AE → no re-prompt).
     await maybeRunBreakFree(director, snap);
+
+    // Stunned / Sleep recovery check (status-recovery.js) — free and automatic.
+    // Must run before the turn_start window below: a pass deletes the status,
+    // so its own "skip this turn" row never fires and the creature acts.
+    await maybeRunRecoveryChecks(director, snap);
 
     await cue.untilInput();
 
@@ -9400,6 +9423,29 @@ const FreeActionWindow = {
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
+
+    // Stunned / Sleep on the performer (status-recovery.js). A turn-less summon
+    // (0 turns a round; it only acts through grants like this one) rolls its
+    // recovery check now, at the moment it would act: pass = acts, fail = this
+    // action is skipped and one charge is spent. A creature WITH turns rolls on its
+    // own turn; until then it cannot take a granted free action either.
+    try {
+      const perfActor = reactorTokenDoc.actor ?? reactorActor;
+      if (recoveryStatusesOn(perfActor).length) {
+        const comb = director.dCombat?.combatants?.find?.((c) => c.actorUuid === req.reactorActorUuid || c.tokenUuid === req.reactorTokenUuid);
+        const turnless = Number(comb?.turnsPerRound) === 0;
+        let skip = true;
+        if (turnless) {
+          const rc = await runRecoveryChecks(perfActor, { name: reactorTokenDoc.name ?? perfActor.name, spendOnFail: true });
+          skip = rc.blocked;
+        }
+        if (skip) {
+          log(`FREE_ACTION_WINDOW: ${perfActor.name} cannot act (${recoveryStatusesOn(perfActor).map((e) => e.name).join(", ") || "recovery check failed"}) — skipping "${req.sourceLabel}"`);
+          director.enqueue({ type: INTENTS.INTERNAL_DONE });
+          return;
+        }
+      }
+    } catch (e) { warn("FREE_ACTION_WINDOW: recovery check threw", e); }
 
     // Install the freeActions singleton from the request — COMPUTE reads
     // this to bake checkBonus / damageBonus into the action's roll and

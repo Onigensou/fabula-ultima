@@ -52,6 +52,7 @@ const KEY_LABEL = {
   override_all_damage_type: "All damage type",
   cannot_target_uuids: "Can't target", must_include_applier: "Must include caster in",
   can_target_flying_with: "Hits flyers with",
+  disable_action: "Can't use", enable_action_only: "Can only use",
 };
 
 const cap = (w) => (w ? w[0].toUpperCase() + w.slice(1) : w);
