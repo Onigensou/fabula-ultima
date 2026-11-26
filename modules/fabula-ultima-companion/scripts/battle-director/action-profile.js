@@ -83,12 +83,6 @@ export function resolveChosenChainRows(effectTable, startLabel, picks) {
   return out;
 }
 
-// Status conditions that force Vulnerability to a specific element (mirrors the
-// Attack COMPUTE table in state-handlers.js — keep in sync).
-const FORCED_VU_BY_STATUS = {
-  Wet: "bolt", Oil: "fire", Petrify: "earth",
-  Hypothermia: "ice", Turbulence: "air", Zombie: "light",
-};
 const TIER_IDENTITY = 7;
 
 // Resource-recovery / non-elemental damage-type strings that are NOT routed
@@ -678,12 +672,9 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     // keyword pass itself, once, AFTER a reaction element override).
     const computeAffinity = (withKeywords = true) => {
       if (primary.isMpDamage) return "NE";
-      let aff = e.affinities?.[primary.element] ?? "NE";
-      // Status-forced vulnerability is a property of the TARGET + the incoming element,
-      // not of the action kind — applies to a spell of that element as well as an attack.
-      for (const cond of (e.conditions ?? [])) {
-        if (FORCED_VU_BY_STATUS[cond] === primary.element) { aff = "VU"; break; }
-      }
+      // Status vulnerability (Wet, Oil, …) is part of the sheet affinity now: each
+      // status AE grants VU and the affinity ladder folds it per core p.92.
+      const aff = e.affinities?.[primary.element] ?? "NE";
       // NOTE: `pierce` does NOT touch affinity. Canon Pierce (Keyword
       // Repository) is ONLY "deals 50% damage if the Accuracy check is lower
       // than the target's defense" — the pierce-MISS rule, carried separately by

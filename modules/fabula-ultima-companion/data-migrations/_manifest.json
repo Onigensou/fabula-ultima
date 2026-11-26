@@ -829,6 +829,10 @@
     {
       "key": "2026-11-26-nox-steals",
       "path": "data-migrations/2026-11-26-nox-steals.js"
+    },
+    {
+      "key": "2026-11-26-status-vu-grants",
+      "path": "data-migrations/2026-11-26-status-vu-grants.js"
     }
   ]
 }

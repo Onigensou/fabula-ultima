@@ -47,19 +47,8 @@ export function readAffinities(actor) {
   return Object.freeze(out);
 }
 
-// Status conditions that force Vulnerable on a specific element when
-// applied — mirrored from AdvanceDamage.js line 588 (legacy condVU map).
-const FORCED_VU_BY_STATUS = Object.freeze({
-  Wet: "bolt",
-  Oil: "fire",
-  Petrify: "earth",
-  Hypothermia: "ice",
-  Turbulence: "air",
-  Zombie: "light",
-});
-
-// Read the list of active-effect labels currently on an actor. Used by the
-// affinity resolver to apply forced-VU from status conditions.
+// Read the list of active-effect labels currently on an actor (the snapshot's
+// `conditions`).
 function readActiveConditions(actor) {
   try {
     const effs = actor?.effects ?? actor?.appliedEffects ?? [];
@@ -72,25 +61,15 @@ function readActiveConditions(actor) {
   } catch (_) { return []; }
 }
 
-// Resolve the effective affinity code for an actor against a given element,
-// honouring status-condition forced-Vulnerable. Returns "VU"/"RS"/"IM"/"AB"
-// or "NE".
+// Resolve the effective affinity code for an actor against a given element.
+// Returns "VU"/"RS"/"IM"/"AB" or "NE". The sheet IS the answer: status
+// vulnerability (Wet → Bolt, Oil → Fire, Petrify → Earth, Hypothermia → Ice,
+// Turbulence → Air, Zombie → Light) is a VU grant on each status AE, folded with
+// gear and passives by the affinity ladder per core p.92 — it used to be forced
+// here over everything, even IM / AB (folded in, user 2026-11-26).
 export function resolveAffinity(actor, element) {
   const el = String(element ?? "physical").toLowerCase();
-  const affinities = readAffinities(actor);
-  let code = affinities[el] ?? "NE";
-
-  // Status-forced VU overrides — applied AFTER reading the sheet affinity.
-  // Mirrors legacy AdvanceDamage line 589-591: any of these conditions on
-  // the actor, paired with the matching element, forces VU regardless of
-  // the sheet value (so a fire-resistant actor doused in Oil still takes
-  // doubled fire damage).
-  const conditions = readActiveConditions(actor);
-  for (const cond of conditions) {
-    const forcedEl = FORCED_VU_BY_STATUS[cond];
-    if (forcedEl && forcedEl === el) { code = "VU"; break; }
-  }
-  return code;
+  return readAffinities(actor)[el] ?? "NE";
 }
 
 // Apply an affinity code to a damage value. Returns the post-affinity

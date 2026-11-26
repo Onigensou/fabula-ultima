@@ -271,10 +271,6 @@
     ice:      "affinity_7", light: "affinity_8", poison:"affinity_9",
   };
 
-  const CONDITION_VULNERABLE = {
-    Wet: "bolt", Oil: "fire", Petrify: "earth",
-    Hypothermia: "ice", Turbulence: "air", Zombie: "light",
-  };
 
   // ── AV ASSETS (mirrors AdvanceDamage — self-contained copy) ──────
   const _SFX = {
@@ -581,12 +577,11 @@
       affinity = (!ignoreAffinity && affinityKey) ? (props[affinityKey] ?? null) : null;
 
       if (!ignoreAffinity) {
-        const activeActor = targetToken?.actor ?? targetActor;
-        const conditions  = Array.from(activeActor.effects ?? []).map((e) => e.label ?? e.name);
-        // Condition-forced vulnerability
-        for (const [cond, el] of Object.entries(CONDITION_VULNERABLE)) {
-          if (conditions.includes(cond) && elementType === el) affinity = "VU";
-        }
+        // Status vulnerability (Wet → Bolt, Oil → Fire, …) is no longer forced here:
+        // each status AE grants VU on its affinity_N and the affinity ladder
+        // (syntaxExtender-conditionalChangeGate.js) folds it with everything else per
+        // core p.92, so `props[affinityKey]` above already holds it (user 2026-11-26:
+        // an Immune / Absorbing creature keeps IM / AB under Wet or Oil).
         // NOTE: Guard's "Resistance to all" is NOT special-cased here. The Guard
         // AE overrides the affinity props (affinity_1..9 → RS, except where the
         // target is natively IM/AB; see 2026-06-09-guard-affinity-rs), so the
