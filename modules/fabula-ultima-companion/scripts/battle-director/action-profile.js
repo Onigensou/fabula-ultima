@@ -732,9 +732,22 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // as it was.
       const _gmDmg = applyGmDamageInput(gmDamage, flatBase, effectiveHr);
       const preMult = _gmDmg.hr + _gmDmg.flat;
-      const multBase = Math.floor(preMult * atkDmgMult);
-      if (atkDmgMult !== 1 && multBase !== preMult) {
-        damageModParts.push({ source: atkMultSource(), amount: multBase - preMult });
+      const famBase = Math.floor(preMult * atkDmgMult);
+      if (atkDmgMult !== 1 && famBase !== preMult) {
+        damageModParts.push({ source: atkMultSource(), amount: famBase - preMult });
+      }
+      // Reaction-carried Damage % for THIS target (adjust_damage op "percent",
+      // outgoing — Dullahan Armor): it joins the attacker's Damage % family, so
+      // it ADDS to the sheet's % instead of compounding on top of it (rule 2).
+      const pctOps = hit ? targetOps.filter((o) => o.op === "percent" && !o.finalFormula) : [];
+      const pctExtra = pctOps.reduce((s, o) => s + (Number(o.amount) || 0), 0);
+      let multBase = famBase;
+      if (pctExtra) {
+        const famMult = (atkDmgMult / _outPctMult) * Math.max(0, 1 + (_outPct + pctExtra) / 100);
+        multBase = Math.floor(preMult * famMult);
+        if (multBase !== famBase) {
+          damageModParts.push({ source: `${[...new Set(pctOps.map((o) => o.source ?? "Reaction"))].join(", ")} ${pctExtra > 0 ? "+" : ""}${pctExtra}%`, amount: multBase - famBase });
+        }
       }
       // Volley: the shared flat bonuses join AFTER the attacker multiplier (they
       // are already counted once), and before DR / crit / efficiency / affinity.
@@ -765,10 +778,19 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 
       if (!primary.isMpDamage) {
         // Crush skips damage reduction entirely ("bypasses damage reduction effects").
+        // The defender's reaction-carried reduction % for THIS hit (adjust_damage op
+        // "percent", incoming — Dullahan Armor) joins its damage-reduction % family
+        // before the curve; the override re-apply below skips it (counted here).
+        const _ovIn = ctx?.damageOverrides?.find?.((v) =>
+          (v.tokenUuid && v.tokenUuid === e.tokenUuid) || (v.actorUuid && v.actorUuid === e.actorUuid));
+        const pctIn = (Array.isArray(_ovIn?.ops) ? _ovIn.ops : [])
+          .filter((o) => String(o?.op) === "percent")
+          .reduce((s, o) => s - (Number(o.amount) || 0), 0);
         const red = crushHit
           ? { value: rawDamage, parts: [] }
           : resolveIncomingReduction({
               actor: liveTarget, elementType: primary.element, range: primary.rangeKind ?? null, raw: rawDamage,
+              extraPct: pctIn,
             });
         rawDamage = red.value;
         damageModParts.push(...red.parts);
@@ -815,7 +837,8 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // their integer contribution + source for the card breakdown; the element
       // op overrides the affinity element below; pierce downgrades RS→NE.
       if (hit && targetOps.length) {
-        const numericOps = targetOps.filter((o) => o.op !== "keyword" && o.op !== "element" && !o.finalFormula);
+        // "percent" ops already joined the Damage % family above (pctExtra).
+        const numericOps = targetOps.filter((o) => o.op !== "keyword" && o.op !== "element" && o.op !== "percent" && !o.finalFormula);
         const kwSet = new Set(targetOps.filter((o) => o.op === "keyword").map((o) => o.keyword));
         const elementOp = [...targetOps].reverse().find((o) => o.op === "element" && o.element);
         const fromRaw = rawDamage;
@@ -910,7 +933,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
           (v.tokenUuid && v.tokenUuid === e.tokenUuid) || (v.actorUuid && v.actorUuid === e.actorUuid));
         if (soak) {
           const soakOps = Array.isArray(soak.ops) && soak.ops.length ? soak.ops : [{ op: soak.op ?? "set", amount: soak.amount ?? 0 }];
-          for (const s of soakOps) predictedDamage = applyAdjustOp(predictedDamage, String(s.op ?? "set"), Number(s.amount) || 0);
+          for (const s of soakOps) { if (String(s.op) === "percent") continue; predictedDamage = applyAdjustOp(predictedDamage, String(s.op ?? "set"), Number(s.amount) || 0); }
           predictedDamage = Math.max(0, Math.floor(predictedDamage));
         }
         const finalResolver = buildSkillResolver({
@@ -1866,7 +1889,8 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
           ? ov.ops
           : [{ op: ov.op ?? "set", amount: ov.amount ?? 0 }];
         let d = oldDmg;
-        for (const o of ops) d = applyAdjustOp(d, String(o.op ?? "set"), Number(o.amount) || 0);
+        // "percent" already joined the damage-reduction % family in buildPerTarget.
+        for (const o of ops) { if (String(o.op) === "percent") continue; d = applyAdjustOp(d, String(o.op ?? "set"), Number(o.amount) || 0); }
         const newDmg = Math.max(0, Math.floor(d));
         let newRaw = Math.max(0, Number(row.rawDamage ?? 0) || 0);
         if (newDmg <= 0) newRaw = 0;

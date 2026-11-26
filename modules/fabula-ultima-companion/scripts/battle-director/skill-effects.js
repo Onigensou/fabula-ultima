@@ -2928,7 +2928,9 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
 // computeSenderDamageBonuses); "incoming" rows adjust the landed damage at
 // HP-write (read by resolveDamageReactions). `cap` = upper bound, `floor` =
 // lower bound. Mercy ("survive at 1") = incoming cap at `CUR_HP - 1`.
-const DAMAGE_OPS = new Set(["add", "subtract", "multiply", "set", "cap", "floor"]);
+// "percent" = a signed % that joins the Damage % / damage-reduction % families at
+// the damage fold (skill-formulas applyAdjustOp; action-profile buildPerTarget).
+const DAMAGE_OPS = new Set(["add", "subtract", "multiply", "set", "cap", "floor", "percent"]);
 export function applyDamageOp(d, op, amount) {
   return applyAdjustOp(d, op, amount); // shared op table (skill-formulas)
 }

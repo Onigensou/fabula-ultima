@@ -4548,6 +4548,12 @@ export function applyAdjustOp(base, op, value) {
     case "set":      return value;
     case "cap":      return Math.min(base, value); // upper bound
     case "floor":    return Math.max(base, value); // lower bound
+    // Signed % (Dullahan Armor, 2026-11-26): +7 = 7 % more, −7 = 7 % less. The
+    // damage fold (action-profile buildPerTarget) routes it into the % FAMILIES
+    // instead — outgoing joins the attacker's Damage % sum, incoming joins the
+    // defender's damage-reduction % before the curve (shared/stat-rules.js). This
+    // multiply is only the fallback for a path that doesn't know the families.
+    case "percent":  return base * Math.max(0, 1 + value / 100);
     default:         return base;
   }
 }
@@ -4647,10 +4653,12 @@ export function applyCritDamage({ raw, props = null, actor = null } = {}) {
 // sheet's FLAT ranged key is `damage_receiving_mod_range` (not `_ranged`)
 // — quirk preserved from apply-damage-core. Returns { value, parts }
 // where parts carry NEGATIVE amounts (they subtract from damage).
-export function resolveIncomingReduction({ actor = null, props = null, elementType = null, range = null, raw = 0 } = {}) {
+// `extraPct`: a reaction-carried reduction % for THIS hit (adjust_damage op "percent",
+// incoming — Dullahan Armor), summed into the family before the curve.
+export function resolveIncomingReduction({ actor = null, props = null, elementType = null, range = null, raw = 0, extraPct = 0 } = {}) {
   const parts = [];
   const base = _mnum(raw);
-  const p = props ?? actor?.system?.props ?? null;
+  const p = props ?? actor?.system?.props ?? ((Number(extraPct) || 0) ? {} : null);
   if (!p) return { value: base, parts };
   const r = normalizeModRange(range);
   const el = String(elementType ?? "").toLowerCase();
@@ -4682,6 +4690,7 @@ export function resolveIncomingReduction({ actor = null, props = null, elementTy
   if (r === "ranged") pct += _mnum(p.damage_receiving_percentage_range);
   if (el && !isNullElement(el)) pct += _mnum(p[`damage_receiving_percentage_${el}`]);
   pct += orb.pct;
+  pct += Number(extraPct) || 0;
   pct = effectiveReductionPct(pct);
   if (pct !== 0) {
     const mult = Math.max(0, 1 - pct / 100);
