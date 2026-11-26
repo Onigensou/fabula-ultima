@@ -89,7 +89,10 @@ function installAdditivePercent() {
     return;
   }
   const multiply = function (wrapped, actor, change, current, delta, changes) {
-    if (!ADDITIVE_PCT_KEYS.has(change?.key)) return wrapped(actor, change, current, delta, changes);
+    // Real Actor documents only: the Party Menu's Effects tab dry-runs each change on a
+    // plain stand-in object from a neutral 1, and needs Foundry's own ×1.10 back to read
+    // "+10%" (flooring 1 × 1.10 would make every Max HP % effect look inactive).
+    if (!ADDITIVE_PCT_KEYS.has(change?.key) || actor?.documentName !== "Actor") return wrapped(actor, change, current, delta, changes);
     changes[change.key] = additiveMultiply(actor, change.key, current, delta);
   };
   const prepare = function (wrapped, ...args) {
@@ -109,4 +112,8 @@ function installAdditivePercent() {
 const api = { DR_KNEE, DR_SOFT, effectiveReductionPct, outgoingPct, OUTGOING_PCT_KEYS, RECEIVING_PCT_KEYS, ELEMENTS, additiveMultiply };
 globalThis.FUStatRules = Object.assign(globalThis.FUStatRules ?? {}, api);
 
-if (globalThis.Hooks) Hooks.once("setup", installAdditivePercent);
+// "init", not "setup": world documents are prepared BEFORE the setup hook, so a later
+// install leaves every actor compounded (and unfloored) until something re-prepares it.
+// CSB has set CONFIG.ActiveEffect/Actor classes in its own (earlier) init, and libWrapper
+// is available at init (the syntax extender registers there too).
+if (globalThis.Hooks) Hooks.once("init", installAdditivePercent);
