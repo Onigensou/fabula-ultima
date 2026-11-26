@@ -71,6 +71,11 @@ export function keyLabel(key) {
   if (chk) return `${["dex", "ins", "mig", "wlp"].includes(chk[1]) ? chk[1].toUpperCase() : chk[1][0].toUpperCase() + chk[1].slice(1)} checks`;
   const red = /^damage_receiving_mod_(\w+)$/.exec(k);
   if (red) return `${cap(red[1] === "range" ? "ranged" : red[1])} damage taken`;
+  // % families (shared/stat-rules.js): "Damage +10%", "Fire damage +10%", "Dmg taken −25%".
+  const outPct = /^damage_outgoing_percentage_(\w+)$/.exec(k);
+  if (outPct) return outPct[1] === "all" ? "Damage" : `${cap(outPct[1])} damage`;
+  const redPct = /^damage_receiving_percentage_(\w+)$/.exec(k);
+  if (redPct) return redPct[1] === "all" ? "Damage taken" : `${cap(redPct[1] === "range" ? "ranged" : redPct[1])} damage taken`;
   const taken = /^damage_taken_increased_(\w+)$/.exec(k);
   if (taken) return `${taken[1][0].toUpperCase()}${taken[1].slice(1)} damage taken`;
   const sl = /^skill_level_bonus_(\w+)$/.exec(k);
@@ -98,13 +103,13 @@ function elementOf(k) {
   const aff = /^affinity_(\d)$/.exec(k);
   if (aff) return ELEMENTS[Number(aff[1]) - 1]?.toLowerCase() ?? null;
   const m = /_([a-z]+)$/.exec(k);
-  return m && ELEMENT_KEYS.has(m[1]) && /^(extra_damage_mod|damage_receiving_mod|damage_taken_increased)_/.test(k) ? m[1] : null;
+  return m && ELEMENT_KEYS.has(m[1]) && /^(extra_damage_mod|damage_receiving_mod|damage_taken_increased|damage_outgoing_percentage|damage_receiving_percentage)_/.test(k) ? m[1] : null;
 }
 
 function chipLabel(k, label) {
   if (/^affinity_\d$/.test(k)) return "";
-  if (/^extra_damage_mod_/.test(k) && elementOf(k)) return "Damage";
-  if (/^(damage_receiving_mod|damage_taken_increased)_/.test(k)) return "Dmg taken";
+  if (/^(extra_damage_mod|damage_outgoing_percentage)_/.test(k) && (elementOf(k) || /_all$/.test(k))) return "Damage";
+  if (/^(damage_receiving_mod|damage_taken_increased|damage_receiving_percentage)_/.test(k)) return "Dmg taken";
   return CHIP_LABEL[k] ?? label;
 }
 
@@ -120,12 +125,18 @@ function present(key, mode, n, shown) {
   const graded = /^(affinity_\d|condition_\w+)$/.test(k);
   // A reduction is shown as the minus it is ("Dmg taken −4", "IP cost −1"); for
   // these and for "damage taken increased" a bigger shown number is the bad one.
-  const reduces = /^damage_receiving_mod_/.test(k) || k === "ip_reduction_value";
+  const reduces = /^damage_receiving_(mod|percentage)_/.test(k) || k === "ip_reduction_value";
   const worse = /^damage_taken_increased_/.test(k);
+  const pct = /^damage_(outgoing|receiving)_percentage_/.test(k) ? "%" : "";
   if (mode === MODES.ADD && n != null) {
     const v = reduces ? -n : n;
     const bad = reduces || worse ? v > 0 : v < 0;
-    return { text: `${label} ${signed(v)}`, chip: { k: ck, v: signed(v), bad, el } };
+    return { text: `${label} ${signed(v)}${pct}`, chip: { k: ck, v: `${signed(v)}${pct}`, bad, el } };
+  }
+  // Max HP / MP %: authored as ×1.10, read as the +10% it is (stat-rules.js rule 1).
+  if (mode === MODES.MULTIPLY && n != null && (k === "max_hp" || k === "max_mp")) {
+    const p = Math.round((n - 1) * 1000) / 10;
+    return { text: `${label} ${signed(p)}%`, chip: { k: ck, v: `${signed(p)}%`, bad: p < 0, el } };
   }
   if (mode === MODES.MULTIPLY && n != null) return { text: `${label} ×${fmtNum(n)}`, chip: { k: ck, v: `×${fmtNum(n)}`, el } };
   if (mode === MODES.UPGRADE && n != null) return { text: `${label} at least ${fmtNum(n)}`, chip: { k: ck, v: fmtNum(n), el } };

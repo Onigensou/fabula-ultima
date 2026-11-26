@@ -2718,6 +2718,21 @@ const BUILTIN_GAMEPLAY_MODIFIER_KEYS = [
   "damage_receiving_percentage_light",
   "damage_receiving_percentage_poison",
 
+  // Damage % (outgoing) — added together (shared/stat-rules.js)
+  "damage_outgoing_percentage_all",
+  "damage_outgoing_percentage_melee",
+  "damage_outgoing_percentage_ranged",
+  "damage_outgoing_percentage_spell",
+  "damage_outgoing_percentage_physical",
+  "damage_outgoing_percentage_air",
+  "damage_outgoing_percentage_bolt",
+  "damage_outgoing_percentage_dark",
+  "damage_outgoing_percentage_earth",
+  "damage_outgoing_percentage_fire",
+  "damage_outgoing_percentage_ice",
+  "damage_outgoing_percentage_light",
+  "damage_outgoing_percentage_poison",
+
   // Critical / special combat modifiers
   "minimum_critical_dice",
   "critical_dice_range",

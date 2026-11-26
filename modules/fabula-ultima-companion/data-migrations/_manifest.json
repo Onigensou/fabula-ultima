@@ -833,6 +833,10 @@
     {
       "key": "2026-11-26-status-vu-grants",
       "path": "data-migrations/2026-11-26-status-vu-grants.js"
+    },
+    {
+      "key": "2026-11-26-percent-stat-keys",
+      "path": "data-migrations/2026-11-26-percent-stat-keys.js"
     }
   ]
 }

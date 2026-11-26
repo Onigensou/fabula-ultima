@@ -278,6 +278,21 @@ const FOCUSED_BUILTIN_GAMEPLAY_KEYS = [
   { key: "damage_receiving_percentage_light", category: "Damage Reduction" },
   { key: "damage_receiving_percentage_poison", category: "Damage Reduction" },
 
+  // Damage % (outgoing) — added together, ×(1 + sum/100) on the hit (shared/stat-rules.js)
+  { key: "damage_outgoing_percentage_all", category: "Damage %" },
+  { key: "damage_outgoing_percentage_melee", category: "Damage %" },
+  { key: "damage_outgoing_percentage_ranged", category: "Damage %" },
+  { key: "damage_outgoing_percentage_spell", category: "Damage %" },
+  { key: "damage_outgoing_percentage_physical", category: "Damage %" },
+  { key: "damage_outgoing_percentage_air", category: "Damage %" },
+  { key: "damage_outgoing_percentage_bolt", category: "Damage %" },
+  { key: "damage_outgoing_percentage_dark", category: "Damage %" },
+  { key: "damage_outgoing_percentage_earth", category: "Damage %" },
+  { key: "damage_outgoing_percentage_fire", category: "Damage %" },
+  { key: "damage_outgoing_percentage_ice", category: "Damage %" },
+  { key: "damage_outgoing_percentage_light", category: "Damage %" },
+  { key: "damage_outgoing_percentage_poison", category: "Damage %" },
+
   // Weapon Efficiency
   { key: "arcane_ef", category: "Weapon Efficiency" },
   { key: "bow_ef", category: "Weapon Efficiency" },
@@ -864,6 +879,11 @@ function isAllowedGameplayKeyFamily(key) {
   if (
     /^damage_receiving_(mod|percentage)_(all|melee|range|ranged|physical|air|bolt|dark|earth|fire|ice|light|poison)$/.test(k)
   ) {
+    return true;
+  }
+
+  // Damage % (outgoing).
+  if (/^damage_outgoing_percentage_(all|melee|ranged|spell|physical|air|bolt|dark|earth|fire|ice|light|poison)$/.test(k)) {
     return true;
   }
 
