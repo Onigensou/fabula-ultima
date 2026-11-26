@@ -5943,6 +5943,9 @@ const Compute = {
           targets: _chainNarrow ? _chainNarrow.targets : targetSnapshots,
           roll: c.dieSwap ? { ...delta.roll, dieSwap: c.dieSwap } : delta.roll,
           damage: delta.damage,
+          // Mana Burn weapons (Shadow Grimoire) land on MP; RESOLVE reads this.
+          // The Skill path gets it by spreading the projection.
+          damageResource: delta.damageResource ?? "hp",
           perTargetResults: _chainNarrow ? _chainNarrow.perTargetResults : delta.perTargetResults,
           // The HIT-target token list — drives `hit_action_targets` reactions
           // (Warning Shot's Shaken/Slow, Vanish, …) at RESOLVE. The Skill COMPUTE
