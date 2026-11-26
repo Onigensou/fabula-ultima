@@ -26,7 +26,12 @@ const READ = `(globalThis.__csTrace || []).map((e, i, a) => ({ type: e.type, t0:
 const TIMED = new Set(["wait", "cameraPan", "screenEffect", "setToken", "moveToken", "showEmote", "stopBGM"]);
 function diff(mock, game, ev) {
   const skip = new Set(ev?.skipped || []);
-  const m = mock.filter((e) => !skip.has(e.path));
+  let m = mock.filter((e) => !skip.has(e.path));
+  // a trace that started late (recording armed after the event began): find where it joins the mockup's run
+  let offset = 0, best = -1;
+  for (let k = 0; k <= Math.min(20, m.length - 1); k++) { let s = 0; for (let i = 0; i < Math.min(12, game.length); i++) if (m[i + k]?.type === game[i]?.type) s++; if (s > best) { best = s; offset = k; } }
+  const lateStart = offset ? `game trace starts at mockup row ${m[offset].path} (${offset} earlier row(s) not recorded)` : "";
+  m = m.slice(offset);
   const out = [], n = Math.max(m.length, game.length); let orderBad = 0, timeBad = 0;
   for (let i = 0; i < n; i++) {
     const a = m[i], b = game[i];
@@ -36,7 +41,7 @@ function diff(mock, game, ev) {
       if (Math.abs(d) > tol) { timeBad++; out.push({ i, verdict: "TIME", mock: `${a.path} ${a.type} ${a.ms} ms`, game: `${b.ms} ms (${d > 0 ? "+" : ""}${d})` }); }
     }
   }
-  return { compared: Math.min(m.length, game.length), mockRows: m.length, gameRows: game.length, orderMismatches: orderBad, timingMismatches: timeBad, rows: out };
+  return { lateStart, compared: Math.min(m.length, game.length), mockRows: m.length, gameRows: game.length, orderMismatches: orderBad, timingMismatches: timeBad, rows: out };
 }
 
 if (cmd === "install") console.log(await evaluate(port, INSTALL));
@@ -45,6 +50,7 @@ else if (cmd === "diff") {
   const mock = JSON.parse(readFileSync(opt("--mock"), "utf8")), game = JSON.parse(readFileSync(opt("--game"), "utf8"));
   const ev = opt("--event") ? JSON.parse(readFileSync(opt("--event"), "utf8")) : null;
   const r = diff(mock, game, ev);
+  if (r.lateStart) console.log("note: " + r.lateStart);
   console.log(`compared ${r.compared} rows (mockup ${r.mockRows}, game ${r.gameRows}): ${r.orderMismatches} out of order, ${r.timingMismatches} off in time`);
   for (const x of r.rows) console.log(`  #${x.i} ${x.verdict}  mockup: ${x.mock}  |  game: ${x.game}`);
   process.exitCode = r.orderMismatches || r.timingMismatches ? 1 : 0;
