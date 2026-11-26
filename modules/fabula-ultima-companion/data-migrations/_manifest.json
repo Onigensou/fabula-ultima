@@ -825,6 +825,10 @@
     {
       "key": "2026-11-26-sage-of-destruction",
       "path": "data-migrations/2026-11-26-sage-of-destruction.js"
+    },
+    {
+      "key": "2026-11-26-nox-steals",
+      "path": "data-migrations/2026-11-26-nox-steals.js"
     }
   ]
 }
