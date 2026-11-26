@@ -219,6 +219,15 @@ export function crisisKeywordOps(keywords, inCrisis) {
   return ops;
 }
 
+// Mana Burn keyword (journal NI69hHt2XDbzuxGV: "does damage to MP instead of
+// HP"). Keeps the element, so affinity still applies — user ruling 2026-11-26
+// (a Dark Mana Burn hit is resisted / doubled / absorbed like any Dark hit).
+// Accepts "mana burn" / "mana_burn" / "manaburn".
+export function resourceForKeywords(keywords) {
+  const list = Array.isArray(keywords) ? keywords : [];
+  return list.some((k) => /^mana[\s_]?burn$/i.test(String(k).trim())) ? "mp" : "hp";
+}
+
 function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = null, chainVars = null }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const props = liveAttacker?.system?.props ?? null;
@@ -259,7 +268,11 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
     // via buildDamageBonusParts(attackGrant) in baseParts.
     const grantDb = Number(grant?.damageBonus ?? 0) || 0;
     return {
-      mode: "damage", element, resource: "hp", isMpDamage: false,
+      // Mana Burn (weapon keyword, e.g. Shadow Grimoire): the hit is a normal
+      // elemental hit in every respect (DR, crit, efficiency, affinity) whose
+      // RESOURCE is MP. Not `isMpDamage` — that is the element-less "mp" damage
+      // type, which skips the incoming layer. See resourceForKeywords.
+      mode: "damage", element, resource: resourceForKeywords(attackKeywords), isMpDamage: false,
       damageBonus: (Number(weapon?.damageBonus ?? 0) || 0) + grantDb,
       // The grant's part of damageBonus on its own: a volley Chain shares it
       // across its shots like the outgoing parts (applyVolleyToPrimary).
@@ -333,7 +346,7 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
     actor: liveAttacker, props, kind: dmgKind, elementType: element, weaponKey,
   });
   return {
-    mode: "damage", element, resource: isMpDamage ? "mp" : "hp", isMpDamage,
+    mode: "damage", element, resource: isMpDamage ? "mp" : resourceForKeywords(keywords), isMpDamage,
     damageBonus,
     outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
     rangeKind: null, weaponKey,
@@ -887,7 +900,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       const finalOps = hit ? targetOps.filter((o) => o.finalFormula) : [];
       for (const o of finalOps) {
         // An HP hit only: absorbed or MP damage takes nothing off HP.
-        let predictedDamage = (primary.isMpDamage || affinityCode === "AB") ? 0 : damageVal;
+        let predictedDamage = (primary.isMpDamage || primary.resource === "mp" || affinityCode === "AB") ? 0 : damageVal;
         // The target's accepted reductions land after this fold (see recompute's
         // damageOverrides re-apply) but are part of what the hit will really do.
         const soak = ctx?.damageOverrides?.find?.((v) =>
@@ -936,7 +949,8 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // inherently on the action (primary.keywords) or via an apply_action_keyword
       // "benign" effect on a reaction (reactionKeywords). Only binds when lethal.
       const isBenign = primary.keywords?.includes("benign") || reactionKeywords?.includes("benign");
-      if (isBenign && liveTarget && damageVal > 0) {
+      // HP cap only: a Mana Burn hit takes MP, so it can never be lethal.
+      if (isBenign && liveTarget && damageVal > 0 && primary.resource !== "mp") {
         const tgtHp = Number(liveTarget?.system?.props?.current_hp ?? 0) || 0;
         if (tgtHp > 0 && damageVal > tgtHp - 1) {
           const capped = Math.max(0, tgtHp - 1);

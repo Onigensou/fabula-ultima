@@ -807,11 +807,28 @@ export async function applyDamageToTarget({
     catch (e) { warn("applyDamageToTarget: battle-log row build failed", e); }
   };
 
-  // MP path — drain spells, future MP-burn. No AB flip; no reactions
-  // (could add later for an MP-clamp AE if a use case appears).
+  // MP path — drain spells ("mp" damage type, always NE) and Mana Burn hits (an
+  // elemental hit whose resource is MP; its affinity is already folded into
+  // `damage` by the profile). No reactions (could add later for an MP-clamp AE).
   if (resource === "mp") {
-    if (damage <= 0) return empty;
     const curMp = readPropNum(target, ["current_mp", "mp"]);
+    // Mana Burn into an Absorb: the element restores MP instead (user ruling
+    // 2026-11-26 — affinity applies to Mana Burn like any hit of its element).
+    if (affinity === "AB") {
+      const maxMp = readPropNum(target, ["max_mp"], curMp);
+      const gained = Math.max(0, Math.min(Math.max(0, damage), maxMp - curMp));
+      if (gained > 0) {
+        await target.update({ "system.props.current_mp": curMp + gained });
+        log(`${prefix}absorbed ${gained} MP on ${targetName}: ${curMp} → ${curMp + gained}${logSuffix}`);
+        vfx?.absorb({ tokenUuid, amount: gained });
+        _pushLog({ resource: "mp", affinity: "AB", value: gained, valueDirection: "recover", bands: { mp: { from: curMp, to: curMp + gained } } });
+      }
+      return { resource: "mp", finalValue: gained, valueDirection: "recover", fired: [] };
+    }
+    if (damage <= 0) {
+      if (affinity === "IM") vfx?.immune({ tokenUuid });
+      return empty;
+    }
     const newMp = Math.max(0, curMp - damage);
     // ACTUAL MP reduced, clamped to what the target had. Drain Spirit recovers
     // half of THIS (MP_DEALT), so a target at 0 MP — or one whose loss the clamp
@@ -820,8 +837,8 @@ export async function applyDamageToTarget({
     const mpLost = curMp - newMp;
     await target.update({ "system.props.current_mp": newMp });
     log(`${prefix}applied ${mpLost} MP damage to ${targetName}: ${curMp} → ${newMp}${logSuffix}`);
-    vfx?.loss({ tokenUuid, resource: "mp", amount: mpLost });
-    _pushLog({ resource: "mp", affinity: "NE", value: mpLost, valueDirection: "loss", bands: { mp: { from: curMp, to: newMp } } });
+    vfx?.loss({ tokenUuid, resource: "mp", amount: mpLost, affinity, element: _vfxElement, isCrit: _vfxIsCrit });
+    _pushLog({ resource: "mp", affinity, value: mpLost, valueDirection: "loss", bands: { mp: { from: curMp, to: newMp } } });
     return { resource: "mp", finalValue: mpLost, valueDirection: "loss", fired: [] };
   }
 
