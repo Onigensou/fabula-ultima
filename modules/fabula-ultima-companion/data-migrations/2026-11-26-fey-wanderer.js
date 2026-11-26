@@ -15,7 +15,7 @@
  *   3pc Fairy's Sacrifice  aura on every ally: a would-be KO is capped at 1 HP, every ally recovers
  *                        【20 + your level】, the Fairy is dismissed; the aura clears (once per scene).
  * Data: healing spells (Heal, Regen) gain skill_tags "heal" — world + every actor copy — so
- * "healing spell" reads SKILL_HAS_TAG_HEAL. Fairy art: placeholder Beastiary/Wisp.png (owed).
+ * "healing spell" reads SKILL_HAS_TAG_HEAL. Fairy art: Beastiary/Sylph_Standard.png (the Sylph sprite, user pick 11-26).
  *
  * SEED-ONLY: fixed ids, flag feyWanderer.
  */
@@ -45,7 +45,7 @@ const IMG = {
   staff: `${FORGE}Item%20Icon/Sword%20of%20Convollaria/Gleam_Short_Staff-icon.webp`,
   robe: `${FORGE}Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Siren%2527s_Robe.webp`,
   earring: `${FORGE}Item%20Icon/Fantasy%20Life%20I/Armor/Flutter_Charm.webp`,
-  fairy: `${FORGE}Beastiary/Wisp.png`,
+  fairy: `${FORGE}Beastiary/Sylph_Standard.png`,
 };
 const T = { fairyHeal: "10 + floor(SUMMONER_LEVEL / 2)", sproutHr: "30", regenHp: "10", regenTurns: 2, moondew: 2, graceHeal: "20 + CHAR_LEVEL" };
 
@@ -201,7 +201,7 @@ async function createFairy(out) {
   if (!hawk) { out.push("! Spirit Hawk donor missing — Fairy not created"); return; }
   const d = hawk.toObject();
   d._id = ID.fairy; d.name = "Fairy"; d.img = IMG.fairy;
-  d.prototypeToken = { ...(d.prototypeToken ?? {}), name: "Fairy", texture: { ...(d.prototypeToken?.texture ?? {}), src: IMG.fairy } };
+  d.prototypeToken = { ...(d.prototypeToken ?? {}), name: "Fairy", texture: { ...(d.prototypeToken?.texture ?? {}), src: IMG.fairy, scaleX: 0.9, scaleY: 0.9 } }; // Sylph sprite at the Sylph actor's own scale
   const keep = (d.items ?? []).filter((i) => i.name === "Flying");
   const light = cloneItem(DONOR.passive, { id: ID.feyLight, name: "Fey Light", folder: null, img: IMG.earring,
     props: passiveProps(FAIRY_RC, FAIRY_EFF, [`At the end of your summoner's turn, restore ${B("【10 + ½ their level】")} HP to the ally with the lowest HP. On even rounds, remove 1 debuff from an ally instead, if any ally has one.`]) });

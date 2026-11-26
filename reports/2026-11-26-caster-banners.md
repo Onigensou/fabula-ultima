@@ -101,7 +101,5 @@ Two new Hako gacha banners, each a main set plus a filler set. Every piece is Ra
   - Ain Soph Aur's damage on a real card;
   - the Fairy's Sacrifice save with a living Fairy in a real fight;
   - the even-round cleanse.
-- **Fairy art:** `Beastiary/Wisp.png` is a placeholder (nothing else in Forge fits).
-- **Sprout Ward:** heal spells don't roll, so HR is 0 and 【HR + 30】 heals a flat 30. Suggested change: 【30 + ½ your level】, about 53 at level 47. This needs the user's call.
-- **Overflow and "× T MP" spells:** Overflow is added after the cost is set. A "× T MP" spell pays its picked targets plus the flat 20, not × every enemy.
-- **Balance:** Mindscape sims for the review page's paper numbers were not run.
+- **Fairy art:** the Sylph sprite (`Beastiary/Sylph_Standard.png`, scale 0.9), user pick 11-26.
+- **Sprout Ward** stays 【HR + 30】 (a flat 30, since heals do not roll): user call 11-26, the value is the automatic tick, not the heal size.

@@ -41,7 +41,7 @@ await safe("data", async () => {
   ok("six main pieces Rare, priced, Forge icons", pcs.every((s) => /:Rare:\d+:true$/.test(s)), pcs);
   ok("set tables", JSON.stringify(out.data.feySet) === '["2:Moondew","3:Fairy\'s Sacrifice"]' && JSON.stringify(out.data.sageSet) === '["2:Mana Return","3:Overflow Rite"]', out.data);
   ok("granted spells contained", out.data.spells.every(Boolean), out.data.spells);
-  ok("Fairy actor: Fey Light + Flying, DEF 10 / M.DEF 13, MP 0, presence marker", !!f && out.data.fairy.items.includes("Fey Light") && out.data.fairy.items.includes("Flying")
+  ok("Fairy actor: Sylph art, Fey Light + Flying, DEF 10 / M.DEF 13, MP 0, presence marker", !!f && /Sylph_Standard/.test(out.data.fairy.img) && out.data.fairy.items.includes("Fey Light") && out.data.fairy.items.includes("Flying")
     && Number(out.data.fairy.def) === 10 && Number(out.data.fairy.mdef) === 13 && Number(out.data.fairy.mp) === 0 && out.data.fairy.presence.includes("Fairy Presence"), out.data.fairy);
   ok("healing spells tagged heal", out.data.healTags.length > 0 && out.data.healTags.every((t) => /\bheal\b/.test(String(t))), out.data.healTags);
   const { listBanners } = await import(`/modules/${NS}/scripts/gacha-system/gacha-banners.js`);
