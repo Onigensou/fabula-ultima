@@ -1,5 +1,5 @@
 {
-  "_comment": "PAPER EQUIPMENT — Dullahan Armor PROPOSAL 2026-11-26: DEF 13 / MDEF 11; +-10 % vs a lower HP %, +1 % per 10 points of gap, cap 15 % (gap 50+). Registry: lib/reactions.js \"Dullahan Armor (Passive)\".",
+  "_comment": "PAPER EQUIPMENT — Dullahan Armor as APPROVED 2026-11-26: DEF 13 / MDEF 11; ±5 % vs a lower HP %, +1 % per 10 points of gap, cap 10 % (gap 50+). Registry: lib/reactions.js \"Dullahan Armor (Passive)\".",
   "name": "Dullahan Armor",
   "system": {
     "props": {
