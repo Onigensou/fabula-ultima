@@ -67,7 +67,7 @@
   const MODULE_ID = "fabula-ultima-companion";
   const TAG = "[ONI][AE-Gate]";
   const TRACE_TAG = "[ONI][AE-Gate][TRACE]";
-  const VERSION = "6.5.0-skill-level-bonus-2026-11-23";
+  const VERSION = "6.6.0-affinity-ladder-2026-11-26";
 
   const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor", "aeAffinityStep", "aeAffinityCap", "aeSceneSpellWhen", "aeClassCount", "aeBuffDebuffWhen"];
 
@@ -1311,6 +1311,134 @@ function getBaseValueForChange(actor, change) {
 }
 
   // ------------------------------------------------------------
+  // Affinity ladder (2026-11-26) — affinity_N is RESOLVED, not "last override wins"
+  // ------------------------------------------------------------
+  //
+  // Every OVERRIDE / CUSTOM change on affinity_1..9 used to write straight over the
+  // slot, so the effect with the highest priority decided the result — and a false
+  // gate wrote "NA" (Dark Blood out of Crisis erased Hina's Emerald Pendant RS).
+  // Now each change is collected into a per-derivation bucket and EVERY write is the
+  // full resolution of that bucket, so order and priority no longer matter:
+  //
+  //   1. grants  = the creature's base value + every change's own value (plain, CSB
+  //      `${…}$` formula, aeWhen-style gate when true, aeAffinityFloor(X) = grant X).
+  //      Combined per Fabula Ultima core p.92: any AB → AB; else any IM → IM; else RS
+  //      and VU together → NA; else RS; else VU; else NA. Duplicates don't stack.
+  //   2. modifiers on that result, on the ladder VU < NA < RS < IM < AB:
+  //      raising steps (aeAffinityStep(+n)) → caps (aeAffinityCap(X): Anomaly, Bane
+  //      Oils, Soul Master) → lowering steps (aeAffinityStep(-n): Element Gorge).
+  //      Cap before the lowering step: Gorge on an Anomaly'd Immune creature reads
+  //      the NA the cap left and worsens it to VU — both debuffs count.
+  //
+  // A false gate grants nothing (it no longer writes "NA"). The bucket is keyed per
+  // effect + change, so a change applied twice in one pass can't count twice, and it
+  // lives for one synchronous derivation (reset at applyActiveEffects + a microtask).
+
+  const AFF_LADDER = ["VU", "NA", "RS", "IM", "AB"];
+  const ladderState = new WeakMap(); // actor → { base: {}, keys: Map(key → Map(id → entry)) }
+
+  function affinityShortKey(key) {
+    const k = String(key ?? "").trim().replace(/^target\./, "").replace(/^system\.props\./, "").replace(/^props\./, "");
+    return /^affinity_\d+$/i.test(k) ? k.toLowerCase() : null;
+  }
+
+  function affinityCode(value) {
+    const v = String(value ?? "").trim().toUpperCase();
+    if (v === "NE" || v === "") return "NA";
+    return AFF_LADDER.includes(v) ? v : null;
+  }
+
+  function resetLadder(actor) {
+    if (actor) ladderState.delete(actor);
+  }
+
+  function getLadder(actor) {
+    let s = ladderState.get(actor);
+    if (!s) {
+      s = { base: { ...(getActorSourceProps(actor) ?? {}) }, keys: new Map() };
+      ladderState.set(actor, s);
+      // One derivation is synchronous: drop the bucket once it's over.
+      queueMicrotask(() => { if (ladderState.get(actor) === s) ladderState.delete(actor); });
+    }
+    return s;
+  }
+
+  // Combine grants per core p.92, then apply the modifiers. Exported for tests.
+  function resolveAffinityLadder(base, entries) {
+    const grants = [affinityCode(base) ?? "NA"];
+    let up = 0, down = 0, cap = null;
+    for (const e of entries) {
+      if (e.kind === "grant") { const c = affinityCode(e.value); if (c) grants.push(c); }
+      else if (e.kind === "step") { if (e.n > 0) up += e.n; else down += e.n; }
+      else if (e.kind === "cap") { const i = AFF_LADDER.indexOf(affinityCode(e.value) ?? ""); if (i >= 0) cap = cap === null ? i : Math.min(cap, i); }
+    }
+    const has = (c) => grants.includes(c);
+    let code = has("AB") ? "AB" : has("IM") ? "IM" : (has("RS") && has("VU")) ? "NA" : has("RS") ? "RS" : has("VU") ? "VU" : "NA";
+    let i = AFF_LADDER.indexOf(code);
+    const clamp = (n) => Math.max(0, Math.min(AFF_LADDER.length - 1, n));
+    i = clamp(i + up);
+    if (cap !== null) i = Math.min(i, cap);
+    i = clamp(i + down);
+    return AFF_LADDER[i];
+  }
+
+  // Handles an affinity OVERRIDE / CUSTOM change; returns { handled, result }.
+  function applyAffinityLadder(effect, args, callOriginal) {
+    const changeIdx = args.findIndex((a) => a && typeof a === "object" && !isActorDocument(a) && "key" in a && "value" in a);
+    if (changeIdx < 0) return { handled: false };
+    const change = args[changeIdx];
+    const short = affinityShortKey(change.key);
+    const mode = Number(change.mode);
+    if (!short || (mode !== 5 && mode !== 0)) return { handled: false };
+    const actor = resolveActorFromEffect(effect, args.find((a) => isActorDocument(a)) ?? null);
+    if (!actor) return { handled: false };
+
+    const pristine = clone(change);       // CSB's apply rewrites change.key / change.value in place
+    const raw = String(pristine.value ?? "");
+    let entry = null;
+    const parsed = hasGateSyntax(raw) ? parseGateSyntax(raw) : null;
+    const helper = parsed?.ok ? normalize(parsed.helper) : null;
+    if (helper === "aeaffinitystep") {
+      const n = Number.parseInt(parsed.trueValue, 10);
+      entry = { kind: "step", n: Number.isFinite(n) ? n : 0 };
+    } else if (helper === "aeaffinitycap") {
+      entry = { kind: "cap", value: parsed.trueValue };
+    } else if (helper === "aeaffinityfloor") {
+      entry = { kind: "grant", value: parsed.trueValue };
+    } else if (parsed?.ok) {
+      const d = withActorCache(actor, () => evaluateGate(raw, actor, effect, pristine));
+      entry = { kind: "grant", value: d.recognized && d.active ? d.value : "NA" };
+    } else {
+      // Plain value or a CSB `${…}$` formula: let the original apply evaluate it.
+      let evaluated;
+      try {
+        const ret = callOriginal(args.map((a, i) => (i === changeIdx ? clone(pristine) : a)));
+        evaluated = ret && typeof ret === "object" ? Object.values(ret)[0] : undefined;
+      } catch (err) {
+        warn("Affinity ladder: evaluating a change failed; it grants nothing.", { effect: effect?.name, change: pristine, err });
+      }
+      entry = { kind: "grant", value: evaluated };
+    }
+
+    const lad = getLadder(actor);
+    let bucket = lad.keys.get(short);
+    if (!bucket) { bucket = new Map(); lad.keys.set(short, bucket); }
+    bucket.set(`${effect?.uuid ?? effect?.id ?? effect?.name}|${short}|${raw}|${mode}`, entry);
+
+    const resolved = resolveAffinityLadder(lad.base[short], [...bucket.values()]);
+    const out = clone(pristine);
+    out.value = resolved;
+    out.mode = 5; // the write is the resolved value, whatever mode the change was authored in
+    const result = callOriginal(args.map((a, i) => (i === changeIdx ? out : a)));
+
+    traceEnabledFor(actor) && pushTrace("ActiveEffect.apply AFFINITY LADDER", actor, {
+      effect: summarizeEffect(effect), key: short, entry, base: lad.base[short],
+      bucket: [...bucket.values()], resolved
+    });
+    return { handled: true, result };
+  }
+
+  // ------------------------------------------------------------
   // Patch 1: ActiveEffect.apply
   // ------------------------------------------------------------
 
@@ -1471,6 +1599,8 @@ function getBaseValueForChange(actor, change) {
           return original.apply(this, args);
         }
 
+        const ladder = applyAffinityLadder(this, args, (a) => original.apply(this, a));
+        if (ladder.handled) return ladder.result;
         const result = transformApplyArgs(this, args);
         return original.apply(this, result.args);
       });
@@ -1501,6 +1631,8 @@ function getBaseValueForChange(actor, change) {
               return wrapped(...args);
             }
 
+            const ladder = applyAffinityLadder(this, args, (a) => wrapped(...a));
+            if (ladder.handled) return ladder.result;
             const result = transformApplyArgs(this, args);
             return wrapped(...result.args);
           });
@@ -1767,6 +1899,7 @@ function getBaseValueForChange(actor, change) {
 
     state.actorGuard.add(actor);
     state.actorPass.set(actor, makeActorPassData(actor));
+    resetLadder(actor);
 
     const finish = (result = undefined, error = null) => {
       const after = tracing ? actorTraceSnapshot(actor) : null;
@@ -1951,6 +2084,12 @@ function getBaseValueForChange(actor, change) {
     globalThis.FUCompanion.api ??= {};
 
     globalThis.FUCompanion.api.activeEffectConditionalGate = {
+      // Pure affinity-ladder resolution (tests): base code + entries
+      // [{kind:"grant",value}|{kind:"step",n}|{kind:"cap",value}] → final code.
+      resolveAffinityLadder(base, entries = []) {
+        return resolveAffinityLadder(base, entries);
+      },
+
       // [{ source, amount }] of gear/effects lifting this skill's level.
       skillLevelBonusSources(actor, skill) {
         return skillLevelBonusSources(actor, skill).map((s) => ({ ...s }));
