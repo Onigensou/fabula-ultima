@@ -38,9 +38,12 @@ export function crisisThreshold(actor) {
   // TARGET_WAS_IN_CRISIS, which reads this through captureSubjectSnapshot.
   if (isBattlefieldObject(actor)) return null;
   const p = actor?.system?.props ?? {};
+  // No HP pool (max 0, e.g. a legacy tracker actor at 0/0): nothing to be in Crisis of.
+  // Without this, 0 <= ceil(0/2) stamps Crisis on such actors at every GM boot.
+  const max = num(p.max_hp);
+  if (max != null && max <= 0) return null;
   const stored = num(p.crisis_hp);
   if (stored != null) return stored;
-  const max = num(p.max_hp);
   return max != null ? Math.ceil(max / 2) : null;
 }
 
