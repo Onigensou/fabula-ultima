@@ -114,7 +114,11 @@ const ART = {
  "fx_pierce": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Pierce.png",
  "fx_freeze": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png",
  "fx_heal": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
- "fx_return": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Return.png"
+ "fx_return": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Return.png",
+ // Valley trio (11-27): shadow-free stills (monster cards)
+ "asura": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Monster%20Cards/Asura.png",
+ "rakshasa": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Monster%20Cards/Rakshasa.png",
+ "deva": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Monster%20Cards/Deva.png"
 };
 // animated battle sprites for character-card holograms (they face LEFT, the bestiary art faces right → mirrored in the window)
 const HOLO_VIDEO = {
@@ -125,10 +129,14 @@ const HOLO_VIDEO = {
  "kalina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Battler001.webm",
  "blanche": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Battler002.webm",
  "keren": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Battler002.webm",
- "gryphon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Gryphon/Gryphon_Standard.webm"
+ "gryphon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Gryphon/Gryphon_Standard.webm",
+ // Valley trio (11-27): their battle idles. Deva picks by her element this round: Light = Fury arms, Dark = Focus arms (her fight's forms)
+ "asura": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Battle_Idle.webm",
+ "rakshasa": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa_Battle_Idle.webm",
+ "deva": { light: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Fury_Battle_Idle.webm", dark: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Focus_Battle_Idle.webm" }
 };
 // still art that faces LEFT like the character battlers (mirrored the same way on the board)
-const FACE_LEFT = ['jack','jill','love','brucev','nullis','gardner','hako','willy','rume','pomme','canis','albero','alcina','wagner','roselie','thomas','seigfried','guy','farin'];
+const FACE_LEFT = ['jack','jill','love','brucev','nullis','gardner','hako','willy','rume','pomme','canis','albero','alcina','wagner','roselie','thomas','seigfried','guy','farin','asura','rakshasa','deva'];
 const SFXDATA = {};
 const SFXURL = {
  "nav": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Book1.ogg",

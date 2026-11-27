@@ -1458,10 +1458,13 @@ function fieldHTML(){
     <div class="lane" id="lane"></div><div class="status" id="status"></div>
     ${row(0)}<div class="hand mine" id="hand0"></div><div class="fxl" id="fxl"></div></div>`;
 }
+// a card's element right now: elEven = its element on even rounds (Deva, 11-27); same rule as fa-engine elOf
+function elNow(m){ const c=CARDS[m.cid]; return (c && c.elEven && S && S.round>0 && S.round%2===0) ? c.elEven : c.el; }
+function holoSrc(m){ const v=(typeof HOLO_VIDEO!=='undefined') ? HOLO_VIDEO[m.cid] : null; return (v && typeof v==='object') ? (v[elNow(m)] || Object.values(v)[0]) : v; }
 function slotHTML(s,m){
-  const c=CARDS[m.cid];
+  const c={ ...CARDS[m.cid], el:elNow(m) };
   return `<div class="slot ${s?'theirs':'mine'}" id="slot${s}_${m.i}" data-s="${s}" data-i="${m.i}" tabindex="0" style="--ec:var(--e-${c.el})">
-    <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div>${(typeof HOLO_VIDEO!=='undefined' && HOLO_VIDEO[m.cid]) ? `<video class="spr fl" src="${HOLO_VIDEO[m.cid]}" poster="${ART[m.cid]}" autoplay loop muted playsinline></video>` : `<img class="spr${(typeof FACE_LEFT!=='undefined' && FACE_LEFT.includes(m.cid))?' fl':''}" src="${ART[m.cid]}" alt="">`}<div class="scan"></div><div class="cue" id="cue${s}_${m.i}"></div></div>
+    <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div>${holoSrc(m) ? `<video class="spr fl" src="${holoSrc(m)}" poster="${ART[m.cid]}" autoplay loop muted playsinline></video>` : `<img class="spr${(typeof FACE_LEFT!=='undefined' && FACE_LEFT.includes(m.cid))?' fl':''}" src="${ART[m.cid]}" alt="">`}<div class="scan"></div><div class="cue" id="cue${s}_${m.i}"></div></div>
     <div class="flat"><div class="flatcard" style="--c:var(--e-${c.el})"><div class="fa"><img src="${ART[m.cid]}" alt="">${elBadge(c.el,'art',true)}</div>${elBadge(c.el,'coin',true)}
       <div class="fn">${elBadge(c.el,'name',true)}<span class="fnt">${esc(c.name)}</span><span class="costn">${starStr(c.cost)}</span></div>
       <div class="fs" id="fs${s}_${m.i}">${elBadge(c.el,'stats',true)}${statChip('atk',c.atk,true)}${statChip('def',c.def,true)}${statChip('spd',c.spd,true)}</div><span class="cost">${starStr(c.cost)}</span></div></div>
@@ -1610,6 +1613,8 @@ function fxStats(s, m){
   { const rv = m.cid==='nullis' ? 'gardner' : m.cid==='gardner' ? 'nullis' : null; if (rv && S.p[s].roster.some(x=>x.cid===rv && x.ko)){ out.def.v+=(CFG.RIVAL||1); out.def.why.push(`+${CFG.RIVAL||1} Rival`); } }
   if (m.cid==='raubens' && (m.loot||0)>0){ out.atk.v+=m.loot; out.atk.why.push(`+${m.loot} Bandit King`); }
   if (m.cid==='keren' && fxFoxFire(m)){ const f=fxFoxFire(m); out.atk.v+=f; out.atk.why.push(`+${f} Fox Fire`); }
+  if (m.cid==='asura' && (m.marks||[]).length){ const k=Math.min(CFG.ASCENSION_MAX||3, m.marks.length); out.atk.v+=k; out.atk.why.push(`+${k} Ascension`); }
+  if (m.cid==='deva' && S.round>0 && (CFG.DISCIPLINE||0)){ if (S.round%2===0){ out.atk.v+=CFG.DISCIPLINE; out.atk.why.push(`+${CFG.DISCIPLINE} Celestial Discipline (even round)`); } else { out.def.v+=CFG.DISCIPLINE; out.def.why.push(`+${CFG.DISCIPLINE} Celestial Discipline (odd round)`); } }
   if (m.cid==='geist' && m.bn && (CFG.GEIST_BN||0)){ out.atk.v+=CFG.GEIST_BN; out.atk.why.push(`+${CFG.GEIST_BN} The Blackest Night (risen)`); }
   return out;
 }
@@ -1646,6 +1651,14 @@ function fxList(s, m){
       desc:`+${CFG.FOXFIRE||2} ATK for every card KO'd in this match, on either side (max +${cap}). It builds while Keren waits on the bench.`, when: f>=cap ? 'Fully stoked.' : '' }); }
   if (m.cid==='raubens' && (m.loot||0)>0) add({ k:'loot', tier:'buff', icon:'fx_loot', name:'Bandit King', num:m.loot, short:`+${m.loot} ATK`,
     desc:`+${m.loot} ATK for the rest of the match. +1 more each time the opponent uses an item while Raubens is the active card.` });
+  if (m.cid==='asura' && (m.marks||[]).length){ const mk=m.marks, cap=CFG.ASCENSION_MAX||3;
+    add({ k:'ascension', tier: mk.length>=cap ? 'ready' : 'buff', icon:'fx_charge', name:'Ascension', num:mk.length, short:`+${Math.min(cap,mk.length)} ATK${mk.length>=cap?' (max)':''}`,
+      desc:`Marks: ${mk.map(e=>EL[e]).join(', ')}. Each new element that damages Asura adds +1 ATK for the rest of the match (max +${cap}). Elementless doesn't count.` }); }
+  if (m.cid==='rakshasa' && m.readBy && CARDS[m.readBy]) add({ k:'wread', tier:'buff', icon:'fx_guard', name:'Weapon Read', short:`reads ${CARDS[m.readBy].name}`,
+    desc:`Takes −${CFG.WEAPON_READ||1} DMG from ${esc(CARDS[m.readBy].name)}, the last card that damaged Rakshasa. A different attacker hits in full.` });
+  if (m.cid==='deva' && S.round>0){ const even=S.round%2===0;
+    add({ k:'discipline', tier:'buff', icon: even ? 'fx_charge' : 'fx_shield', name: even ? 'Offense round' : 'Guard round', short: even ? `Dark · +${CFG.DISCIPLINE||1} ATK` : `Light · +${CFG.DISCIPLINE||1} DEF`,
+      desc:`Celestial Discipline: odd rounds Deva is Light with +${CFG.DISCIPLINE||1} DEF; even rounds Dark with +${CFG.DISCIPLINE||1} ATK.`, when: even ? 'Next round: Light, +DEF.' : 'Next round: Dark, +ATK.' }); }
   if (m.cid==='kalina' && m.dive) add({ k:'dive', tier:'ready', icon:'fx_jump', name:'Dive Ready', short:'next switch-in',
     desc:`The next time Kalina is switched in (or sent in after a KO), she drops on the enemy card for ${CFG.DIVE||2} damage (ignores DEF and items).`, when:'Triggers when she comes back in.' });
   if (m.cid==='hako'){ const used=Object.keys(ITEMS).filter(k=>!ITEMS[k].created && !Number(S.p[s].items[k])).length, need=CFG.SUPPLY_MIN||3, on=used>=need;
@@ -1675,7 +1688,7 @@ function fxStatRow(s, m){
     const flash = prev!=null && prev!==st[k].v;
     const tip=`<div class="fu-st-tip t-${d>0?'buff':'debuff'}"><div class="th nimg"><div><strong>${STAT[k].l} ${st[k].v}</strong><small>${c[k]} printed</small></div></div><div class="tb"><div class="desc">${st[k].why.map(w=>fxRules(esc(w))).join('<br>')}</div></div></div>`;
     return `<em class="sv ${d>0?'up':'down'} ${flash?'sv-flash':''}" data-tip="${fxAttr(tip)}">${st[k].v}</em>`; };
-  return `${elBadge(c.el,'stats',true)}${statChip('atk',v('atk'),true)}${statChip('def',v('def'),true)}${statChip('spd',v('spd'),true)}`;
+  return `${elBadge(elNow(m),'stats',true)}${statChip('atk',v('atk'),true)}${statChip('def',v('def'),true)}${statChip('spd',v('spd'),true)}`;
 }
 // ---------- cues on the monster (status-cues.js look; only the active monster's hologram is visible)
 function fxRng(seed){ let h=2166136261; for (const ch of String(seed)) h=Math.imul(h^ch.charCodeAt(0),16777619); return ()=>((h=Math.imul(h^(h>>>15),2246822507), h=Math.imul(h^(h>>>13),3266489909), (h^=h>>>16)>>>0)/4294967296); }
@@ -1706,6 +1719,10 @@ function renderEffects(){
       const row=$(`#fx${s}_${m.i}`); if (row){ const h=fxList(s,m).map(e=>fxTile(`${s}:${m.i}:${e.k}`, e)).join(''); if (row._h!==h){ row._h=h; row.innerHTML=h; } }
       const fsr=$(`#fs${s}_${m.i}`); if (fsr){ const h=fxStatRow(s,m); if (fsr._h!==h){ fsr._h=h; fsr.innerHTML=h; } }
       const slot=$(`#slot${s}_${m.i}`), cue=$(`#cue${s}_${m.i}`);
+      if (slot && CARDS[m.cid] && CARDS[m.cid].elEven){ const el=elNow(m); if (slot._el!==el){ slot._el=el; slot.style.setProperty('--ec',`var(--e-${el})`);
+        const fc=slot.querySelector('.flatcard'); if (fc) fc.style.setProperty('--c',`var(--e-${el})`);
+        for (const b of slot.querySelectorAll('.elcoin,.elname')){ b.style.setProperty('--c',`var(--e-${el})`); b.title=EL[el]; b.innerHTML=elIco(el); }
+        const v=slot.querySelector('.holo video.spr'), src=holoSrc(m); if (v && src && v.getAttribute('src')!==src){ v.setAttribute('src', src); try { v.play(); } catch(e){} } } }
       if (slot && cue && slot.classList){ const cs=fxCues(s,m), key=cs.join(' ');
         if (cue._k!==key){ cue._k=key; for (const k of ['st1','st2','burn','pow','roo']) slot.classList.toggle('c-'+k, cs.includes(k));
           cue.innerHTML = cs.filter(k=>k==='st1'||k==='st2'||k==='burn').map(k=>fxCueHTML(k, `${s}:${m.i}`)).join(''); } }

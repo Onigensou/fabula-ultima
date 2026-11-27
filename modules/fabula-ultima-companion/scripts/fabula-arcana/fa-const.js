@@ -103,6 +103,10 @@ const ART = {   // exact library paths (matched by content hash to the duel wind
   seigfried: "Fabula Arcana/Character Cards/King Seigfried.png",
   guy: "Fabula Arcana/Character Cards/Guy.png",
   farin: "Fabula Arcana/Character Cards/Farin.png",
+  // Valley trio (11-27): shadow-free stills from the battle-idle clips (Beastiary/*_Battle_Idle.webm, first frame, trimmed)
+  asura: "Fabula Arcana/Monster Cards/Asura.png",
+  rakshasa: "Fabula Arcana/Monster Cards/Rakshasa.png",
+  deva: "Fabula Arcana/Monster Cards/Deva.png",
 };
 export const artUrl = (cid) => (ART[cid] ? FORGE + ART[cid].split("/").map(encodeURIComponent).join("/") : "icons/svg/card-joker.svg");
 export const artFiles = () => ({ ...ART });   // cid → library path (card drops match monster art against these)
