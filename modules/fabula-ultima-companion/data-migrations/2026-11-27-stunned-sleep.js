@@ -164,7 +164,9 @@ async function patchSleep(parent, label, library, out) {
 // damage; the 15% rides an outgoing adjust_damage row fired by the spell's own
 // will-deal-damage reaction, read per target (Scorched Claw's 25% uses the same shape).
 const NM_LABEL = "nm_maxhp";
-const NM_EFFECT = { effect_label: NM_LABEL, effect_kind: "adjust_damage", damage_operation: "add", damage_stage: "outgoing", damage_amount: "floor(TARGET_MAX_HP * 0.15)", $deleted: false };
+// Only on a sleeping target, as the spell's Target line says (user 2026-11-27).
+const NM_AMOUNT = "floor(TARGET_MAX_HP * 0.15) * (TARGET_AE_COUNT_SLEEP > 0)";
+const NM_EFFECT = { effect_label: NM_LABEL, effect_kind: "adjust_damage", damage_operation: "add", damage_stage: "outgoing", damage_amount: NM_AMOUNT, $deleted: false };
 const NM_REACTION = { reaction_trigger: "creature_will_deal_damage", reaction_source: "self", reaction_source_skill: "Nightmare", reaction_passive_mode: "force", reaction_effect_ref: NM_LABEL, $deleted: false };
 const nextKey = (o) => String(Object.keys(o ?? {}).map(Number).filter(Number.isFinite).reduce((m, k) => Math.max(m, k + 1), 0));
 
@@ -175,7 +177,9 @@ async function tagNightmare(item, label, out) {
   const tags = String(p.skill_tags ?? "").split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
   if (!tags.map((t) => t.toLowerCase()).includes("dream")) upd["system.props.skill_tags"] = [...tags, "dream"].join(", ");
   const fx = p.effect_table ?? {};
-  if (!Object.values(fx).some((r) => r && !r.$deleted && r.effect_label === NM_LABEL)) upd[`system.props.effect_table.${nextKey(fx)}`] = { ...NM_EFFECT };
+  const fxRow = Object.entries(fx).find(([, r]) => r && !r.$deleted && r.effect_label === NM_LABEL);
+  if (!fxRow) upd[`system.props.effect_table.${nextKey(fx)}`] = { ...NM_EFFECT };
+  else if (fxRow[1].damage_amount !== NM_AMOUNT) upd[`system.props.effect_table.${fxRow[0]}.damage_amount`] = NM_AMOUNT;
   const rx = p.reaction_config_table ?? {};
   if (!Object.values(rx).some((r) => r && !r.$deleted && r.reaction_effect_ref === NM_LABEL)) upd[`system.props.reaction_config_table.${nextKey(rx)}`] = { ...NM_REACTION };
   if (p.isReaction !== true) upd["system.props.isReaction"] = true;

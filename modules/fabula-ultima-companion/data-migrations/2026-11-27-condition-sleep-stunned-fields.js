@@ -16,7 +16,10 @@
  * prunes undeclared props, so it is not something to run on every actor unasked.
  *
  * Needs a page reload (F5) before the sheet shows the new fields (CSB caches the
- * parsed tree per session). IDEMPOTENT.
+ * parsed tree per session).
+ *
+ * Also: Champions and Villains get condition_sleep "RS" (user 2026-11-27, so a
+ * Hypno Sleep + Nightmare loop cannot hold a boss for 3 rounds). IDEMPOTENT.
  */
 
 export const key = "2026-11-27-condition-sleep-stunned-fields";
@@ -104,6 +107,26 @@ async function patchTemplate(t, log) {
   return missing.length;
 }
 
+// Bosses resist Sleep (user 2026-11-27): every Champion and Villain gets
+// condition_sleep "RS" (Sleep lasts 1 round on them) unless it already has a value.
+// Kept on the actor's stored props; the templates above now declare the field, so a
+// later template reload keeps it.
+const isBoss = (p) => String(p?.npc_rank ?? "").trim().toLowerCase().startsWith("cha") || !!p?.isVillain;
+async function bossSleepRS(log) {
+  const names = [];
+  for (const a of game.actors ?? []) {
+    if (a.type === "_template") continue;
+    const p = a._source?.system?.props ?? {};
+    if (!isBoss(p)) continue;
+    const cur = String(p.condition_sleep ?? "").trim().toUpperCase();
+    if (cur && cur !== "NA" && cur !== "-") continue;
+    await a.update({ "system.props.condition_sleep": "RS" });
+    names.push(a.name);
+  }
+  if (names.length) log(`  Sleep RS on ${names.length} boss(es): ${names.join(", ")}`);
+  return names.length;
+}
+
 export async function migrate(game, log = () => {}) {
   let fields = 0, touched = 0;
   for (const id of TEMPLATE_IDS) {
@@ -114,5 +137,7 @@ export async function migrate(game, log = () => {}) {
       if (n) { fields += n; touched++; }
     } catch (e) { log(`  ${t.name}: patch threw ${e?.message ?? e}`); }
   }
-  return { applied: true, summary: `${fields} field(s) added across ${touched}/${TEMPLATE_IDS.length} template(s)` };
+  let bosses = 0;
+  try { bosses = await bossSleepRS(log); } catch (e) { log(`  boss Sleep RS threw ${e?.message ?? e}`); }
+  return { applied: true, summary: `${fields} field(s) added across ${touched}/${TEMPLATE_IDS.length} template(s); Sleep RS on ${bosses} boss(es)` };
 }
