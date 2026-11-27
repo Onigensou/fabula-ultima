@@ -270,6 +270,13 @@
               if (!row.successRows?.length && !row.failureRows?.length) add("info", "Run Check where neither Success nor Failure does anything.");
               if (String(row.storeVar ?? "").trim()) note(variables, row.storeVar, "written", at);
               break;
+            case "runContest":
+              for (const [k, s] of [["A", row.sideA], ["B", row.sideB]]) {
+                if (s?.kind === "name" && !String(s.name ?? "").trim()) add("warn", `Run Contest side ${k} is a named character with no name.`);
+              }
+              if (!row.aRows?.length && !row.bRows?.length) add("info", "Run Contest where neither side's win does anything.");
+              if (String(row.storeVar ?? "").trim()) note(variables, row.storeVar, "written", at);
+              break;
             case "showChoices": {
               const options = row.options ?? [];
               if (options.some(o => !String(o.label ?? "").trim())) add("warn", "Show Choices has an answer with no text.");

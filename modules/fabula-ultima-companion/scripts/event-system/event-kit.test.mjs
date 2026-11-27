@@ -362,7 +362,7 @@ globalThis.oni.EventSystem.ShowText = {
 
 for (const file of [
   "event-client.js", "event-gameState.js", "event-eventRegistry.js", "event-flow.js",
-  "event-rows-flow.js", "event-rows-choices.js", "event-rows-check.js", "event-rows-float.js",
+  "event-rows-flow.js", "event-rows-choices.js", "event-rows-check.js", "event-rows-contest.js", "event-rows-float.js",
   "event-rows-offer.js", "event-rows-items.js"
 ]) load(file);
 
