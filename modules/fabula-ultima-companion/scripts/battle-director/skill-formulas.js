@@ -543,6 +543,13 @@ function conflictObjectHp(rawId) {
   return sum;
 }
 
+// Highest CURRENT HP among the living objects (0 if none). An overflowed object counts whole.
+function conflictObjectTopHp(rawId) {
+  let top = 0;
+  for (const a of conflictObjectActors(rawId)) top = Math.max(top, Number(a.system?.props?.current_hp) || 0);
+  return top;
+}
+
 
 // 1 if any creature on the scene matches `needle` by SPECIES or NPC RANK, else 0.
 // Prefers the active combat's combatants (a battle), else the active/viewed scene's
@@ -2604,6 +2611,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // with >= : a typo after the prefix reads 0 and so never fires.
         if (name.startsWith("CONFLICT_OBJECT_HP_")) {
           return conflictObjectHp(name.slice("CONFLICT_OBJECT_HP_".length));
+        }
+        // Dynamic CONFLICT_OBJECT_TOP_HP_<ID> — the HIGHEST current HP among the living
+        // objects of one kind (0 if none; same gatherer). Soul Strike's damage_bonus and AI
+        // gate. Does not start with CONFLICT_OBJECT_HP_, so no branch shadows another.
+        if (name.startsWith("CONFLICT_OBJECT_TOP_HP_")) {
+          return conflictObjectTopHp(name.slice("CONFLICT_OBJECT_TOP_HP_".length));
         }
         // Dynamic TARGET_IS_CONFLICT_OBJECT_<ID> — 1 when the trigger SUBJECT
         // (payload.subjectActorUuid; in a `target_eligibility` that is the candidate)

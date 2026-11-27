@@ -16,6 +16,7 @@
 
 import { log, warn } from "./logger.js";
 import { playUiHoverSfx, playUiClickSfx } from "./director-ui-sfx.js";
+import { hasOverflow, overflowGradient } from "./hp-overflow.js";
 
 const STYLE_ID = "fud-drawer-views-styles";
 
@@ -215,6 +216,7 @@ export function ensureDrawerStyles() {
 .dhv-thp { display: grid; gap: 1px; font: 700 10.5px/1 var(--dhud-ui, "Signika", sans-serif); font-variant-numeric: tabular-nums; color: #6a5d4c; text-align: right; }
 .dhv-thp i { display: block; height: 5px; border-radius: 3px; background: rgba(58,50,40,.2); overflow: hidden; }
 .dhv-thp i b { display: block; height: 100%; background: linear-gradient(90deg, #6bd66b, #2fbf71); }
+.dhv-thp i.ovr { display: flex; } .dhv-thp i b.ov { background: ${overflowGradient("90deg")}; }
 .dhv-trow.is-excl { color: rgba(58,50,40,.45); cursor: not-allowed; }
 .dhv-trow.is-excl .dhv-face { filter: grayscale(1) opacity(.6); }
 .dhv-trow .why { font: 700 10.5px var(--dhud-ui, "Signika", sans-serif); color: #b3261e; text-align: right; overflow: hidden; text-overflow: ellipsis; }
@@ -699,6 +701,13 @@ function shortReason(s) {
  * the rings, selection rules and keyboard; this only draws and reports clicks.
  * cols: [{ label, rows:[{ uuid, name, img, hp:{v,m}|null, status, excluded:reason|null }], none }]
  */
+// A target row's HP bar. HP above Max (a Soul Fragment): the bar spans the current HP, the
+// fill covers Max/HP of it and the extra is drawn in the overflow colour. Otherwise as before.
+function dhvHpBar(hp) {
+  if (!hasOverflow(hp.v, hp.m)) return `<i><b style="width:${Math.max(0, Math.min(100, (100 * hp.v) / (hp.m || 1)))}%"></b></i>`;
+  const f = (hp.m / hp.v) * 100;
+  return `<i class="ovr"><b style="width:${f.toFixed(2)}%"></b><b class="ov" style="width:${(100 - f).toFixed(2)}%"></b></i>`;
+}
 export function mountDockedTargets(host, { action = "Targets", onHover, onToggle, onConfirm, onBack, backLabel = "Back", secondary = null, onSecondary = null }) {
   ensureDrawerStyles();
   const view = document.createElement("div");
@@ -708,7 +717,7 @@ export function mountDockedTargets(host, { action = "Targets", onHover, onToggle
     + `<span class="dhv-dia"></span>${r.img ? `<img class="dhv-face" src="${escapeHtml(r.img)}" alt="">` : `<span class="dhv-face"></span>`}`
     + `<span class="nm">${escapeHtml(r.name)}${r.you ? " (you)" : ""}${r.status ? ` <span class="dhv-chip t-tag">${escapeHtml(r.status)}</span>` : ""}</span>`
     + (r.excluded ? `<span class="why">${escapeHtml(r.excluded)}</span>`
-      : r.hp ? `<span class="dhv-thp"><span>${r.hp.v} / ${r.hp.m}</span><i><b style="width:${Math.max(0, Math.min(100, (100 * r.hp.v) / (r.hp.m || 1)))}%"></b></i></span>` : `<span></span>`)
+      : r.hp ? `<span class="dhv-thp"><span>${r.hp.v} / ${r.hp.m}</span>${dhvHpBar(r.hp)}</span>` : `<span></span>`)
     + `</div>`;
   function paint() {
     const s = state;

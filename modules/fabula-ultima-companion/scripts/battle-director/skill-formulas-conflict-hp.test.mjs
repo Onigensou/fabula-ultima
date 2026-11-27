@@ -39,4 +39,17 @@ t("none / unknown kind / typo read 0 (>= gate fails closed)", () => {
   assert.equal(run("CONFLICT_OBJECT_HP_SOUL_FRAGMNT >= 1"), 0);
   assert.equal(run("CONFLICT_OBJECT_HP_"), 0);
 });
+t("TOP_HP: max over fragments, dead ignored, overflow whole, 0 when none", () => {
+  setScene([tok("a", obj("soul-fragment", 120)), tok("b", obj("soul-fragment", 310)), tok("c", obj("soul-fragment", 0)), tok("d", obj("lightning-crystal", 500))]);
+  assert.equal(run("CONFLICT_OBJECT_TOP_HP_SOUL_FRAGMENT"), 310);
+  assert.equal(run("CONFLICT_OBJECT_TOP_HP_LIGHTNING_CRYSTAL"), 500);
+  assert.equal(run("CONFLICT_OBJECT_HP_SOUL_FRAGMENT"), 430);
+  assert.equal(run("CONFLICT_OBJECT_TOP_HP_SOUL_FRAGMENT >= 100"), 1);
+  setScene([tok("c", obj("soul-fragment", 0))]);
+  assert.equal(run("CONFLICT_OBJECT_TOP_HP_SOUL_FRAGMENT"), 0);
+  setScene([]);
+  assert.equal(run("CONFLICT_OBJECT_TOP_HP_SOUL_FRAGMENT"), 0);
+  assert.equal(run("CONFLICT_OBJECT_TOP_HP_SOUL_FRAGMNT >= 1"), 0);
+  assert.equal(run("CONFLICT_OBJECT_TOP_HP_"), 0);
+});
 console.log(`${n} passed`);

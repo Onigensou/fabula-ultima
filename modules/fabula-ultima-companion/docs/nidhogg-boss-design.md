@@ -270,6 +270,21 @@ Moves (in the order given):
    fragment follows every normal rule: it can be the recipient, and as a donor it is destroyed like a devoured one
    and returns at the end of the round (item 7). The Nox Priest's "Soul Siphon" trigger fires once per destroyed
    donor, as written. A destroyed donor triggers no on-kill passive (a fragment is not a creature).
+11. **Soul Strike** (given 2026-11-27). Type: Skill. Accuracy: MIG + WLP + 9. Target: one enemy creature.
+   "Select the soul fragment with the highest HP and throw it at the target creature. On hit, deal poison damage equal
+   to the fragment's current HP to both the fragment and the target. On miss, the damage is halved." Spec:
+   `tools/handoffs/nidhogg-soul-strike-spec.md`. Ruled by the user 2026-11-27:
+   - The miss-for-half rule IS the existing keyword **Pierce** (author it with the keyword, do not hand-roll it).
+   - A fragment destroyed by Soul Strike refunds **Max HP only** to its owner (as Soul Devour / Soul Confluence).
+   - AI: "prefer a big fragment".
+   Lead calls (the user can overrule): AI row only when the highest fragment's current HP is **100 or more**, ordinary
+   priority tier (20, with Call of the Master / Army), needs 1 or more fragment. No MP cost. Same defense as Call of
+   the Master. Fragment pick = highest current HP, tie -> highest Max HP, then party order (same ordering as Soul
+   Confluence). The damage amount is read once before either write; on a miss both take half (the fragment survives a
+   miss with half HP). An overflowed fragment throws its full current HP. The permanent (Nox Servant) fragment can be
+   thrown and returns at round end like a devoured one. Any enemy creature (PC, guest, summon) can be the target.
+   **Rule for ALL his moves (user, 2026-11-27):** each move is used **at most once per round**, unless there is no
+   other move, in which case he uses Claw or Tail Stab.
 
    Claw and Tail Stab are his **fallback moves**: used when no other move can be used (by the AI's rules or for lack
    of resources). Moves without a specific visual from the user get a simple animation; all of them get SFX.

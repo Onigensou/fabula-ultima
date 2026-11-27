@@ -260,6 +260,31 @@ export function eatFragment({ stolen, eaten, fragmentHp } = {}) {
 }
 
 /**
+ * The ONE fragment ordering (Confluence recipient, Soul Strike pick): current HP desc, then
+ * Max HP desc, then party slot asc (a missing / negative slot sorts last). Pure, returns a copy.
+ */
+export function rankFragments(list = []) {
+  const slot = (f) => (Number.isFinite(f.slot) && f.slot >= 0 ? f.slot : Number.MAX_SAFE_INTEGER);
+  return [...(list ?? [])].filter(Boolean).sort((a, b) => whole(b.hp) - whole(a.hp) || whole(b.max) - whole(a.max) || slot(a) - slot(b));
+}
+
+/**
+ * Soul Strike (Nidhogg): what throwing the top fragment does. Pure. `list` = standing
+ * fragments [{ id, hp, max, slot }]; `hit` / `pierceMiss` = the enemy's outcome from the card.
+ * Pick = rankFragments(live)[0]; amount = its current HP (an overflowed one throws whole).
+ * loss = amount on a hit, ceil(amount / 2) on a Pierce miss (same ceil as the enemy's half,
+ * action-profile.js:762 `Math.ceil(shareBase / 2)`), else 0. No standing fragment -> null.
+ */
+export function planStrike({ list = [], hit = false, pierceMiss = false } = {}) {
+  const live = (list ?? []).filter((f) => f && whole(f.hp) > 0);
+  const top = rankFragments(live)[0];
+  if (!top) return null;
+  const amount = whole(top.hp);
+  const loss = hit ? amount : pierceMiss ? Math.ceil(amount / 2) : 0;
+  return { fragmentId: top.id, amount, loss, newHp: amount - loss, destroys: loss > 0 && amount - loss <= 0 };
+}
+
+/**
  * Soul Confluence (Nidhogg): who receives, who gives. Pure. `list` = standing fragments
  * [{ id, hp, max, slot }]. Recipient = highest current HP, tie highest Max HP, tie lowest
  * party slot (a missing slot sorts last). Fewer than 2 -> null (nothing to merge).
@@ -268,8 +293,7 @@ export function eatFragment({ stolen, eaten, fragmentHp } = {}) {
 export function planConfluence(list = []) {
   const live = (list ?? []).filter((f) => f && whole(f.hp) > 0);
   if (live.length < 2) return null;
-  const slot = (f) => (Number.isFinite(f.slot) && f.slot >= 0 ? f.slot : Number.MAX_SAFE_INTEGER);
-  const sorted = [...live].sort((a, b) => whole(b.hp) - whole(a.hp) || whole(b.max) - whole(a.max) || slot(a) - slot(b));
+  const sorted = rankFragments(live);
   const [recipient, ...donors] = sorted;
   return {
     recipientId: recipient.id,
@@ -445,6 +469,13 @@ function liveFragmentOf(ctx, ownerUuid) {
   return fragmentCombatants(ctx).find((c) => ownerUuidOf(c) === ownerUuid
     && propNum(c.actorDoc, "current_hp") > 0
     && markAe(c.actorDoc)?.flags?.[FLAG_NS]?.soulReturned !== true) ?? null;
+}
+
+/** Standing, unpaid, not-eaten fragment combatants (hp > 0, with a mark AE). */
+function standingFragments(ctx) {
+  return fragmentCombatants(ctx).filter((c) => propNum(c.actorDoc, "current_hp") > 0
+    && markAe(c.actorDoc) && markAe(c.actorDoc).flags?.[FLAG_NS]?.soulReturned !== true
+    && markAe(c.actorDoc).flags?.[FLAG_NS]?.soulEatenAt == null);
 }
 
 // ── Writes ──────────────────────────────────────────────────────────────────
@@ -773,6 +804,8 @@ async function sweepLeftovers(ctx) {
  * that reached 0 with no HP event at all. The owner still gets it back.
  */
 async function sweepDestroyed(ctx) {
+  // F5 safety for Soul Strike: a throw an F5 cut short is finished first (max_only, never full).
+  await finishStrikes(ctx);
   for (const c of fragmentCombatants(ctx)) {
     // Refunded already and somehow standing again (healed during its defeat
     // animation): its loss was paid back, so it has nothing left to hold.
@@ -1262,6 +1295,67 @@ async function finishMerges(ctx, { show = false } = {}) {
   return handled;
 }
 
+/** Soul Strike's stamps on a fragment mark: null when it carries none. */
+function strikeStamp(actor) {
+  const f = markAe(actor)?.flags?.[FLAG_NS] ?? {};
+  if (f.soulStrikeKill !== true && f.soulStrikeHp == null) return null;
+  return {
+    round: whole(f.soulStrikeRound),
+    hp: f.soulStrikeHp == null ? null : whole(f.soulStrikeHp),
+    amount: whole(f.soulStrikeAmount),
+    // A stamped HP of 0 or less is a kill whatever the flag says: 0 HP is never written.
+    kill: f.soulStrikeKill === true || (f.soulStrikeHp != null && whole(f.soulStrikeHp) <= 0),
+  };
+}
+
+async function clearStrikeStamp(actor) {
+  await markAe(actor)?.update({
+    [`flags.${FLAG_NS}.soulStrikeRound`]: null, [`flags.${FLAG_NS}.soulStrikeHp`]: null,
+    [`flags.${FLAG_NS}.soulStrikeKill`]: null, [`flags.${FLAG_NS}.soulStrikeAmount`]: null,
+  });
+}
+
+/**
+ * Soul Strike's F5 repair (sweepDestroyed runs it first; strikeFragment runs it before a
+ * new throw). A fragment mark stamped by strikeFragment means an F5 cut the throw short:
+ *  - kill stamp: destroyed max_only (Max HP back, current HP untouched), whatever its HP and
+ *    whatever round it is from. Never through 0 HP, so never the FULL refund;
+ *  - partial stamp (`soulStrikeHp` = the ABSOLUTE HP after the throw), this round, fragment
+ *    standing: HP above the stamp is SET to the stamp (an absolute set, so a replay can never
+ *    subtract twice); at or below it (written already, or hit since) it is left alone;
+ *  - partial stamp from an OLDER round: cleared with nothing written. A round end has passed
+ *    without its sweep, and a Calling or heal since may have moved the HP legitimately, so a
+ *    set could undo real play; losing a half throw is the safe side (no subtract, no refund);
+ *  - then the stamps are cleared (a destroyed fragment's go with it).
+ * Returns [{ name, round, amount, kill }] for every stamp it handled.
+ */
+async function finishStrikes(ctx, { show = false } = {}) {
+  const round = Number(ctx.dCombat?.round) || 0;
+  const handled = [];
+  const kills = [];
+  for (const c of fragmentCombatants(ctx)) {
+    const s = strikeStamp(c.actorDoc);
+    if (!s) continue;
+    handled.push({ name: c.actorDoc?.name, round: s.round, amount: s.amount, kill: s.kill });
+    if (s.kill) { kills.push(c); continue; }
+    const f = markAe(c.actorDoc)?.flags?.[FLAG_NS] ?? {};
+    const hp = propNum(c.actorDoc, "current_hp");
+    const standing = hp > 0 && f.soulReturned !== true && f.soulEatenAt == null;
+    if (standing && s.round === round && hp > s.hp) {
+      await setFragmentHp(c, s.hp, propNum(c.actorDoc, "max_hp"));
+      ctx.log(`strikeFragment (resumed): ${c.actorDoc?.name} ${hp} -> ${s.hp}`);
+    } else if (standing && s.round !== round) {
+      ctx.warn(`strikeFragment: ${c.actorDoc?.name} carried a throw stamp from round ${s.round} (now ${round}); cleared, nothing written`);
+    }
+    await clearStrikeStamp(c.actorDoc);
+  }
+  if (kills.length) {
+    await destroyFragments(ctx, kills, { refund: REFUND.MAX_ONLY, show });
+    ctx.log(`strikeFragment (resumed): ${kills.map((c) => c.actorDoc?.name).join(", ")} destroyed (max_only)`);
+  }
+  return handled;
+}
+
 // ── The event ───────────────────────────────────────────────────────────────
 
 registerConflictEvent({
@@ -1599,9 +1693,7 @@ registerConflictEvent({
       }
       await sweepDestroyed(ctx);
       const pl = players(ctx);
-      const standing = fragmentCombatants(ctx).filter((c) => propNum(c.actorDoc, "current_hp") > 0
-        && markAe(c.actorDoc) && markAe(c.actorDoc).flags?.[FLAG_NS]?.soulReturned !== true
-        && markAe(c.actorDoc).flags?.[FLAG_NS]?.soulEatenAt == null);
+      const standing = standingFragments(ctx);
       const plan = planConfluence(standing.map((c) => ({
         id: c.tokenDoc?.id, hp: propNum(c.actorDoc, "current_hp"), max: propNum(c.actorDoc, "max_hp"),
         slot: pl.findIndex((p) => p.actorDoc?.uuid === ownerUuidOf(c)),
@@ -1619,6 +1711,90 @@ registerConflictEvent({
       await finishMerges(ctx, { show: playShow });
       setVar(propNum(rec.actorDoc, "current_hp"));
       ctx.log(`mergeFragments: ${donors.length} fragment(s) into ${rec.actorDoc?.name} — ${hp} HP (Max ${propNum(rec.actorDoc, "max_hp")}, not clamped)`);
+      await saveNow(ctx);
+      return true;
+    },
+
+    /**
+     * Soul Strike (Nidhogg): the standing fragment with the most current HP (planStrike /
+     * rankFragments: HP, then Max HP, then party slot) is thrown at one enemy. Row (item
+     * skill, One Enemy, on_activate):
+     *   { effect_kind: "conflict_event_action", conflict_action: "strikeFragment show=none",
+     *     target_ref: "action_targets" }
+     * The ENEMY's damage is the card's own (damage_bonus CONFLICT_OBJECT_TOP_HP_SOUL_FRAGMENT,
+     * read at COMPUTE, Pierce halves it on a miss). This action does the FRAGMENT's half: it
+     * reads the enemy's outcome from the card's single result row
+     * (effectCtx.actionResult.perTargetResults[0]: `hit`, `pierceMiss`) and the fragment loses
+     * the same amount: all of its HP on a hit, ceil(half) on a Pierce miss, nothing otherwise.
+     * A kill is a destroy max_only (owner's Max HP back, current HP not): 0 HP is NEVER written,
+     * because a 0 HP fragment pays the FULL refund (onObjectDestroyed / sweepDestroyed). A
+     * partial loss is an absolute HP set. Stamps first (`soulStrikeRound`, `soulStrikeHp`,
+     * `soulStrikeKill`, `soulStrikeAmount`), so an F5 mid-throw is finished, not repeated
+     * (finishStrikes). A permanent (Nox Servant) fragment goes the same way and is re-torn at
+     * the round end. Leaves VAR_STRIKE_AMOUNT (the thrown fragment's HP) on the chain for a show;
+     * never use it as the damage (it is set at RESOLVE, after the card's damage was computed).
+     * Returns false when there is no result row or no standing fragment.
+     */
+    async strikeFragment(ctx, { options = {}, effectCtx = null } = {}) {
+      const dc = ctx.dCombat;
+      if (!dc || dc.ended) return false;
+      const setVar = (v) => {
+        if (!effectCtx) return;
+        if (!effectCtx.payload) effectCtx.payload = {};
+        if (!effectCtx.payload._chainVars) effectCtx.payload._chainVars = {};
+        effectCtx.payload._chainVars.strike_amount = v;
+      };
+      setVar(0);
+      const round = Number(dc.round) || 0;
+      await adoptStrayFragments(ctx);
+      // A throw an F5 cut short this round is this action's own earlier run: finish it, do not throw again.
+      const resumed = (await finishStrikes(ctx)).filter((s) => s.round === round);
+      if (resumed.length) {
+        setVar(resumed[0].amount);
+        ctx.log(`strikeFragment: finished a throw an F5 cut short (${resumed.map((s) => s.name).join(", ")}); no second throw`);
+        await saveNow(ctx);
+        return true;
+      }
+      await sweepDestroyed(ctx);
+      const row = effectCtx?.actionResult?.perTargetResults?.[0] ?? null;
+      if (!row) { ctx.log("strikeFragment: no result row on the card (actionResult.perTargetResults[0]); nothing thrown"); return false; }
+      const hit = row.hit === true, pierceMiss = row.pierceMiss === true;
+      const pl = players(ctx);
+      const standing = standingFragments(ctx);
+      const plan = planStrike({
+        list: standing.map((c) => ({
+          id: c.tokenDoc?.id, hp: propNum(c.actorDoc, "current_hp"), max: propNum(c.actorDoc, "max_hp"),
+          slot: pl.findIndex((p) => p.actorDoc?.uuid === ownerUuidOf(c)),
+        })),
+        hit, pierceMiss,
+      });
+      if (!plan) { ctx.log(`strikeFragment: no standing fragment to throw`); return false; }
+      const c = standing.find((f) => f.tokenDoc?.id === plan.fragmentId);
+      if (!c) { ctx.log(`strikeFragment: planned fragment ${plan.fragmentId} not found`); return false; }
+      setVar(plan.amount);
+      const name = c.actorDoc?.name;
+      if (plan.loss <= 0) {
+        ctx.log(`strikeFragment: ${name} ${plan.amount} untouched (neither hit nor pierce-miss)`);
+        return true;
+      }
+      // Never a 0 HP write: anything that would leave it at 0 or below is the max_only destroy.
+      const kill = plan.destroys || plan.newHp <= 0;
+      const max = propNum(c.actorDoc, "max_hp");
+      await markAe(c.actorDoc)?.update({
+        [`flags.${FLAG_NS}.soulStrikeRound`]: round,
+        [`flags.${FLAG_NS}.soulStrikeHp`]: kill ? 0 : plan.newHp,
+        [`flags.${FLAG_NS}.soulStrikeKill`]: kill,
+        [`flags.${FLAG_NS}.soulStrikeAmount`]: plan.amount,
+      });
+      if (kill) {
+        const playShow = String(options?.show ?? "").trim().toLowerCase() !== "none";
+        // The fragment leaves the field here; its stamps go with it.
+        await destroyFragments(ctx, [c], { refund: REFUND.MAX_ONLY, show: playShow });
+      } else {
+        await setFragmentHp(c, plan.newHp, max);
+        await clearStrikeStamp(c.actorDoc);
+      }
+      ctx.log(`strikeFragment: ${name} ${plan.amount} -> ${kill ? 0 : plan.newHp} (${hit ? "hit" : "pierce-miss"})${kill ? " destroyed, max_only" : ""}`);
       await saveNow(ctx);
       return true;
     },
