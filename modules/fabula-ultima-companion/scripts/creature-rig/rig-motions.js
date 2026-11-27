@@ -212,6 +212,33 @@ defineMotion("inhale", {
   },
 });
 
+// ---- hurl: a throw from the mouth. The head rears back and up with the jaw parting (the catch: something is pulled
+// into the mouth), holds it there with a tremor and a last wind-up, then at the peak SNAPS forward and down with the
+// jaw thrown wide (the release), follows through a beat and settles (Nidhogg's Soul Strike, 2026-11-28). Options:
+//   peak    seconds from the start to the release (default 1.15)   jaw   full gape at the release (default 28)
+//   rear    head lift while holding (default +10)   thrust  head at the release, forward and down (default -8)
+defineMotion("hurl", {
+  calm: 0.3, fadeIn: 0, fadeOut: 0,             // starts and ends at rest by itself
+  duration: (o = {}) => (o.peak ?? 1.15) + 0.12 + 0.2 + 0.45,
+  peakAt: (o = {}) => o.peak ?? 1.15,
+  sample(t, o = {}) {
+    const P = o.peak ?? 1.15, J = o.jaw ?? 28, RR = o.rear ?? 10, TH = o.thrust ?? -8;
+    const t0 = Math.min(0.3, P * 0.26), tw = Math.max(t0, P - 0.15), t2 = P + 0.12, t3 = t2 + 0.2, t4 = t3 + 0.45;
+    const JH = 0.55 * J;                         // the jaw held part-open round the thing in the mouth
+    let jaw, lift, breath, wings;
+    if (t < t0) { const e = ease(t / t0); jaw = JH * 0.7 * e; lift = RR * e; breath = 0.8 * e; wings = -6 * e; }
+    else if (t < P) {
+      const u = (t - t0) / Math.max(0.01, P - t0), w = ease((t - tw) / Math.max(0.01, P - tw));   // w: the last wind-up
+      jaw = JH * (0.7 + 0.3 * ease(u)) + 0.9 * Math.sin(t * 37) * ease(u * 3) * (1 - w); lift = RR + 3 * w; breath = 0.8 + 0.4 * w; wings = -6 - 4 * w;
+    }
+    else if (t < t2) { const u = (t - P) / (t2 - P), e = ease(u); jaw = JH + (J - JH) * outBack(u); lift = RR + 3 + (TH - RR - 3) * e; breath = 1.2 - 2 * e; wings = -10 - 6 * e; }
+    else if (t < t3) { const q = 1 - (t - t2) / (t3 - t2); jaw = J * (0.85 + 0.15 * q); lift = TH + 0.8 * Math.sin(Math.PI * q) * Math.sin(t * 43); breath = -0.8; wings = -16 + 4 * (1 - q); }
+    else if (t < t4) { const e = 1 - ease((t - t3) / (t4 - t3)); jaw = J * 0.85 * e; lift = TH * e; breath = -0.8 * e; wings = -12 * e; }
+    else { jaw = 0; lift = 0; breath = 0; wings = 0; }
+    return { jaw, lift, breath, wings };
+  },
+});
+
 /** One animator per rigged token (per client). Time is in seconds, supplied by the caller. */
 export class RigAnimator {
   constructor() {

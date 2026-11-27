@@ -165,5 +165,34 @@ ok(["roar", "flinch", "snarl"].every((n) => motionNames().includes(n)), "built-i
   pin("tailStrike", 0.62, "tail", 33.51);
   pin("wingSpread", 1.1, "wings", -14);
 }
+// hurl (Nidhogg's Soul Strike, 2026-11-28): rear back with the jaw part-open (the ball in the mouth), hold, SNAP
+// forward and down with the jaw wide at the peak, follow through, settle to rest
+{
+  ok(motionNames().includes("hurl"), "hurl registered");
+  const A = new RigAnimator(); A.idleOn = false; A.idleK = 0;
+  const h = A.play("hurl", {}, 0); let peaked = false, done = null; h.peak.then((v) => peaked = v); h.done.then((r) => done = r);
+  ok(CHANNELS.every((c) => Math.abs(A.sample(0.0001)[c]) < 0.1), "hurl starts at rest");
+  const rear = A.sample(0.6), held = A.sample(1.12);
+  ok(rear.lift > 8 && rear.jaw > 9 && rear.jaw < 18, `rears back with the jaw part-open (lift ${rear.lift.toFixed(1)}, jaw ${rear.jaw.toFixed(1)})`);
+  ok(held.lift > rear.lift && held.jaw > 13 && held.jaw < 18, `holds it, winding up before the release (lift ${held.lift.toFixed(1)}, jaw ${held.jaw.toFixed(1)})`);
+  const snap = A.sample(1.27), follow = A.sample(1.4);
+  ok(snap.lift < -7 && snap.jaw > 26, `snaps forward and down, jaw wide (lift ${snap.lift.toFixed(1)}, jaw ${snap.jaw.toFixed(1)})`);
+  ok(follow.lift < -6 && follow.jaw > 22, `follows through (lift ${follow.lift.toFixed(1)}, jaw ${follow.jaw.toFixed(1)})`);
+  A.sample(1.85); await Promise.resolve(); await Promise.resolve();
+  ok(peaked === true && done === null, "hurl peak resolved, still settling at 1.85 s");
+  A.sample(1.95); await Promise.resolve(); await Promise.resolve();
+  ok(done && done.ok === true, "hurl done at 1.92 s");
+  ok(CHANNELS.every((c) => Math.abs(A.sample(2.0)[c]) < 1e-6), "back at rest after hurl");
+  const tm = motionTiming("hurl");
+  ok(tm && tm.peakMs === 1150 && tm.durationMs === 1920, `timing("hurl") peakMs 1150 / durationMs 1920 (${JSON.stringify(tm)})`);
+  ok(motionTiming("hurl", { peak: 0.9 })?.peakMs === 900, "peak option moves the peak");
+  // no pops: at 240 Hz no channel jumps more than 2.5 deg in one step, except across the snap itself
+  const C = new RigAnimator(); C.idleOn = false; C.idleK = 0; C.play("hurl", {}, 0);
+  let prev = C.sample(0), worst = 0, worstAt = 0;
+  for (let t = 1 / 240; t < 1.95; t += 1 / 240) { const p = C.sample(t); if (t < 1.14 || t > 1.3) for (const c of CHANNELS) { const d = Math.abs(p[c] - prev[c]); if (d > worst) { worst = d; worstAt = t; } } prev = p; }
+  ok(worst < 2.5, `hurl is continuous outside the snap (worst step ${worst.toFixed(2)} deg at ${worstAt.toFixed(3)} s)`);
+  const B = new RigAnimator(); B.idleOn = false; B.idleK = 0; B.play("hurl", { jaw: 20, thrust: -4, rear: 6 }, 0);
+  const b1 = B.sample(1.27); ok(b1.jaw > 18 && b1.jaw < 23 && b1.lift < -3 && b1.lift > -5.5 && B.sample(0.6).lift < 7, `jaw / thrust / rear options (jaw ${b1.jaw.toFixed(1)}, lift ${b1.lift.toFixed(1)})`);
+}
 ok(near(idle(0, 0).jaw, 0), "idle weight 0 is still");
 console.log(fails ? `${fails} FAILED` : "all passed"); process.exit(fails ? 1 : 0);
