@@ -129,10 +129,10 @@ await safe("armor rows", async () => {
   out.rows = { crisis: crisisOn(a), loseCond: cond(rcs[0].condition_formula) };
   await SE.applyEffectRow(R("bk_on"), ctx); await wait(800);
   const bz = () => a.effects.filter((e) => e.name === "Berserk" && !e.disabled);
-  out.rows.after_on = { berserk: bz().length, rage: a.effects.filter((e) => e.name === "Berserker Rage").length, lifetime: bz()[0]?.flags?.[NS]?.lifetimeMode,
+  out.rows.after_on = { berserk: bz().length, rage: a.effects.filter((e) => e.name === "Berserker Rage").length, charges: bz()[0]?.flags?.[NS]?.charges ?? null, rounds: bz()[0]?.duration?.rounds ?? null,
     gate: bz()[0]?.changes?.map((c) => `${c.key}=${c.value}`) };
   ok("in Crisis: lose-HP row condition true", out.rows.crisis && Number(out.rows.loseCond) === 1, out.rows);
-  ok("bk_on: Berserk (persistent) + hidden Rage marker", out.rows.after_on.berserk === 1 && out.rows.after_on.rage === 1 && out.rows.after_on.lifetime === "persistent_counter", out.rows.after_on);
+  ok("bk_on: Berserk (no turn counter) + hidden Rage marker", out.rows.after_on.berserk === 1 && out.rows.after_on.rage === 1 && !(Number(out.rows.after_on.charges) > 0), out.rows.after_on);
   // Berserk ×2 reaches the damage fold: the reactor gate
   out.rows.onlyAttack = (out.rows.after_on.gate ?? []).some((s) => /enable_action_only=Attack/.test(s));
   ok("Berserk = Attack only", out.rows.onlyAttack, out.rows.after_on.gate);
@@ -145,7 +145,7 @@ await safe("armor rows", async () => {
   await SE.applyEffectRow(R("bk_off"), ctx); await wait(800);
   out.rows.after_off = { berserk: bz().length, rage: a.effects.filter((e) => e.name === "Berserker Rage").length };
   ok("out of Crisis: gain-HP condition true, Berserk + marker removed", Number(out.rows.offCond) === 1 && out.rows.after_off.berserk === 0 && out.rows.after_off.rage === 0, out.rows);
-  ok("marker classified hidden", (() => { const m = psv.effects.find((e) => e.name === "Berserker Rage"); return !!m?.flags?.[NS]?.hidden; })());
+  ok("marker classified hidden", (() => { const m = psv.effects.contents.find((e) => e.name === "Berserker Rage"); return !!m?.flags?.[NS]?.hidden; })());
 });
 
 // axe % ladder + set multiplier + hat
@@ -183,7 +183,7 @@ await safe("hat rows", async () => {
   out.hat = { round1: game.combat?.round };
   await a.update({ "system.props.current_mp": 10 }); await wait(300);
   // round 1: attack → blade mark = 1
-  await chainRun("ht_self"); await chainRun("ht_atk");
+  await chainRun("ht_atk");
   out.hat.blade1 = ch("Fencer Hat Blade");
   out.hat.dmgGateR1 = cond(dmgGate);
   // round 2: cast an offensive spell → +5 MP (attacked last turn), spell mark = 2
@@ -198,7 +198,7 @@ await safe("hat rows", async () => {
   // round 4: spell again but no attack in round 3 → no MP
   await cmb.nextRound(); await wait(400);
   const b4 = mp0(); await chainRun("ht_spl"); out.hat.mpGain4 = mp0() - b4;
-  out.hat.markersHidden = psv.effects.every((e) => e.flags?.[NS]?.hidden === true);
+  out.hat.markersHidden = psv.effects.contents.every((e) => e.flags?.[NS]?.hidden === true);
   ok("hat: blade mark = round of the attack", out.hat.round1 === 1 && out.hat.blade1 === 1, out.hat);
   ok("hat: spell after last turn's attack → +5 MP", out.hat.mpGain === 5 && out.hat.spell2 === 2, out.hat);
   ok("hat: +5 damage gate only the turn after a spell", out.hat.dmgGateR1 === 0 && out.hat.dmgGateR2 === 0 && out.hat.dmgGateR3 === 1, out.hat);

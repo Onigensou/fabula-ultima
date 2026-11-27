@@ -86,8 +86,6 @@ const rc = (trigger, ref, extra = {}) => ({
   reaction_trigger: trigger, reaction_source: "self", reaction_passive_mode: "force", reaction_effect_ref: ref,
   condition_formula: "", reaction_resource_filter: "", reaction_cause_filter: "", reaction_max_per_round: "", reaction_requires_weapon_used: false, ...extra,
 });
-const SELF = (label) => ({ effect_kind: "targeting", effect_label: label, candidate_source: "self", count: "1", mode: "exact",
-  iteration_mode: "together", auto_target: "skip", auto_confirm_when_obvious: true, skip_when_passive: true });
 const removeAe = (label, names, extra = {}) => ({ effect_label: label, effect_kind: "remove_ae", ae_template_ref: names, include_persistent: true, target_ref: "self", ...extra });
 const templAe = (id, name, img, changes, desc, flags = {}, transfer = false) => ({
   _id: id, name, img, transfer, disabled: false, statuses: [], type: "base", system: { tags: [] }, sort: 0, tint: "#ffffff",
@@ -106,8 +104,8 @@ const ARMOR_RC = [
 ];
 const ARMOR_EFF = [
   { effect_label: "bk_on", effect_kind: "chain", chain_steps: "bk_berserk, bk_mark" },
-  { effect_label: "bk_berserk", effect_kind: "apply_ae", ae_template_ref: "Berserk", ae_duplicate_mode: "skip", ae_lifetime_mode: "persistent_counter", target_ref: "self" },
-  { effect_label: "bk_mark", effect_kind: "apply_ae", ae_template_ref: "Berserker Rage", ae_duplicate_mode: "replace", ae_lifetime_mode: "persistent_counter", target_ref: "self" },
+  { effect_label: "bk_berserk", effect_kind: "apply_ae", ae_template_ref: "Berserk", ae_duplicate_mode: "skip", ae_duration_rounds: "scene", target_ref: "self" },
+  { effect_label: "bk_mark", effect_kind: "apply_ae", ae_template_ref: "Berserker Rage", ae_duplicate_mode: "replace", ae_duration_rounds: "scene", target_ref: "self" },
   { effect_label: "bk_off", effect_kind: "chain", chain_steps: "bk_unberserk, bk_unmark" },
   removeAe("bk_unberserk", "Berserk"),
   removeAe("bk_unmark", "Berserker Rage"),
@@ -137,14 +135,13 @@ const HAT_RC = [
   rc("conflict_end", "ht_clear", { reaction_source: "", reaction_passive_target: "self" }),
 ];
 const HAT_EFF = [
-  SELF("ht_self"),
   { effect_label: "ht_atk", effect_kind: "apply_ae", ae_template_ref: "Fencer Hat Blade", ae_duplicate_mode: "replace",
-    ae_initial_charges: "ROUND", ae_initial_charges_max: "999", ae_lifetime_mode: "persistent_counter", target_ref: "ht_self" },
+    ae_initial_charges: "ROUND", ae_initial_charges_max: "999", ae_lifetime_mode: "persistent_counter", target_ref: "self" },
   { effect_label: "ht_spl", effect_kind: "chain", chain_steps: "ht_mp, ht_spl_mark" },
-  { effect_label: "ht_mp", effect_kind: "grant", grant_resource: "mp", grant_amount: T.hatMp, target_ref: "ht_self",
+  { effect_label: "ht_mp", effect_kind: "grant", grant_resource: "mp", grant_amount: T.hatMp, target_ref: "self",
     condition_formula: "AE_CHARGES_FENCER_HAT_BLADE == ROUND - 1", on_condition_fail: "skip" },
   { effect_label: "ht_spl_mark", effect_kind: "apply_ae", ae_template_ref: "Fencer Hat Spell", ae_duplicate_mode: "replace",
-    ae_initial_charges: "ROUND", ae_initial_charges_max: "999", ae_lifetime_mode: "persistent_counter", target_ref: "ht_self" },
+    ae_initial_charges: "ROUND", ae_initial_charges_max: "999", ae_lifetime_mode: "persistent_counter", target_ref: "self" },
   { effect_label: "ht_dmg", effect_kind: "adjust_damage", damage_stage: "outgoing", damage_operation: "add", damage_amount: T.hatDmg, target_ref: "trigger_subject" },
   removeAe("ht_clear", "Fencer Hat Blade, Fencer Hat Spell"),
 ];
