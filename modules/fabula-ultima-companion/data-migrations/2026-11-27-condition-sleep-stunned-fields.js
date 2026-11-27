@@ -36,7 +36,7 @@ const NEW = [
 ];
 
 function hasKey(node, want, depth = 0) {
-  if (!node || typeof node !== "object" || depth > 24) return false;
+  if (!node || typeof node !== "object" || depth > 40) return false;
   if (node.key === want) return true;
   for (const v of Object.values(node)) {
     if (Array.isArray(v)) { for (const c of v) if (hasKey(c, want, depth + 1)) return true; }
@@ -45,10 +45,17 @@ function hasKey(node, want, depth = 0) {
   return false;
 }
 
-// The node whose `contents` holds the anchor field.
+// Where the anchor field sits. Two layouts are live:
+//   NPC  a panel: `contents` holds the field itself            -> { kind: "list", node }
+//   PC   a CSB table: `contents` is rows of cells, the field is
+//        one cell of a row, empty cells are null               -> { kind: "table", node, row }
 function findParent(node, depth = 0) {
-  if (!node || typeof node !== "object" || depth > 24) return null;
-  if (Array.isArray(node.contents) && node.contents.some((c) => c?.key === ANCHOR)) return node;
+  if (!node || typeof node !== "object" || depth > 40) return null;
+  if (Array.isArray(node.contents)) {
+    if (node.contents.some((c) => c?.key === ANCHOR)) return { kind: "list", node };
+    const row = node.contents.find((r) => Array.isArray(r) && r.some((c) => c?.key === ANCHOR));
+    if (row) return { kind: "table", node, row };
+  }
   for (const v of Object.values(node)) {
     if (Array.isArray(v)) { for (const c of v) { const r = findParent(c, depth + 1); if (r) return r; } }
     else if (v && typeof v === "object") { const r = findParent(v, depth + 1); if (r) return r; }
@@ -61,17 +68,36 @@ async function patchTemplate(t, log) {
   const roots = [sys.body, sys.header].filter(Boolean);
   const missing = NEW.filter((f) => !roots.some((r) => hasKey(r, f.key)));
   if (!missing.length) { log(`  ${t.name}: already has both fields`); return 0; }
-  let parent = null;
-  for (const r of roots) { parent = findParent(r); if (parent) break; }
-  if (!parent) { log(`  ${t.name}: no ${ANCHOR} field, skipped`); return 0; }
-  const anchor = parent.contents.find((c) => c?.key === ANCHOR);
-  let at = parent.contents.indexOf(anchor) + 1;
-  for (const f of missing) {
+  let hit = null;
+  for (const r of roots) { hit = findParent(r); if (hit) break; }
+  if (!hit) { log(`  ${t.name}: no ${ANCHOR} field, skipped`); return 0; }
+  const list = hit.kind === "list" ? hit.node.contents : hit.row;
+  const anchor = list.find((c) => c?.key === ANCHOR);
+  const make = (f) => {
     const node = foundry.utils.duplicate(anchor);
     node.key = f.key;
-    node.label = f.label;
+    if ("label" in anchor) node.label = f.label;
     node.tooltip = "";
-    parent.contents.splice(at++, 0, node);
+    return node;
+  };
+  if (hit.kind === "list") {
+    let at = list.indexOf(anchor) + 1;
+    for (const f of missing) list.splice(at++, 0, make(f));
+  } else {
+    // Fill the empty cells after the anchor; a full row grows the table by a row.
+    const table = hit.node;
+    const width = Number(table.cols) || hit.row.length;
+    let row = hit.row, i = row.indexOf(anchor) + 1;
+    for (const f of missing) {
+      while (i < width && row[i] != null) i++;
+      if (i >= width) {
+        row = new Array(width).fill(null);
+        table.contents.splice(table.contents.indexOf(hit.row) + 1, 0, row);
+        table.rows = table.contents.length;
+        i = 0;
+      }
+      row[i++] = make(f);
+    }
   }
   await t.update({ "system.body": sys.body, "system.header": sys.header });
   log(`  ${t.name}: added ${missing.map((f) => f.key).join(", ")}`);
