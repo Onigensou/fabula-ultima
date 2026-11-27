@@ -57,5 +57,16 @@ ok(matchCard({ images: ["a/BanditRoo_Standard.png"] }, cards, art) === null, "re
 ok(matchCard({ images: ["a/Bandit_Standard.png"], name: "Bandit" }, cards, art) === null, "no card for an unmatched monster");
 ok(DROP.chance.soldier === 0.25 && DROP.pityAt.elite === 3, "tunables");
 
+// Valley trio (11-27): the real catalog finds them by actor name; fa-drops rolls dropAlways cards as a champion
+{
+  const { readFileSync } = await import("node:fs"); const vm = await import("node:vm");
+  vm.runInThisContext(readFileSync(new URL("./fa-catalog.js", import.meta.url), "utf8"));
+  const C = globalThis.FabulaArcana.Catalog.CARDS;
+  const found = ["Asura", "Rakshasa", "Deva"].map((name) => matchCard({ images: [`Beastiary/${name}_Standard.png`], name }, C, {}));
+  const rolled = decideDrops(found.map((cid) => ({ cid, rank: C[cid].dropAlways ? "champion" : "elite" })), [{ id: "a", owned: ["deva"], pity: {} }, { id: "b", owned: [], pity: {} }], seq(0.999));
+  ok(found.join() === "asura,rakshasa,deva" && rolled.drops.filter((d) => d.actorId === "a").map((d) => d.cid).join() === "asura,rakshasa" && rolled.drops.filter((d) => d.actorId === "b").length === 3,
+    "Valley trio: matched by name, a sure drop for every PC who doesn't own it yet");
+}
+
 console.log(fails ? `${fails} FAILED` : "ALL PASS");
 process.exit(fails ? 1 : 0);

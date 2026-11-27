@@ -31,7 +31,8 @@ export async function rollCardDrops(enemies, recipients, { rng = Math.random } =
   const C = Catalog()?.CARDS; if (!C) return [];
   if (!faUnlocked({ gmBypass: false })) return [];   // no drops (and no pity counting) before the party has met the game
   const list = [];
-  for (const e of enemies ?? []) { const cid = cardForEnemy(e.actor, e.token); if (cid) list.push({ cid, rank: e.rank ?? gp(e.actor, "system.props.npc_rank", "soldier") }); }
+  // dropAlways cards (the Valley trio, story elites fought once) roll as a champion: a sure drop on the first win
+  for (const e of enemies ?? []) { const cid = cardForEnemy(e.actor, e.token); if (cid) list.push({ cid, rank: C[cid]?.dropAlways ? "champion" : (e.rank ?? gp(e.actor, "system.props.npc_rank", "soldier")) }); }
   if (!list.length || !recipients?.length) return [];
   const recips = recipients.filter(Boolean).map((a) => ({ id: a.id, owned: ownedCards(a), pity: { ...(gp(a, `flags.${MODULE_ID}.${FLAG_PITY}`, {}) || {}) } }));
   const { drops, pity } = decideDrops(list, recips, rng);
