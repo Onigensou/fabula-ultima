@@ -2308,7 +2308,7 @@
       "condition_doom": "IM",
       "condition_enraged": "NA",
       "condition_envenomed": "NA",
-      "condition_fatigue": "NA",
+      "condition_fatigue": "IM",
       "condition_frightened": "IM",
       "condition_grappled": "IM",
       "condition_hypothermia": "NA",

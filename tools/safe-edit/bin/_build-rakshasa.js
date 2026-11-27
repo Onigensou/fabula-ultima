@@ -606,6 +606,9 @@ run(async ({ changes, deletes }) => {
     // bars, so he would only Guard. Boss rule: IM to whatever blocks the main command set,
     // plus Charmed, Doomed and Grappled for every lone boss.
     condition_charm: "IM", condition_paralyzed: "IM", condition_doom: "IM", condition_grappled: "IM",
+    // Fatigue (single-target only) bars Executioner's Volley + Rain of Arrows, so a Fatigued
+    // Rakshasa re-Shifts instead of striking (Blanche's Thread the Horns). Asura and Deva are IM too.
+    condition_fatigue: "IM",
     condition_slow: "RS", condition_weak: "RS",
     // Every lane starts NEUTRAL. A static profile here would fight the dynamic
     // one — Adaptive Defense is the only thing that moves these.
