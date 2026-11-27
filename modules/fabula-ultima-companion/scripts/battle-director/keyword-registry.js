@@ -96,7 +96,7 @@ const DATA = [
   ["Magic Break", "MagcBreakStatus1", SK + "17_PCT/Role_Actions/Addle.png", "status"],
   ["Obscure",     "ZdBbIFKzxQQcY71T", SK + "BLU/cold_fog.png",           "status"],
   ["Oil",         "Vnd1QB9lYQMYvIDF", SK + "BLU/self-destruct.png",      "status"],
-  ["Panic",       "vf421bQSPCjLAvBW", BF + "Stun.png",                   "status"],
+  ["Panic",       "vf421bQSPCjLAvBW", SK + "BLU/eerie_soundwave.png",  "status"],
   ["Provoked",    "c4sYPClmvld4TEK8", SK + "02_WAR/TankRollAction/provoke.png", "status"],
   ["Paralyzed",   "GqqgHkKOs0hkghdG", BF + "Paralyze.png",               "status"],
   ["Petrify",     "thBevyZDOURijH8I", SK + "BLU/peripheral_synthesis.png","status"],

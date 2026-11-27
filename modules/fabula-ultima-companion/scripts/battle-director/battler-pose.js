@@ -367,8 +367,9 @@ function onEffectChanged(effect) {
       dropShowHold(rec, "ko");
     }
     if (next === "ko") _lethal.cancel(token.id);
-    // Entering KO plays the fall from the start; anything else just switches.
-    render(token, { restart: next === "ko" });
+    // Entering KO plays the fall from the start, entering Stunned the hurt clip
+    // (then both hold their last frame); anything else just switches.
+    render(token, { restart: next === "ko" || next === "stunned" });
   }
 }
 
@@ -470,7 +471,9 @@ function endOneShot(tokenId, pose, record = null) {
     trace(token, _lethal.isPending() ? "hold-hurt-until-ko-pending" : "hold-hurt-armed");
     return;
   }
-  render(token, { restart: true });
+  // A hit on a Stunned unit: the hurt clip just ended on the frame the stunned
+  // pose holds, so keep it there instead of playing the clip a second time.
+  render(token, { restart: !(pose === "hurt" && entry.lasting === "stunned") });
 }
 
 // ── drawing ─────────────────────────────────────────────────────────────

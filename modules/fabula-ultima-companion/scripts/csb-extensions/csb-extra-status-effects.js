@@ -49,6 +49,14 @@
             CONFIG.statusEffects.push({ ...s });
             added++;
         }
+        // 2026-11-27: Panic gave Stun.png to Stunned. Its status comes from CSB's own
+        // list (world setting), so swap the icon here rather than rewrite the setting.
+        const panic = CONFIG.statusEffects.find((s) => s?.id === '8LN8tDQjON508Rqm');
+        if (panic && String(panic.img ?? panic.icon ?? '').endsWith('Stun.png')) {
+            const img = ICON + 'BLU/eerie_soundwave.png';
+            if ('img' in panic || !('icon' in panic)) panic.img = img;
+            if ('icon' in panic) panic.icon = img;
+        }
         console.info(`${TAG} added ${added} status effect(s).`);
     });
 })();

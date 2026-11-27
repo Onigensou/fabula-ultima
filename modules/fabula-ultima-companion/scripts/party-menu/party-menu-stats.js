@@ -324,7 +324,7 @@ export function battleTab(actor) {
 const CORE = ["dazed", "enraged", "poisoned", "shaken", "slow", "weak"];
 const OTHER = ["anomaly", "bane", "berserk", "bleed", "blind", "burn", "charm", "confused", "curse", "delayed", "despair", "disarmed", "doom",
   "envenomed", "fatigue", "frightened", "grappled", "hypothermia", "isolate", "obscure", "oil", "panic", "paralyzed", "petrify",
-  "silence", "stagger", "suppress", "turbulence", "wet", "wither", "zombie"];
+  "silence", "sleep", "stagger", "stunned", "suppress", "turbulence", "wet", "wither", "zombie"];
 const STATUS_TERM = { delayed: "Delay" };   // sheet key → keyword-registry name
 const GRADE = { RS: "Resistant", IM: "Immune", VU: "Vulnerable", AB: "Absorbs" };
 const resRow = (r) => `<div class="pm-btrow" data-bt-tip="${tipRef({ title: r.label, r })}"><span class="pm-btlabel">`

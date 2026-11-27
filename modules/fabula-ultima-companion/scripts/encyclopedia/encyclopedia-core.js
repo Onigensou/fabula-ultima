@@ -454,7 +454,7 @@
     "frightened","paralyzed","confused","panic","grappled","envenomed","burn",
     "blind","zombie","wither","bleed","obscure","fatigue","charm","berserk",
     "despair","doom","bane","curse","wet","oil","petrify","hypothermia",
-    "turbulence","delayed","isolate","suppress","disarmed","anomaly"
+    "turbulence","delayed","isolate","suppress","disarmed","anomaly","sleep","stunned"
   ];
 
   function objectToList(raw) {

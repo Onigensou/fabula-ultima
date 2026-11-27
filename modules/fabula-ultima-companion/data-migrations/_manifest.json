@@ -849,6 +849,10 @@
     {
       "key": "2026-11-27-stunned-sleep",
       "path": "data-migrations/2026-11-27-stunned-sleep.js"
+    },
+    {
+      "key": "2026-11-27-condition-sleep-stunned-fields",
+      "path": "data-migrations/2026-11-27-condition-sleep-stunned-fields.js"
     }
   ]
 }

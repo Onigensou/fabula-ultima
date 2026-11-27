@@ -25,15 +25,22 @@
  *   2. Sleep on the Debuff library AND every live copy (actors, their items,
  *      unlinked tokens): description, disable_action All, recovery flags, no-reapply,
  *      the wake row gated on SKILL_HAS_TAG_DREAM == 0. Library copy also: 3 charges.
- *   3. Nightmare (Hexer spell, world items + embedded copies): skill_tags += dream.
+ *   3. Nightmare (Hexer spell, world items + embedded copies): skill_tags += dream, and
+ *      its "+ 15% of the target's Max HP" authored (it was text only): an outgoing
+ *      adjust_damage row on its own will-deal-damage reaction (Scorched Claw's shape).
  *   4. Journals: Sleep's text page rewritten; a "Stunned" journal (StunnedKeyword01)
  *      created next to it in the same folder, shaped like Sleep's.
+ *   5. Stunned holds the hurt pose (flag holdPose "hurt", battler-pose-rules.js).
+ *   6. Panic gives Stun.png to Stunned: its AE (library + live copies) and journal
+ *      icon become Eerie Soundwave (user pick on the mockup, 2026-11-27).
+ *   7. Hypno Pendulum's Sleep spell: no fixed 1 charge any more, so it uses Sleep's
+ *      own 3 rounds; "for 1 Round" dropped from its text (pendulum + spell).
  *
  * Idempotent: a second run reports nothing to do.
  */
 
 export const key = "2026-11-27-stunned-sleep";
-export const description = "Stunned (new) + Sleep rework: turn-start recovery check, no reactions, no reapply; Nightmare = dream damage.";
+export const description = "Stunned (new) + Sleep rework: turn-start recovery check, no reactions, no reapply, held hurt pose; Nightmare = dream damage + 15% Max HP; Panic new icon; Hypno Sleep 3 rounds.";
 
 const M = "fabula-ultima-companion";
 const DEBUFF_CONTAINER = "XVOWOq9oUmEECGrU";
@@ -46,6 +53,10 @@ const STUN_PAGE = "StunnedDescPage1";
 const DAZED_JOURNAL = "3nmUvPei3zrOJkEt";
 const WEAK_JOURNAL = "KYehgac3Pw1fKC9S";
 const BF = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/";
+const PANIC_AE = "owA4mhwuMM1Gh18f";
+const PANIC_STATUS_ID = "8LN8tDQjON508Rqm";
+const PANIC_JOURNAL = "vf421bQSPCjLAvBW";
+const PANIC_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/eerie_soundwave.png";
 
 const ALL = "All";
 const WAKE_GATE = "SKILL_HAS_TAG_DREAM == 0";
@@ -78,6 +89,7 @@ const STUNNED = {
       charges: 1, chargesMax: 1, lifetimeMode: "target_turn_end",
       recoveryCheck: { attr1: "MIG", attr2: "WLP", dl: 10 },
       noReapply: true,
+      holdPose: "hurt",
     },
     // Same shape as Corroded / Armor Break: CSB keeps the fixed id only with these,
     // and Convenient Effects resolves the status through them.
@@ -148,12 +160,70 @@ async function patchSleep(parent, label, library, out) {
   return updates.length;
 }
 
+// "Deal 【HR + 15% of the target Max HP】 Dark damage": the HR part is the spell's own
+// damage; the 15% rides an outgoing adjust_damage row fired by the spell's own
+// will-deal-damage reaction, read per target (Scorched Claw's 25% uses the same shape).
+const NM_LABEL = "nm_maxhp";
+const NM_EFFECT = { effect_label: NM_LABEL, effect_kind: "adjust_damage", damage_operation: "add", damage_stage: "outgoing", damage_amount: "floor(TARGET_MAX_HP * 0.15)", $deleted: false };
+const NM_REACTION = { reaction_trigger: "creature_will_deal_damage", reaction_source: "self", reaction_source_skill: "Nightmare", reaction_passive_mode: "force", reaction_effect_ref: NM_LABEL, $deleted: false };
+const nextKey = (o) => String(Object.keys(o ?? {}).map(Number).filter(Number.isFinite).reduce((m, k) => Math.max(m, k + 1), 0));
+
 async function tagNightmare(item, label, out) {
   if (item?.name !== "Nightmare" || String(item.system?.props?.skill_type ?? "").toLowerCase() !== "spell") return 0;
-  const tags = String(item.system?.props?.skill_tags ?? "").split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
-  if (tags.map((t) => t.toLowerCase()).includes("dream")) return 0;
-  await item.update({ "system.props.skill_tags": [...tags, "dream"].join(", ") });
-  out.push(`Nightmare tagged dream ~ ${label}`);
+  const p = item.system?.props ?? {};
+  const upd = {};
+  const tags = String(p.skill_tags ?? "").split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+  if (!tags.map((t) => t.toLowerCase()).includes("dream")) upd["system.props.skill_tags"] = [...tags, "dream"].join(", ");
+  const fx = p.effect_table ?? {};
+  if (!Object.values(fx).some((r) => r && !r.$deleted && r.effect_label === NM_LABEL)) upd[`system.props.effect_table.${nextKey(fx)}`] = { ...NM_EFFECT };
+  const rx = p.reaction_config_table ?? {};
+  if (!Object.values(rx).some((r) => r && !r.$deleted && r.reaction_effect_ref === NM_LABEL)) upd[`system.props.reaction_config_table.${nextKey(rx)}`] = { ...NM_REACTION };
+  if (p.isReaction !== true) upd["system.props.isReaction"] = true;
+  if (!Object.keys(upd).length) return 0;
+  await item.update(upd);
+  out.push(`Nightmare (dream tag, +15% Max HP row) ~ ${label}`);
+  return 1;
+}
+
+// Panic: the new icon on its AE (library + every live copy still on Stun.png).
+async function panicIcon(parent, label, out) {
+  const updates = [];
+  for (const e of parent?.effects ?? []) {
+    const isPanic = e.id === PANIC_AE || e.name === "Panic" || new Set(Array.from(e.statuses ?? [])).has(PANIC_STATUS_ID);
+    if (isPanic && String(e.img ?? "").endsWith("Stun.png")) updates.push({ _id: e.id, img: PANIC_ICON });
+  }
+  if (!updates.length) return 0;
+  await parent.updateEmbeddedDocuments("ActiveEffect", updates);
+  out.push(`Panic icon ~ ${label} (${updates.length})`);
+  return updates.length;
+}
+
+// Hypno Pendulum's Sleep spell (row label hypno_sleep): drop the fixed 1 charge so
+// the Sleep template's 3 rounds apply; the spell and pendulum text lose "for 1 Round".
+const ONE_ROUND = " for 1 Round";
+async function hypnoSleep(item, label, out) {
+  const p = item?.system?.props ?? {};
+  const upd = {};
+  let isHypno = item?.name === "Hypno Pendulum";
+  for (const [k, r] of Object.entries(p.effect_table ?? {})) {
+    if (r?.effect_label !== "hypno_sleep") continue;
+    isHypno = true;
+    if (r.ae_initial_charges) upd[`system.props.effect_table.${k}.ae_initial_charges`] = "";
+    if (r.ae_initial_charges_max) upd[`system.props.effect_table.${k}.ae_initial_charges_max`] = "";
+    if (r.ae_duplicate_mode !== "skip") upd[`system.props.effect_table.${k}.ae_duplicate_mode`] = "skip";
+  }
+  if (!isHypno) return 0;
+  for (const key of ["skill_description", "description"]) {
+    const v = p[key];
+    if (typeof v === "string" && v.includes(ONE_ROUND)) upd[`system.props.${key}`] = v.split(ONE_ROUND).join("");
+  }
+  for (const [k, r] of Object.entries(p.item_skill_active ?? {})) {
+    const v = r?.skill_description;
+    if (typeof v === "string" && v.includes(ONE_ROUND)) upd[`system.props.item_skill_active.${k}.skill_description`] = v.split(ONE_ROUND).join("");
+  }
+  if (!Object.keys(upd).length) return 0;
+  await item.update(upd);
+  out.push(`Hypno Sleep uses 3 rounds ~ ${label}`);
   return 1;
 }
 
@@ -167,6 +237,15 @@ async function journals(out) {
     await sleepPage.update({ "text.content": sleepText });
     out.push("Sleep journal text updated");
     n++;
+  }
+  const panicJ = game.journal.get(PANIC_JOURNAL);
+  for (const p of panicJ?.pages ?? []) {
+    const c = String(p.text?.content ?? "");
+    if (p.type === "text" && c.includes(BF + "Stun.png")) {
+      await p.update({ "text.content": c.split(BF + "Stun.png").join(PANIC_ICON) });
+      out.push("Panic journal icon updated");
+      n++;
+    }
   }
   const stunText = journalText("Stun.png", STUN_DESC, WEAK_JOURNAL, "Weak");
   const stunJ = game.journal.get(STUN_JOURNAL);
@@ -196,23 +275,38 @@ export async function migrate(game, log = () => {}) {
     out.push("Stunned added to the Debuff library");
     n++;
   }
+  const stunAe = box.effects.get(STUN_AE_ID) ?? box.effects.find((e) => e.name === "Stunned");
+  if (stunAe && stunAe.flags?.[M]?.holdPose !== "hurt") {
+    await stunAe.update({ [`flags.${M}.holdPose`]: "hurt" });
+    out.push("Stunned holds the hurt pose");
+    n++;
+  }
 
   n += await patchSleep(box, "Debuff library", true, out);
+  n += await panicIcon(box, "Debuff library", out);
   for (const item of game.items ?? []) {
-    if (item.id !== DEBUFF_CONTAINER) n += await patchSleep(item, `Item ${item.name}`, false, out);
+    if (item.id !== DEBUFF_CONTAINER) {
+      n += await patchSleep(item, `Item ${item.name}`, false, out);
+      n += await panicIcon(item, `Item ${item.name}`, out);
+    }
     n += await tagNightmare(item, `Item ${item.id}`, out);
+    n += await hypnoSleep(item, `Item ${item.name}`, out);
   }
   for (const actor of game.actors ?? []) {
     n += await patchSleep(actor, `Actor ${actor.name}`, false, out);
+    n += await panicIcon(actor, `Actor ${actor.name}`, out);
     for (const item of actor.items ?? []) {
       n += await patchSleep(item, `${actor.name} / ${item.name}`, false, out);
+      n += await panicIcon(item, `${actor.name} / ${item.name}`, out);
       n += await tagNightmare(item, `${actor.name}`, out);
+      n += await hypnoSleep(item, `${actor.name} / ${item.name}`, out);
     }
   }
   for (const scene of game.scenes ?? []) {
     for (const t of scene.tokens ?? []) {
       if (t.actorLink || !t.actor) continue;
       n += await patchSleep(t.actor, `${scene.name} / ${t.name}`, false, out);
+      n += await panicIcon(t.actor, `${scene.name} / ${t.name}`, out);
     }
   }
   n += await journals(out);

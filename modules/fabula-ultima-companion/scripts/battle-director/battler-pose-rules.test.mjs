@@ -183,4 +183,21 @@ t("a direct poseArt effect still wins over a combo", () => {
   assert.equal(statePoseSrc([mark("fire"), artFx("a.png")]), "a.png");
 });
 
+console.log("stunned (held hurt)");
+const stun = { name: "Stunned", flags: { [NS]: { holdPose: "hurt" } } };
+t("holdPose hurt gives the stunned pose", () => assert.equal(lastingPose([stun]), "stunned"));
+t("KO beats Stunned; Stunned beats Guard, state art and Crisis", () => {
+  assert.equal(lastingPose([stun, ko]), "ko");
+  assert.equal(lastingPose([guard, artFx("a.png"), crisis, stun]), "stunned");
+});
+t("a disabled Stunned does not hold", () => assert.equal(lastingPose([{ ...stun, disabled: true }]), "idle"));
+t("stunned shows the hurt art, else the own image", () => {
+  assert.equal(poseSrc({ sprite_hurt: "h.webm" }, "stunned"), "h.webm");
+  assert.equal(poseSrc({}, "stunned"), null);
+});
+t("a one-shot plays over stunned and hands back", () => {
+  assert.equal(shownPose("stunned", "hurt"), "hurt");
+  assert.equal(shownPose("stunned", null), "stunned");
+});
+
 console.log(`\n${n} passed`);

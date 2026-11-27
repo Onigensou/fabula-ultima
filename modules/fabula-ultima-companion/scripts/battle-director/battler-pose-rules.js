@@ -6,6 +6,8 @@
 //   hurt    once                              (a hit — the hurt reaction)
 //   attack  once                              (an action's animation starts)
 //   cast    once                              (a spell's animation starts)
+//   stunned held                              (Stunned: the hurt art, played once and
+//                                              frozen on its last frame while it lasts)
 //   guard   loop                              (Guard effect)
 //   state   loop                              (an effect that carries its own art)
 //   crisis  loop                              (Crisis marker)
@@ -17,14 +19,14 @@
 
 //   leap    held                              (crouched to spring — a cinematic's take-off)
 //   fly     held                              (airborne — a cinematic's hover / climb / descent)
-export const POSES = ["idle", "hurt", "ko", "crisis", "guard", "attack", "cast", "leap", "fly"];
+export const POSES = ["idle", "hurt", "ko", "stunned", "crisis", "guard", "attack", "cast", "leap", "fly"];
 
 // Poses that play once and then hand back to the lasting pose.
 export const ONE_SHOT = new Set(["hurt", "attack", "cast"]);
 // Poses that play once and then stay on their last frame (or are stills held
 // until released). leap / fly are read off the sheet by cinematics
 // (oni.timeline) and are also valid held poses for the pose system.
-export const HOLD = new Set(["ko", "leap", "fly"]);
+export const HOLD = new Set(["ko", "stunned", "leap", "fly"]);
 // Poses that loop for as long as they are shown.
 export const LOOPING = new Set(["crisis", "guard", "state"]);
 
@@ -32,6 +34,7 @@ export const LOOPING = new Set(["crisis", "guard", "state"]);
 export const FALLBACK = {
   hurt: ["hurt", "idle"],
   ko: ["ko", "idle"],
+  stunned: ["hurt", "idle"],                 // no art of its own: the hurt clip, held
   crisis: ["crisis", "idle"],
   guard: ["guard", "idle"],
   attack: ["attack", "idle"],
@@ -140,12 +143,20 @@ export function comboPoseArt(effects, failed = null) {
   return src && !(failed && failed.has(src)) ? src : null;
 }
 
-// The lasting pose for an actor's effects: KO beats Guard beats an effect's own
+// An effect that holds its bearer in the hurt pose while it lasts carries
+// `flags.<ns>.holdPose = "hurt"` (Stunned, 2026-11-27). Data, not a name match.
+export function isHeldHurtEffect(e) {
+  if (!e || e.disabled === true) return false;
+  return String(e.flags?.[NS]?.holdPose ?? "").trim().toLowerCase() === "hurt";
+}
+
+// The lasting pose for an actor's effects: KO beats Stunned beats Guard beats an effect's own
 // art beats Crisis. The state beats Crisis because it is the bigger change: a
 // Supercharged creature that drops below half is still Supercharged.
 export function lastingPose(effects) {
   const list = Array.isArray(effects) ? effects : [...(effects ?? [])];
   if (list.some(isKoEffect)) return "ko";
+  if (list.some(isHeldHurtEffect)) return "stunned";
   if (list.some(isGuardEffect)) return "guard";
   if (list.some(effectPoseArt) || comboPoseArt(list)) return "state";
   if (list.some(isCrisisEffect)) return "crisis";
