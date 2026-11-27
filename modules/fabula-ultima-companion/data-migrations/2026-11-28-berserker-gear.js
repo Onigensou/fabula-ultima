@@ -130,7 +130,7 @@ const HAT_RC = [
   rc("creature_completes_attack", "ht_atk", { reaction_passive_target: "self", condition_formula: "ROUND > 0" }),
   rc("creature_completes_spell", "ht_spl", { reaction_passive_target: "self", condition_formula: `ROUND > 0 && ${HAT_SPELL}` }),
   rc("creature_will_deal_damage", "ht_dmg", { reaction_action_target: "enemy",
-    condition_formula: "ROUND > 0 && ACTION_IS_ATTACK == 1 && DAMAGE_IS_HP == 1 && AE_CHARGES_FENCER_HAT_SPELL == ROUND - 1" }),
+    condition_formula: "ROUND > 0 && ACTION_IS_ATTACK == 1 && DAMAGE_IS_HP == 1 && AE_COUNT_FENCER_HAT_SPELL > 0 && AE_CHARGES_FENCER_HAT_SPELL == ROUND - 1" }),
   rc("conflict_start", "ht_clear", { reaction_source: "", reaction_passive_target: "self" }),
   rc("conflict_end", "ht_clear", { reaction_source: "", reaction_passive_target: "self" }),
 ];
@@ -139,7 +139,7 @@ const HAT_EFF = [
     ae_initial_charges: "ROUND", ae_initial_charges_max: "999", ae_lifetime_mode: "persistent_counter", target_ref: "self" },
   { effect_label: "ht_spl", effect_kind: "chain", chain_steps: "ht_mp, ht_spl_mark" },
   { effect_label: "ht_mp", effect_kind: "grant", grant_resource: "mp", grant_amount: T.hatMp, target_ref: "self",
-    condition_formula: "AE_CHARGES_FENCER_HAT_BLADE == ROUND - 1", on_condition_fail: "skip" },
+    condition_formula: "AE_COUNT_FENCER_HAT_BLADE > 0 && AE_CHARGES_FENCER_HAT_BLADE == ROUND - 1", on_condition_fail: "skip" },
   { effect_label: "ht_spl_mark", effect_kind: "apply_ae", ae_template_ref: "Fencer Hat Spell", ae_duplicate_mode: "replace",
     ae_initial_charges: "ROUND", ae_initial_charges_max: "999", ae_lifetime_mode: "persistent_counter", target_ref: "self" },
   { effect_label: "ht_dmg", effect_kind: "adjust_damage", damage_stage: "outgoing", damage_operation: "add", damage_amount: T.hatDmg, target_ref: "trigger_subject" },

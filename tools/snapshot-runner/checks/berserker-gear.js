@@ -181,7 +181,8 @@ await safe("hat rows", async () => {
   const mp0 = () => Number(P(a).current_mp);
   out.hat = { round1: round };
   await a.update({ "system.props.current_mp": 10 }); await wait(300);
-  // round 1: attack → blade mark = 1
+  // round 1: spell before any attack → no MP; then attack → blade mark = 1
+  const b0 = mp0(); await chainRun("ht_mp"); out.hat.mpGain0 = mp0() - b0;
   await chainRun("ht_atk");
   out.hat.blade1 = ch("Fencer Hat Blade");
   out.hat.dmgGateR1 = cond(dmgGate);
@@ -201,7 +202,7 @@ await safe("hat rows", async () => {
   ok("hat: blade mark = round of the attack", out.hat.round1 === 1 && out.hat.blade1 === 1, out.hat);
   ok("hat: spell after last turn's attack → +5 MP", out.hat.mpGain === 5 && out.hat.spell2 === 2, out.hat);
   ok("hat: +5 damage gate only the turn after a spell", out.hat.dmgGateR1 === 0 && out.hat.dmgGateR2 === 0 && out.hat.dmgGateR3 === 1, out.hat);
-  ok("hat: no MP without last turn's attack", out.hat.mpGain4 === 0, out.hat);
+  ok("hat: no MP without last turn's attack (incl. first round)", out.hat.mpGain4 === 0 && out.hat.mpGain0 === 0, out.hat);
   ok("hat markers hidden", out.hat.markersHidden);
 });
 
