@@ -170,17 +170,16 @@ await safe("hat rows", async () => {
   const rows = Object.values(P(psv).effect_table), rcs = Object.values(P(psv).reaction_config_table);
   const R = (l) => rows.find((r) => r.effect_label === l);
   const tok = (await tokFor(a));
-  // a combat so ROUND exists
-  const cmb = await Combat.create({ scene: scene.id, active: true });
-  await cmb.createEmbeddedDocuments("Combatant", [{ tokenId: tok.id, sceneId: scene.id, actorId: a.id }]);
-  await cmb.startCombat(); await wait(500);
-  const ctx = () => ({ casterActor: a, reactorActor: a, reactorToken: tok, payload: {}, sourceUuid: null, skill: psv });
+  // the BD round (ctx.dCombat.round), as the director passes it to rows and conditions
+  let round = 1;
+  const cmb = { nextRound: async () => { round++; } };
+  const ctx = () => ({ casterActor: a, reactorActor: a, reactorToken: tok, payload: {}, sourceUuid: null, skill: psv, dCombat: { round } });
   const chainRun = async (label) => { const r = R(label); if (r.effect_kind === "chain") { for (const s of r.chain_steps.split(",").map((x) => x.trim())) await SE.applyEffectRow(R(s), ctx()); } else await SE.applyEffectRow(r, ctx()); await wait(400); };
   const ch = (n) => a.effects.find((e) => e.name === n)?.flags?.[NS]?.charges ?? null;
-  const cond = (f) => Number(SF.evaluateFormula(f, SF.buildSkillResolver({ actor: a, payload: {} })));
+  const cond = (f) => Number(SF.evaluateFormula(f, SF.buildSkillResolver({ actor: a, payload: {}, round })));
   const dmgGate = rcs[2].condition_formula.replace("ACTION_IS_ATTACK == 1 && DAMAGE_IS_HP == 1 && ", "");
   const mp0 = () => Number(P(a).current_mp);
-  out.hat = { round1: game.combat?.round };
+  out.hat = { round1: round };
   await a.update({ "system.props.current_mp": 10 }); await wait(300);
   // round 1: attack → blade mark = 1
   await chainRun("ht_atk");
@@ -188,7 +187,7 @@ await safe("hat rows", async () => {
   out.hat.dmgGateR1 = cond(dmgGate);
   // round 2: cast an offensive spell → +5 MP (attacked last turn), spell mark = 2
   await cmb.nextRound(); await wait(400);
-  out.hat.round2 = game.combat?.round;
+  out.hat.round2 = round;
   const before = mp0(); await chainRun("ht_spl"); out.hat.mpGain = mp0() - before;
   out.hat.spell2 = ch("Fencer Hat Spell");
   out.hat.dmgGateR2 = cond(dmgGate);
@@ -204,7 +203,6 @@ await safe("hat rows", async () => {
   ok("hat: +5 damage gate only the turn after a spell", out.hat.dmgGateR1 === 0 && out.hat.dmgGateR2 === 0 && out.hat.dmgGateR3 === 1, out.hat);
   ok("hat: no MP without last turn's attack", out.hat.mpGain4 === 0, out.hat);
   ok("hat markers hidden", out.hat.markersHidden);
-  await cmb.delete();
 });
 
 for (const a of made) { try { await a.delete(); } catch {} }
