@@ -152,7 +152,7 @@ const blank = blankStats;
   S = duel(A('hellhound'), ['roper','flame','kirin'], {hp:[30,1]}); r=go(P,P); S.p[1].pending=true; r=go(P,{replace:1,action:'PASS'});
   ok(S.p[1].active===1 && !(r.ev.entry||[]).length, 'Dynamic Entry does not trigger on a forced replacement');
   // pool
-  ok(R.IDS.length===51 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren','gryphon','love','jack','jill','hilde','carlbero','brucev','nullis','gardner','hako'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','life'].includes(k)), 'pool = 51 cards (23 + 28 character cards; Bandit Roo retired)');
+  ok(R.IDS.length===54 && ['asura','rakshasa','deva','obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren','gryphon','love','jack','jill','hilde','carlbero','brucev','nullis','gardner','hako'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','life'].includes(k)), 'pool = 54 cards (26 + 28 character cards; Bandit Roo retired)');
   // Succubus Charm
   S = duel(A('hellhound'), ['roper','succubus','kirin'], {hp:[30,30]}); S.p[1].roster[1].hp=30; r=go(P,{action:'SWITCH',target:1});
   const c1=dmg0(); r=go(P,P); const c2=dmg0(); r=go(P,P); const c3=dmg0();
@@ -569,6 +569,39 @@ const blank = blankStats;
     const arc = () => ["ARC_SUN","ARC_MOON","ARC_STAR"].reduce((a,k)=>a+H.count(m,0,k),0);
     const a1 = arc(); m.p[1].roster[0].hp = 99; round(m, P); const a2 = arc();
     ok(a1 === 1 && a2 === 1, "Farin: an Arcana at the start of the round, max 1 in hand"); }
+
+  // ===== Valley trio (2026-11-27) =====
+  const atkOn = (m, a, d, x = {}) => E._withState(m, () => E._calcAttack(a, d, { attItem:"PASS", defItem:"PASS", ...x })).dmg;
+  // Asura: a new element that damages it = +1 ATK for the match, max +3; the same element twice and Elementless don't count
+  { const m = fresh([["asura","wolf","pyrefly"],["kirin","roper","pyrefly"]]); const a = m.p[0].roster[0], k = m.p[1].roster[0]; a.hp = 99; k.hp = 99;
+    const base = atkOn(m, a, k);
+    round(m, P); const one = (a.marks || []).slice();
+    round(m, P); const same = (a.marks || []).length;
+    round(m, P, { action:"SHARD" }); const shard = (a.marks || []).length;
+    const plus1 = atkOn(m, a, k);
+    a.marks = ["bolt","fire","ice","air"]; const capped = atkOn(m, a, k);
+    ok(one.join() === "bolt" && same === 1 && shard === 1 && plus1 === base + 1 && capped === base + CFG.ASCENSION_MAX,
+      `Asura: Ascension marks Bolt once, ignores Elementless, +1 ATK per mark, max +${CFG.ASCENSION_MAX} (${base} → ${plus1} → ${capped})`); }
+  // Rakshasa: −1 DMG from the card that damaged it last; a new attacker hits in full and becomes the one it reads
+  { const m = fresh([["rakshasa","wolf","pyrefly"],["roper","wolf","pyrefly"]]); const r = m.p[0].roster[0], ro = m.p[1].roster[0], wo = m.p[1].roster[1]; r.hp = 99; ro.hp = 99;
+    const full = atkOn(m, ro, r);
+    round(m, P); const read = r.readBy, after = atkOn(m, ro, r), other = atkOn(m, wo, r);
+    r.readBy = "wolf"; const back = atkOn(m, ro, r);
+    ok(read === "roper" && after === Math.max(0, full - CFG.WEAPON_READ) && other === atkOn(m, wo, { ...r, cid:"rakshasa", readBy:null }) && back === full && C.rakshasa.spd === 1,
+      `Rakshasa: Weapon Read −${CFG.WEAPON_READ} from the card it read last only (${full} → ${after}), SPD 1`); }
+  // Deva: odd rounds Light + DEF, even rounds Dark + ATK; the element chart follows her
+  { const m = fresh([["deva","wolf","pyrefly"],["hellhound","wolf","pyrefly"]]); const d = m.p[0].roster[0], h = m.p[1].roster[0]; d.hp = 99; h.hp = 99;
+    const odd = m.round % 2 === 1;
+    const elOdd = E.elOf(m, d), takenOdd = atkOn(m, h, d), dealtOdd = atkOn(m, d, h);
+    round(m, P);
+    const elEven = E.elOf(m, d), takenEven = atkOn(m, h, d), dealtEven = atkOn(m, d, h);
+    // Hellhound is Dark: vs Light Deva it is Weak/Strong both ways; vs Dark Deva neutral
+    ok(odd && elOdd === "light" && elEven === "dark" && takenEven - takenOdd === -(CFG.ADV) + CFG.DISCIPLINE && dealtOdd - dealtEven === CFG.ADV - CFG.DISCIPLINE,
+      `Deva: Light + DEF on odd rounds, Dark + ATK on even (takes ${takenOdd} → ${takenEven}, deals ${dealtOdd} → ${dealtEven})`); }
+  // drops + spoiler guard: always drop like a champion, never in a random team
+  { const teams = Array.from({ length: 400 }, () => E.randomTeam());
+    ok(["asura","rakshasa","deva"].every(k => C[k].dropAlways && C[k].noRandom && C[k].cost === 3 && !C[k].character) && !teams.some(t => t.some(k => C[k].noRandom)),
+      "Valley trio: ★★★ monster cards, always drop, never in a random team (400 random teams)"); }
 }
 
 console.log(fails ? fails + " FAILED" : "ALL PASS");

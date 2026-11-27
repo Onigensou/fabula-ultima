@@ -107,12 +107,15 @@
   const benchOptions = pl => pl.roster.filter(m => !m.ko && m.i!==pl.active);
   const teamCost = ids => ids.reduce((a,id)=>a+CARDS[id].cost,0);
   const LEGAL_TEAMS = (()=>{ const out=[]; for (let a=0;a<IDS.length;a++) for (let b=a+1;b<IDS.length;b++) for (let c=b+1;c<IDS.length;c++){ const t=[IDS[a],IDS[b],IDS[c]]; if (teamCost(t)<=CFG.BUDGET) out.push(t); } return out; })();
-  const randomTeam = () => shuffle(LEGAL_TEAMS[Math.floor(RNG()*LEGAL_TEAMS.length)]);
+  const RANDOM_TEAMS = LEGAL_TEAMS.filter(t => !t.some(id => CARDS[id].noRandom));   // noRandom cards (Valley trio) never in a random team
+  const randomTeam = () => shuffle(RANDOM_TEAMS[Math.floor(RNG()*RANDOM_TEAMS.length)]);
   const compKey = ids => ids.map(id=>CARDS[id].cost).sort((a,b)=>b-a).join('+');
   // ===================== rules engine (v0.2) =====================
   // ctx: {attItem, defItem, defSwitchedIn}
+  // a card's element right now: elEven = its element on even rounds (Deva, 11-27)
+  const elOf = m => { const c=CARDS[m.cid]; return (c.elEven && S && S.round%2===0) ? c.elEven : c.el; };
   function calcAttack(att, def, ctx){
-    const A=CARDS[att.cid], D=CARDS[def.cid];
+    const A={...CARDS[att.cid], el:elOf(att)}, D={...CARDS[def.cid], el:elOf(def)};
     const ael = ctx.attItem==='SHARD' ? 'none' : A.el;
     let atk = A.atk; const parts=[`${A.atk} ATK`];
     if ((att.ser||0)>=S.round){ atk+=CFG.SERENADE; parts.push(`+${CFG.SERENADE} Love Serenade`); }
@@ -135,6 +138,8 @@
     if (att.cid==='roper' && ctx.defSwitchedIn){ atk+=1; parts.push('+1 Entangle'); }
     const howl = att.cid==='wolf' && !!att.howl; if (howl){ atk+=1; parts.push('+1 Howl'); }
     if ((att.charm||0)>=S.round){ atk=Math.max(0,atk-CFG.CHARM); parts.push(`−${CFG.CHARM} Charm`); }
+    if (att.cid==='asura'){ const mk=Math.min(CFG.ASCENSION_MAX,(att.marks||[]).length); if (mk){ atk+=mk; parts.push(`+${mk} Ascension`); } }
+    if (att.cid==='deva' && S.round%2===0 && CFG.DISCIPLINE){ atk+=CFG.DISCIPLINE; parts.push(`+${CFG.DISCIPLINE} Celestial Discipline`); }
     const head = `${parts.join(' ')} = ${atk} ${EL[ael]}`;
     // absorption ability: checked before damage (fires even if Guard would zero it)
     if (D.absorb && D.absorb===ael && !def.abilityUsed)
@@ -150,9 +155,10 @@
     const rival = (def.cid==='nullis' && twinDown(def,'gardner')) || (def.cid==='gardner' && twinDown(def,'nullis')) ? CFG.RIVAL : 0;
     const gdef = golem ? CFG.GOLEM + (def.cid==='seigfried'?CFG.DECREE:0) : 0;
     const fdef = (fxOf(ctx.defItem)||{}).def || 0;   // a created card's DEF this round (works like Golem Fragment: Smoke ignores it)
-    const tdef = pdef + nullG + heavy + rival + gdef + fdef, pierce = att.cid==='brucev' && !smoke ? Math.min(CFG.PIERCE, tdef) : 0;
+    const disc = def.cid==='deva' && S.round%2===1 ? CFG.DISCIPLINE : 0;
+    const tdef = pdef + disc + nullG + heavy + rival + gdef + fdef, pierce = att.cid==='brucev' && !smoke ? Math.min(CFG.PIERCE, tdef) : 0;
     const ddef = smoke ? 0 : tdef - pierce;
-    const defNotes = smoke ? '' : [gdef ? `Golem Fragment +${gdef}` : '', fdef ? `${ITEMS[ctx.defItem].t} +${fdef}` : '', nullG ? `Null Guard +${nullG}` : '', heavy ? `Heavy Armor +${heavy}` : '', rival ? `Rival +${rival}` : ''].filter(Boolean).join(', ');
+    const defNotes = smoke ? '' : [disc ? `Celestial Discipline +${disc}` : '', gdef ? `Golem Fragment +${gdef}` : '', fdef ? `${ITEMS[ctx.defItem].t} +${fdef}` : '', nullG ? `Null Guard +${nullG}` : '', heavy ? `Heavy Armor +${heavy}` : '', rival ? `Rival +${rival}` : ''].filter(Boolean).join(', ');
     let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}`:'') + (defNotes ? ` (${defNotes})` : '') + (smoke && tdef ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + (pierce ? ` · <b>Teleportation Strike</b> ignores ${pierce} DEF` : '') + (slip && ddef ? ' (Slipstream +' + CFG.SLIPSTREAM + ')' : '') + ` = ${d}`;
     const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
     if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Weak</b>: ${EL[D.el]} takes +${mod} from ${EL[ael]} = ${d}`; }
@@ -165,6 +171,7 @@
     if (def.cid==='broo' && ctx.defSwitchedIn){ r+=2; red.push('Soft Landing −2'); }
     if (def.cid==='fulgimite' && ctx.defSwitchedIn){ r+=2; red.push('Evasion −2'); }
     if (def.cid==='albero'){ const ds=sideOf(def); if (ds>=0 && living(S.p[ds]).length < living(S.p[1-ds]).length){ r+=CFG.ELDER; red.push('Village Elder −'+CFG.ELDER); } }
+    if (def.cid==='rakshasa' && CFG.WEAPON_READ && def.readBy===att.cid){ r+=CFG.WEAPON_READ; red.push('Weapon Read −'+CFG.WEAPON_READ); }
     d = Math.max(0, d-r);
     let usedFirst=false;
     let prevented=0;
@@ -260,7 +267,7 @@
       L.push([`${N(m.cid)} uses ${ITEMS[ch[s].action].t}: +${m.hp-b} HP → ${m.hp}.`,'g']); }
     for (const s of [0,1]){ const fx=fxOf(ch[s].action); if (!fx || !fx.dmg) continue;
       const t=mon(P[1-s],P[1-s].active); if (!t || t.hp<=0) continue;
-      const amt=Math.max(1, (fx.dmg.n||0) + (fx.dmg.el ? elMod(fx.dmg.el, CARDS[t.cid].el) : 0)), b=t.hp;
+      const amt=Math.max(1, (fx.dmg.n||0) + (fx.dmg.el ? elMod(fx.dmg.el, elOf(t)) : 0)), b=t.hp;
       t.hp=Math.max(0,t.hp-amt); BN(t); (ev.direct=ev.direct||[]).push({ s:1-s, i:t.i, amt:b-t.hp, src:ITEMS[ch[s].action].t });
       S.stats.cardDmg=(S.stats.cardDmg||0)+(b-t.hp);
       L.push([`${ITEMS[ch[s].action].t}: ${b-t.hp} ${fx.dmg.el ? EL[fx.dmg.el]+' ' : ''}damage to ${N(t.cid)} (${t.hp} HP).`,'']); }
@@ -287,6 +294,8 @@
       else if (r.a.cid==='roo'){ if (r.knife){ r.a.steps=null; if (r.a.marks) r.a.marks[r.d.i]=0; r.a.leaving=!!CFG.ROO_LEAVE; S.stats.knife=(S.stats.knife||0)+1; }
         else { if (CFG.ROO_MARK){ r.a.marks=r.a.marks||{}; r.a.marks[r.d.i]=(r.a.marks[r.d.i]||0)+1; }
           const st=r.a.steps; r.a.steps = (st && st.t===r.d.i) ? {t:r.d.i, n:st.n+1} : {t:r.d.i, n:(CFG.ROO_MARK?r.a.marks[r.d.i]:1)}; L.push([`Roo takes a step toward ${N(r.d.cid)} (${r.a.steps.n}/3).`,'m']); } }
+      if (r.d.cid==='asura' && r.dmg>0 && !r.heal && r.ael && r.ael!=='none'){ r.d.marks=r.d.marks||[]; if (!r.d.marks.includes(r.ael) && r.d.marks.length<CFG.ASCENSION_MAX){ r.d.marks.push(r.ael); S.stats.ascension=(S.stats.ascension||0)+1; L.push([`Ascension: Asura takes the ${EL[r.ael]} mark (+${r.d.marks.length} ATK).`,'m']); } }
+      if (r.d.cid==='rakshasa' && r.dmg>0 && !r.heal && r.d.readBy!==r.a.cid){ r.d.readBy=r.a.cid; S.stats.wread=(S.stats.wread||0)+1; L.push([`Weapon Read: Rakshasa reads ${N(r.a.cid)} (−${CFG.WEAPON_READ} DMG from it).`,'m']); }
       if (r.kcharge){ delete r.a.chg[S.round]; S.stats.kcharge=(S.stats.kcharge||0)+1; }
       if (r.d.cid==='kirin' && r.dmg>0 && r.d.hp>0 && !r.heal){ r.d.chg=r.d.chg||{}; r.d.chg[S.round+1]=true; L.push([`Lightning Charge: Kirin is charged (+${CFG.KCHARGE} ATK next round).`,'m']); }
       if (false && r.a.cid==='sylph' && r.dmg>0 && r.d.hp>0){ r.d.slowRound=S.round+1; S.stats.gust=(S.stats.gust||0)+1; L.push([`Gust: ${N(r.d.cid)} will be −1 SPD next round.`,'m']); }
@@ -294,7 +303,7 @@
       if (r.a.cid==='archer') directHit(1-r.side, 1, 'Double Strafe', false);
       if (r.a.cid==='pomme' && r.dmg>0 && !r.heal && !cnt(P[r.side],'APPLE_BOMB')) addToHand(S, r.side, 'APPLE_BOMB', 1, 'Pomme', L, ev);
       if (CFG.ARMOR_BREAK && r.a.cid==='canis' && r.dmg>0 && !r.heal && Math.max(0, CARDS[r.d.cid].def-(r.d.armorBreak||0))>0){ r.d.armorBreak=(r.d.armorBreak||0)+CFG.ARMOR_BREAK; S.stats.abreak=(S.stats.abreak||0)+1; L.push([`Armor Break: ${N(r.d.cid)} loses ${CFG.ARMOR_BREAK} DEF for the match.`,'m']); }
-      if (r.a.cid==='roselie'){ const pl=P[1-r.side]; for (const m of pl.roster) if (!m.ko && m.hp>0 && m.i!==pl.active) hitOne(1-r.side, m, Math.max(1, CFG.WILDFIRE + elMod('fire', CARDS[m.cid].el)), 'Wildfire Kiss'); }
+      if (r.a.cid==='roselie'){ const pl=P[1-r.side]; for (const m of pl.roster) if (!m.ko && m.hp>0 && m.i!==pl.active) hitOne(1-r.side, m, Math.max(1, CFG.WILDFIRE + elMod('fire', elOf(m))), 'Wildfire Kiss'); }
       if (r.a.cid==='carlbero' && r.dmg>0 && r.d.hp>0){ r.d.breath=S.round+(CFG.BREATH_ROUNDS-1); S.stats.breath=(S.stats.breath||0)+1; L.push([`Stinking Breath: ${N(r.d.cid)} reeks (−1 ATK, −1 DEF, −1 SPD for ${CFG.BREATH_ROUNDS} rounds).`,'m']); }
       if (r.a.cid==='love' && (CFG.SERENADE_MODE||1)===1) serenade(r.side, 'attack');
       if (r.a.cid==='zarg'){ const pl=P[1-r.side]; const b=pl.roster.filter(m=>!m.ko && m.hp>0 && m.i!==pl.active).sort((x,y)=>x.hp-y.hp);
@@ -423,7 +432,7 @@
       if (fx.def) v += (my.hp<=incS && incS>0 ? 1.8 : 0.2);
       if (fx.heal) v += my.hp>=max-1 ? -0.4 : (my.hp<=max/2 ? 1.8 : 0.3) + (my.hp<=incS && my.hp+fx.heal>incS ? 1.2 : 0);
       if (fx.spd){ const ms=CARDS[my.cid].spd, os=CARDS[opMon.cid].spd; v += (ms<=os && ms+fx.spd>os && out>=opMon.hp) ? 2 : 0.1; }
-      if (fx.dmg && opMon){ const n=Math.max(1,(fx.dmg.n||0)+(fx.dmg.el?elMod(fx.dmg.el,CARDS[opMon.cid].el):0)); v += opMon.hp<=n ? 3 : (opMon.hp<=n+out ? 1.6 : 0.7); }
+      if (fx.dmg && opMon){ const n=Math.max(1,(fx.dmg.n||0)+(fx.dmg.el?elMod(fx.dmg.el,elOf(opMon)):0)); v += opMon.hp<=n ? 3 : (opMon.hp<=n+out ? 1.6 : 0.7); }
       w[k]=v; }
     if (!me.pending){
       const bench=benchOptions(me);
@@ -732,7 +741,7 @@
   });
 
   const Engine = Object.freeze({
-    Match, Series, View, Format, Hand, foretellSeat, foxFire: (state, m) => withState(state, () => foxFire(m)), IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
+    Match, Series, View, Format, Hand, foretellSeat, foxFire: (state, m) => withState(state, () => foxFire(m)), IDS, LEGAL_TEAMS, isLegalTeam, elOf: (state, m) => withState(state, () => elOf(m)), teamCost, compKey, randomTeam, elMod,
     setRng(fn){ RNG = typeof fn === 'function' ? fn : Math.random; },
     // low-level hooks for tests and the balance tool (run inside a state)
     _withState: withState, _resolveRound: ch => resolveRound(ch), _calcAttack: (a, d, ctx) => calcAttack(a, d, ctx), _mkPlayer: mkPlayer,
