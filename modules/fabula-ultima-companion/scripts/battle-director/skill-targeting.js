@@ -1330,6 +1330,14 @@ function matchesCategory(token, category, ctx) {
   return true;  // unknown category — fail-open
 }
 
+// Category test for callers outside a chain context (the add_target "No other
+// target" pre-check): same rules as the targeting row, the acting creature as
+// the reactor.
+export function tokenMatchesTargetCategory(token, category, { reactorToken = null, reactorActor = null } = {}) {
+  if (!token) return false;
+  return matchesCategory(token, String(category ?? ""), { reactorToken, reactorActor: reactorActor ?? reactorToken?.actor ?? null });
+}
+
 // ── Chain context helper ────────────────────────────────────────────────
 
 // Build a fresh chain context that the effect dispatcher will mutate as

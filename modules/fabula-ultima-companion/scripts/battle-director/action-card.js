@@ -8740,7 +8740,16 @@ export async function postActionCard({ director, kind, payload }) {
         if (!reason && isMassiveJoinRowKey(p.rowKey) && p.reactorActorUuid && targetAct.has(p.reactorActorUuid)) reason = "Already a target";
         // 2. nothing left to add
         if (!reason && p._addTarget && kind === "Attack") {
-          const spare = (director?.ctx?.eligibleTargets ?? []).filter((e) => e?.tokenUuid && !targetTok.has(e.tokenUuid));
+          // Same side filter as the CONFIRM offer (Barrage adds enemies only).
+          const eligible = director?.ctx?.eligibleTargets ?? [];
+          const spare = typeof sk?.spareAddTargets === "function"
+            ? sk.spareAddTargets({
+                eligible,
+                alreadyTokenUuids: [...targetTok],
+                categories: p.addTargetCategories ?? [],
+                attackerTokenUuid: payload?.attacker?.tokenUuid ?? payload?.attackerTokenUuid ?? null,
+              })
+            : eligible.filter((e) => e?.tokenUuid && !targetTok.has(e.tokenUuid));
           if (!spare.length) reason = "No other target";
         }
         // 3. shared budget

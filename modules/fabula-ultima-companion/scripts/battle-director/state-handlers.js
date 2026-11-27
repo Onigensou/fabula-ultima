@@ -6731,8 +6731,14 @@ const Confirm = {
             // for any non-"condition" kind. Attack only: the heal/buff/rolled
             // spreads draw from other pools.
             if (isAttack && cand.available !== false) {
-              const already = new Set((ar.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean));
-              const spare = (director.ctx.eligibleTargets ?? []).filter((e) => e?.tokenUuid && !already.has(e.tokenUuid));
+              // Narrowed to the side the add_target picks from (Barrage: enemies),
+              // so an "Up to two creatures" bow's allies don't count as spare.
+              const spare = _seStatic.spareAddTargets({
+                eligible: director.ctx.eligibleTargets ?? [],
+                alreadyTokenUuids: (ar.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean),
+                categories: cand.addTargetCategories ?? [],
+                attackerTokenUuid: ar.attacker?.tokenUuid ?? null,
+              });
               if (!spare.length) {
                 cand.available = false;
                 cand.unavailableKind = "target";

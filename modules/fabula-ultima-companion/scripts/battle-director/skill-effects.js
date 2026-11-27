@@ -29,7 +29,7 @@ import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
 // on a player's client without dragging the effect engine along. Re-exported
 // below for the existing importers of `promptNumberDialog`.
 import { promptNumberDialog } from "./number-picker.js";
-import { resolveTargetRef } from "./skill-targeting.js";
+import { resolveTargetRef, tokenMatchesTargetCategory } from "./skill-targeting.js";
 import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY, capAwareNext, mayExceedMax } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
@@ -2122,6 +2122,45 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
   return false;
 }
 
+// The `category` of each targeting row an add_target in this chain picks from
+// (Barrage: barrage_add → barrage_pick, category "enemy"). Empty when the
+// add_target has no targeting row of its own, in which case callers do not
+// narrow by side.
+function effectRefAddTargetCategories(effectTable, ref, depth = 0, out = new Set()) {
+  if (!effectTable || !ref || depth > 8) return out;
+  const rows = Object.values(effectTable).filter((r) => r && !r.$deleted);
+  const row = rows.find((r) => r.effect_label === ref);
+  if (!row) return out;
+  if (row.effect_kind === "add_target") {
+    const pick = rows.find((r) => r.effect_label === row.target_ref && r.effect_kind === "targeting");
+    const cat = String(pick?.category ?? "").trim().toLowerCase();
+    if (cat) out.add(cat);
+  } else if (row.effect_kind === "chain") {
+    for (const s of String(row.chain_steps ?? "").split(/[,\n]/).map((x) => x.trim()).filter(Boolean)) {
+      effectRefAddTargetCategories(effectTable, s, depth + 1, out);
+    }
+  }
+  return out;
+}
+
+// Who an Attack's add_target (Barrage) could still add: the attack's own
+// range-gated pool, minus who it already targets, narrowed to the side the
+// add_target's targeting row accepts. Without the side filter an "Up to two
+// creatures" bow counted Zarg's allies as spare, so against a lone boss the
+// pill stayed live and Apply found nobody (pill stuck pending, Confirm locked).
+export function spareAddTargets({ eligible = [], alreadyTokenUuids = [], categories = [], attackerTokenUuid = null } = {}) {
+  const already = new Set(alreadyTokenUuids);
+  let spare = (eligible ?? []).filter((e) => e?.tokenUuid && !already.has(e.tokenUuid));
+  const cats = [...(categories ?? [])].filter(Boolean);
+  if (!cats.length || !spare.length) return spare;
+  const reactorToken = attackerTokenUuid ? (globalThis.fromUuidSync?.(attackerTokenUuid) ?? null) : null;
+  if (!reactorToken) return spare;
+  return spare.filter((e) => {
+    const tok = globalThis.fromUuidSync?.(e.tokenUuid) ?? null;
+    return !!tok && cats.some((c) => tokenMatchesTargetCategory(tok, c, { reactorToken }));
+  });
+}
+
 // ── Reaction fire cap (reaction_max_per_round + reaction_max_scope) ──────────
 // A reaction row may carry `reaction_max_per_round: N` to bound how many times it
 // auto/ask-fires (Wandering Flame's Ignition: at most 3 Burn-triggered MP/ZP gains
@@ -2440,6 +2479,8 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         // creature_performs_action scan surfaces only explicit all/ally/enemy.
         reactionSource: String(row.reaction_source ?? "").trim().toLowerCase(),
         usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
+
+        addTargetCategories: [...effectRefAddTargetCategories(effectTable, refLabel)],
         available,
         unavailableKind,
         unavailableReason,
@@ -2519,6 +2560,8 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         // See item path above — disposition scope for observer-scan filtering.
         reactionSource: String(row.reaction_source ?? "").trim().toLowerCase(),
         usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
+
+        addTargetCategories: [...effectRefAddTargetCategories(effectTable, refLabel)],
         available,
         unavailableKind,
         unavailableReason,
@@ -2632,6 +2675,8 @@ export async function findTargetOwnedCandidates({ skill, trigger, targetActor, p
       mode,
       ref: refLabel,
       usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
+
+      addTargetCategories: [...effectRefAddTargetCategories(effectTable, refLabel)],
       available,
       unavailableKind,
       unavailableReason,
