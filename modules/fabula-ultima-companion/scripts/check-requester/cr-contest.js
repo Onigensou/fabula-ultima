@@ -429,6 +429,9 @@
         S.emitCheckReactions({ actorUuid: sd.actorUuid, attrA: sd.attrA, attrB: sd.attrB, dl: null, rollA: f.a, rollB: f.b, total: f.a + f.b, pass: false, isCrit: false, isFumble: true, singleDie: false });
       }
     } catch (e) { console.warn(TAG, "reactions", e); }
+    // Silent (backend) contests never open the Opportunity picker — the same as a
+    // silent Skill Check — so a monster action's contest cannot stall on it.
+    if (done.opts?.mode === "silent") return;
     try {
       const crits = [...new Set(done.crits)].map((i) => result.sides[i]).filter(Boolean)
         .map((sd) => ({ actorUuid: sd.actorUuid, actorName: sd.actorName, isCrit: true, isFumble: false, total: sd.total, rollA: sd.rollA, rollB: sd.rollB, attrA: sd.attrA, attrB: sd.attrB }));
