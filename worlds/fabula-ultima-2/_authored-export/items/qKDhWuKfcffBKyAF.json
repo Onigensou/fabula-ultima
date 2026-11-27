@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "mofRework": true
     }
   },
   "folder": null,
@@ -24,14 +27,14 @@
   "system": {
     "container": "2Z502E09PMrRdWat",
     "props": {
-      "description": "<p><strong>Monster of Frankensteiner (2 pieces)</strong> — at the start of your turn, you take 5 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage.</p>",
+      "description": "<ul><li><p>When you Absorb damage, recover MP equal to the amount absorbed. Once per round.</p></li></ul>",
       "details_roller": "Show",
       "effect_table": {
         "0": {
-          "damage_amount": "5",
-          "damage_element": "bolt",
-          "effect_kind": "deal_damage",
-          "effect_label": "mof2_zap",
+          "effect_kind": "grant",
+          "effect_label": "gf_mp",
+          "grant_amount": "TRIGGER_AMOUNT",
+          "grant_resource": "mp",
           "target_ref": "self"
         }
       },
@@ -42,31 +45,19 @@
       "reaction_config_table": {
         "0": {
           "condition_formula": "",
-          "reaction_action_intent": "",
-          "reaction_action_kind": "",
-          "reaction_action_target": "",
-          "reaction_cause_filter": "",
-          "reaction_damage_source": "",
-          "reaction_effect_ref": "mof2_zap",
-          "reaction_max_per_round": "",
-          "reaction_max_scope": "",
-          "reaction_origin_filter": "",
-          "reaction_ownership": "",
-          "reaction_passive_mode": "force",
-          "reaction_passive_target": "",
+          "reaction_cause_filter": "damage",
+          "reaction_effect_ref": "gf_mp",
+          "reaction_max_per_round": "1",
+          "reaction_passive_mode": "on",
           "reaction_requires_weapon_used": false,
-          "reaction_resource_filter": "",
-          "reaction_responder": "",
+          "reaction_resource_filter": "hp",
           "reaction_source": "self",
-          "reaction_source_skill": "",
-          "reaction_status_filter": "",
-          "reaction_subject_kind": "",
-          "reaction_trigger": "turn_start",
-          "requires_skill": ""
+          "reaction_trigger": "creature_gain_resource"
         }
       },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
+      "skill_description": "<ul><li><p>When you Absorb damage, recover MP equal to the amount absorbed. Once per round.</p></li></ul>",
       "skill_type": "Passive",
       "uuid": "Item.qKDhWuKfcffBKyAF"
     },

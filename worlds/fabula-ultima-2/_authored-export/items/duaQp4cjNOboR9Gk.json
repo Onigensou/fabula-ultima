@@ -8,6 +8,66 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "EtTrvCloakHzd001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795744129254,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.hazard_damage_reduction_pct",
+          "mode": 2,
+          "priority": 20,
+          "value": "${isEquipped ? 50 : 0}$"
+        }
+      ],
+      "description": "<p>Hazards deal 50% less damage to you.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "EtTrvCloakHzd001",
+          "originalParentId": "duaQp4cjNOboR9Gk",
+          "originalUuid": "Item.duaQp4cjNOboR9Gk.ActiveEffect.EtTrvCloakHzd001"
+        },
+        "fabula-ultima-companion": {
+          "casterFillers": "ae"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2447.gif",
+      "name": "Hunter Boots — Hazards",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"

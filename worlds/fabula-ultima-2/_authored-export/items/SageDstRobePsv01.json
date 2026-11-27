@@ -1,0 +1,73 @@
+{
+  "_id": "SageDstRobePsv01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744145230,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "sageOfDestruction": "created"
+    }
+  },
+  "folder": "SageDstFolder001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Mage%2527s_Habit.webp",
+  "name": "Gevurah Robe (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "SageDstGevurah01",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Your offensive spells deal <strong>【3 × the number of creatures they target】</strong> extra damage to each target.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "3 * ACTION_TARGET_COUNT",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "gv_bonus"
+        }
+      },
+      "id": "SageDstRobePsv01",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Gevurah Robe (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_OFFENSIVE_SPELL == 1 && DAMAGE_IS_HP == 1",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "gv_bonus",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<ul><li><p>Your offensive spells deal <strong>【3 × the number of creatures they target】</strong> extra damage to each target.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.SageDstRobePsv01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "SageDstRobePsv01"
+  },
+  "type": "equippableItem"
+}

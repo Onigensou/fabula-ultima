@@ -1,0 +1,143 @@
+{
+  "_id": "FeyWndStaff00001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744130084,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "feyWanderer": "created"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "UgcS71lsTsfnUG1b",
+        "itemName": "Oak Staff",
+        "pickedOldProps": {
+          "cost": "1500",
+          "martial": false
+        },
+        "ts": 1769646981455
+      }
+    }
+  },
+  "folder": "FeyWndFolder0001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Sword%20of%20Convollaria/Gleam_Short_Staff-icon.webp",
+  "name": "Glimmerwing Staff",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Arcane",
+      "celestial_ef": "100",
+      "check": "Check",
+      "check_bonus": "1",
+      "construct_ef": "100",
+      "damage_bonus": "6",
+      "defense_target_type": "mdef",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li><p>You may cast the spell 【✨<strong>@UUID[Item.FeyWndSproutWrd1]{Sprout Ward}</strong>】</p></li></ul>",
+      "dragon_ef": "100",
+      "effect_table": {},
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flavor_text": "<p><em>A slender wand of moonlit silver. Fey lights gather at its tip, waiting to be asked.</em></p>",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "Two-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "id": "FeyWndStaff00001",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Fraxinus_Staff_icon.webp",
+      "ingredient_taste": "",
+      "ingredient_taste2": "",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isIngredient": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": true,
+      "isUnique": false,
+      "item_activeEffect": "",
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "3000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_skill_active": {
+        "FeyWndSproutWrd1": {
+          "id": "${item.id}",
+          "name": "Sprout Ward",
+          "skill_cost": "10 MP",
+          "skill_description": "<ul><li><p>The next time the target falls into <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, it recovers <strong>【HR + 30】</strong> HP.</p></li></ul>",
+          "skill_maxLevel": 1,
+          "uuid": "Item.FeyWndSproutWrd1"
+        }
+      },
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Glimmerwing Staff",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reaction_config_table": {},
+      "recipe_dish_uuid": "",
+      "recipe_kind": "",
+      "refine_count": "0",
+      "refine_level": "0",
+      "related_item_list": {
+        "FeyWndSproutWrd1": {
+          "id": "${item.id}",
+          "name": "Sprout Ward",
+          "related_item_description": "<ul><li><p>The next time the target falls into <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, it recovers <strong>【HR + 30】</strong> HP.</p></li></ul>",
+          "uuid": "Item.FeyWndSproutWrd1"
+        }
+      },
+      "reptilian_ef": "100",
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "WLP",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>At the start of each conflict, gain <strong>2</strong> <strong>Moondew</strong>. When you cast a healing spell, you may spend 1 <strong>Moondew</strong>: it costs no MP.</p></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Once per scene, when an ally would fall to 0 HP, <strong>Fairy</strong> takes the blow instead. The ally is left at 1 HP, and every ally recovers <strong>【20 + your level】</strong> HP. <strong>Fairy</strong> leaves until the next scene.</p></li></ul>",
+      "set_name": "Fey Wanderer",
+      "skill_tags": "",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Physical",
+      "undead_ef": "100",
+      "uuid": "Item.FeyWndStaff00001",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 3202566307,
+    "unique": false,
+    "uniqueId": "FeyWndStaff00001"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,185 @@
+{
+  "_id": "FeyWndSproutWrd1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744130719,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "FeyWndSproutAE01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>The next time you fall into Crisis, recover HP (Sprout Ward).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "feyWanderer": "ae",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "sw_heal, sw_end",
+                "effect_kind": "chain",
+                "effect_label": "sw_do"
+              },
+              "1": {
+                "effect_kind": "grant",
+                "effect_label": "sw_heal",
+                "grant_amount": "HR + 30",
+                "grant_resource": "hp",
+                "target_ref": "self"
+              },
+              "2": {
+                "ae_template_ref": "Sprout Ward",
+                "effect_kind": "remove_ae",
+                "effect_label": "sw_end",
+                "include_persistent": true,
+                "target_ref": "self"
+              }
+            },
+            "name": "Sprout Ward",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "sw_do",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_status_filter": "Crisis",
+                "reaction_trigger": "creature_status_applied"
+              }
+            }
+          }
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Sword%20of%20Convollaria/Gleam_Short_Staff-icon.webp",
+      "name": "Sprout Ward",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "feyWanderer": "created"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "category": "skill",
+        "detectedType": "spellcard_v1",
+        "fromTemplate": "XfUpjwaovj4v9AjI",
+        "itemId": "OmWE7jRa80TMTc1x",
+        "itemName": "Regen",
+        "pickedOldProps": {
+          "class": "Spiritist",
+          "cost": "10 MP",
+          "damage": "0",
+          "description": "<p>You awaken the regenerative power in target creature, For the next <strong>3 rounds,</strong> The target gains the following effects:</p><ul><li><p>At the start of your turn, restore <strong>【20% of your Max HP】</strong></p></li></ul>",
+          "discipline": "spiritism",
+          "duration": "3 Round",
+          "id": "OmWE7jRa80TMTc1x",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+          "name": "Regen",
+          "target": "One Creature",
+          "type_damage": "",
+          "uuid": "Item.OmWE7jRa80TMTc1x"
+        },
+        "ts": 1770021428497
+      }
+    }
+  },
+  "folder": "FeyWndFolder0001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Sword%20of%20Convollaria/Gleam_Short_Staff-icon.webp",
+  "name": "Sprout Ward",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "FeyWndStaff00001",
+    "props": {
+      "action_command": "spell",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "10 MP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>The next time the target falls into <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, it recovers <strong>【HR + 30】</strong> HP.</p></li></ul>",
+      "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Sprout Ward",
+          "effect_kind": "apply_ae",
+          "effect_label": "sw_apply",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "FeyWndSproutWrd1",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Sprout Ward",
+      "on_activate_effect_ref": "sw_apply",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_description": "<ul><li><p>The next time the target falls into <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, it recovers <strong>【HR + 30】</strong> HP.</p></li></ul>",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_tags": "heal",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.FeyWndSproutWrd1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "FeyWndSproutWrd1"
+  },
+  "type": "equippableItem"
+}

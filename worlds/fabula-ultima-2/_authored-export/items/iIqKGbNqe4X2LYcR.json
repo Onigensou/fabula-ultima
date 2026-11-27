@@ -86,23 +86,43 @@
       "defense_target_type": "mdef",
       "description": "<p>You cause the target to suffer a terrifying nightmare, Deal <strong>【HR + 15% of the target Max HP】</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage to the target, this damage <strong>do not cause sleeping creature to wake up</strong>.</p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "damage_amount": "floor(TARGET_MAX_HP * 0.15) * (TARGET_AE_COUNT_SLEEP > 0)",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "nm_maxhp"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": true,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": true,
-      "isReaction": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "1",
       "name": "Nightmare",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_effect_ref": "nm_maxhp",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_source_skill": "Nightmare",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
       "rolled_atr1": "INS",
       "rolled_atr2": "WLP",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "",
+      "skill_tags": "dream",
       "skill_target": "One Creature",
       "skill_type": "Spell",
       "type_damage": "Dark",

@@ -332,8 +332,15 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
-          "description": "<p>Prevents the creature from <strong>acting</strong> until taking damage</p>",
+          "changes": [
+            {
+              "key": "disable_action",
+              "mode": 5,
+              "priority": 0,
+              "value": "All"
+            }
+          ],
+          "description": "<p>Cannot act or perform reactions.</p><p>At the start of your turn, roll <strong>【INS + WLP】</strong> DL 10. On a success, Sleep ends.</p><p>Taking damage ends Sleep.</p><p>Lasts 3 rounds. Cannot be reapplied while active.</p>",
           "disabled": false,
           "duration": {
             "combat": null,
@@ -362,6 +369,14 @@
               "isDynamic": false,
               "isTemporary": false,
               "isViewable": true
+            },
+            "fabula-ultima-companion": {
+              "noReapply": true,
+              "recoveryCheck": {
+                "attr1": "INS",
+                "attr2": "WLP",
+                "dl": 10
+              }
             },
             "statuscounter": {
               "config": {

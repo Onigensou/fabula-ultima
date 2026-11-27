@@ -7125,7 +7125,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -8236,6 +8236,7 @@
       "condition_poisoned": "NA",
       "condition_shaken": "NA",
       "condition_silence": "NA",
+      "condition_sleep": "RS",
       "condition_slow": "NA",
       "condition_stagger": "NA",
       "condition_suppress": "NA",

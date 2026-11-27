@@ -1,0 +1,85 @@
+{
+  "_id": "NoxStDullahPsv01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744149674,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "monsterFamily": "dullahan",
+      "noxSteals": "created"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/materials/feather-blue-grey.webp",
+  "name": "Dullahan Armor (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "NoxStDullahArm01",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Deal <strong>5%</strong> more damage to creatures with a lower HP percentage than yours. <strong>+1%</strong> for every 10% HP difference, up to <strong>10%</strong>.</p></li><li><p>Take <strong>5%</strong> less damage from creatures with a lower HP percentage than yours. <strong>+1%</strong> for every 10% HP difference, up to <strong>10%</strong>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "damage_amount": "min(10, 5 + floor((CUR_HP * 100 / MAX_HP - TARGET_CURRENT_HP * 100 / TARGET_MAX_HP) / 10))",
+          "damage_operation": "percent",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "dl_press"
+        },
+        "1": {
+          "$deleted": false,
+          "damage_amount": "-min(10, 5 + floor((CUR_HP * 100 / MAX_HP - ATTACKER_CURRENT_HP * 100 / ATTACKER_MAX_HP) / 10))",
+          "damage_operation": "percent",
+          "damage_stage": "incoming",
+          "effect_kind": "adjust_damage",
+          "effect_label": "dl_guard"
+        }
+      },
+      "id": "NoxStDullahPsv01",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "name": "Dullahan Armor (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1 && TARGET_CURRENT_HP * MAX_HP < CUR_HP * TARGET_MAX_HP",
+          "reaction_effect_ref": "dl_press",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "1": {
+          "condition_formula": "INCOMING_DAMAGE > 0 && ATTACKER_CURRENT_HP * MAX_HP < CUR_HP * ATTACKER_MAX_HP",
+          "reaction_effect_ref": "dl_guard",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_targeted_by_action"
+        }
+      },
+      "skill_description": "<ul><li><p>Deal <strong>5%</strong> more damage to creatures with a lower HP percentage than yours. <strong>+1%</strong> for every 10% HP difference, up to <strong>10%</strong>.</p></li><li><p>Take <strong>5%</strong> less damage from creatures with a lower HP percentage than yours. <strong>+1%</strong> for every 10% HP difference, up to <strong>10%</strong>.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.NoxStDullahPsv01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "NoxStDullahPsv01"
+  },
+  "type": "equippableItem"
+}

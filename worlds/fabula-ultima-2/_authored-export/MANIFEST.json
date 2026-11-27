@@ -891,6 +891,12 @@
         "parent": "OnmQOiAz7vgNYZrN"
       },
       {
+        "id": "FeyWndFolder0001",
+        "name": "Fey Wanderer",
+        "type": "Item",
+        "parent": "5KFkUixjqI5c6PpK"
+      },
+      {
         "id": "7NbxPryD0Bd70KPW",
         "name": "Firearm",
         "type": "Item",
@@ -1713,6 +1719,12 @@
         "parent": "AYqJLwzAu9WvlJ5C"
       },
       {
+        "id": "MofRetiredBanner",
+        "name": "Retired Banners",
+        "type": "RollTable",
+        "parent": "QGWhvmRAHt4ibvnG"
+      },
+      {
         "id": "E2rHUSe9roqJD1FD",
         "name": "Revolver",
         "type": "Item",
@@ -1747,6 +1759,12 @@
         "name": "Ruhig Village",
         "type": "Scene",
         "parent": "yvRW0RqT5kwSxKFl"
+      },
+      {
+        "id": "SageDstFolder001",
+        "name": "Sage of Destruction",
+        "type": "Item",
+        "parent": "5KFkUixjqI5c6PpK"
       },
       {
         "id": "86YVYtsd63uPhfzZ",
@@ -2709,6 +2727,12 @@
         "name": "Agony",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "SageDstAinSoph01",
+        "name": "Ain Soph Aur",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "imkMQLnCLaFbaS6Y",
@@ -4439,6 +4463,12 @@
         "effects": 0
       },
       {
+        "id": "SageDstChesed001",
+        "name": "Chesed Band",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "G6zwbm2sfECSKpDM",
         "name": "Children of the Grave",
         "type": "equippableItem",
@@ -5072,7 +5102,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 64
+        "effects": 65
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -5425,6 +5455,18 @@
       {
         "id": "SpFnDuelGuard001",
         "name": "Duelist's Guard",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "NoxStDullahArm01",
+        "name": "Dullahan Armor",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
+        "id": "NoxStDullahPsv01",
+        "name": "Dullahan Armor (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5864,7 +5906,7 @@
         "id": "SDyXwtWF0CgO7hIe",
         "name": "Eternal Traveler — Equipment Set",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "IPezvtbd25xqxmR8",
@@ -5993,6 +6035,12 @@
         "effects": 3
       },
       {
+        "id": "FeyWndSacrifice1",
+        "name": "Fairy's Sacrifice",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "T0HplvOxcpR0NdWX",
         "name": "Faithful Companion",
         "type": "equippableItem",
@@ -6073,6 +6121,12 @@
       {
         "id": "8pyt3fY7WrEoKyRk",
         "name": "Festivities",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FeyWndSetDef0001",
+        "name": "Fey Wanderer — Equipment Set",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6629,6 +6683,18 @@
         "effects": 3
       },
       {
+        "id": "SageDstGevurah01",
+        "name": "Gevurah Robe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SageDstRobePsv01",
+        "name": "Gevurah Robe (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "ROQw6telXF9qyZC8",
         "name": "Ghostly Sheet",
         "type": "equippableItem",
@@ -6709,6 +6775,36 @@
       {
         "id": "g74cJxJ4guXSyVlJ",
         "name": "Glacies Finis",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FeyWndEarring001",
+        "name": "Glimmerwing Earring",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FeyWndEarPsv0001",
+        "name": "Glimmerwing Earring (Passive)",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "FeyWndRobe000001",
+        "name": "Glimmerwing Robe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FeyWndRobePsv001",
+        "name": "Glimmerwing Robe (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FeyWndStaff00001",
+        "name": "Glimmerwing Staff",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6920,7 +7016,7 @@
         "id": "FbNEjOWpsDZGPmjR",
         "name": "Gorgonis Shield",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "XS2XcpLQhbq9p04p",
@@ -7226,7 +7322,7 @@
         "id": "gmnCyBBh5qJNb8HM",
         "name": "Handy Knives",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 2
       },
       {
         "id": "4sRQe37ayG9OebW3",
@@ -7676,7 +7772,7 @@
         "id": "duaQp4cjNOboR9Gk",
         "name": "Hunter Boots",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "b4WDIQiy7HB7caRW",
@@ -8261,6 +8357,18 @@
         "effects": 0
       },
       {
+        "id": "SageDstKeterRod1",
+        "name": "Keter Rod",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SageDstRodPsv001",
+        "name": "Keter Rod (Passive)",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "I7CVFOekhZ33p3tS",
         "name": "Kevlar Vest",
         "type": "equippableItem",
@@ -8468,7 +8576,7 @@
         "id": "uEAuWAA7dZeSnaFk",
         "name": "Lightning Rod (Passive)",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "6y5mdxrHe6MpCMD8",
@@ -9025,6 +9133,12 @@
       {
         "id": "LJg3zdH2gbrOfw6D",
         "name": "Mana Catcher",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SageDstManaRtn01",
+        "name": "Mana Return",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9689,14 +9803,26 @@
         "effects": 0
       },
       {
-        "id": "nYQMIXsVeTZzPvhd",
-        "name": "Moon Dancer Ornament",
+        "id": "MoonDncChakPsv01",
+        "name": "Moon Dancer Chakram (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
       {
+        "id": "nYQMIXsVeTZzPvhd",
+        "name": "Moon Dancer Ornament",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "AXoP4nNE3BflbOfM",
         "name": "Moon Pudding",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "FeyWndMoondew001",
+        "name": "Moondew",
         "type": "equippableItem",
         "effects": 1
       },
@@ -9707,8 +9833,26 @@
         "effects": 0
       },
       {
+        "id": "MoonDncSetDef001",
+        "name": "Moonlight Dancer — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "roafy3ui2JMXHqsa",
         "name": "Moonlight Dancer Robe",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
+        "id": "MoonDncRobePsv01",
+        "name": "Moonlight Dancer Robe (Passive)",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "MoonDncStepSkl01",
+        "name": "Moonlit Step",
         "type": "equippableItem",
         "effects": 2
       },
@@ -10013,6 +10157,12 @@
         "effects": 0
       },
       {
+        "id": "NoxStNoxCinder01",
+        "name": "Nox Cinder",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Gk0pJtWurS6kIDzK",
         "name": "npc_attack",
         "type": "equippableItem",
@@ -10125,6 +10275,12 @@
         "name": "Ouroboros Dance",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "SageDstOvrRite01",
+        "name": "Overflow Rite",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "uMIItEHpqu7mII8g",
@@ -11597,6 +11753,12 @@
         "effects": 1
       },
       {
+        "id": "SageDstSetDef001",
+        "name": "Sage of Destruction — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "NHQNneNjKb1Je06v",
         "name": "Sage Ring",
         "type": "equippableItem",
@@ -12014,7 +12176,7 @@
         "id": "JUuBEVyu4PgfMCol",
         "name": "Silver Bolt (Passive)",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "2qY1KhC6cpihpdZY",
@@ -12371,6 +12533,12 @@
         "effects": 0
       },
       {
+        "id": "MofSparkOfLife01",
+        "name": "Spark of Life",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "rtzMGURmtMcXp0OE",
         "name": "Specialty of the House",
         "type": "equippableItem",
@@ -12513,6 +12681,12 @@
         "name": "Sports Bra",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "FeyWndSproutWrd1",
+        "name": "Sprout Ward",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "23dQXPmLWKFjpwNt",
@@ -12686,7 +12860,7 @@
         "id": "NsEPkgoPjLnmTyjl",
         "name": "Stitched-Up Jacket (Passive)",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "vKxAyYVlL6604wsj",
@@ -13634,13 +13808,13 @@
         "id": "FU3mR0UB7xuX9ZPu",
         "name": "Traveler's Backpack",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "dHS9b0tj8FnO0aOQ",
         "name": "Traveler's Cloak",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "oPABGC6FtBfRoCDv",
@@ -14113,6 +14287,12 @@
       {
         "id": "tTLMqCkHSxjnTiDQ",
         "name": "Vortex",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "MoonDncWaltzSk01",
+        "name": "Waltz",
         "type": "equippableItem",
         "effects": 1
       },
@@ -15571,7 +15751,7 @@
         "name": "Arctic Narsissus",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "jRmyEUXMPxPdDmNh",
@@ -16608,7 +16788,7 @@
         "name": "Blazing Chrysanthemum",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "Lw66ZLMHRvJKedpj",
@@ -19229,6 +19409,22 @@
         "effects": 0
       },
       {
+        "id": "FeyWndFairyAct01",
+        "name": "Fairy",
+        "type": "character",
+        "items": [
+          {
+            "id": "FeyWndFeyLight01",
+            "name": "Fey Light"
+          },
+          {
+            "id": "HkWdHawkFlight01",
+            "name": "Flying"
+          }
+        ],
+        "effects": 2
+      },
+      {
         "id": "9ubDCyNifyglcDUX",
         "name": "Farian Pasta",
         "type": "character",
@@ -20209,21 +20405,21 @@
         "name": "Generic NPC",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "z4xolfkb6lbx1w8X",
         "name": "Generic NPC 2",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "Dxu2DWIxYcaFuAcM",
         "name": "Generic NPC 3",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "dh5Hx55KfPHSvrRh",
@@ -20356,7 +20552,7 @@
         "name": "Golden Ginkgo",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "jcirGKyrbSZI68Oz",
@@ -21419,7 +21615,7 @@
         "name": "Hookleaf Nightshade",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "yC5RLeD6oUhS1Xzd",
@@ -23640,6 +23836,14 @@
             "name": "Beheading"
           },
           {
+            "id": "NoxStLootExEqp01",
+            "name": "Dullahan Armor"
+          },
+          {
+            "id": "NoxStLootExMa201",
+            "name": "Nox Cinder"
+          },
+          {
             "id": "1f379LsubBsS2qP9",
             "name": "Nox Gibbet"
           },
@@ -23654,6 +23858,14 @@
           {
             "id": "cKpsDtgyB6G5Vk3g",
             "name": "Soul Sever"
+          },
+          {
+            "id": "NoxStLootExMa101",
+            "name": "Steel"
+          },
+          {
+            "id": "NoxStLootExCon01",
+            "name": "Tincture of Endurance"
           }
         ],
         "effects": 0
@@ -23668,6 +23880,10 @@
             "name": "(Empty)"
           },
           {
+            "id": "NoxStLootGhCon01",
+            "name": "Acid Flask"
+          },
+          {
             "id": "wQkg9XT3ZRut3Dmb",
             "name": "Counter when enemy Healed"
           },
@@ -23680,8 +23896,20 @@
             "name": "Grave Claw"
           },
           {
+            "id": "NoxStLootGhMa201",
+            "name": "Nox Cinder"
+          },
+          {
+            "id": "NoxStLootGhEqp01",
+            "name": "Old Bandages"
+          },
+          {
             "id": "jkQeeUNyOifZMaqP",
             "name": "Poison Blade"
+          },
+          {
+            "id": "NoxStLootGhMa101",
+            "name": "Rotten Nail"
           }
         ],
         "effects": 0
@@ -23696,12 +23924,28 @@
             "name": "(Empty)"
           },
           {
+            "id": "NoxStLootHdMa101",
+            "name": "Animal Fang"
+          },
+          {
+            "id": "NoxStLootHdEqp01",
+            "name": "Bloodthirster"
+          },
+          {
+            "id": "NoxStLootHdMa201",
+            "name": "Nox Cinder"
+          },
+          {
             "id": "Df6zE6jUKloJ8aBc",
             "name": "On the Hunt"
           },
           {
             "id": "UWvbAUzIRiTLrmnj",
             "name": "Rending Fangs"
+          },
+          {
+            "id": "NoxStLootHdCon01",
+            "name": "Tincture of Strength"
           },
           {
             "id": "GyRkh4l1AeALt0fu",
@@ -23728,16 +23972,32 @@
             "name": "Lux Finis"
           },
           {
+            "id": "NoxStLootPrMa201",
+            "name": "Nox Cinder"
+          },
+          {
             "id": "86mcbQMVnKdkUcD1",
             "name": "Nox Tome"
+          },
+          {
+            "id": "NoxStLootPrCon01",
+            "name": "Phoenix Feather"
           },
           {
             "id": "ZS586T9SATVTKv8f",
             "name": "Resurrection"
           },
           {
+            "id": "NoxStLootPrEqp01",
+            "name": "Shadow Grimoire"
+          },
+          {
             "id": "NZTJNCT4SzV1jjXb",
             "name": "Soul Siphon"
+          },
+          {
+            "id": "NoxStLootPrMa101",
+            "name": "Torned Fabric"
           },
           {
             "id": "gHMFqoihIfdcZv1Q",
@@ -23760,6 +24020,10 @@
             "name": "Bile Spew"
           },
           {
+            "id": "NoxStLootVpMa101",
+            "name": "Clear Liquid"
+          },
+          {
             "id": "QKGirAor6THNnpyG",
             "name": "Coil"
           },
@@ -23770,6 +24034,18 @@
           {
             "id": "VGTE6O606rCBlGrQ",
             "name": "Feeding Coil"
+          },
+          {
+            "id": "NoxStLootVpEqp01",
+            "name": "Gorgonis Shield"
+          },
+          {
+            "id": "NoxStLootVpMa201",
+            "name": "Nox Cinder"
+          },
+          {
+            "id": "NoxStLootVpCon01",
+            "name": "Poison"
           },
           {
             "id": "3M8bMlPowWjvQ0op",
@@ -23796,8 +24072,24 @@
             "name": "Ethereal"
           },
           {
+            "id": "NoxStLootWrMa201",
+            "name": "Nox Cinder"
+          },
+          {
+            "id": "NoxStLootWrMa101",
+            "name": "Regret"
+          },
+          {
+            "id": "NoxStLootWrEqp01",
+            "name": "Soul Ring"
+          },
+          {
             "id": "xgvEVdcnu76IEA2r",
             "name": "Soul Ripper"
+          },
+          {
+            "id": "NoxStLootWrCon01",
+            "name": "Tincture of Spirit"
           }
         ],
         "effects": 0
@@ -24131,7 +24423,7 @@
         "name": "Pilgrim Gazalia",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "DH4LTRX2NkmBrHgP",
@@ -24870,7 +25162,7 @@
         "name": "Remedy Lily",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "hD4pnyKyKOqKNvkR",
@@ -25409,7 +25701,7 @@
         "name": "Serrated Rose",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "cBDhTXQcItSRZZpu",
@@ -26840,7 +27132,7 @@
         "name": "Test Character",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "Xu9NOUE15qM7A9jV",
@@ -27238,7 +27530,7 @@
         "name": "Wardwattle",
         "type": "character",
         "items": [],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "WtBFZhIad3fxPVwD",
@@ -28355,6 +28647,11 @@
         "results": 12
       },
       {
+        "id": "CasterBnrFey0001",
+        "name": "Fey Wanderer",
+        "results": 6
+      },
+      {
         "id": "krmgo70mxn7HYI8w",
         "name": "Generic - Fish",
         "results": 24
@@ -28473,6 +28770,11 @@
         "id": "DiwyiqNujJaPIH8M",
         "name": "Overworld (Chapter 4) - Enemies",
         "results": 4
+      },
+      {
+        "id": "CasterBnrSage001",
+        "name": "Sage of Destruction",
+        "results": 6
       },
       {
         "id": "IGZhlzseqySC5xUd",

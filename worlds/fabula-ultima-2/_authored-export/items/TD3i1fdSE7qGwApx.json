@@ -55,6 +55,7 @@
       "skill_animation_mode": "custom",
       "skill_information": "",
       "skill_range": "Range",
+      "skill_tags": "heal",
       "skill_target": "Up to three creatures",
       "skill_type": "Spell",
       "type_damage": "Heal",

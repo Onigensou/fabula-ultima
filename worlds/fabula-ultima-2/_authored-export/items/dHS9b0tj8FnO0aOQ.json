@@ -84,6 +84,64 @@
       "type": "base"
     },
     {
+      "_id": "EtTrvCloakHzd001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795744123144,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.hazard_damage_reduction_pct",
+          "mode": 2,
+          "priority": 20,
+          "value": "${isEquipped ? 50 : 0}$"
+        }
+      ],
+      "description": "<p>Field hazards deal 50% less damage to you.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "EtTrvCloakHzd001",
+          "originalParentId": "dHS9b0tj8FnO0aOQ",
+          "originalUuid": "Item.dHS9b0tj8FnO0aOQ.ActiveEffect.EtTrvCloakHzd001"
+        },
+        "fabula-ultima-companion": {
+          "casterFillers": "ae"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "name": "Traveler's Cloak — Hazards",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "nIIyljueYmbMUTpM",
       "_stats": {
         "compendiumSource": null,
@@ -208,6 +266,7 @@
         "parentName": "",
         "parentType": "World"
       },
+      "casterFillers": true,
       "defMdefHelperKeyPatchBackup_v1": {
         "createdAt": 1777708466859,
         "effects": [
@@ -327,7 +386,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><strong>Hazards</strong> becomes 50% less effective on you.</p><hr></li></ul>",
+      "description": "<ul><li><p>Field hazards deal <strong>50%</strong> less damage to you.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -350,11 +409,11 @@
       "isUnique": false,
       "item_baseDef": "0",
       "item_baseMdef": "0",
-      "item_cost": "900",
+      "item_cost": "1800",
       "item_def_bonus": "+2",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Uncommon",
+      "item_rarity": "Rare",
       "item_type": "armor",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -364,7 +423,7 @@
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
-      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li style=\"list-style-type: none;\"><p>During <strong>Rest </strong>scene, you recover 50% of your maximum IP <em>(Even if you aren't in town)</em></p><hr><p><strong>3 Piece</strong></p><ul><li><p>Once during your&nbsp; turn, You can perform the <strong>【item】</strong>action as a <strong>free action</strong>.</p></li></ul></li></ul>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>When you rest, recover <strong>50%</strong> of your max IP, even outside town.</p></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Once per scene, you may perform the Item action as a Free Action.</p></li></ul>",
       "set_name": "Eternal Traveler",
       "soldier_ef": "100",
       "spirit_ef": "100",

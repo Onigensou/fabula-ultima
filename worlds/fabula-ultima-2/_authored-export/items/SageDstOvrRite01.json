@@ -1,0 +1,97 @@
+{
+  "_id": "SageDstOvrRite01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744147848,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "sageOfDestruction": "created"
+    }
+  },
+  "folder": "SageDstFolder001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Rods/Icon-Mateus%2527s_Malice.webp",
+  "name": "Overflow Rite",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "SageDstSetDef001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When you cast an offensive spell, you may pay <strong>20</strong> extra MP. If you do, it gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ov_add, ov_cost",
+          "effect_kind": "chain",
+          "effect_label": "ov_do",
+          "menu_description": "Pay 20 MP: this spell hits every enemy.",
+          "menu_label": "Overflow"
+        },
+        "1": {
+          "effect_kind": "add_target",
+          "effect_label": "ov_add",
+          "menu_description": "Pay 20 MP: hits every enemy.",
+          "menu_label": "Overflow",
+          "target_ref": "ov_pool"
+        },
+        "2": {
+          "auto_target": "skip",
+          "candidate_source": "combat",
+          "category": "enemy",
+          "effect_kind": "targeting",
+          "effect_label": "ov_pool",
+          "exclude_action_targets": true,
+          "mode": "all",
+          "skip_when_passive": false
+        },
+        "3": {
+          "cost_amount": "20",
+          "cost_operation": "add",
+          "cost_resource": "mp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "ov_cost"
+        }
+      },
+      "id": "SageDstOvrRite01",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Overflow Rite",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_OFFENSIVE_SPELL == 1 && ACTION_TARGET_COUNT < ENEMY_COUNT && CUR_MP >= ACTION_COST_MP + 20",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ov_do",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "ask",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "skill_description": "<ul><li><p>When you cast an offensive spell, you may pay <strong>20</strong> extra MP. If you do, it gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a>.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.SageDstOvrRite01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "SageDstOvrRite01"
+  },
+  "type": "equippableItem"
+}

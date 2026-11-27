@@ -2614,6 +2614,7 @@
       "condition_poisoned": "NA",
       "condition_shaken": "RS",
       "condition_silence": "IM",
+      "condition_sleep": "RS",
       "condition_slow": "NA",
       "condition_stagger": "NA",
       "condition_suppress": "IM",

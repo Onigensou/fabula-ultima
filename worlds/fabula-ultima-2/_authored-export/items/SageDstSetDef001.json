@@ -1,0 +1,56 @@
+{
+  "_id": "SageDstSetDef001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744146526,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "sageOfDestruction": "created"
+    }
+  },
+  "folder": "SageDstFolder001",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Sage of Destruction — Equipment Set",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "id": "SageDstSetDef001",
+      "isSet": false,
+      "name": "Sage of Destruction — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Multi-target offensive spell: recover 20% of its MP",
+          "bonus_skill_ref": "Mana Return",
+          "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Pay 20 MP: an offensive spell gains Overflow",
+          "bonus_skill_ref": "Overflow Rite",
+          "pieces": "3"
+        }
+      },
+      "set_name": "Sage of Destruction",
+      "uuid": "Item.SageDstSetDef001"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "SageDstSetDef001"
+  },
+  "type": "equippableItem"
+}

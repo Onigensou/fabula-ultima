@@ -1,0 +1,78 @@
+{
+  "_id": "FeyWndRobePsv001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744131985,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "feyWanderer": "created"
+    }
+  },
+  "folder": "FeyWndFolder0001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Siren%2527s_Robe.webp",
+  "name": "Glimmerwing Robe (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "FeyWndRobe000001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>You begin each conflict with the companion <strong>Fairy</strong>.</p></li><li><p><strong>Fairy</strong>: at the end of your turn, restores <strong>【10 + ½ your level】</strong> HP to the ally with the lowest HP.</p></li><li><p><strong>Fairy</strong>: every <strong>2</strong> rounds, removes 1 debuff from an ally instead, if any ally has one.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "summon",
+          "effect_label": "gr_call",
+          "summon_act_this_round": "false",
+          "summon_actor": "Actor.FeyWndFairyAct01",
+          "summon_count": "1",
+          "summon_kind": "companion",
+          "summon_max": "1",
+          "summon_overrides": "{\"max_hp\":\"5 + CHAR_LEVEL\",\"current_hp\":\"5 + CHAR_LEVEL\"}",
+          "summon_turns_per_round": "0"
+        }
+      },
+      "id": "FeyWndRobePsv001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Glimmerwing Robe (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "gr_call",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_description": "<ul><li><p>You begin each conflict with the companion <strong>Fairy</strong>.</p></li><li><p><strong>Fairy</strong>: at the end of your turn, restores <strong>【10 + ½ your level】</strong> HP to the ally with the lowest HP.</p></li><li><p><strong>Fairy</strong>: every <strong>2</strong> rounds, removes 1 debuff from an ally instead, if any ally has one.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.FeyWndRobePsv001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "FeyWndRobePsv001"
+  },
+  "type": "equippableItem"
+}

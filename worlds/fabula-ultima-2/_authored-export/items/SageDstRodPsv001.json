@@ -1,0 +1,141 @@
+{
+  "_id": "SageDstRodPsv001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744143889,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "SageDstVeilAE001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>At 3 Veil, Keter Rod can cast Ain Soph Aur.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "veil",
+          "charges": 0,
+          "chargesMax": 3,
+          "hudResourceColor": "#f0d27a",
+          "lifetimeMode": "persistent_counter",
+          "sageOfDestruction": "ae"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Rods/Icon-Mateus%2527s_Malice.webp",
+      "name": "Veil",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "sageOfDestruction": "created"
+    }
+  },
+  "folder": "SageDstFolder001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Rods/Icon-Mateus%2527s_Malice.webp",
+  "name": "Keter Rod (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "SageDstKeterRod1",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When you cast an offensive spell that costs MP for the first time this scene, gain 1 <strong>Veil</strong>. Max <strong>3</strong> stacks.</p></li><li><p><strong>Veil</strong> is lost at the end of the scene.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "3",
+          "ae_template_ref": "Veil",
+          "effect_kind": "apply_ae",
+          "effect_label": "kr_veil",
+          "target_ref": "self"
+        },
+        "1": {
+          "ae_template_ref": "Veil",
+          "effect_kind": "remove_ae",
+          "effect_label": "kr_clear",
+          "include_persistent": true,
+          "target_ref": "self"
+        }
+      },
+      "id": "SageDstRodPsv001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Keter Rod (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_OFFENSIVE_SPELL == 1 && ACTION_COST_MP > 0 && ACTION_IS_FREE_CAST == 0 && PERFORMED_SKILL != \"Ain Soph Aur\"",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "kr_veil",
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "skill",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "1": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "kr_clear",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_end"
+        }
+      },
+      "skill_description": "<ul><li><p>When you cast an offensive spell that costs MP for the first time this scene, gain 1 <strong>Veil</strong>. Max <strong>3</strong> stacks.</p></li><li><p><strong>Veil</strong> is lost at the end of the scene.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.SageDstRodPsv001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "SageDstRodPsv001"
+  },
+  "type": "equippableItem"
+}

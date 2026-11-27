@@ -1,0 +1,159 @@
+{
+  "_id": "FeyWndEarPsv0001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744133237,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "FeyWndRegenAE001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Recovers <strong>HP</strong> at the start of each turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "OlzqcPwkPWtVJyHY",
+          "originalParentId": "OmWE7jRa80TMTc1x",
+          "originalUuid": "Item.OmWE7jRa80TMTc1x.ActiveEffect.OlzqcPwkPWtVJyHY"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "feyregen",
+          "charges": 2,
+          "chargesMax": 2,
+          "feyWanderer": "ae",
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "effect_kind": "grant",
+                "effect_label": "regen_heal",
+                "grant_amount": "10",
+                "grant_resource": "hp",
+                "target_ref": "self"
+              }
+            },
+            "name": "Fey Regen",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "regen_heal",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          },
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fantasy%20Life%20I/Armor/Flutter_Charm.webp",
+      "name": "Fey Regen",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "feyWanderer": "created"
+    }
+  },
+  "folder": "FeyWndFolder0001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fantasy%20Life%20I/Armor/Flutter_Charm.webp",
+  "name": "Glimmerwing Earring (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "FeyWndEarring001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Allies healed by your spells gain <strong>Fey Regen</strong>: recover <strong>10</strong> HP at the start of their turn for <strong>2</strong> rounds.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "2",
+          "ae_template_ref": "Fey Regen",
+          "effect_kind": "apply_ae",
+          "effect_label": "ge_regen",
+          "target_ref": "ally_action_targets"
+        }
+      },
+      "id": "FeyWndEarPsv0001",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Glimmerwing Earring (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && SKILL_HAS_TAG_HEAL == 1",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ge_regen",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_spell"
+        }
+      },
+      "skill_description": "<ul><li><p>Allies healed by your spells gain <strong>Fey Regen</strong>: recover <strong>10</strong> HP at the start of their turn for <strong>2</strong> rounds.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.FeyWndEarPsv0001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "FeyWndEarPsv0001"
+  },
+  "type": "equippableItem"
+}

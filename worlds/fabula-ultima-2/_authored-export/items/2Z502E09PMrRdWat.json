@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "mofRework": true
     }
   },
   "folder": "5KFkUixjqI5c6PpK",
@@ -27,9 +30,15 @@
       "set_bonus_table": {
         "0": {
           "bonus_ae_ref": "",
-          "bonus_label": "Turn start: 5 Bolt damage to yourself",
+          "bonus_label": "Absorb damage: recover that much MP (once per round)",
           "bonus_skill_ref": "Galvanic Feedback",
           "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Absorb Bolt: Spark of Life; at 3, survive a KO at your Crisis score",
+          "bonus_skill_ref": "Spark of Life",
+          "pieces": "3"
         }
       },
       "set_name": "Monster of Frankensteiner"

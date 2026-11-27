@@ -8,9 +8,70 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "MofSilverReady01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795744121931,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Silver Bolt can change the next hit you take into Bolt damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "MofSilverReady01",
+          "originalParentId": "JUuBEVyu4PgfMCol",
+          "originalUuid": "Item.JUuBEVyu4PgfMCol.ActiveEffect.MofSilverReady01"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "silverbolt",
+          "charges": 1,
+          "chargesMax": 1,
+          "lifetimeMode": "persistent_counter",
+          "mofRework": "ae"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/SilverBolt.png",
+      "name": "Silver Bolt Ready",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "mofRework": true
     }
   },
   "folder": "ft3358qUh5ZDldYQ",
@@ -24,13 +85,46 @@
   "system": {
     "container": "aPVUpJ1KwspTpUTV",
     "props": {
-      "description": "<p>Equipped passive: Whenever you take <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage, you recover MP equal to the damage taken.</p>",
+      "description": "<ul><li><p>When you take or Absorb <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage, gain <a class=\"content-link\" data-uuid=\"Item.Gg1ot3L3XPuiGkym\" data-id=\"Gg1ot3L3XPuiGkym\" data-type=\"Item\">Strong</a>.</p></li><li><p>When you take damage, you may change it to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage. Recharges at the start of your turn.</p></li><li><p>Converted damage can't be Absorbed.</p></li></ul>",
       "effect_table": {
         "0": {
-          "effect_kind": "grant",
-          "effect_label": "sbolt_recover",
-          "grant_amount": "DAMAGE_DEALT",
-          "grant_resource": "mp",
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Strong",
+          "effect_kind": "apply_ae",
+          "effect_label": "sb_strong",
+          "target_ref": "self"
+        },
+        "1": {
+          "chain_steps": "sb_el, sb_spend",
+          "effect_kind": "chain",
+          "effect_label": "sb_convert"
+        },
+        "2": {
+          "change_element": "bolt",
+          "effect_kind": "change_damage_element",
+          "effect_label": "sb_el",
+          "element_no_absorb": true
+        },
+        "3": {
+          "charge_key": "silverbolt",
+          "count": "1",
+          "effect_kind": "consume_charge",
+          "effect_label": "sb_spend",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Silver Bolt Ready",
+          "effect_kind": "apply_ae",
+          "effect_label": "sb_refill",
+          "target_ref": "self"
+        },
+        "5": {
+          "ae_template_ref": "Silver Bolt Ready",
+          "effect_kind": "remove_ae",
+          "effect_label": "sb_clear",
+          "include_persistent": true,
           "target_ref": "self"
         }
       },
@@ -39,30 +133,76 @@
       "name": "Silver Bolt (Passive)",
       "reaction_config_table": {
         "0": {
-          "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1 && DAMAGE_IS_HP == 1",
-          "reaction_action_intent": "",
-          "reaction_action_kind": "",
-          "reaction_action_target": "",
+          "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
           "reaction_cause_filter": "",
-          "reaction_damage_source": "",
-          "reaction_effect_ref": "sbolt_recover",
+          "reaction_effect_ref": "sb_strong",
           "reaction_max_per_round": "",
-          "reaction_origin_filter": "",
-          "reaction_ownership": "",
           "reaction_passive_mode": "on",
           "reaction_requires_weapon_used": false,
-          "reaction_resource_filter": "",
-          "reaction_responder": "",
+          "reaction_resource_filter": "hp",
           "reaction_source": "self",
-          "reaction_source_skill": "",
-          "reaction_status_filter": "",
-          "reaction_subject_kind": "",
-          "reaction_trigger": "creature_takes_damage",
-          "requires_skill": ""
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "1": {
+          "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "sb_strong",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_gain_resource"
+        },
+        "2": {
+          "condition_formula": "INCOMING_DAMAGE > 0 && TRIGGER_DAMAGE_IS_BOLT == 0 && AE_CHARGES_SILVER_BOLT_READY >= 1",
+          "reaction_action_intent": "harmful",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "sb_convert",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "ask",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_targeted_by_action"
+        },
+        "3": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "sb_refill",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        },
+        "4": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "sb_refill",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "5": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "sb_clear",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_end"
         }
       },
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
+      "skill_description": "<ul><li><p>When you take or Absorb <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage, gain <a class=\"content-link\" data-uuid=\"Item.Gg1ot3L3XPuiGkym\" data-id=\"Gg1ot3L3XPuiGkym\" data-type=\"Item\">Strong</a>.</p></li><li><p>When you take damage, you may change it to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage. Recharges at the start of your turn.</p></li><li><p>Converted damage can't be Absorbed.</p></li></ul>",
       "skill_type": "Passive"
     },
     "template": "j0F5Msw5RZ8aIB3j",

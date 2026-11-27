@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.6.4"
     },
+    "fabula-ultima-companion": {
+      "noxSteals": "authored"
+    },
     "fucompanion": {
       "itemMigratorBackup": {
         "detectedType": "weapon",
@@ -60,6 +63,7 @@
   "system": {
     "container": null,
     "props": {
+      "action_keywords": "mana burn",
       "active_effect_config_table": {},
       "aquatic_ef": "100",
       "automaton_ef": "100",
@@ -71,6 +75,7 @@
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "15",
+      "defense_target_type": "mdef",
       "demiHuman_ef": "100",
       "demon_ef": "100",
       "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NI69hHt2XDbzuxGV\" data-id=\"NI69hHt2XDbzuxGV\" data-type=\"JournalEntry\">Mana Burn</a></p></li><li><p>Attacks with this weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a>&nbsp;</p></li></ul>",

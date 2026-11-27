@@ -517,6 +517,7 @@
       "condition_poisoned": "IM",
       "condition_shaken": "IM",
       "condition_silence": "IM",
+      "condition_sleep": "RS",
       "condition_slow": "IM",
       "condition_stagger": "IM",
       "condition_suppress": "IM",

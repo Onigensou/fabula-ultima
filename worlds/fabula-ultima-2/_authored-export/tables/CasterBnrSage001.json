@@ -1,0 +1,123 @@
+{
+  "_id": "CasterBnrSage001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744148767,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "<p>Beyond the Three Veils</p>",
+  "displayRoll": true,
+  "flags": {
+    "fabula-ultima-companion": {
+      "gacha": {
+        "mainSet": "Sage of Destruction"
+      },
+      "sageOfDestruction": "banner"
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d6",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Rods/Icon-Mateus%2527s_Malice.webp",
+  "name": "Sage of Destruction",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "55nzQfCb8M5B1D1J",
+      "documentCollection": "Item",
+      "documentId": "SageDstGevurah01",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Mage%2527s_Habit.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Gevurah Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "GSkJWEcBxgB4V7WL",
+      "documentCollection": "Item",
+      "documentId": "nJXcfE31UpQ0rGJI",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Moon_Dancer_Chakram_icon.jpg",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Moon Dancer Chakram",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "hgS4hKTSAwLZzp3e",
+      "documentCollection": "Item",
+      "documentId": "SageDstChesed001",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Diablo_Ring.webp",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Chesed Band",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "HHlA97WtVKrG8psn",
+      "documentCollection": "Item",
+      "documentId": "nYQMIXsVeTZzPvhd",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Moon_Dancer_Ornament_icon.jpg",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Moon Dancer Ornament",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "OYs2qgKsTVgwHInv",
+      "documentCollection": "Item",
+      "documentId": "roafy3ui2JMXHqsa",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Moonlight_Dancer_Robe_icon.jpg",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Moonlight Dancer Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "sAPGBhIH10QraVVD",
+      "documentCollection": "Item",
+      "documentId": "SageDstKeterRod1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Rods/Icon-Mateus%2527s_Malice.webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Keter Rod",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

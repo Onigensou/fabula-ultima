@@ -1,0 +1,181 @@
+{
+  "_id": "FeyWndSacrifice1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744135197,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "FeyWndGraceAE001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Once per scene, the Fairy takes a blow that would knock you out.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "feyWanderer": "ae",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "fg_cap, fg_card, fg_heal, fg_fairy, fg_dismiss, fg_clear",
+                "effect_kind": "chain",
+                "effect_label": "fg_save"
+              },
+              "1": {
+                "consume_self": true,
+                "damage_amount": "CUR_HP - 1",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "fg_cap"
+              },
+              "2": {
+                "effect_kind": "notify",
+                "effect_label": "fg_card",
+                "notify_abort": false,
+                "notify_message": "Fairy's Sacrifice",
+                "notify_type": "card"
+              },
+              "3": {
+                "effect_kind": "grant",
+                "effect_label": "fg_heal",
+                "grant_amount": "20 + CHAR_LEVEL",
+                "grant_resource": "hp",
+                "target_ref": "all_party"
+              },
+              "4": {
+                "allow_empty": true,
+                "auto_target": "skip",
+                "candidate_source": "combat",
+                "category": "ally",
+                "effect_kind": "targeting",
+                "effect_label": "fg_fairy",
+                "mode": "all",
+                "target_filter": "HAS_SKILL_FEY_LIGHT == 1"
+              },
+              "5": {
+                "effect_kind": "destroy_summon",
+                "effect_label": "fg_dismiss",
+                "suppress_defeat": true,
+                "target_ref": "fg_fairy"
+              },
+              "6": {
+                "ae_template_ref": "Fairy's Grace",
+                "effect_kind": "remove_ae",
+                "effect_label": "fg_clear",
+                "include_persistent": true,
+                "target_ref": "all_party"
+              }
+            },
+            "name": "Fairy's Grace",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "COMBAT_LIVING_MAX_AE_CHARGES_FAIRY_PRESENCE >= 1 && AE_COUNT_FAIRY_PRESENCE == 0",
+                "reaction_damage_outcome": "would_reduce_to_zero",
+                "reaction_effect_ref": "fg_save",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Siren%2527s_Robe.webp",
+      "name": "Fairy's Grace",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "feyWanderer": "created"
+    }
+  },
+  "folder": "FeyWndFolder0001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Siren%2527s_Robe.webp",
+  "name": "Fairy's Sacrifice",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "FeyWndSetDef0001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>Once per scene, when an ally would fall to 0 HP, <strong>Fairy</strong> takes the blow instead. The ally is left at 1 HP, and every ally recovers <strong>【20 + your level】</strong> HP. <strong>Fairy</strong> leaves until the next scene.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Fairy's Grace",
+          "effect_kind": "apply_ae",
+          "effect_label": "fs_aura",
+          "target_ref": "all_party"
+        }
+      },
+      "id": "FeyWndSacrifice1",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Fairy's Sacrifice",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "fs_aura",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_description": "<ul><li><p>Once per scene, when an ally would fall to 0 HP, <strong>Fairy</strong> takes the blow instead. The ally is left at 1 HP, and every ally recovers <strong>【20 + your level】</strong> HP. <strong>Fairy</strong> leaves until the next scene.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.FeyWndSacrifice1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "FeyWndSacrifice1"
+  },
+  "type": "equippableItem"
+}

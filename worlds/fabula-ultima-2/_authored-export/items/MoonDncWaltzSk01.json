@@ -1,0 +1,186 @@
+{
+  "_id": "MoonDncWaltzSk01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744128634,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "MoonDncWaltzAE01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Thrown weapons deal +3 damage per Waltz Point.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "casterFillers": "ae",
+          "category": "Other",
+          "chargeKey": "waltz",
+          "charges": 0,
+          "chargesMax": 999,
+          "hudResourceColor": "#c9b6ff",
+          "lifetimeMode": "persistent_counter"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Moonlight_Dancer_Robe_icon.jpg",
+      "name": "Waltz Point",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "casterFillers": "created"
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Moonlight_Dancer_Robe_icon.jpg",
+  "name": "Waltz",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "MoonDncSetDef001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When you perform a Dance that differs from last turn's, gain 1 <strong>Waltz Point</strong>: Thrown weapons deal <strong>+3</strong> damage per point. Lose all points if you end a turn without dancing or repeat a Dance.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "999",
+          "ae_template_ref": "Waltz Point",
+          "effect_kind": "apply_ae",
+          "effect_label": "wz_gain",
+          "target_ref": "self"
+        },
+        "1": {
+          "charge_ae_name": "Waltz Point",
+          "charge_amount": "0",
+          "charge_operation": "set",
+          "effect_kind": "adjust_charges",
+          "effect_label": "wz_reset",
+          "target_ref": "self"
+        },
+        "2": {
+          "damage_amount": "3 * AE_CHARGES_WALTZ_POINT",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "wz_bonus"
+        },
+        "3": {
+          "ae_template_ref": "Waltz Point",
+          "effect_kind": "remove_ae",
+          "effect_label": "wz_clear",
+          "include_persistent": true,
+          "target_ref": "self"
+        }
+      },
+      "id": "MoonDncWaltzSk01",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Waltz",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && SKILL_HAS_TAG_MANAGED == 1 && AE_COUNT_LAST_TURN_DANCE > 0 && AE_FLAG(\"Last Turn Dance\",\"rememberedAction\") != PERFORMED_SKILL",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "wz_gain",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "1": {
+          "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && SKILL_HAS_TAG_MANAGED == 1 && AE_COUNT_LAST_TURN_DANCE > 0 && AE_FLAG(\"Last Turn Dance\",\"rememberedAction\") == PERFORMED_SKILL && AE_CHARGES_WALTZ_POINT > 0",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "wz_reset",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "2": {
+          "condition_formula": "AE_COUNT_DANCING == 0 && AE_CHARGES_WALTZ_POINT > 0",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "wz_reset",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        },
+        "3": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && USED_WEAPON_CATEGORY_IS_THROWN == 1 && DAMAGE_IS_HP == 1 && AE_CHARGES_WALTZ_POINT > 0",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "wz_bonus",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "4": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "wz_clear",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_end"
+        }
+      },
+      "skill_description": "<ul><li><p>When you perform a Dance that differs from last turn's, gain 1 <strong>Waltz Point</strong>: Thrown weapons deal <strong>+3</strong> damage per point. Lose all points if you end a turn without dancing or repeat a Dance.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.MoonDncWaltzSk01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "MoonDncWaltzSk01"
+  },
+  "type": "equippableItem"
+}

@@ -29,9 +29,9 @@
       "duration": "Instantaneous",
       "effect_table": {
         "0": {
-          "ae_duplicate_mode": "replace",
-          "ae_initial_charges": "1",
-          "ae_initial_charges_max": "1",
+          "ae_duplicate_mode": "skip",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
           "ae_lifetime_mode": "target_turn_end",
           "ae_template_ref": "Sleep",
           "condition_formula": "chance(50)",
@@ -45,7 +45,7 @@
       "on_activate_effect_ref": "hypno_sleep",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
-      "skill_description": "Inflicts Sleep on a creature that can see you for 1 Round. 50% success rate.",
+      "skill_description": "Inflicts Sleep on a creature that can see you. 50% success rate.",
       "skill_target": "One Creature",
       "skill_type": "Spell"
     },

@@ -10,6 +10,64 @@
   },
   "effects": [
     {
+      "_id": "EtTrvKnifeAls001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795744122919,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "weapon_category_alias",
+          "mode": 0,
+          "priority": 20,
+          "value": "dagger: sword, spear, thrown"
+        }
+      ],
+      "description": "<p>Handy Knives also count as a Sword, Spear or Thrown weapon.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "EtTrvKnifeAls001",
+          "originalParentId": "gmnCyBBh5qJNb8HM",
+          "originalUuid": "Item.gmnCyBBh5qJNb8HM.ActiveEffect.EtTrvKnifeAls001"
+        },
+        "fabula-ultima-companion": {
+          "casterFillers": "ae"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dagger.gif",
+      "name": "Handy Knives — Counts As",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "SQc7LPTx3XsbXV91",
       "_stats": {
         "compendiumSource": null,
@@ -68,6 +126,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "casterFillers": true
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -129,7 +190,7 @@
       "damage_bonus": "6",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>+2 to <strong>skill checks</strong> that require <strong>【DEX】</strong>or<strong>【INS】</strong></p></li><li><p>You may have this weapon category becomes <strong>Sword, Spear </strong>or <strong>Thrown </strong>when attacking.</p></li></ul>",
+      "description": "<ul><li><p><strong>+2</strong> to checks that use 【DEX】 or 【INS】.</p></li><li><p>When you attack, this weapon may count as a Sword, Spear or Thrown weapon.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -152,11 +213,11 @@
       "isUnique": false,
       "item_baseDef": "0",
       "item_baseMdef": "0",
-      "item_cost": "900",
+      "item_cost": "1800",
       "item_def_bonus": "0",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Uncommon",
+      "item_rarity": "Rare",
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -166,7 +227,7 @@
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "INS",
-      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>&nbsp; &nbsp; &nbsp;2 Piece</strong></p><ul><li style=\"list-style-type: none;\"><p>During <strong>Rest </strong>scene, you recover 50% of your maximum IP <em>(Even if you aren't in town)</em></p><hr><p><strong>3 Piece</strong></p><ul><li><p>Once during your&nbsp; turn, You can perform the <strong>【item】</strong>action as a <strong>free action</strong>.</p></li></ul></li></ul>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>When you rest, recover <strong>50%</strong> of your max IP, even outside town.</p></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Once per scene, you may perform the Item action as a Free Action.</p></li></ul>",
       "set_name": "Eternal Traveler",
       "skill_target": "One Enemy",
       "soldier_ef": "100",

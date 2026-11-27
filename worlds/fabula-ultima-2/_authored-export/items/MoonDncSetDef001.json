@@ -1,0 +1,56 @@
+{
+  "_id": "MoonDncSetDef001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744127367,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "casterFillers": "created"
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Moonlight Dancer — Equipment Set",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "id": "MoonDncSetDef001",
+      "isSet": false,
+      "name": "Moonlight Dancer — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Dance different from last turn: +2 DEF / M.DEF",
+          "bonus_skill_ref": "Moonlit Step",
+          "pieces": "2"
+        },
+        "1": {
+          "bonus_ae_ref": "",
+          "bonus_label": "Waltz Points: +3 Thrown damage each",
+          "bonus_skill_ref": "Waltz",
+          "pieces": "3"
+        }
+      },
+      "set_name": "Moonlight Dancer",
+      "uuid": "Item.MoonDncSetDef001"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "MoonDncSetDef001"
+  },
+  "type": "equippableItem"
+}

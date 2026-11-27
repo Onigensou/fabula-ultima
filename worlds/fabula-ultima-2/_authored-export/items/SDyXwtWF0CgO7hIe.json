@@ -8,9 +8,74 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "EtTrvRestIp00001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795744127174,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.rest_ip_recover_pct",
+          "mode": 2,
+          "priority": 20,
+          "value": "50"
+        }
+      ],
+      "description": "<p>When you rest, recover 50% of your max IP, even outside town.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "EtTrvRestIp00001",
+          "originalParentId": "SDyXwtWF0CgO7hIe",
+          "originalUuid": "Item.SDyXwtWF0CgO7hIe.ActiveEffect.EtTrvRestIp00001"
+        },
+        "fabula-ultima-companion": {
+          "casterFillers": "ae",
+          "category": "Other",
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Traveler%20Backpack.gif",
+      "name": "Eternal Traveler: Rest",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "casterFillers": true
     }
   },
   "folder": "5KFkUixjqI5c6PpK",
@@ -26,8 +91,14 @@
       "isSet": false,
       "set_bonus_table": {
         "0": {
+          "bonus_ae_ref": "Eternal Traveler: Rest",
+          "bonus_label": "Rest: recover 50% max IP, even outside town",
+          "bonus_skill_ref": "",
+          "pieces": "2"
+        },
+        "1": {
           "bonus_ae_ref": "",
-          "bonus_label": "Once per turn: free Item action",
+          "bonus_label": "Once per scene: free Item action",
           "bonus_skill_ref": "Ready Pack",
           "pieces": "3"
         }

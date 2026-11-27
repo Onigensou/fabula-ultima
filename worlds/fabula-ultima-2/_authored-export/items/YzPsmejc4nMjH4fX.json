@@ -19,7 +19,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "affinity_7",
+          "mode": 0,
+          "priority": null,
+          "value": "VU"
+        }
+      ],
       "description": "<p>Gain <strong>Ice </strong>vulnerability</p>",
       "disabled": false,
       "duration": {

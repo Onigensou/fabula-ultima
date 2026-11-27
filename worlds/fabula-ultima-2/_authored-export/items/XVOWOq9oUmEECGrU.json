@@ -600,7 +600,8 @@
       "statuses": [],
       "system": {
         "tags": [
-          "lightning-rod"
+          "lightning-rod",
+          "hazard"
         ]
       },
       "tint": "#ffffff",
@@ -1396,8 +1397,15 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
-      "description": "<p>Prevents the creature from <strong>acting</strong> until taking damage</p>",
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 0,
+          "value": "All"
+        }
+      ],
+      "description": "<p>Cannot act or perform reactions.</p><p>At the start of your turn, roll <strong>【INS + WLP】</strong> DL 10. On a success, Sleep ends.</p><p>Taking damage ends Sleep.</p><p>Lasts 3 rounds. Cannot be reapplied while active.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -1425,17 +1433,12 @@
           "isViewable": true
         },
         "fabula-ultima-companion": {
-          "charges": 1,
-          "chargesMax": 1,
+          "charges": 3,
+          "chargesMax": 3,
           "lifetimeMode": "target_turn_end",
+          "noReapply": true,
           "reactionConfig": {
             "effect_table": {
-              "0": {
-                "effect_kind": "modify_turns",
-                "effect_label": "sleep_skip",
-                "turns_delta": "-1",
-                "turns_floor": "0"
-              },
               "1": {
                 "ae_duplicate_mode": "remove",
                 "ae_template_ref": "Sleep",
@@ -1445,32 +1448,8 @@
               }
             },
             "reaction_config_table": {
-              "0": {
-                "condition_formula": "",
-                "reaction_action_intent": "",
-                "reaction_action_kind": "",
-                "reaction_action_target": "",
-                "reaction_cause_filter": "",
-                "reaction_damage_source": "",
-                "reaction_effect_ref": "sleep_skip",
-                "reaction_max_per_round": "",
-                "reaction_max_scope": "",
-                "reaction_origin_filter": "",
-                "reaction_ownership": "",
-                "reaction_passive_mode": "force",
-                "reaction_passive_target": "",
-                "reaction_requires_weapon_used": false,
-                "reaction_resource_filter": "",
-                "reaction_responder": "",
-                "reaction_source": "self",
-                "reaction_source_skill": "",
-                "reaction_status_filter": "",
-                "reaction_subject_kind": "",
-                "reaction_trigger": "turn_start",
-                "requires_skill": ""
-              },
               "1": {
-                "condition_formula": "",
+                "condition_formula": "SKILL_HAS_TAG_DREAM == 0",
                 "reaction_action_intent": "",
                 "reaction_action_kind": "",
                 "reaction_action_target": "",
@@ -1494,6 +1473,11 @@
                 "requires_skill": ""
               }
             }
+          },
+          "recoveryCheck": {
+            "attr1": "INS",
+            "attr2": "WLP",
+            "dl": 10
           }
         },
         "statuscounter": {
@@ -1624,7 +1608,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "affinity_7",
+          "mode": 0,
+          "priority": null,
+          "value": "VU"
+        }
+      ],
       "description": "<p>Gain <strong>Ice </strong>vulnerability</p>",
       "disabled": false,
       "duration": {
@@ -3437,7 +3428,7 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Stun.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/eerie_soundwave.png",
       "name": "Panic",
       "origin": null,
       "sort": 0,
@@ -4194,6 +4185,88 @@
       "type": "base"
     },
     {
+      "_id": "StunnedAE0000001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795744171068,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 0,
+          "value": "All"
+        }
+      ],
+      "description": "<p>Cannot act or perform reactions.</p><p>At the start of your turn, roll <strong>【MIG + WLP】</strong> DL 10. On a success, Stunned ends and you act normally.</p><p>Lasts until the end of your next turn. Cannot be reapplied while active.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "StunnedAE0000001",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.StunnedAE0000001"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "stunned",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "charges": 1,
+          "chargesMax": 1,
+          "holdPose": "hurt",
+          "lifetimeMode": "target_turn_end",
+          "noReapply": true,
+          "recoveryCheck": {
+            "attr1": "MIG",
+            "attr2": "WLP",
+            "dl": 10
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Stun.png",
+      "name": "Stunned",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "StunnedStatId001"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "SZcUg8Hgo7rzddjQ",
       "_stats": {
         "compendiumSource": null,
@@ -4209,6 +4282,12 @@
           "mode": 5,
           "priority": 20,
           "value": "UNDEAD"
+        },
+        {
+          "key": "affinity_8",
+          "mode": 0,
+          "priority": null,
+          "value": "VU"
         }
       ],
       "description": "<p>Convert <strong>Healing </strong>into <strong>Damage </strong>and gain the <strong>Undead </strong>type</p>",

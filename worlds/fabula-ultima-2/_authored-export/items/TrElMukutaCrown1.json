@@ -23,7 +23,7 @@
         {
           "key": "max_hp",
           "mode": 1,
-          "priority": 50,
+          "priority": null,
           "value": "${isEquipped ? 1.12 : 1}$"
         }
       ],
@@ -42,11 +42,7 @@
         "custom-system-builder": {
           "isFromTemplate": false
         },
-        "fabula-ultima-companion": {
-          "roundUp": [
-            "max_hp"
-          ]
-        },
+        "fabula-ultima-companion": {},
         "statuscounter": {
           "config": {
             "multiplyEffect": true,
@@ -80,7 +76,7 @@
         {
           "key": "max_mp",
           "mode": 1,
-          "priority": 50,
+          "priority": null,
           "value": "${isEquipped ? 1.12 : 1}$"
         }
       ],
@@ -99,11 +95,7 @@
         "custom-system-builder": {
           "isFromTemplate": false
         },
-        "fabula-ultima-companion": {
-          "roundUp": [
-            "max_mp"
-          ]
-        },
+        "fabula-ultima-companion": {},
         "statuscounter": {
           "config": {
             "multiplyEffect": true,

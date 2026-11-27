@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "casterFillers": true
     }
   },
   "folder": null,
@@ -24,7 +27,7 @@
   "system": {
     "container": "SDyXwtWF0CgO7hIe",
     "props": {
-      "description": "<p><strong>Eternal Traveler (3 pieces)</strong> — once during your turn, you may perform the <strong>Item</strong> action as a Free Action.</p>",
+      "description": "<ul><li><p>Once per scene, you may perform the Item action as a Free Action.</p></li></ul>",
       "details_roller": "Show",
       "effect_table": {
         "0": {
@@ -49,7 +52,7 @@
           "reaction_damage_source": "",
           "reaction_effect_ref": "et3_free",
           "reaction_max_per_round": "1",
-          "reaction_max_scope": "round",
+          "reaction_max_scope": "battle",
           "reaction_origin_filter": "",
           "reaction_ownership": "",
           "reaction_passive_mode": "ask",
@@ -67,6 +70,7 @@
       },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
+      "skill_description": "<ul><li><p>Once per scene, you may perform the Item action as a Free Action.</p></li></ul>",
       "skill_type": "Passive",
       "uuid": "Item.fR29CoH9EQ9ySXTs"
     },

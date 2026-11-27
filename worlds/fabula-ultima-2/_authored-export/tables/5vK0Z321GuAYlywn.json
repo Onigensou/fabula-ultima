@@ -13,9 +13,12 @@
   "flags": {
     "better-rolltables": {
       "table-type": null
+    },
+    "fabula-ultima-companion": {
+      "mofRework": "retired"
     }
   },
-  "folder": "QGWhvmRAHt4ibvnG",
+  "folder": "MofRetiredBanner",
   "formula": "1d6",
   "img": "icons/svg/d20-grey.svg",
   "name": "Monster of Frankensteiner",

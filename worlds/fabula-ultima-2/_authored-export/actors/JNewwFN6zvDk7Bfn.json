@@ -853,6 +853,7 @@
       "condition_poisoned": "NA",
       "condition_shaken": "IM",
       "condition_silence": "NA",
+      "condition_sleep": "RS",
       "condition_slow": "IM",
       "condition_stagger": "NA",
       "condition_suppress": "NA",

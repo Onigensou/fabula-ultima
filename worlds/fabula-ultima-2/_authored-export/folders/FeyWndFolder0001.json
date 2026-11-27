@@ -1,0 +1,19 @@
+{
+  "_id": "FeyWndFolder0001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744129377,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "5KFkUixjqI5c6PpK",
+  "name": "Fey Wanderer",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,227 @@
+{
+  "_id": "MoonDncStepSkl01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744127992,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "MoonDncGuardAE01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "2"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "2"
+        }
+      ],
+      "description": "<p>+2 DEF and +2 M.DEF until the start of your next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "casterFillers": "ae",
+          "category": "buff"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Moonlight_Dancer_Robe_icon.jpg",
+      "name": "Moonlit Step",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "MoonDncLastTurn1",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>The Dance you performed last turn (Moonlight Dancer).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "casterFillers": "ae",
+          "category": "Other"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Moonlight_Dancer_Robe_icon.jpg",
+      "name": "Last Turn Dance",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "casterFillers": "created"
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Moonlight_Dancer_Robe_icon.jpg",
+  "name": "Moonlit Step",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "MoonDncSetDef001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When you perform a Dance that differs from last turn's, gain <strong>+2</strong> DEF and <strong>+2</strong> M.DEF until the start of your next turn.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_remember_from": "Dancing",
+          "ae_template_ref": "Last Turn Dance",
+          "effect_kind": "apply_ae",
+          "effect_label": "ms_snap",
+          "target_ref": "self"
+        },
+        "1": {
+          "ae_template_ref": "Last Turn Dance",
+          "effect_kind": "remove_ae",
+          "effect_label": "ms_drop",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "1",
+          "ae_lifetime_mode": "target_turn_start",
+          "ae_template_ref": "Moonlit Step",
+          "effect_kind": "apply_ae",
+          "effect_label": "ms_guard",
+          "target_ref": "self"
+        },
+        "3": {
+          "chain_steps": "ms_drop, ms_unguard",
+          "effect_kind": "chain",
+          "effect_label": "ms_clear"
+        },
+        "4": {
+          "ae_template_ref": "Moonlit Step",
+          "effect_kind": "remove_ae",
+          "effect_label": "ms_unguard",
+          "include_persistent": true,
+          "target_ref": "self"
+        }
+      },
+      "id": "MoonDncStepSkl01",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Moonlit Step",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "AE_COUNT_DANCING > 0",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ms_snap",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        },
+        "1": {
+          "condition_formula": "AE_COUNT_DANCING == 0",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ms_drop",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        },
+        "2": {
+          "condition_formula": "SKILL_HAS_TAG_DANCE == 1 && SKILL_HAS_TAG_MANAGED == 1 && AE_COUNT_LAST_TURN_DANCE > 0 && AE_FLAG(\"Last Turn Dance\",\"rememberedAction\") != PERFORMED_SKILL",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ms_guard",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "3": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ms_clear",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_end"
+        }
+      },
+      "skill_description": "<ul><li><p>When you perform a Dance that differs from last turn's, gain <strong>+2</strong> DEF and <strong>+2</strong> M.DEF until the start of your next turn.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.MoonDncStepSkl01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "MoonDncStepSkl01"
+  },
+  "type": "equippableItem"
+}

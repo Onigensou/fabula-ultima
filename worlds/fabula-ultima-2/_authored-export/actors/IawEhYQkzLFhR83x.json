@@ -213,12 +213,75 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "EtTrvCloakHzd001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1795744123200,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.hazard_damage_reduction_pct",
+              "mode": 2,
+              "priority": 20,
+              "value": "${isEquipped ? 50 : 0}$"
+            }
+          ],
+          "description": "<p>Field hazards deal 50% less damage to you.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "EtTrvCloakHzd001",
+              "originalParentId": "klHIF4DKDGOC9pXD",
+              "originalUuid": "Actor.IawEhYQkzLFhR83x.Item.klHIF4DKDGOC9pXD.ActiveEffect.EtTrvCloakHzd001"
+            },
+            "fabula-ultima-companion": {
+              "casterFillers": "ae"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+          "name": "Traveler's Cloak — Hazards",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "core": {
           "sourceId": "Item.dHS9b0tj8FnO0aOQ"
         },
         "custom-system-builder": {
           "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "casterFillers": true
         }
       },
       "folder": "cSLVeZ3TavIe40F1",
@@ -237,15 +300,17 @@
           "def_bonus": "+2",
           "defense": "0",
           "defense_include_dex": true,
-          "description": "<ul>\n<li><strong>Hazards</strong> becomes 50% less effective on you.</li>\n</ul>",
+          "description": "<ul><li><p>Field hazards deal <strong>50%</strong> less damage to you.</p></li></ul>",
           "initiative": "0",
           "isSet": true,
+          "item_cost": "1800",
+          "item_rarity": "Rare",
           "magic_defense": "0",
           "magic_defense_include_ins": true,
           "martial": false,
           "mdef_bonus": "0",
           "name": "Traveler's Cloak",
-          "set_description": "<p><strong>【Set Bonus】</strong></p>\n<p><strong>&nbsp; &nbsp; &nbsp; &nbsp;2 Piece</strong></p>\n<ul>\n<li style=\"list-style-type: none;\">\n<ul>\n<li>During <strong>Rest </strong>scene, you recover 50% of your maximum IP <em>(Even if you aren't in town)</em><br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>Once during your&nbsp; turn, You can perform the <strong>【item】</strong>action as a <strong>free action</strong>.<hr></li>\n</ul></li>\n</ul>",
+          "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>When you rest, recover <strong>50%</strong> of your max IP, even outside town.</p></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Once per scene, you may perform the Item action as a Free Action.</p></li></ul>",
           "set_name": "Eternal Traveler",
           "shield": false
         },

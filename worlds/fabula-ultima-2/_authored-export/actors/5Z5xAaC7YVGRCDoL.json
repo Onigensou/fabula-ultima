@@ -622,6 +622,12 @@
               "mode": 5,
               "priority": 20,
               "value": "UNDEAD"
+            },
+            {
+              "key": "affinity_8",
+              "mode": 0,
+              "priority": null,
+              "value": "VU"
             }
           ],
           "description": "<p>Convert <strong>Healing </strong>into <strong>Damage </strong>and gain the <strong>Undead </strong>type</p>",

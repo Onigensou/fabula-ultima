@@ -1,0 +1,74 @@
+{
+  "_id": "SageDstManaRtn01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744147181,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "sageOfDestruction": "created"
+    }
+  },
+  "folder": "SageDstFolder001",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Diablo_Ring.webp",
+  "name": "Mana Return",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "SageDstSetDef001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>After an offensive spell that targets more than one creature resolves, recover <strong>20%</strong> of its MP cost.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "condition_formula": "ACTION_TARGET_COUNT >= 2",
+          "effect_kind": "grant",
+          "effect_label": "mr_mp",
+          "grant_amount": "floor(LAST_SPELL_MP * 0.2)",
+          "grant_resource": "mp",
+          "target_ref": "self"
+        }
+      },
+      "id": "SageDstManaRtn01",
+      "img": "icons/commodities/materials/feather-blue-grey.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "max_level": 1,
+      "name": "Mana Return",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_OFFENSIVE_SPELL == 1",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "mr_mp",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_spell"
+        }
+      },
+      "skill_description": "<ul><li><p>After an offensive spell that targets more than one creature resolves, recover <strong>20%</strong> of its MP cost.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.SageDstManaRtn01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "SageDstManaRtn01"
+  },
+  "type": "equippableItem"
+}

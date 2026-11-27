@@ -1,0 +1,123 @@
+{
+  "_id": "CasterBnrFey0001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744148811,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "<p>Moondew Lullaby</p>",
+  "displayRoll": true,
+  "flags": {
+    "fabula-ultima-companion": {
+      "gacha": {
+        "mainSet": "Fey Wanderer"
+      },
+      "sageOfDestruction": "banner"
+    }
+  },
+  "folder": "QGWhvmRAHt4ibvnG",
+  "formula": "1d6",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Sword%20of%20Convollaria/Gleam_Short_Staff-icon.webp",
+  "name": "Fey Wanderer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "62E5Y9NfUeh7xy1b",
+      "documentCollection": "Item",
+      "documentId": "FeyWndStaff00001",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Sword%20of%20Convollaria/Gleam_Short_Staff-icon.webp",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Glimmerwing Staff",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bJ5eWTFAQ33AjkDt",
+      "documentCollection": "Item",
+      "documentId": "dHS9b0tj8FnO0aOQ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Traveler's Cloak",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bPta7BJqpJSwbhJG",
+      "documentCollection": "Item",
+      "documentId": "FeyWndRobe000001",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Siren%2527s_Robe.webp",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Glimmerwing Robe",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "n96OoUpw0eDckQ8l",
+      "documentCollection": "Item",
+      "documentId": "FeyWndEarring001",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fantasy%20Life%20I/Armor/Flutter_Charm.webp",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Glimmerwing Earring",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "qCUHStJ4ox3RmqPt",
+      "documentCollection": "Item",
+      "documentId": "FU3mR0UB7xuX9ZPu",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Traveler%20Backpack.gif",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Traveler's Backpack",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "wT0EHYTxFdF6cEMR",
+      "documentCollection": "Item",
+      "documentId": "gmnCyBBh5qJNb8HM",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dagger.gif",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Handy Knives",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}

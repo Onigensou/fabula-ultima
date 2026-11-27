@@ -1,0 +1,203 @@
+{
+  "_id": "MofSparkOfLife01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795744122047,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "MofSparkLifeAE01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>At 3 Spark of Life, a hit that would reduce you to 0 HP leaves you at your Crisis score instead.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "spark",
+          "charges": 0,
+          "chargesMax": 3,
+          "hudResourceColor": "#b48cff",
+          "lifetimeMode": "persistent_counter",
+          "mofRework": "ae",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "sl_cap, sl_card, sl_wait, sl_fall, sl_hold, sl_fx, sl_heal, sl_rise",
+                "effect_kind": "chain",
+                "effect_label": "sl_save"
+              },
+              "1": {
+                "consume_self": true,
+                "damage_amount": "CUR_HP - 1",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "sl_cap"
+              },
+              "2": {
+                "effect_kind": "notify",
+                "effect_label": "sl_card",
+                "notify_abort": false,
+                "notify_message": "Spark of Life",
+                "notify_type": "card"
+              },
+              "3": {
+                "delay_ms": "500",
+                "effect_kind": "delay",
+                "effect_label": "sl_wait"
+              },
+              "4": {
+                "effect_kind": "play_pose",
+                "effect_label": "sl_fall",
+                "pose_name": "ko"
+              },
+              "5": {
+                "delay_ms": "1200",
+                "effect_kind": "delay",
+                "effect_label": "sl_hold"
+              },
+              "6": {
+                "action_ref": "Item.FxShared0Revive1",
+                "effect_kind": "play_animation",
+                "effect_label": "sl_fx",
+                "target_ref": "self"
+              },
+              "7": {
+                "effect_kind": "set_resource",
+                "effect_label": "sl_heal",
+                "grant_amount": "floor(MAX_HP / 2)",
+                "grant_resource": "hp",
+                "target_ref": "self"
+              },
+              "8": {
+                "effect_kind": "play_pose",
+                "effect_label": "sl_rise",
+                "pose_name": "idle"
+              }
+            },
+            "name": "Spark of Life",
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "AE_CHARGES_SPARK_OF_LIFE >= 3",
+                "reaction_damage_outcome": "would_reduce_to_zero",
+                "reaction_effect_ref": "sl_save",
+                "reaction_last_resort": true,
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "name": "Spark of Life",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "mofRework": true
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/item-bag.svg",
+  "name": "Spark of Life",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "2Z502E09PMrRdWat",
+    "props": {
+      "description": "<ul><li><p>When you Absorb <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage, gain 1 <strong>Spark of Life</strong>. Max <strong>3</strong> stacks.</p></li><li><p>When you would be reduced to 0 HP with <strong>3</strong> <strong>Spark of Life</strong>, spend them. Your HP becomes your <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span> score instead.</p></li><li><p><strong>Spark of Life</strong> is lost at the end of the scene.</p></li></ul>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_template_ref": "Spark of Life",
+          "effect_kind": "apply_ae",
+          "effect_label": "sp_gain",
+          "target_ref": "self"
+        },
+        "1": {
+          "ae_template_ref": "Spark of Life",
+          "effect_kind": "remove_ae",
+          "effect_label": "sp_clear",
+          "include_persistent": true,
+          "target_ref": "self"
+        }
+      },
+      "id": "MofSparkOfLife01",
+      "isReaction": true,
+      "max_level": "1",
+      "name": "Spark of Life",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "TRIGGER_DAMAGE_IS_BOLT == 1",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "sp_gain",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "on",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_gain_resource"
+        },
+        "1": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "sp_clear",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_end"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_description": "<ul><li><p>When you Absorb <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage, gain 1 <strong>Spark of Life</strong>. Max <strong>3</strong> stacks.</p></li><li><p>When you would be reduced to 0 HP with <strong>3</strong> <strong>Spark of Life</strong>, spend them. Your HP becomes your <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span> score instead.</p></li><li><p><strong>Spark of Life</strong> is lost at the end of the scene.</p></li></ul>",
+      "skill_type": "Passive",
+      "uuid": "Item.MofSparkOfLife01"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "MofSparkOfLife01"
+  },
+  "type": "equippableItem"
+}
