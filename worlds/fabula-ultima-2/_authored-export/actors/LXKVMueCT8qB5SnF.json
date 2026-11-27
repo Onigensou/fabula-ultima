@@ -8,78 +8,6 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
-  "effects": [
-    {
-      "_id": "VyPswtgoSJjbrQ93",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1795744170975,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>This creature has less than 50% HP</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "VyPswtgoSJjbrQ93",
-          "originalParentId": "LXKVMueCT8qB5SnF",
-          "originalUuid": "Actor.LXKVMueCT8qB5SnF.ActiveEffect.VyPswtgoSJjbrQ93"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-crisis",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": false
-        },
-        "fabula-ultima-companion": {
-          "bdCrisis": true,
-          "derivedStatus": {
-            "byRules": [
-              "core-crisis"
-            ],
-            "forStatus": "Crisis"
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
-      "name": "Crisis",
-      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
-      "sort": 0,
-      "statuses": [
-        "5jkr80zqdzaR003d"
-      ],
-      "system": {
-        "tags": []
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    }
-  ],
   "flags": {
     "core": {
       "sourceId": "Actor.sVhTGFbBH4qo2q3n"
@@ -259,6 +187,7 @@
       "affinity_9": "NA",
       "arcane_ef": "100",
       "arcane_vu": "NA",
+      "attribute": "",
       "bow_ef": "100",
       "bow_vu": "NA",
       "brawling_ef": "100",
@@ -299,8 +228,10 @@
       "condition_7": "NA",
       "condition_8": "NA",
       "condition_9": "NA",
-      "current_hp": "0",
+      "current_def": " DEF: \n8",
+      "current_hp": "10",
       "current_ip": "0",
+      "current_mdef": " MDEF: \n8",
       "current_mp": "0",
       "dagger_ef": "100",
       "dagger_vu": "NA",
@@ -318,20 +249,30 @@
       "init": "6",
       "ins_base": "8",
       "ins_current": "8",
+      "isAlmighty": false,
+      "isAwake": false,
+      "isClarity": false,
       "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
       "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
       "isPoisoned": false,
       "isShaken": false,
       "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isUnyielding": false,
       "isWeak": false,
       "level": "5",
-      "max_hp": "0",
+      "max_hp": "10",
       "max_ip": "0",
       "max_mp": "0",
       "max_zero": "0",
       "mdef_mod": "+0",
       "mig_base": "8",
-      "mig_current": "ERROR",
+      "mig_current": "8",
       "name": "Remedy Lily",
       "resource_value_1": "0",
       "resource_value_2": "0",
@@ -344,6 +285,7 @@
       "spear_vu": "NA",
       "species": "PLANT",
       "subtype": "Sub-Type",
+      "subtype_list": "",
       "sword_ef": "100",
       "sword_vu": "NA",
       "thrown_ef": "100",

@@ -15751,7 +15751,7 @@
         "name": "Arctic Narsissus",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "jRmyEUXMPxPdDmNh",
@@ -16788,7 +16788,7 @@
         "name": "Blazing Chrysanthemum",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "Lw66ZLMHRvJKedpj",
@@ -20405,21 +20405,21 @@
         "name": "Generic NPC",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "z4xolfkb6lbx1w8X",
         "name": "Generic NPC 2",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "Dxu2DWIxYcaFuAcM",
         "name": "Generic NPC 3",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "dh5Hx55KfPHSvrRh",
@@ -20552,7 +20552,7 @@
         "name": "Golden Ginkgo",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "jcirGKyrbSZI68Oz",
@@ -21615,7 +21615,7 @@
         "name": "Hookleaf Nightshade",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "yC5RLeD6oUhS1Xzd",
@@ -24423,7 +24423,7 @@
         "name": "Pilgrim Gazalia",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "DH4LTRX2NkmBrHgP",
@@ -25162,7 +25162,7 @@
         "name": "Remedy Lily",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "hD4pnyKyKOqKNvkR",
@@ -25701,7 +25701,7 @@
         "name": "Serrated Rose",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "cBDhTXQcItSRZZpu",
@@ -27132,7 +27132,7 @@
         "name": "Test Character",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "Xu9NOUE15qM7A9jV",
@@ -27530,7 +27530,7 @@
         "name": "Wardwattle",
         "type": "character",
         "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "WtBFZhIad3fxPVwD",
