@@ -844,6 +844,11 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "",       value: "Performer vs each target (default)" },
     { key: "lowest", value: "Lowest — targets contest each other; lowest total(s) lose" },
   ], { tooltip: "contest_check: blank = the performer rolls against each target (higher wins, ties reroll). \"lowest\" = the PERFORMER DOES NOT ROLL: every target rolls Save Attr 1 + Save Attr 2 and the creature(s) with the LOWEST total land in contest_lost_targets (ties at the bottom all lose, no reroll); the rest land in contest_won_targets. A lone participant is the lowest by definition and does not roll. (Rumble!)", vis: CONTEST_VIS, defaultValue: "" }),
+  selectCol("contest_hud", "Contest HUD", [
+    { key: "",            value: "Silent (default) — rolled GM-side, no HUD" },
+    { key: "silent",      value: "Silent — rolled GM-side, no HUD" },
+    { key: "interactive", value: "Interactive — the Contest HUD, one contest per target" },
+  ], { tooltip: "contest_check (performer vs each target): blank / Silent keeps the backend roll (the performer silent, the targets per Save Mode). Interactive runs each performer-vs-target contest on the Contest Check HUD: both sides on screen, the side behind may invoke (Trait with FP / UP, Bond, Lucky Seven, Divination), ties clash and reroll. An NPC performer rolls itself; a player's side waits for that player (the GM can roll for anyone). Ignored for contest_mode \"lowest\".", vis: CONTEST_VIS, defaultValue: "" }),
 
   // ── hide_item config ───────────────────────────────────────────────────
   // All three were authorable-but-unregistered — the engine read them off the

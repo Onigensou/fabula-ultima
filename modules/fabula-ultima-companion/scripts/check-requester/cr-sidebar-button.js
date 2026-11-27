@@ -381,6 +381,7 @@ Hooks.once("ready", () => {
           <div class="oni-creq-mode-row">
             <button type="button" class="oni-creq-mode-tab active" data-mode="skill-check">🎯 Skill Check</button>
             <button type="button" class="oni-creq-mode-tab"        data-mode="group-check">👥 Group Check</button>
+            <button type="button" class="oni-creq-mode-tab"        data-mode="contest">⚔️ Contest</button>
           </div>
 
           <!-- ══ SKILL CHECK ═══════════════════════════════════════════════ -->
@@ -427,10 +428,16 @@ Hooks.once("ready", () => {
             </div>
           </div>
 
+          <!-- ══ CONTEST ═══════════════════════════════════════════════════ -->
+          <!-- Drawn by cr-contest-setup.js (ONI.ContestSetup) when the tab opens. -->
+          <div class="oni-creq-sec" data-mode-sec="contest" style="display:none">
+            <div id="oni-ct-setup-host"></div>
+          </div>
+
           <!-- ══ SHARED ════════════════════════════════════════════════════ -->
 
-          <!-- Attribute pickers (shared) -->
-          <div class="oni-creq-sec">
+          <!-- Attribute pickers (shared; a Contest sets them per side) -->
+          <div class="oni-creq-sec" data-mode-hide="contest">
             <div class="oni-creq-attr-labels">
               <div class="oni-creq-attr-label">Attribute A</div>
               <div class="oni-creq-attr-label">Attribute B &nbsp;<span style="opacity:.55;font-style:italic;font-weight:400;text-transform:none;letter-spacing:0">(— = 1 die)</span></div>
@@ -442,7 +449,7 @@ Hooks.once("ready", () => {
           </div>
 
           <!-- DL + Context (DL label changes per mode) -->
-          <div class="oni-creq-sec">
+          <div class="oni-creq-sec" data-mode-hide="contest">
             <div class="oni-creq-config-row">
               <div class="oni-creq-field oni-creq-dl-wrap">
                 <div class="oni-creq-field-lbl" id="oni-creq-dl-lbl">DL</div>
@@ -496,8 +503,11 @@ Hooks.once("ready", () => {
               btn.classList.toggle("active", btn.dataset.mode === mode));
             document.querySelectorAll("[data-mode-sec]").forEach(sec =>
               sec.style.display = sec.dataset.modeSec === mode ? "" : "none");
+            document.querySelectorAll("[data-mode-hide]").forEach(sec =>
+              sec.style.display = sec.dataset.modeHide === mode ? "none" : "");
             const dlLbl = document.getElementById("oni-creq-dl-lbl");
             if (dlLbl) dlLbl.textContent = mode === "group-check" ? "Leader DL" : "DL";
+            if (mode === "contest") globalThis.ONI?.ContestSetup?.mount?.(document.getElementById("oni-ct-setup-host"));
           }
 
           document.querySelectorAll(".oni-creq-mode-tab").forEach(btn =>
@@ -658,9 +668,9 @@ Hooks.once("ready", () => {
           title:   "🎯 Request Check",
           content: buildDialogContent(partyActors, preSelectedUuids, "DEX", "MIG", String(prefill.label ?? "")),
           render:  html => {
-            if (prefill.mode !== "group-check") return;
+            if (prefill.mode !== "group-check" && prefill.mode !== "contest") return;
             const root = html[0] ?? html;
-            root.querySelector?.('.oni-creq-mode-tab[data-mode="group-check"]')?.click();
+            root.querySelector?.(`.oni-creq-mode-tab[data-mode="${prefill.mode}"]`)?.click();
           },
           buttons: {
             confirm: {
@@ -685,6 +695,23 @@ Hooks.once("ready", () => {
                 // whose equipped check_buff +N gets folded into each roll.
                 const checkBuffActions = [...root.querySelectorAll('.oni-creq-buff-cb:checked')]
                   .map(el => el.value);
+
+                // ── CONTEST ──────────────────────────────────────────────
+                if (mode === "contest") {
+                  const opts = globalThis.ONI?.ContestSetup?.collect?.();
+                  if (!opts) { resolve(null); return; }
+                  if (!globalThis.ONI?.Contest?.request) {
+                    ui?.notifications?.error?.("ONI.Contest is not loaded.");
+                    resolve(null); return;
+                  }
+                  try { resolve(await globalThis.ONI.Contest.request(opts)); }
+                  catch (e) {
+                    console.error(TAG, e);
+                    ui?.notifications?.error?.(`Contest: ${e?.message ?? "an error occurred"}`);
+                    resolve(null);
+                  }
+                  return;
+                }
 
                 // ── SKILL CHECK ──────────────────────────────────────────
                 if (mode === "skill-check") {
@@ -789,7 +816,7 @@ Hooks.once("ready", () => {
           default: "confirm",
           close:   () => resolve(null),
         }, {
-          width:   460,
+          width:   520,
           classes: ["oni-creq-dialog"],
         });
 
@@ -798,9 +825,10 @@ Hooks.once("ready", () => {
     };
 
     // ── Public: open this dialog from another tool ────────────────────────
-    // ONI.CheckRequester.openDialog({ label, actorUuids, mode })
+    // ONI.CheckRequester.openDialog({ label, actorUuids, mode })   mode: skill-check | group-check | contest
     //   → { mode: "skill-check", results: CheckResult[] }
     //   | { mode: "group-check", results: GroupCheckResult }
+    //   | { mode: "contest", results: ContestResult }
     //   | null (cancelled / closed)
     // The GM picks everything else in the dialog (attributes, DL, buffs, roles).
     // Used by the Skill Check tile's Custom Event chip (dp-skill-check.js).
@@ -809,7 +837,9 @@ Hooks.once("ready", () => {
       CR.openDialog = async (prefill = {}) => {
         const r = await openDialog(prefill);
         if (r == null) return null;
-        return Array.isArray(r) ? { mode: "skill-check", results: r } : { mode: "group-check", results: r };
+        if (Array.isArray(r)) return { mode: "skill-check", results: r };
+        if (r && "winner" in r && "placings" in r) return { mode: "contest", results: r };
+        return { mode: "group-check", results: r };
       };
     }
 

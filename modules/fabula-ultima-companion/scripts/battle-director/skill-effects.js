@@ -5929,7 +5929,7 @@ export const EFFECT_KIND_LABELS = {
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
-  contest_check:       "Contest Check (performer and target both roll, higher wins, ties reroll; losers → contest_lost_targets. contest_mode lowest: targets contest each other, lowest total(s) lose)",
+  contest_check:       "Contest Check (performer and target both roll, higher wins, ties reroll; losers → contest_lost_targets. contest_mode lowest: targets contest each other, lowest total(s) lose; contest_hud interactive: each contest on the Contest Check HUD; VAR_CONTEST_MARGIN = performer total - target total)",
   group_check:         "Group Check (FU leader + helpers vs a DL; leader result → VAR_<gc_var>)",
   adjust_grant:        "Adjust Grant (op on the action's restore — multiply/set/cap/floor/add)",
   roll_loot_table:     "Roll Loot Table",
@@ -12253,6 +12253,19 @@ async function applyContestCheckEffect(row, ctx) {
       : (Number(hr) || 0);
   };
   publishContestHr(0);
+  // VAR_CONTEST_MARGIN: the performer's total minus the (first) target's total
+  // on the deciding roll — negative when the performer lost. For consequences
+  // that grow with the win (Contest Check 2026-11-27: "VAR_CONTEST_MARGIN >= 6").
+  // Harness: inject harnessNumbers.contest_margin.
+  const publishContestMargin = (m) => {
+    if (!ctx.payload) return;
+    if (!ctx.payload._chainVars) ctx.payload._chainVars = {};
+    const injected = ctx?.harnessNumbers?.contest_margin;
+    ctx.payload._chainVars.contest_margin = (injected != null && Number.isFinite(Number(injected)))
+      ? Math.floor(Number(injected))
+      : (Number(m) || 0);
+  };
+  publishContestMargin(0);
 
   const targetRef = String(row.target_ref ?? "action_targets").trim() || "action_targets";
   let tokens = [];
@@ -12352,6 +12365,47 @@ async function applyContestCheckEffect(row, ctx) {
       totals: Object.fromEntries(totals) };
   }
 
+  // contest_hud "interactive" — each performer-vs-target contest runs on the
+  // Contest Check HUD (ONI.Contest): both sides on screen, the side behind may
+  // invoke, ties clash and reroll inside the contest. One contest per target
+  // slot, in order (each is its own Opposed Check). Same outputs and the same
+  // failure direction as the silent path: an unrunnable contest = the target loses.
+  const CT = globalThis.ONI?.Contest;
+  if (String(row.contest_hud ?? "").trim().toLowerCase() === "interactive" && CT?.request && ctx?.mode !== "preview") {
+    const lostI = new Set();
+    let firstDone = false, lastPerf = null;
+    for (const u of slotActorUuids) {
+      let r = null;
+      try {
+        r = await CT.request({
+          sides: [
+            { actor: performer, attrA: pAttrA, attrB: pAttrB, modifiers: perfMods },
+            { actorUuid: u, attrA: tAttrA, attrB: tAttrB },
+          ],
+          label, autoRoll: "npc", allowInvokes: true, postChat: true,
+          context: { source: "contest_check", effect: row.effect_label ?? "" },
+        });
+      } catch (e) { warn("contest_check(interactive): contest threw", e); }
+      if (!r?.winner) { lostI.add(u); continue; }
+      const p = r.sides?.[0], t = r.sides?.[1];
+      lastPerf = p?.total ?? lastPerf;
+      if (!firstDone) {
+        firstDone = true;
+        publishContestHr(Math.max(Number(p?.rollA) || 0, Number(p?.rollB) || 0));
+        publishContestMargin((Number(p?.total) || 0) - (Number(t?.total) || 0));
+      }
+      if (r.winner.index === 0) lostI.add(u);
+    }
+    const lostIa = uniqueActorUuids.filter((u) => lostI.has(u));
+    const wonIa = uniqueActorUuids.filter((u) => !lostI.has(u));
+    ctx.contestLostTargetUuids = lostIa;
+    ctx.contestWonTargetUuids = wonIa;
+    for (const u of lostIa) { const t = actorToToken.get(u); if (t) ctx.contestLostTokenUuids.push(t); }
+    for (const u of wonIa) { const t = actorToToken.get(u); if (t) ctx.contestWonTokenUuids.push(t); }
+    log(`contest_check(interactive): ${performer.name} vs ${slotActorUuids.length} target slot(s) — ${lostIa.length} lost / ${wonIa.length} won`);
+    return { ok: true, kind: "contest_check", mode: "interactive", lost: lostIa, won: wonIa, performerTotal: lastPerf };
+  }
+
   const maxRerolls = Math.min(
     CONTEST_MAX_REROLLS_CAP,
     Math.max(0, Math.floor(Number(String(row.contest_max_rerolls ?? "5").trim()) || 0)),
@@ -12407,10 +12461,14 @@ async function applyContestCheckEffect(row, ctx) {
       byActor.set(r.actorUuid, arr);
     }
     const stillTied = [];
+    let firstSeen = false;
     for (const u of pending) {
       const arr = byActor.get(u) ?? [];
       const total = arr.length ? arr.shift() : NaN;   // one entry per pending slot
       byActor.set(u, arr);
+      // The first target slot's roll sets VAR_CONTEST_MARGIN; while it is still
+      // tied and rerolled, each round overwrites it, so it ends on the deciding roll.
+      if (!firstSeen && u === slotActorUuids[0] && Number.isFinite(total)) { firstSeen = true; publishContestMargin(performerTotal - total); }
       if (!Number.isFinite(total)) { lostSlots.add(u); continue; }
       if (total > performerTotal) continue;
       if (total < performerTotal) { lostSlots.add(u); continue; }

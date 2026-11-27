@@ -189,6 +189,7 @@
     "scripts/check-requester/cr-contest-logic.js",
     "scripts/check-requester/cr-contest-hud.js",
     "scripts/check-requester/cr-contest.js",
+    "scripts/check-requester/cr-contest-setup.js",
     "scripts/check-requester/cr-dp-adapter.js",
     "scripts/check-requester/cr-sidebar-button.js",
     "scripts/dungeon-pathing-system/dp-constants.js",

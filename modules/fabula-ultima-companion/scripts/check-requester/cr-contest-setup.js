@@ -136,7 +136,7 @@
       <input class="search" data-k="search" type="text" placeholder="Search every actor in the world…" style="display:none">
       <div class="srcnote" data-k="note"></div>
       <div class="grid" data-k="grid"></div>
-      <div class="row"><span>Label</span><input type="text" data-k="label" value="Contest" placeholder="Arm Wrestle"></div>
+      <div class="row"><span>Label</span><input type="text" data-k="label" value="${esc(document.getElementById("oni-creq-ctx")?.value?.trim() || "Contest")}" placeholder="Arm Wrestle"></div>
       <div class="row"><span>Stakes</span><input type="text" data-k="stakes" value="" placeholder="Optional · shown on the HUD and in chat"></div>
       <div class="row"><span>Mode</span><select data-k="mode"><option value="oneoff">One-off contest</option><option value="clock">Conflict: move a Clock by the margin</option></select><select data-k="clock" style="display:none"></select></div>
     </div>`;
