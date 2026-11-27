@@ -58,13 +58,14 @@ weapon category, **Deva = Strike vs Magic** (the class of the check: vs DEF = St
 | 2026-11-21 | Tuning pass 2: HP 1500 → 1400; Vajra Fist / Mudra Lance 38 → 52, Double Slap 25 → 36, Ground Slam 30 → 45, Fists of Fury 28 → 42, Fists of Focus 12 → 18 (drain 3 × (HR + 18)), Surya Palm 62 → 78, Kala Strike 25 → 38; every attack check +4 → +6; Surya Palm and Kala Strike players-only | At 1500 she missed 30–60% and fights ran 4–5 rounds at ~80% party HP. Confirmation at 1400: 5.2 rounds, lowest party HP 45–76%, 1 KO in 5; all 14 epic casts aimed at a PC | user | real-table look 2026-11-21 evening |
 | 2026-11-21 | Missile Fist: (1) engine fix — target-survey matches the performer by token before actor (both fists share one actor; the 2nd fist's Self Hover/Detonate found no performer and lost its turn); (2) Deva re-summons only when no fists are out: Celestial Discipline's round_start Guard row splits on OWN_SUMMON_COUNT (== 0 → guard with Fist Ready, > 0 → guard_nf without) | Every Guard round's new pair (summon_max 2) replaced fists still on the field before their fuse-2 Detonate whenever Deva acted first that round. User pick "A": keep fuse 2; ignored fists always detonate, broken fists come back next Guard round. Runner: 0 self-target errors in 15 fights; fists alive at a Guard round → no re-summon → Detonate lands | user | — |
 | 2026-11-24 | Form-bound affinity: Fury = RS Light / VU Dark / attribute LIGHT, Focus = VU Light / RS Dark / attribute DARK, Guard = Neutral (changes on the 4 form AEs); EF spear 150 / brawling 50; HP 1400 → 1550. Engine fix: apply_ae no longer bakes an `attribute` change as a formula ("LIGHT" became "0") | To-do #15 (no affinities since the build; elite rule asks for 1 VU). JRPG shifting-weakness boss: the arm colour shows the weakness before the party acts; Enlightenment flips it mid-round. Party covers both elements (Hina Lux/Lunar Bow/Dark Orbit, Keren and Zarg dark weapons, Zarg dances, Elemental Weapon). Runner, story setup, 10 each: HP 1400 → median 4 rounds (the weakness shortened the fight), HP 1550 → median 5, ~82% party HP left, 0.2 KO/fight; 0 affinity-state mismatches in 19 fights | user | real-table look owed |
+| 2026-11-28 | IM Doomed + Grappled (world + `_build-deva.js`) | Boss rule 2026-11-28: every boss/solo elite is IM Charmed, Doomed and Grappled (she already had Charm, Frightened, Fatigue) | user | — |
 
 ```json dossier
 {
   "monster": "Deva",
   "actorId": "amxILxU7mqQ0jKhZ",
   "status": "draft",
-  "updated": "2026-11-24",
+  "updated": "2026-11-28",
   "role": "story elite — Valley of the Dragon, The Kneeling Colossus (Valley_Map029), arena Valley_Battlemap007 with the Lightning Storm",
   "exceptions": [
     {

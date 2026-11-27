@@ -47,7 +47,7 @@
               "key": "affinity_3",
               "mode": 5,
               "priority": 3,
-              "value": "aeAffinityFloor(\"RS\")"
+              "value": "aeAffinityStep(+2)"
             }
           ],
           "description": "<p>The Asura's blades are aspected to bolt.</p>",
@@ -179,7 +179,7 @@
               "key": "affinity_2",
               "mode": 5,
               "priority": 3,
-              "value": "aeAffinityFloor(\"RS\")"
+              "value": "aeAffinityStep(+2)"
             }
           ],
           "description": "<p>The Asura's blades are aspected to bolt.</p>",
@@ -267,7 +267,7 @@
               "key": "affinity_7",
               "mode": 5,
               "priority": 3,
-              "value": "aeAffinityFloor(\"RS\")"
+              "value": "aeAffinityStep(+2)"
             }
           ],
           "description": "<p>The Asura's blades are aspected to bolt.</p>",
@@ -355,7 +355,7 @@
               "key": "affinity_6",
               "mode": 5,
               "priority": 3,
-              "value": "aeAffinityFloor(\"RS\")"
+              "value": "aeAffinityStep(+2)"
             }
           ],
           "description": "<p>The Asura's blades are aspected to bolt.</p>",
@@ -3769,12 +3769,12 @@
       "condition_delayed": "NA",
       "condition_despair": "NA",
       "condition_disarmed": "IM",
-      "condition_doom": "NA",
+      "condition_doom": "IM",
       "condition_enraged": "RS",
       "condition_envenomed": "NA",
       "condition_fatigue": "IM",
       "condition_frightened": "IM",
-      "condition_grappled": "NA",
+      "condition_grappled": "IM",
       "condition_hypothermia": "NA",
       "condition_isolate": "NA",
       "condition_obscure": "NA",

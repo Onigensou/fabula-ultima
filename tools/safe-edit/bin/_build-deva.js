@@ -377,6 +377,8 @@ run(async ({ changes }) => {
     study_text: STUDY,
     // the rule for every solo elite (Charm), plus the design's own three; Provoked is the passive's job
     condition_charm: "IM", condition_frightened: "IM", condition_fatigue: "IM",
+    // boss rule 2026-11-28: Doomed and Grappled break a lone enemy
+    condition_doom: "IM", condition_grappled: "IM",
   });
   if ("uuid" in p) p.uuid = `Actor.${A}`;
   a.img = ART;

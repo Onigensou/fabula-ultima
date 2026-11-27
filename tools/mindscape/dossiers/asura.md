@@ -20,7 +20,9 @@ doomsday clock, "ever-increasing strength" lore and the elemental theme at once.
 ## The gimmick
 
 - **Adaptive affinity:** fire/bolt/ice/air start **VU**; each Mark AE flips its element to RS
-  while that blade is lit. Holding the mark IS the resistance. Quad clears all marks → back
+  while that blade is lit. Since 2026-11-28 the Mark is `aeAffinityStep(+2)` (VU → RS on the
+  affinity ladder), NOT `aeAffinityFloor("RS")`: under the core p.92 ladder a floor is a grant,
+  and VU + RS cancels to NA. Element Gorge (−1) on a lit element reads NA. Holding the mark IS the resistance. Quad clears all marks → back
   to VU and the blade reverts to Physical.
 - **Elemental Aspect** — the last element that hit it sets the Aspect of its Slash
   (bolt → Paralyzed, ice → Disarmed, air → Silence, fire → Overflow). The Aspect rows filter
@@ -52,13 +54,14 @@ doomsday clock, "ever-increasing strength" lore and the elemental theme at once.
 | 2026-11-11 | Filler cut reverted: Slash + (Enchanted) 48, Overflow 25, Aspect +10, Crisis +20 (Life Charm automation kept) | Cut playtests (2 Phoenix + Life Charm): 52/67/66% party HP; with Kalina as guest (the expected story setup) 84/45/75%, wins in r3–r4 — user: "seems too easy now" | user | Kalina set: 44/89/53% (avg 62%) — user: keep |
 | 2026-11-11 | TRIED + REVERTED (Staging only): "Strike Spent" lockout — no Sword Enchant for the rest of the round after Asura Strike | Aimed at the 89% outlier (9 of 15 actions were Enchants). Strike cadence held, but the fight got EASIER: 82/93/76% (avg 84% vs 62%). Enchants are his power-up (Strong + Mark +8 + MP), not wasted actions — do not "tidy" them away. Outlier = dice/party choices | user | rejected; current pattern kept |
 | 2026-11-21 | HP 1200 → 1800 | Runner playtest (207 fights, Lightning Storm, guest Kalina, 2 Phoenix): at 1200 the story fight ended in 3.6 rounds at 72% PC HP. User target for these non-full bosses: 5–6 rounds. HP sweep ×1.4 → 5.3 r / 78%, ×1.6 → 5.9 r / 67% with 1 loss in 10; 1800 sits between. Asura Strike one-shotting a full-HP PC (15 of 20 fights) approved by user: dice + revives | user | pending real-table look; report https://claude.ai/artifact/9p5j7QET429pChy5FPpzPx |
+| 2026-11-28 | Mark AEs (Fire/Bolt/Ice/Air on Ascension) `aeAffinityFloor("RS")` → `aeAffinityStep(+2)`; IM Doomed + Grappled | Affinity ladder (v1.0.685) turned each lit Mark into VU + RS = NA, so the 11-27 checkup ran him at 5.2 rounds vs ~6.2 on 11-21. User: "in design term it should force him to be at RS". Boss rule: IM Charmed/Doomed/Grappled | user | runner: lit elements read RS (VU again when Quad clears a Mark); see 11-28 checkup notes |
 
 ```json dossier
 {
   "monster": "Asura",
   "actorId": "0AwQ7wEDz4ISA9mA",
   "status": "draft",
-  "updated": "2026-10-31",
+  "updated": "2026-11-28",
   "role": "standalone story elite (Rakshasa's counterpart); GM-spawnable via Valley Enemies row 7; designed WITH the Lightning Storm",
   "exceptions": [
     {

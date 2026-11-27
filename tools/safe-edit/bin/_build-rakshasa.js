@@ -602,6 +602,10 @@ run(async ({ changes, deletes }) => {
     // A weapon master cannot be disarmed, and it does not flinch. Four of the six
     // attribute-shrinkers stay fully open so there is always a play.
     condition_disarmed: "IM", condition_frightened: "IM",
+    // 2026-11-28: his whole kit runs on Form Shift / Dual Shift (Skills), which Paralyzed
+    // bars, so he would only Guard. Boss rule: IM to whatever blocks the main command set,
+    // plus Charmed, Doomed and Grappled for every lone boss.
+    condition_charm: "IM", condition_paralyzed: "IM", condition_doom: "IM", condition_grappled: "IM",
     condition_slow: "RS", condition_weak: "RS",
     // Every lane starts NEUTRAL. A static profile here would fight the dynamic
     // one — Adaptive Defense is the only thing that moves these.
