@@ -144,6 +144,16 @@
 
   const getFP = actor => safeInt(actor?.system?.props?.fabula_point, 0);
 
+  // The point an Invoke Trait spends (user decision D4, 2026-11-27): an NPC (it has
+  // an npc_rank) spends Ultima Points, a player character Fabula Points — the same
+  // rule as the Battle Director's invoke (invoke/invoke-core.js getPointResource).
+  // Bonds stay Fabula-Point only: Villains have no Bonds (core p.101).
+  const isNpcActor = actor => String(actor?.system?.props?.npc_rank ?? "").trim() !== "";
+  const getTraitResource = actor => isNpcActor(actor)
+    ? { key: "ultima_point", label: "Ultima Point", short: "UP" }
+    : { key: "fabula_point", label: "Fabula Point", short: "FP" };
+  const getTraitPoints = actor => safeInt(actor?.system?.props?.[getTraitResource(actor).key], 0);
+
   const getTokenImg = actor => {
     const std   = String(actor?.system?.props?.sprite_standard ?? "").trim();
     const token = String(actor.getActiveTokens?.(true, true)?.[0]?.document?.texture?.src ?? "").trim();
@@ -1283,8 +1293,8 @@
     if (!actor || !_session || _session.sessionId !== ses.sessionId) return;
     const fp = getFP(actor), bonds = collectBonds(actor);
     st._actor = actor; st._bonds = bonds;
-    st.canTrait = fp >= 1;
-    st.canBond  = fp >= 1 && bonds.length > 0;
+    st.canTrait = getTraitPoints(actor) >= 1;                 // FP, or UP for an NPC (D4)
+    st.canBond  = !isNpcActor(actor) && fp >= 1 && bonds.length > 0;
     // Broadcast "divination possible" = self OR any observer (RAW observer-model).
     // Keeps the panel open for an observer to force a reroll; per-client button
     // visibility is decided locally in syncPanel.
@@ -1482,13 +1492,14 @@
     const st = ses.panelStates.get(slot);
     if (!st || st.usedTrait || st.result?.isFumble) return;
     const actor = st._actor ?? await resolveActor(st.actorUuid);
-    if (!actor || getFP(actor) < 1) { ui.notifications?.warn("Not enough Fabula Points (need 1)."); return; }
+    const res = getTraitResource(actor);
+    if (!actor || getTraitPoints(actor) < 1) { ui.notifications?.warn(`Not enough ${res.label}s (need 1).`); return; }
 
     const isSingle = !!st.singleDie;
     const choice = await showTraitRerollPanel(st, isSingle);
     if (!choice) return;
 
-    await actor.update({ "system.props.fabula_point": getFP(actor) - 1 });
+    await actor.update({ [`system.props.${res.key}`]: getTraitPoints(actor) - 1 });
 
     const rA = st.rollA, rB = isSingle ? st.rollA : (st.rollB ?? st.rollA);
     let newA = rA, newB = rB;
@@ -2265,6 +2276,20 @@
   // Boot
   // =========================================================================
   ONI.CheckRequester = { request, requestOne, rollCost };
+
+  // Shared building blocks for the Contest Check (cr-contest.js), which rolls,
+  // invokes and reacts exactly as a Skill Check does. Not a public API: names
+  // may change with this file.
+  ONI.CheckRequester._internal = {
+    MODULE_ID, SOCKET_CH, ATTR_ICONS, MAX_ATTR_DIE, LS_USED_SCENE_FLAG,
+    safeInt, esc, wait,
+    getDieSize, getFP, isNpcActor, getTraitResource, getTraitPoints, getTokenImg,
+    resolveActor, resolveActorInput, canOwnerAct, collectBonds,
+    findDivinationAe, findObserverDivinationActor, consumeDivinationCharge,
+    chargesApi, findLuckyState, currentSceneId,
+    rollDie, computeCheck, resolveEquippedCheckBuffMods,
+    emitCheckReactions,
+  };
 
   Hooks.once("ready", () => {
     setupSocket();
