@@ -61,6 +61,28 @@ Migration `2026-11-27-stunned-sleep`: Stunned AE `StunnedAE0000001` on the Debuf
 Sleep reworked on the library and every live copy, Nightmare `skill_tags += dream`,
 Sleep's journal rewritten, Stunned journal `StunnedKeyword01` created.
 
+## Round 2 (same day, after the mockup review)
+
+8. **Held hurt pose** (`battler-pose-rules.js`, `battler-pose.js`): new lasting pose
+   `stunned` = the `sprite_hurt` art played once and frozen on its last frame. Opt-in
+   per effect with `flags.fabula-ultima-companion.holdPose = "hurt"` (the Stunned
+   template carries it). Priority KO > stunned > guard > state > crisis. A hit while
+   Stunned plays the hurt one-shot, and `endOneShot` hands back WITHOUT restart so the
+   clip isn't played twice. No hurt art = own image (fallback chain `hurt, idle`).
+9. Cue sizes from the review sliders (`status-cues.js`): stars 24 px, orbit 30 × 11,
+   40 px above the eyes; Zs 20 px, 1.6 s drift.
+10. **Panic** gave Stun.png to Stunned: Eerie Soundwave (BLU) on its AE, journal,
+    keyword row, link CSS, and its CSB status entry (patched at `setup` in
+    `csb-extra-status-effects.js`, the setting itself untouched).
+11. **Nightmare** "+15% of the target's Max HP" was text only; now an outgoing
+    `adjust_damage` row (`floor(TARGET_MAX_HP * 0.15)`) on its own
+    `creature_will_deal_damage` reaction, Scorched Claw's shape.
+12. **Hypno Pendulum** Sleep spell: no fixed 1 charge, so Sleep's own 3 rounds apply.
+13. New migration `2026-11-27-condition-sleep-stunned-fields`: `condition_sleep` and
+    `condition_stunned` on the four active actor templates (copies of
+    `condition_anomaly`, placed after it). Masters only, no mass `reloadTemplate`.
+    Resistance tab + encyclopedia lists include them.
+
 ## Tests
 
 - `scripts/battle-director/status-recovery.test.mjs` (9 cases, no Foundry).
