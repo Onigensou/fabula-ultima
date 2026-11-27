@@ -129,6 +129,7 @@ class RosterConsole {
         <td style="white-space:nowrap">${odds}</td>
         <td><button type="button" class="fu-rc-tg ${r.pin ? "on" : ""}" data-act="pin">Pin</button>
             <button type="button" class="fu-rc-tg off ${r.off ? "on" : ""}" data-act="off">Off</button>
+            ${r.isSet && r.setName ? `<button type="button" class="fu-rc-tg ${cfg.allowedSets.includes(r.setName) ? "on" : ""}" data-act="allowset" data-set="${esc(r.setName)}" title="Allow every piece of ${esc(r.setName)} to roll here (each piece rolls on its own)">Allow set</button>` : ""}
             ${r.needsAuthoring ? `<button type="button" class="fu-rc-tg" data-act="authored" title="Mark as authored: it can roll from now on">Authored ✓</button>` : ""}
             <button type="button" class="fu-rc-tg" data-act="remove" title="Remove from the pool">✕</button></td></tr>`;
     }).join("");
@@ -154,6 +155,7 @@ class RosterConsole {
         <div class="fu-rc-row"><span>Repeat weight</span>${num("repeatWeight", cfg.repeatWeight, 0.05)}<span class="fu-rc-sub">for items in the roster being replaced</span></div>
         <div class="fu-rc-row"><span>Cooldown (h)</span>${num("cooldownHours", cfg.cooldownHours)}<span class="fu-rc-sub">one restock per Rest within this window</span></div>
         <label><input type="checkbox" data-cfg="stockRules" ${cfg.stockRules ? "checked" : ""}> Skip monster-stealable items and items another shop sells now</label>
+        <div class="fu-rc-row"><span>Allowed sets</span><span class="fu-rc-sub">${cfg.allowedSets.length ? cfg.allowedSets.map(esc).join(", ") : "none: set pieces never roll"}</span><span></span></div>
         <button type="button" class="fu-rc-btn" data-act="defaults">Reset rules to defaults</button></div></div>`;
   }
 
@@ -233,6 +235,13 @@ class RosterConsole {
       if (act === "defaults") return this.run(() => api().patchState(this.actor, { config: null }));
       if (act === "pin") return this.run(() => this.editPool(id, (e) => ({ ...e, pin: !e.pin })));
       if (act === "off") return this.run(() => this.editPool(id, (e) => ({ ...e, off: !e.off })));
+      if (act === "allowset") {
+        const name = btn.dataset.set;
+        return this.run(() => {
+          const cur = this.data.cfg.allowedSets;
+          return this.editConfig("allowedSets", cur.includes(name) ? cur.filter((s) => s !== name) : [...cur, name]);
+        });
+      }
       if (act === "authored") return this.run(() => this.editPool(id, (e) => { const n = { ...e }; delete n.authoring; return n; }));
       if (act === "remove") return this.run(() => this.editPool(id, () => null));
     });

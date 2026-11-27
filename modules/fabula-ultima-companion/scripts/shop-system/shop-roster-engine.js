@@ -6,7 +6,10 @@
 // objects; this file decides which of them go on sale.
 //
 // One roll:
-//   1. Items that can never roll are set aside (blockReason).
+//   1. Items that can never roll are set aside (blockReason). Set pieces are
+//      blocked unless their set is on the shop's allowedSets list (user
+//      2026-11-28: decided per set; each piece still rolls on its own, so a
+//      pair is never guaranteed).
 //   2. The rest split into two tiers: tier 0 = nobody in the party owns it,
 //      tier 1 = owned. Tier 1 only fills a slot when tier 0 has nothing left in
 //      that category, so the shop never runs out but never repeats owned gear
@@ -35,6 +38,7 @@ export const DEFAULT_CONFIG = Object.freeze({
   repeatWeight: 0.25,
   stockRules: true,        // skip monster-stealable + sold-in-another-shop items
   cooldownHours: 12,       // a second Rest the same night keeps the roster
+  allowedSets: [],         // set names whose pieces may roll (per set, GM call)
 });
 
 /** Merge a stored (possibly partial / older) config over the defaults. */
@@ -52,6 +56,9 @@ export function resolveConfig(stored) {
     repeatWeight: Math.min(1, num(stored.repeatWeight, d.repeatWeight)),
     stockRules: stored.stockRules ?? d.stockRules,
     cooldownHours: num(stored.cooldownHours, d.cooldownHours),
+    allowedSets: Array.isArray(stored.allowedSets)
+      ? [...new Set(stored.allowedSets.map((x) => String(x ?? "").trim()).filter(Boolean))]
+      : [],
   };
 }
 
@@ -86,9 +93,12 @@ export function normalizeName(name) {
     .toLowerCase();
 }
 
+/** A set piece whose set the GM allowed for this shop. */
+export const setAllowed = (c, cfg) => !!String(c.setName ?? "").trim() && (cfg?.allowedSets ?? []).includes(String(c.setName).trim());
+
 /** Why a candidate can never roll, or "" when it can. */
 export function blockReason(c, cfg) {
-  if (c.isSet) return `Set piece${c.setName ? ` · ${c.setName}` : ""}`;
+  if (c.isSet && !setAllowed(c, cfg)) return `Set piece${c.setName ? ` · ${c.setName}` : ""}`;
   if (c.retired) return `Retired${typeof c.retired === "string" ? ` · ${c.retired}` : ""}`;
   if (c.off) return "Switched off";
   if (c.needsAuthoring) return "Needs authoring";

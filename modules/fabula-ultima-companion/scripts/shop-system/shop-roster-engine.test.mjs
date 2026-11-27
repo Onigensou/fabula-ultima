@@ -37,6 +37,10 @@ check("rng: same seed, same stream", E.mulberry32(7)() === E.mulberry32(7)());
 // ── blocks ──────────────────────────────────────────────────────────────────
 const D = cfg();
 check("block: set piece", E.blockReason(C("armor", "Rare", { isSet: true, setName: "Luchador" }), D).startsWith("Set piece"));
+check("block: set piece of an allowed set rolls", !E.blockReason(C("armor", "Rare", { isSet: true, setName: "Berserker" }), cfg({ allowedSets: ["Berserker"] })));
+check("block: allowing one set keeps other sets blocked", E.blockReason(C("armor", "Rare", { isSet: true, setName: "Luchador" }), cfg({ allowedSets: ["Berserker"] })).startsWith("Set piece"));
+check("block: set piece with no set name stays blocked", E.blockReason(C("armor", "Rare", { isSet: true, setName: "" }), cfg({ allowedSets: [""] })).startsWith("Set piece"));
+check("config: allowedSets defaults empty, junk dropped", cfg().allowedSets.length === 0 && cfg({ allowedSets: "x" }).allowedSets.length === 0 && cfg({ allowedSets: [" A ", "A", null] }).allowedSets.join() === "A");
 check("block: retired", E.blockReason(C("accessory", "Rare", { retired: "Support units" }), D).startsWith("Retired"));
 check("block: off", E.blockReason(C("weapon", "Rare", { off: true }), D) === "Switched off");
 check("block: needs authoring", E.blockReason(C("weapon", "Rare", { needsAuthoring: true }), D) === "Needs authoring");
