@@ -285,6 +285,26 @@ Moves (in the order given):
    thrown and returns at round end like a devoured one. Any enemy creature (PC, guest, summon) can be the target.
    **Rule for ALL his moves (user, 2026-11-27):** each move is used **at most once per round**, unless there is no
    other move, in which case he uses Claw or Tail Stab.
+   **Fragment loses the original damage (user, 2026-11-27):** "Fragment loses the original damage, not damage after
+   target reduction." The fragment always loses the **full** amount on a hit (half, rounded up, on a Pierce miss). The
+   target's resistance, reductions and reactions change only the **target's** damage. A hit on a target that takes 0
+   still spends the fragment. Built and shipped in commit 7f93ff055.
+   **AI as built (2026-11-27):** every move is at most once per round, except the Claw / Tail Stab fallback. Soulflare is
+   priority 4, once per round, plus a last-resort Soulflare row (priority -2, no cooldown) that is eligible only when
+   neither Claw nor Tail Stab can act. Soul Strike AI row: priority 20, needs a fragment with current HP 100 or more.
+   Known and accepted: out of MP with no usable row, the GM picks.
+
+   **Status stances (user, 2026-11-27):** "We will make Nidhogg immune to Frightened, and resistance to most status
+   effect. Also immune to instant death and any debuff that prevent him from taking turn." As written: **immune** to
+   Frightened, Doom, Sleep, Stunned; **resistant** (the status lands at 1 charge) to every other status that has a
+   stance, including Paralyzed, Silence, Berserk and Suppress (lead call, the user can overrule). Open: no stance
+   exists for Snared, Provoked, Armor Break, Magic Break, Stop-style turn removal, or kill effects that are plain
+   damage. Open: the Sealing Crystal lacks the Sleep and Stunned stance (meant to be immune to everything); the fix
+   waits for the user's OK.
+
+   **Animations (2026-11-27):** Soul Confluence and Soul Strike have candidate clips on the review board, awaiting the
+   user's verdict. Both keep the engine action at `show=none` and play from the item's animation script, with the
+   engine writes on the surge / impact gate. The live items do not carry the scripts yet.
 
    Claw and Tail Stab are his **fallback moves**: used when no other move can be used (by the AI's rules or for lack
    of resources). Moves without a specific visual from the user get a simple animation; all of them get SFX.
