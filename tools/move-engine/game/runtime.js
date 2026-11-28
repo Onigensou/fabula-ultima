@@ -37,8 +37,11 @@ const $ = (id) => { const e = ME_DUMMY_EL(); e.id = id; return e; };   // page D
 const ME_CASTER_TOK = ctx.casterToken;
 const ME_TARGET_TOKS = (ctx.targetTokens || []).filter((t) => t && t.center && t !== ME_CASTER_TOK);
 if (!ME_CASTER_TOK) { oni.fireDone(); return; }
-const ME_TOKENS = { k: { token: ME_CASTER_TOK } };
-ME_TARGET_TOKS.forEach((t, i) => { ME_TOKENS["t" + i] = { token: t, foot: ME_CFG.partyFoot }; });
+const meTexReady = (t) => { const tx = t && t.mesh && t.mesh.texture; return !!(tx && tx.valid && tx.baseTexture && tx.baseTexture.resource && tx.baseTexture.resource.source); };
+for (let i = 0; i < 40 && [ME_CASTER_TOK, ...ME_TARGET_TOKS].some((t) => !meTexReady(t)); i++) await new Promise((r) => setTimeout(r, 50));
+const meArtUrl = (t) => (meTexReady(t) ? undefined : (t.document && t.document.texture && t.document.texture.src) || undefined);
+const ME_TOKENS = { k: { token: ME_CASTER_TOK, art: meArtUrl(ME_CASTER_TOK) } };
+ME_TARGET_TOKS.forEach((t, i) => { ME_TOKENS["t" + i] = { token: t, foot: ME_CFG.partyFoot, art: meArtUrl(t) }; });
 // engine 1.3.0: cfg.poses { name: url } = extra art for the CASTER a move swaps to (a form's idle); cfg.camera = the move drives
 // the camera (FCAM): the timeline then owns the board (not LIVE: every token painted, the camera follows S.cam, the 3D stage
 // flattens for the shot, like the shipped v1.0.575 Deva barrage). Without it the camera is left alone (FCAM.to = a wait).

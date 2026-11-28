@@ -472,8 +472,9 @@ export function createTimeline(spec = {}, env = {}) {
       for (const [p, pd] of Object.entries((spec.poses || {})[k] || {})) {
         const sheetUrl = pd.prop ? String(actorProps(t)[pd.prop] ?? "").trim() : "";
         const img = await imageOf(sheetUrl || pd.url); if (!img) continue;
-        const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
-        const artW = art?.naturalWidth || art?.width || iw;
+        // a video pose (a form's idle clip) has only videoWidth: naturalWidth is undefined and width 0 (it drew at 0 x 0)
+        const iw = img.videoWidth || img.naturalWidth || img.width, ih = img.videoHeight || img.naturalHeight || img.height;
+        const artW = art?.videoWidth || art?.naturalWidth || art?.width || iw;
         const scale = pd.scale ?? (TOK[k].w / artW);
         (POSE[k] ||= {})[p] = { img, foot: pd.foot ?? foot, w: iw * scale, h: ih * scale };
       }
