@@ -10,7 +10,7 @@
 // the finale). Parade = her REAL summons in the chain-formula order: each own Phantasm
 // (fox fire) 1 strike, each own Minion 1, Leichi/Leilan ALWAYS 1 cross strike (the user,
 // 11-06: the twins are mandatory, summoned or not; their real tokens when on the field,
-// else their standard art), each own Numen (Crysta) 2 knife stabs. Then the finale (fire portal, walk, den,
+// else their standard art), each own Numen (Crysta) 2 knife stabs, then she withdraws (not shattered, 11-28). Then the finale (fire portal, walk, den,
 // spin with her back pose, channel circle, fox-fire ring, blast), the whiteout, and the
 // last hit back on the board as the targets fall into their places.
 // Ticks: strikes + blast + last hit = the item's 'chain {...}' count. Every tick is
@@ -65,7 +65,7 @@ const { tl, T, m, TOK, TG, U, E } = B;
 if (!TG.length) { await tl.run(T, { total: 10, onStart: K.ready }); oni.fireDone(); return; }
 const keyOfTok = (tok) => { if (!tok) return null; for (const k in TOK) if (TOK[k].token && TOK[k].token.id === tok.id) return k; return null; };
 parade.forEach((s) => { s.key = keyOfTok(s.tok); s.ka = keyOfTok(s.a); s.kb = keyOfTok(s.b); });
-const shatterKeys = new Set(); parade.forEach((s) => { if ((s.kind === 'fox' || s.kind === 'crysta') && s.key) shatterKeys.add(s.key); });
+const shatterKeys = new Set(); parade.forEach((s) => { if (s.kind === 'fox' && s.key) shatterKeys.add(s.key); });  // Crysta (Numen) survives: she fades back with the party
 
 const c = cfg; const t = c.t || {};
 const DRAG = t.drag || 1000, FALL = t.fall || 1000, PER = t.perSummon || 1600, WALK = t.walkMs || 1500, SPIN = t.spinMs || 2200;
@@ -300,7 +300,7 @@ function kerenState(now) {
 }
 // the den: grows with each shatter / fox explosion; moves over the targets, swells, follows the spin, splits into the ring
 const denGrow = [];
-plan.forEach((p) => { if (p.s.kind === 'fox') denGrow.push(p.hit); if (p.s.kind === 'minion' || p.s.kind === 'crysta') denGrow.push(p.shat + 600); });
+plan.forEach((p) => { if (p.s.kind === 'fox') denGrow.push(p.hit); if (p.s.kind === 'minion') denGrow.push(p.shat + 600); });
 function denState(now) {
   if (now >= T6) return null;
   let s = 0.2; for (const tg of denGrow) if (now >= tg) s += 0.35;
@@ -401,7 +401,8 @@ plan.forEach((p) => {
     const h = sh(s.key, SUM_H.crysta);
     const xAt = (now) => { let x = X(1060); for (let i = 0; i < 2; i++) { const st = p.stab[i]; const tgt = lerp(X(1060), X(820), (i + 1) / 2); const from = i ? lerp(X(1060), X(820), 0.5) : X(1060); if (now >= st.mv) x = lerp(from, tgt, E.outQ(Math.min(1, (now - st.mv) / (PER * 0.1)))); } return x; };
     const knifeAt = (now) => { let ext = 0, tilt = 0; for (let i = 0; i < 2; i++) { const st = p.stab[i]; if (now >= st.mv && now < st.th) { const k = E.outQ(Math.min(1, (now - st.mv) / 140)); ext = -18 * k; tilt = -12 * k; } else if (now >= st.th && now < st.hit) { const k = E.outC((now - st.th) / 90); ext = lerp(-18, 78, k); tilt = lerp(-12, i ? 6 : -4, k); } else if (now >= st.hit && now < st.hit + 180) { const k = E.inQ((now - st.hit) / 180); ext = lerp(78, 0, k); tilt = lerp(i ? 6 : -4, 0, k); } } return { ext, tilt }; };
-    bodyJobs.push((now, P) => { if (now < p.at || now >= p.shat) return []; const art = artOf(s.key, 'crysta'); const a = Math.min(1, (now - p.at) / p.fade); const x = xAt(now), y = Y(610);
+    // 11-28: the Numen is NOT shattered by Last Den; she withdraws (fades out over 400 ms from p.shat)
+    bodyJobs.push((now, P) => { if (now < p.at || now >= p.shat + 400) return []; const art = artOf(s.key, 'crysta'); const a = Math.min(1, (now - p.at) / p.fade) * (now >= p.shat ? 1 - (now - p.shat) / 400 : 1); const x = xAt(now), y = Y(610);
       const out = [{ z: 660, draw: (g) => drawBody(g, P, art, x, y, h, s.key ? (TOK[s.key].flip || 1) : 1, a) }];
       // her knife: Disgaea 5 sword parts (blade _00 over grip _01), 32% of her height, at her front hand, pointed at the targets
       out.push({ z: 661, draw: (g) => { const bl = tl.IMG.knifeBlade, gr = tl.IMG.knifeGrip; if (!bl || !gr || a <= 0) return; const b = ZP.limbInfo(bl), gi = ZP.limbInfo(gr); const kn = knifeAt(now);
@@ -413,7 +414,7 @@ plan.forEach((p) => {
     uwClip('pillar', p.at, { x: X(1060), y: Y(610) }, 0.7, false, { add: true, filter: 'hue-rotate(180deg) brightness(1.2)' }); say(p.at, 'saint5', 0.45);
     p.stab.forEach((st, i) => { say(st.mv + PER * 0.1, 'swing', 0.3); say(st.hit, 'shing', 0.4); uwClip('slash3', st.hit, { x: X(700), y: Y(520) }, 1.6, false, { tint: '#bfe4ff', add: true, rot: (i ? -20 : 15) * Math.PI / 180, flip: !!i }); });
     uwClip('twinkle', p.twk, { x: X(820), y: Y(610) - h * 0.5 }, 0.9, false, { tint: '#bfe4ff', add: true });
-    uwShatter(p.shat, () => ({ x: X(820), y: Y(610) }), h, '190,225,255');
+    uwClip('pillar', p.shat - 200, { x: X(820), y: Y(610) }, 0.7, false, { add: true, filter: 'hue-rotate(180deg) brightness(1.2)' }); say(p.shat, 'saint5', 0.3);
   }
 });
 // every parade strike: the static camera's white flash + a shake (camPunch 1)
@@ -560,7 +561,7 @@ TG.forEach((k, i) => { const T0 = TOK[k]; const mid = { x: T0.x, y: tl.feet(T0).
   m.hold(T_FINAL, T_FINAL + 460, (e, S) => { const q = S.tok[k]; if (q) q.dx += Math.sin(e / 460 * 55 + i) * 4 * MPX * (1 - e / 460); }); });
 ZP.hit(m, T_FINAL, { numbersOnly: true, screenAt: null });
 // The gate opens just after the last hit, so RESOLVE writes HP and destroys the shattered
-// Phantasms / Numen while the tail (the party fading back) still covers them; otherwise the
+// Phantasms (the Numen stays, 11-28) while the tail (the party fading back) still covers them; otherwise the
 // real summon tokens would flash back for a moment between the teardown and RESOLVE.
 ZP.once(m, T_FINAL + 450, () => oni.fireDone());
 

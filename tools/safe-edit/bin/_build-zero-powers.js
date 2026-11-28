@@ -36,6 +36,8 @@ const ACTOR = { hina: "dafTLBUscCDNgq8H", zarg: "Z4CFy505cD3nzl1W", keren: "gdJZ
 
 const KEREN_CHAIN = 'chain {OWN_PHANTASM_COUNT + OWN_NUMEN_COUNT * 2 + OWN_MINION_COUNT + 3} hidden';
 const ZARG_CHAIN = "chain 24 hidden";
+const KEREN_DAMAGE = "floor((10 + floor(CHAR_LEVEL / 2) + (OWN_PHANTASM_COUNT + OWN_NUMEN_COUNT) * 20) * (1 + 0.5 * (OWN_PHANTASM_COUNT >= 3 && OWN_NUMEN_COUNT >= 1)))";
+const KEREN_TEXT = '<p>Shatters all your Phantasms. Your Numen stays. Deals <strong>【10 + half your level + (Phantasms + Numen) × 20】</strong> <a class="content-link" data-uuid="Item.0sFCVCoM6FRrQP2f" data-id="0sFCVCoM6FRrQP2f" data-type="Item">Fire</a> damage to all enemies.</p><p>Full Den: with 3 Phantasms and your Numen out, deals <strong>150%</strong> damage.</p>';
 
 // Merge a chain keyword into an action_keywords list (replacing any earlier chain keyword).
 function withChain(cur, kw) {
@@ -62,7 +64,10 @@ const FIX = {
     for (const l of ["ms_strike", "ms_cost"]) { const r = rowBy(T, l); if (r) r.$deleted = true; }
   },
   keren(p) {
-    p.damage_bonus = "((OWN_PHANTASM_COUNT + OWN_NUMEN_COUNT) * 20) + 20";
+    // 11-28 scaling pass (user-approved): base grows with level, the Numen is NOT shattered
+    // (still counts), Full Den (3 Phantasms + the Numen) deals 150%. L47: 53 / 73 / 93 / 169.
+    p.damage_bonus = KEREN_DAMAGE;
+    p.description = KEREN_TEXT;
     p.cost = "6 Zero Power";
     p.isZeroPower = true;
     p.action_keywords = withChain(p.action_keywords, KEREN_CHAIN);
@@ -71,8 +76,8 @@ const FIX = {
     const root = rowBy(T, "zp_root"); if (!root) throw new Error("Keren: zp_root missing");
     const sh = rowBy(T, "zp_shatter"); if (!sh && !rowBy(T, "zp_shatter_p")) throw new Error("Keren: zp_shatter missing");
     if (sh) { sh.effect_label = "zp_shatter_p"; sh.target_ref = "own_phantasms"; sh.suppress_defeat = true; delete sh.damage_amount; delete sh.damage_cause; delete sh.damage_element; }
-    if (!rowBy(T, "zp_shatter_n")) T[nextKey(T)] = { $deleted: false, effect_kind: "destroy_summon", effect_label: "zp_shatter_n", suppress_defeat: true, target_ref: "own_numen" };
-    root.chain_steps = "zp_shatter_p, zp_shatter_n";
+    const shn = rowBy(T, "zp_shatter_n"); if (shn) shn.$deleted = true;  // the Numen stays (11-28)
+    root.chain_steps = "zp_shatter_p";
     const c = rowBy(T, "zp_cost"); if (c) c.$deleted = true;
   },
   hina(p) { p.isZeroPower = true; },
