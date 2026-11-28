@@ -39,7 +39,12 @@ const ME_TARGET_TOKS = (ctx.targetTokens || []).filter((t) => t && t.center && t
 if (!ME_CASTER_TOK) { oni.fireDone(); return; }
 const ME_TOKENS = { k: { token: ME_CASTER_TOK } };
 ME_TARGET_TOKS.forEach((t, i) => { ME_TOKENS["t" + i] = { token: t, foot: ME_CFG.partyFoot }; });
-const TL = oni.timeline({ tokens: ME_TOKENS, clips: M.clips, images: {}, live: true, depthRef: "k" });
+// engine 1.3.0: cfg.poses { name: url } = extra art for the CASTER a move swaps to (a form's idle); cfg.camera = the move drives
+// the camera (FCAM): the timeline then owns the board (not LIVE: every token painted, the camera follows S.cam, the 3D stage
+// flattens for the shot, like the shipped v1.0.575 Deva barrage). Without it the camera is left alone (FCAM.to = a wait).
+const ME_POSES = ME_CFG.poses ? { k: Object.fromEntries(Object.entries(ME_CFG.poses).map(([p, url]) => [p, { url }])) } : {};
+const ME_CAM = !!ME_CFG.camera;
+const TL = oni.timeline({ tokens: ME_TOKENS, clips: M.clips, images: {}, poses: ME_POSES, live: !ME_CAM, depthRef: "k" });
 await TL.load();
 const TRK = [];                       // timeline tracks
 const TM = TL.mk(TRK);
@@ -54,7 +59,6 @@ const meDepth = (wx, wy) => TL.depthS(wx, wy) || 1;
 // mockup tokenScaleAt(y): the depth size at a mockup row (x = the caster's home column)
 const tokenScaleAt = (y) => meDepth(ME_REF.x, ORG.y + y * KP);
 const TG = { stage: { x: 0, y: 0, w: W, h: H }, scene: { w: W, h: H } };
-const FCAM = { x: W / 2, y: H / 2, z: 1, r: 0, to: (p, ms) => wait(ms), set() {}, screen: (p) => p, apply() {} }, DCAM = FCAM;
 
 // ───────── recording (dry run). Actors / screen state are Proxies: a write outside a tween callback becomes a timed step.
 let VT = 0, PHASE = "dry", REC_ON = false, IN_TW = 0;
@@ -62,6 +66,18 @@ const STEPS = [], TWS = [], ME_Q = []; let ME_QSEQ = 0;
 const ME_RAW = new WeakMap();
 function meRec(obj) { const p = new Proxy(obj, { set(o, k, v) { if (REC_ON && !IN_TW && PHASE === "dry") STEPS.push({ at: VT, o, k, v }); o[k] = v; return true; } }); ME_RAW.set(p, obj); return p; }
 const meRaw = (p) => ME_RAW.get(p) || p;
+
+// the camera: the mockup's makeCam maths (focus x/y in mockup px at the screen centre, zoom z, zoom moved in log space).
+// Played through S.cam when cfg.camera; otherwise a no-op that keeps the beat's length.
+const FCAM = (() => { const raw = { x: W / 2, y: H / 2, z: 1, r: 0 };
+  if (!ME_CAM) return Object.assign(raw, { to: (p, ms) => wait(ms), set() {}, screen: (p) => p, apply() {} });
+  const c = meRec(raw);
+  raw.to = (p, ms, ease = EASE.sine) => { const s = { x: c.x, y: c.y, z: c.z, r: c.r }; const e = { ...s, ...p };
+    return tween(ms, ease, (t) => { c.x = lerp(s.x, e.x, t); c.y = lerp(s.y, e.y, t); c.r = lerp(s.r, e.r, t); c.z = Math.exp(lerp(Math.log(s.z), Math.log(e.z), t)); }); };
+  raw.set = (p) => { for (const k of Object.keys(p)) c[k] = p[k]; };
+  raw.screen = (p) => { const a = c.r * Math.PI / 180, dx = (p.x - c.x) * c.z, dy = (p.y - c.y) * c.z; return { x: W / 2 + dx * Math.cos(a) - dy * Math.sin(a), y: H / 2 + dx * Math.sin(a) + dy * Math.cos(a) }; };
+  raw.apply = () => {};
+  return c; })(), DCAM = FCAM;
 
 // the caster faces its first target (else the friendly side, else its art); mockup face(): party -1 (left), enemy +1
 const ME_DIR = (() => { const K = TL.TOK.k; if (ME_TARGET_TOKS.length) return TL.TOK.t0.x >= K.x ? 1 : -1;
@@ -71,7 +87,7 @@ function meActor(key, id, dir) {
   const T = TL.TOK[key], bot = toM(ME_BOT(key)), s = meDepth(ME_BOT(key).x, ME_BOT(key).y), kind = dir < 0 ? "party" : "enemy";
   const style = meRec({ opacity: "", zIndex: 0, filter: "", transform: "" }), mstyle = meRec({ filter: "", transform: "", transformOrigin: "" });
   const raw = { id, key, kind, on: true, x: bot.x, y: bot.y, cx: bot.x, cy: bot.y - T.h / KP / 2, dx: 0, dy: 0, rot: 0, s, hb: T.h / KP / s, wb: T.w / KP / s,
-    flip: kind === "party" ? 1 : -1, baseFlip: kind === "party" ? 1 : -1, lift: 0, bob: 0, kx: 1, ky: 1,
+    flip: kind === "party" ? 1 : -1, baseFlip: kind === "party" ? 1 : -1, lift: 0, bob: 0, kx: 1, ky: 1, pose: null,
     el: { style }, body: { style: mstyle }, media: { style: mstyle, tagName: "IMG", getAttribute: () => null, play() {} }, src: null, resize() {} };
   return meRec(raw);
 }
@@ -183,7 +199,15 @@ function markGate() { traceEv("gate"); if (PHASE === "dry" && ME_MARK == null) M
 // hit cues: the game's own number / MISS / flinch / HP bar ride oni.hit (Chain) and the damage gate (BD)
 function meHitCue(kind, data) { traceEv("hit", Object.assign({ kind }, data || {})); if (PHASE === "dry" && ME_FIRST_HIT == null) ME_FIRST_HIT = VT; meOnce(() => oni.hit({ paced: true })); }
 function gameNum(t, amount, { kind = "loss", resource = "hp", element = "physical", crit = false, isHit = true } = {}) { if (kind === "loss" && resource === "hp") meHitCue(isHit ? "hit" : "bonus", { amount, element, crit }); else if (kind === "miss") meHitCue("miss"); }
-function dmgNum(key, at, amount, { element = "physical" } = {}) { traceEv("num", { who: key, amount, element }); if (amount > 0 && !["mp", "ip", "heal", "self"].includes(element)) meOnce(() => oni.hit({ paced: true })); }
+// engine 1.3.0, cfg.gateOnNum: a non-Chain move's numbers land where the mockup shows them. The gate (BD writes + shows the
+// numbers) is the move's FIRST number; every other target's first number is reported as its impact offset (oni.impactOffsets),
+// so BD shows it at its own moment. No Chain cue here: a Chain move cues its strikes itself (gameNum).
+const ME_NUM_AT = new Map();
+function dmgNum(key, at, amount, { element = "physical" } = {}) { traceEv("num", { who: key, amount, element });
+  const num = amount > 0 && !["mp", "ip", "heal", "self"].includes(element); if (!num) return;
+  if (ME_CFG.gateOnNum) { if (PHASE !== "dry") return; if (ME_FIRST_HIT == null) ME_FIRST_HIT = VT;
+    const a = ME_ACTORS.find((x) => String(key).startsWith(meRaw(x).id)); const u = a && meUuidOf(a); if (u && !ME_NUM_AT.has(u)) ME_NUM_AT.set(u, VT); return; }
+  meOnce(() => oni.hit({ paced: true })); }
 const numAt = (a) => () => ({ x: OX(a), y: OY(a) - hgt(a) * .5 });
 // the mockup's replicas of game UI: the game draws its own (namecard = the action card, cut-in = BD's crit cut-in BEFORE the
 // animation). They keep the mockup's awaited length where the move awaits them, so the beats line up.
@@ -194,11 +218,55 @@ function hitReact() {} function npcBar() {} function npcBarReset() {} function h
 function hudForm() {} function hudNoForm() {} function hudCost() {} function hudSpendMP() {} function renderBalance() {} function renderMeta() {} function releaseVideos() {}
 // not available in the game runtime (DOM-only mockup helpers). The build refuses moves that call them; at run time: warn, no-op.
 const meUnsupported = (name) => (...a) => { meWarn("not in the game runtime: " + name + "()"); traceEv("unsupported", { name }); return Promise.resolve(); };
-const sprite = (src, parent, o = {}) => { meWarn("not in the game runtime: sprite()"); const d = { el: ME_DUMMY_EL(), m: ME_DUMMY_EL(), x: o.x || 0, y: o.y || 0, h: o.h || 0, set() { return d; }, apply() {}, swap() {}, move: () => Promise.resolve(), fade: () => Promise.resolve(), headPt: () => ({ x: d.x, y: d.y }), mid: () => ({ x: d.x, y: d.y }), remove() {} }; return d; };
-const battlerCopy = (a, parent, x, y, opt) => sprite(null, parent, { x, y });
+// ───────── sprite props (engine 1.3.0): the mockup's DOM sprite() as a recorded canvas prop. Same fields and maths as the
+// mockup's (feet-anchored at x/y, h drawn height, translate(ox, oy) rotate(rot) scale(sx * flip, sy) about the bottom centre,
+// opacity, a CSS filter, mix-blend). Its state is recorded like an actor's (writes outside tweens = timed steps, tweens
+// replayed), its image is drawn by the painter with the filter baked once. Extras the game needs because it has no DOM:
+//   { actor: a }  the image is that actor's art in its current pose (the mockup's sprite(a.media.src) copies of a battler)
+//   o.trail = n   n copies behind it along its local -y, alpha .45 / k (the mockup's cloned <img> trail, barrage fists)
+const ME_PROPS = [];
+const ME_PRELOAD = [];   // promises a family part pushes (images it reads during the dry run); MOVE_PLAY awaits them
+const ME_PROP_SRC = new Set();
+function sprite(src, parent, { x = 0, y = 0, h = 170, flip = 1, filter = "", opacity = 1, z = 1, blend = "", actor = null } = {}) {
+  const raw = { x, y, h, w: h * .6, flip, rot: 0, sx: 1, sy: 1, opacity, ox: 0, oy: 0, z, src: src || null, filter: filter || "", blend: blend || "",
+    actor: actor ? meRaw(actor) : null, pose: actor ? meRaw(actor).pose : null, under: !!(parent && parent.id === "fground"), dead: false, trail: 0, trailStep: .38, trailA: .45 };
+  const o = meRec(raw);
+  // the mockup reads / appends to f.m.style.filter: route it to the recorded field
+  raw.m = { style: { get filter() { return o.filter; }, set filter(v) { o.filter = v; } }, cloneNode: () => ({ style: {} }), getAttribute: () => o.src };
+  raw.el = { style: {}, appendChild() {} };
+  raw.apply = () => {}; raw.set = (p) => { for (const k of Object.keys(p)) o[k] = p[k]; return o; };
+  raw.swap = (s2) => { o.src = s2; if (s2) ME_PROP_SRC.add(s2); };
+  raw.move = (x2, y2, ms, ease = EASE.quad, hop = 0, steps = 1) => { const x0 = o.x, y0 = o.y;
+    return tween(ms, ease, (t) => { o.x = lerp(x0, x2, t); o.y = lerp(y0, y2, t); o.oy = -Math.abs(Math.sin(t * Math.PI * steps)) * hop; }); };
+  raw.fade = (to, ms) => { const f = o.opacity; return tween(ms, EASE.sine, (t) => { o.opacity = lerp(f, to, t); }); };
+  raw.headPt = () => ({ x: o.x, y: o.y - o.h * .86 }); raw.mid = () => ({ x: o.x, y: o.y - o.h * .5 });
+  raw.remove = () => { o.dead = true; };
+  if (PHASE === "dry") { const init = {}; for (const k of Object.keys(raw)) if (typeof raw[k] !== "function" && k !== "m" && k !== "el") init[k] = raw[k];
+    ME_PROPS.push({ t0: VT, raw, init }); if (src) ME_PROP_SRC.add(src); }
+  return o;
+}
+const battlerCopy = (a, parent, x, y, opt = {}) => sprite(null, parent, { x, y, actor: a, ...opt });
 const silhouette = meUnsupported("silhouette"), swapArt = meUnsupported("swapArt"), restoreArt = meUnsupported("restoreArt"), setLineup = meUnsupported("setLineup");
 const groundPortal = (...a) => { meUnsupported("groundPortal")(); return { close: () => Promise.resolve() }; };
-const impactFrame = meUnsupported("impactFrame");
+// impactFrame (engine 1.3.0): the mockup's two-frame anime impact: a black screen with white rays + white silhouettes of the
+// targets, then white with black rays + black silhouettes. Same rnd() draws in the same order as the mockup (2 x 46 rays).
+async function impactFrame(targets, ms = 70) {
+  traceEv("impactFrame", { ms, n: targets.length }); if (FAST) return;
+  const list = targets.map(meRaw), cen = list.reduce((a, t) => { const p = FCAM.screen(center(t)); return { x: a.x + p.x / list.length, y: a.y + p.y / list.length }; }, { x: 0, y: 0 });
+  const rays = () => Array.from({ length: 46 }, () => ({ a: rnd(0, Math.PI * 2), w: rnd(.006, .03), r0: rnd(90, 220) }));
+  const A = rays(), at = VT; const B = (await wait(ms), rays());
+  if (PHASE !== "dry") return wait(ms);
+  const snaps = list.map((t) => meSnap(t));
+  const paint = (g, bg, fg, R, silF) => {
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = "source-over"; g.globalAlpha = 1; g.fillStyle = bg; g.fillRect(0, 0, g.canvas.width, g.canvas.height); g.restore();
+    g.save(); g.translate(ORG.x, ORG.y); g.scale(KP, KP); g.fillStyle = fg;
+    for (const r of R) { g.beginPath(); g.moveTo(cen.x + Math.cos(r.a) * r.r0, cen.y + Math.sin(r.a) * r.r0); g.lineTo(cen.x + Math.cos(r.a - r.w) * 1900, cen.y + Math.sin(r.a - r.w) * 1900); g.lineTo(cen.x + Math.cos(r.a + r.w) * 1900, cen.y + Math.sin(r.a + r.w) * 1900); g.fill(); }
+    g.restore();
+    list.forEach((t, i) => mePaint(g, t, snaps[i], meBaked(t.key, silF, snaps[i].pose), 1)); };
+  TM.hold(at, at + ms, (e, S) => { S.world.push({ z: 45, draw: (g) => paint(g, "#000", "#fff", A, "brightness(0) invert(1)") }); });
+  TM.hold(at + ms, at + 2 * ms, (e, S) => { S.world.push({ z: 45, draw: (g) => paint(g, "#fff", "#000", B, "brightness(0)") }); });
+  return wait(ms);
+}
 const castFocus = (keep, ms = 350) => { traceEv("unsupported", { name: "castFocus" }); return wait(ms); };
 const castUnfocus = (ms = 500) => wait(ms);
 const hurtArt = () => null;
@@ -251,10 +319,42 @@ const ME_BLANK = document.createElement("canvas"); ME_BLANK.width = 2; ME_BLANK.
 for (const k of Object.keys(ME_TOKENS)) (TL.POSE[k] = TL.POSE[k] || {}).blank = { img: ME_BLANK, foot: 1, w: 0.01, h: 0.01 };
 const ME_LAYER_Z = { ground: 2, field: 4, dim: 3, hit: 30 };
 const ME_BAKE = new Map();
-function meBaked(key, filter) { const img = TL.art(key); if (!filter || !img) return img; const id = key + "|" + filter; let c = ME_BAKE.get(id); if (c) return c;
+function meBaked(key, filter, pose = null) { const img = meArt(key, pose); if (!filter || !img) return img; const id = key + "|" + (pose || "") + "|" + filter; let c = ME_BAKE.get(id); if (c) return c;
   const w = img.videoWidth || img.naturalWidth || img.width, h = img.videoHeight || img.naturalHeight || img.height; if (!w || !h) return img;
   c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d"); x.filter = filter.replace(/([\d.]+)px/g, (m0, n) => (Number(n) * w / Math.max(1, TL.TOK[key].w / KP)).toFixed(2) + "px"); x.drawImage(img, 0, 0, w, h); ME_BAKE.set(id, c); return c; }
-function meSnap(a) { const o = parseFloat(a.el.style.opacity); return { dx: a.dx, dy: a.dy, air: (a.lift || 0) - (a.bob || 0), rot: a.rot || 0, kx: a.kx == null ? 1 : a.kx, ky: a.ky == null ? 1 : a.ky, alpha: Number.isFinite(o) ? o : 1, filter: a.media.style.filter || "", glowK: a.glowK || 0, glowC: a.glowC || null }; }
+// flipR (1.3.0): the mockup's a.flip relative to the actor's resting facing (a Paper Mario spin writes flip), folded into kx
+function meSnap(a) { const o = parseFloat(a.el.style.opacity), fr = a.baseFlip ? (a.flip == null ? 1 : a.flip / a.baseFlip) : 1;
+  return { dx: a.dx, dy: a.dy, air: (a.lift || 0) - (a.bob || 0), rot: a.rot || 0, kx: (a.kx == null ? 1 : a.kx) * fr, ky: a.ky == null ? 1 : a.ky, alpha: Number.isFinite(o) ? o : 1, filter: a.media.style.filter || "", glowK: a.glowK || 0, glowC: a.glowC || null, pose: a.pose || null }; }
+// the art an actor shows now: its pose (cfg.poses) or the token's own art
+const meArt = (key, pose) => (pose && TL.POSE[key] && TL.POSE[key][pose] && TL.POSE[key][pose].img) || TL.art(key);
+// a prop image (URL or data: URI), loaded before playback
+const ME_PIMG = new Map();
+async function meLoadProps() { for (const s of ME_PROP_SRC) { if (ME_PIMG.has(s)) continue; let img = null;
+  try { if (/^data:/.test(s)) img = await new Promise((r) => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = s; });
+    else { const tex = await loadTexture(s); img = tex && tex.baseTexture && tex.baseTexture.resource && tex.baseTexture.resource.source || null; } } catch (e) { img = null; }
+  if (!img) meWarn("prop image failed: " + String(s).slice(0, 80)); ME_PIMG.set(s, img); } }
+// a prop image with its CSS filter baked once (px lengths are drawn px: scaled to the image's own pixels by the first drawn h)
+const ME_PBAKE = new Map();
+function mePropBaked(img, id, filter, h) { if (!img) return null; if (!filter) return { c: img, pad: 0 };
+  const k0 = id + "|" + filter; let b = ME_PBAKE.get(k0); if (b) return b;
+  const w = img.videoWidth || img.naturalWidth || img.width, ih = img.videoHeight || img.naturalHeight || img.height; if (!w || !ih) return { c: img, pad: 0 };
+  const sc = ih / Math.max(1, h), f = filter.replace(/([\d.]+)px/g, (m0, n) => (Number(n) * sc).toFixed(2) + "px");
+  const pad = Math.ceil(Math.max(0, ...[...filter.matchAll(/([\d.]+)px/g)].map((m) => Number(m[1]))) * sc * 2.5) + 2;
+  const c = document.createElement("canvas"); c.width = w + 2 * pad; c.height = ih + 2 * pad; const x = c.getContext("2d"); x.filter = f; x.drawImage(img, pad, pad, w, ih);
+  try { x.getImageData(0, 0, 1, 1); } catch (e) {}
+  b = { c, pad: pad / sc }; ME_PBAKE.set(k0, b); return b; }
+function mePaintProp(g, p) {
+  let img, id;
+  if (p.actor) { img = meArt(p.actor.key, p.pose); id = "actor:" + p.actor.key + ":" + (p.pose || ""); } else { img = ME_PIMG.get(p.src); id = p.src; }
+  if (!img || !(p.opacity > 0)) return;
+  const iw = img.videoWidth || img.naturalWidth || img.width || 1, ih = img.videoHeight || img.naturalHeight || img.height || 1, w = p.h * iw / ih, h = p.h;
+  const b = mePropBaked(img, id, p.filter, h); if (!b) return;
+  g.save(); g.translate(ORG.x, ORG.y); g.scale(KP, KP);
+  g.translate(p.x + p.ox, p.y + p.oy); if (p.rot) g.rotate(p.rot * Math.PI / 180); g.scale(p.sx * p.flip, p.sy);
+  if (p.blend) g.globalCompositeOperation = /screen/.test(p.blend) ? "screen" : /plus-lighter|lighter/.test(p.blend) ? "lighter" : /multiply/.test(p.blend) ? "multiply" : "source-over";
+  for (let k = p.trail; k >= 1; k--) { g.globalAlpha = p.opacity * p.trailA / k; g.drawImage(b.c, -w / 2 - b.pad, -h - b.pad - k * p.trailStep * h, w + 2 * b.pad, h + 2 * b.pad); }
+  g.globalAlpha = Math.min(1, p.opacity); g.drawImage(b.c, -w / 2 - b.pad, -h - b.pad, w + 2 * b.pad, h + 2 * b.pad);
+  g.restore(); }
 // the glow of an actor's art in one colour, rendered once at a few sizes: a colour silhouette blurred like CSS
 // drop-shadow(0 0 R px) (σ = R / 2). flashActor's CSS glow SHRINKS at full strength (R = 14 → 0); each frame draws the two
 // pre-rendered sizes around the current R, blended, behind the art (engine 1.2.1; 1.2.0 faded one 14 px glow = softer).
@@ -317,12 +417,23 @@ function meFrame(t, S) {
   // actors: plain moves go through the timeline's own token painting; a filtered one (flashActor) is painted here
   for (const a of ME_ACTORS) { const st = meSnap(a), q = S.tok[a.key]; if (!q) continue;
     q.dx = st.dx * KP; q.dy = st.dy * KP; q.air = st.air * KP; q.rot = st.rot * Math.PI / 180; q.sx = st.kx; q.sy = st.ky; q.alpha = st.alpha;
+    if (st.pose) q.pose = st.pose;
     if (st.glowK > 0 && st.glowC) { q.pose = "blank"; const ra = meRaw(a); S.world.push({ z: 20, draw: (g) => mePaintGlow(g, ra, st, st.alpha) }); }
-    else if (st.filter) { q.pose = "blank"; const ra = meRaw(a); S.world.push({ z: 20, draw: (g) => mePaint(g, ra, st, TL.art(ra.key), st.alpha, st.filter) }); } }
+    else if (st.filter) { q.pose = "blank"; const ra = meRaw(a); S.world.push({ z: 20, draw: (g) => mePaint(g, ra, st, meArt(ra.key, st.pose), st.alpha, st.filter) }); } }
+  // sprite props (1.3.0): alive between their creation and remove(); the mockup's z-index decides above / below the battlers
+  const props = ME_PROPS.filter((e) => t >= e.t0 && !e.raw.dead);
+  if (props.length) { const capZ = Math.round(OY(meRaw(CASTER)));
+    const under = props.filter((e) => e.raw.under), back = props.filter((e) => !e.raw.under && e.raw.z < capZ), front = props.filter((e) => !e.raw.under && e.raw.z >= capZ);
+    const byZ = (L) => L.slice().sort((a, b) => a.raw.z - b.raw.z || a.t0 - b.t0);
+    if (under.length) S.world.push({ z: 3.5, draw: (g) => { for (const e of byZ(under)) mePaintProp(g, e.raw); } });
+    if (back.length) S.world.push({ z: 19.5, draw: (g) => { for (const e of byZ(back)) mePaintProp(g, e.raw); } });
+    if (front.length) S.world.push({ z: 21, draw: (g) => { for (const e of byZ(front)) mePaintProp(g, e.raw); } }); }
+  // the camera (cfg.camera): FCAM's focus point in mockup px → world, relative to the rest view
+  if (ME_CAM) { const f = toW({ x: FCAM.x, y: FCAM.y }), c0 = toW({ x: W / 2, y: H / 2 }); S.cam = { cx: TL.REST.cx + (f.x - c0.x), cy: TL.REST.cy + (f.y - c0.y), zoom: FCAM.z }; }
   // afterimages (pose read the first frame they show)
   const live = ME_AFTER.filter((x) => t >= x.t0 && t < x.t0 + x.ms);
   if (live.length) { for (const x of live) if (!x.snap) x.snap = meSnap(x.a);
-    S.world.push({ z: 19, draw: (g) => { for (const x of live) mePaint(g, x.a, x.snap, meBaked(x.a.key, x.filter), x.op * (1 - EASE.sine((t - x.t0) / x.ms)) * x.snap.alpha); } }); }
+    S.world.push({ z: 19, draw: (g) => { for (const x of live) mePaint(g, x.a, x.snap, meBaked(x.a.key, x.filter, x.snap.pose), x.op * (1 - EASE.sine((t - x.t0) / x.ms)) * x.snap.alpha); } }); }
   // particles: their own draw code, in mockup px
   const dt0 = t - ME_LAST_T; ME_LAST_T = t;
   const byLayer = {};
@@ -345,10 +456,12 @@ let ME_STEP_I = 0, ME_LAST_T = 0;
 // opts.variantTune: { variant: { key: value } } — tune by the play_animation row's #variant (Gunblade: Transform#gun)
 async function MOVE_PLAY(key, opts = {}) {
   if (Array.isArray(opts.byForm) && opts.byForm.length) { const f = meWeaponForm(); key = opts.byForm[Math.min(f, opts.byForm.length - 1)] || key; }
+  if (opts.byVariant && moveVariant() && opts.byVariant[moveVariant()]) key = opts.byVariant[moveVariant()];
+  await Promise.all(ME_PRELOAD);
   const spec = SK[key]; if (!spec) { console.error("[move-engine] no move", key); oni.fireDone(); return; }
   const C = { cfg: {} }; for (const t of spec.tune || []) C.cfg[t.k] = t.v; Object.assign(C.cfg, (opts.tune && opts.tune[key]) || opts.tune || ME_CFG.tune || {});
   const vt = opts.variantTune && moveVariant() && opts.variantTune[moveVariant()]; if (vt) Object.assign(C.cfg, vt);
-  const skip = new Set(opts.skip || ME_CFG.skip || []);
+  const sk0 = opts.skip || ME_CFG.skip || []; const skip = new Set(Array.isArray(sk0) ? sk0 : (sk0[key] || []));   // skip: [beat i] or { moveKey: [beat i] }
   // snapshot of the initial state, restored before playback (the dry run leaves the end state)
   const init = ME_ACTORS.map((a) => { const r = meRaw(a); return [r, Object.assign({}, r), Object.assign({}, meRaw(r.el.style)), Object.assign({}, meRaw(r.media.style))]; });
   const initScr = Object.assign({}, meRaw(SCR));
@@ -361,6 +474,8 @@ async function MOVE_PLAY(key, opts = {}) {
   for (const [r, v, es, ms] of init) { for (const k of Object.keys(r)) if (!(k in v)) delete r[k]; Object.assign(r, v); Object.assign(meRaw(r.el.style), es); Object.assign(meRaw(r.media.style), ms); }
   Object.assign(meRaw(SCR), initScr);
   for (const tw of TWS) tw.fin = false;
+  for (const e of ME_PROPS) Object.assign(e.raw, e.init);   // props back to their creation state (steps + tweens replay the rest)
+  if (ME_CAM) Object.assign(meRaw(FCAM), { x: W / 2, y: H / 2, z: 1, r: 0 });
   let total = end;
   for (const tw of TWS) total = Math.max(total, tw.start + tw.ms);
   for (const e of ME_PARTS) if (e.p.life < 1e8) total = Math.max(total, e.t0 + e.p.life);
@@ -372,10 +487,13 @@ async function MOVE_PLAY(key, opts = {}) {
   globalThis.__MOVE_LAST = report; if (Array.isArray(globalThis.__MOVE_RUNS)) globalThis.__MOVE_RUNS.push(report);   // tests collect every run
   if (ME_CFG.dryOnly) { oni.fireDone(); return report; }
   // the glows this move uses, rendered now (before frame 0) so playback never renders one
+  await meLoadProps();
   for (const id of ME_GLOWS) { const i = id.indexOf("|"); meGlow(id.slice(0, i), id.slice(i + 1)); }
   TM.hold(0, total, (t, S) => meFrame(t, S));
   for (const o of ME_ONCE) { let did = false; TRK.push({ t0: o.at, t1: 1e9, fn: () => { if (did) return; did = true; try { o.fn(); } catch (e) { console.warn("[move-engine] cue threw", e); } } }); }
-  { let did = false; TRK.push({ t0: ME_GATE, t1: 1e9, fn: () => { if (did) return; did = true; oni.fireDone(); } }); }
+  { let did = false; TRK.push({ t0: ME_GATE, t1: 1e9, fn: () => { if (did) return; did = true;
+    if (ME_NUM_AT.size && typeof oni.impactOffsets === "function") { const map = {}; for (const [u, at] of ME_NUM_AT) map[u] = Math.max(0, Math.round(at - ME_GATE)); try { oni.impactOffsets(map); } catch (e) {} }
+    oni.fireDone(); } }); }
   const wall0 = performance.now();
   try { await TL.run(TRK, { total, sfx: ME_SFX, onStart: () => { report.wall0 = performance.now(); const h = ctx.params.readyHook; if (h) { try { Hooks.callAll(h); } catch (e) {} } } }); }
   finally { for (const f of ME_CLEANUP) { try { f(); } catch (e) {} } }
