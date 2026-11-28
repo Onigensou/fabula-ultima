@@ -14,7 +14,8 @@
  *   1. every creature_miss_action row of Adaptive Defense is removed;
  *   2. the description trigger "is attacked with a weapon" → "is hit by an attack or a spell"
  *      (spells read as Arcane since fix #16).
- * Idempotent.
+ * Idempotent. Runs after 2026-11-28-adaptive-defense-miss-source (already applied on the real
+ * world, so the miss row there reads "enemy"); a row of either source is removed.
  */
 
 export const key = "2026-11-28-adaptive-defense-hits-only";

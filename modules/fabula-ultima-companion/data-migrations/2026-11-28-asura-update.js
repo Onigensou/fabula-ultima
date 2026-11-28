@@ -26,17 +26,12 @@
  *      touched (adding Overflow to their Slash rows would count it twice).
  *   E. Asura Strike ignores Provoke: action keyword `ignore_provoke`
  *      (provoke-bypass.js, same commit). Taunts still apply.
- *   F. No Enchant swapping vs an all-flyer party (user call 2026-11-28). The Fire / Bolt /
- *      Ice Enchant rows ("self lacks <X> Mark") become formula rows that also need a
- *      grounded enemy:  AE_COUNT_<X>_MARK == 0 && ENEMY_COUNT_GROUNDED > 0
- *      so while only flyers stand he keeps the Air Aspect and slashes instead of
- *      replacing it. The Air Enchant row is untouched.
  *
  * Idempotent: every step checks the current value first and skips when already done.
  */
 
 export const key = "2026-11-28-asura-update";
-export const description = "Asura: IM Paralyzed; Air Aspect can target Flying (+ text); AI goes Air when only flyers remain; Overflow feeds Elemental Aspect; Asura Strike ignores Provoke; no Enchant swapping when only flyers remain.";
+export const description = "Asura: IM Paralyzed; Air Aspect can target Flying (+ text); AI goes Air when only flyers remain; Overflow feeds Elemental Aspect; Asura Strike ignores Provoke.";
 
 const ASURA = "0AwQ7wEDz4ISA9mA";
 const ID = {
@@ -56,8 +51,6 @@ const IGNORE_PROVOKE = "ignore_provoke";
 // one (gap 0/1/2 = weight 3/2/1, gap 3+ = out; actionReader-matchAndPickAction.js).
 // 9 = 3 above Asura Strike (6), so the flyer hunt is deterministic when it is live.
 const PRIORITY = "9";
-const GATED_ENCHANTS = ["Fire", "Bolt", "Ice"];
-export const enchantGateFormula = (el) => `AE_COUNT_${el.toUpperCase()}_MARK == 0 && ENEMY_COUNT_GROUNDED > 0`;
 
 // A. ───────────────────────────────────────────────────────────────────────────
 async function immuneParalyzed(actor, out) {
@@ -158,30 +151,6 @@ async function strikeIgnoresProvoke(actor, out) {
   out.push(`~ E: Asura Strike keywords "${kw}" -> "${next}"`);
 }
 
-// F. ───────────────────────────────────────────────────────────────────────────
-/** Pattern-table patch gating the Fire/Bolt/Ice Enchant rows on a grounded enemy. */
-export function enchantGatePatch(table = {}) {
-  const patch = {};
-  for (const [k, r] of Object.entries(table)) {
-    if (!r || r.$deleted) continue;
-    const el = GATED_ENCHANTS.find((e) => r.action_pattern_name === `Sword Enchant - ${e}`);
-    if (!el) continue;
-    const formula = enchantGateFormula(el);
-    if (r.action_pattern_condition === "formula" && r.action_pattern_string === formula) continue;
-    if (r.action_pattern_condition !== "self_lacks_status") continue; // hand-edited: leave it
-    patch[`system.props.action_pattern_table.${k}.action_pattern_condition`] = "formula";
-    patch[`system.props.action_pattern_table.${k}.action_pattern_string`] = formula;
-  }
-  return patch;
-}
-async function gateEnchantsOnGround(actor, out) {
-  const patch = enchantGatePatch(actor.system?.props?.action_pattern_table ?? {});
-  const n = Object.keys(patch).length / 2;
-  if (!n) { out.push("= F: Fire/Bolt/Ice Enchant rows already gated"); return; }
-  await actor.update(patch);
-  out.push(`~ F: ${n} Enchant rows -> formula (needs a grounded enemy)`);
-}
-
 export async function migrate(game, log = () => {}) {
   const out = [];
   const actor = game.actors.get(ASURA);
@@ -191,7 +160,6 @@ export async function migrate(game, log = () => {}) {
   await airHuntPattern(actor, out);
   await overflowFeedsAspect(actor, out);
   await strikeIgnoresProvoke(actor, out);
-  await gateEnchantsOnGround(actor, out);
   for (const l of out) log(l);
   return { applied: true, summary: out.join(" | ") };
 }
