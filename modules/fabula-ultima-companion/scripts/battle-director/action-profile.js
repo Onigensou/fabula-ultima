@@ -592,8 +592,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
   // A future "scale spell / skill / all damage" status is data-only — write the
   // matching flag, no engine change. Attributed to the setting AE in the breakdown.
   const _fns = liveAttacker?.flags?.["fabula-ultima-companion"] ?? {};
-  // A monster Attack flagged notNormalAttack (actor-shape) scales with the skill bucket, not the attack one (Bane).
-  const _dealtKey = `damage_dealt_mult_${kind === "Attack" && weapon?.notNormalAttack ? "skill" : String(kind).toLowerCase()}`;
+  const _dealtKey = `damage_dealt_mult_${String(kind).toLowerCase()}`;
   // A carrier attack's own "deals ×M damage" (carrier-attack.js, Sonic Blow ×2):
   // on a Volley Chain the attack's damage is shared over its shots, so each
   // shot's HR + weapon bonus is ×M/N (the shared flats are ×M in volleyPrimary).

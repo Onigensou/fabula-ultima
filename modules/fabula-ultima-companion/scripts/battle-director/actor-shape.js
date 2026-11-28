@@ -147,10 +147,6 @@ export function buildPseudoWeaponFromNpcAttack(item) {
     // Carry the source Item UUID so the action card can deep-link back to
     // the attack sheet, and so rewind can attribute the action correctly.
     npcAttackItemUuid: item?.uuid ?? null,
-    // `flags.<ns>.notNormalAttack` (Deva's big area moves, 2026-11-28): still an Attack (check, HR, keywords, anims),
-    // but not a Normal Attack: attacks-only damage scaling (Bane's damage_dealt_mult_attack) reads the skill bucket
-    // instead, and the card does not call it a Normal Attack.
-    notNormalAttack: item?.flags?.["fabula-ultima-companion"]?.notNormalAttack === true,
     // Unified `uuid` (mirrors resolveAttackerWeapon) so on-hit reaction rows
     // on the attack Item attribute to THIS source (see weaponReactionInPlay).
     uuid: item?.uuid ?? null,

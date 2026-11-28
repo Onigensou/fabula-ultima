@@ -909,6 +909,10 @@
     {
       "key": "2026-11-28-missile-fist-field-object",
       "path": "data-migrations/2026-11-28-missile-fist-field-object.js"
+    },
+    {
+      "key": "2026-11-28-deva-area-skills",
+      "path": "data-migrations/2026-11-28-deva-area-skills.js"
     }
   ]
 }

@@ -2618,7 +2618,7 @@ function buildSubtitleHTML({ weapon, attackMode = "main", passIndex = 0, totalPa
     bullets.push(`<i class="fa-solid fa-swords" aria-hidden="true"></i>${hand}${idx}`);
   } else if (attackMode === "off") {
     bullets.push("Off-Hand");
-  } else if (!weapon.notNormalAttack) {
+  } else {
     bullets.push("Normal Attack");
   }
   const wrapped = bullets.map((b) => `<span class="bullet">${b}</span>`);
