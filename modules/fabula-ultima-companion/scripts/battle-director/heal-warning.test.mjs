@@ -86,13 +86,8 @@ check("Wither MP row",              [C.resultLabelFor(row({ grantAmount: 10, gra
 check("Bleed halves 40 → 20",       F.applyHealReceiving(actor({ effects: [BLEED()] }), 40), 20);
 check("Wither halves 20 MP → 10",   F.applyMpReceiving(actor({ effects: [WITHER()] }), 20), 10);
 check("Wither leaves HP alone",     F.applyHealReceiving(actor({ effects: [WITHER()] }), 40), 40);
-// summary line
-const sum = (rows) => C.healRevSummaryHTML(rows).replace(/<img[^>]*>/, "");
-check("summary 2 of 3",             sum([zRow, uRow, row()]), `<div class="fud-bf-heal-rev-sum">2 of 3 targets take this heal as damage.</div>`);
-check("summary all",                sum([zRow, uRow]), `<div class="fud-bf-heal-rev-sum">All 2 targets take this heal as damage.</div>`);
-check("summary one",                sum([zRow]), `<div class="fud-bf-heal-rev-sum">This target takes this heal as damage.</div>`);
-check("summary ignores hidden",     C.healRevSummaryHTML([uHidden, row()]), "");
-check("summary none",               C.healRevSummaryHTML([row(), row()]), "");
+// no summary line (user 2026-11-28: the DAMAGE row is enough)
+check("summary line removed",       typeof C.healRevSummaryHTML, "undefined");
 
 // ── picker chip ────────────────────────────────────────────────────────────
 const known = () => true, unknown = () => false;

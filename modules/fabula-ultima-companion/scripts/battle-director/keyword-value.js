@@ -101,3 +101,53 @@ export function absorbKeywordValue(anchor, root) {
     return null;
   }
 }
+
+// Keyword + Item link lead-in — "Transform 【Zarg's Bow - Light】" authored as
+//
+//   <p><a …JournalEntry…>Transform</a>&nbsp;<a …Item…>Zarg's Bow - Light</a></p>
+//
+// The keyword opens its block and the rest of the block is ONLY Item links
+// (whitespace / nbsp / commas between them). The Item text joins the keyword
+// row as the chip's detail ("◆ TRANSFORM 【Zarg's Bow - Light】") and the tail
+// is deleted, so the prose doesn't repeat the line (user 2026-11-28).
+// Returns the detail text, or null (DOM left untouched) for any other shape.
+// Call BEFORE removing the anchor — it reads the anchor's position.
+const isItemLink = (el) => {
+  if (!el || el.nodeType !== 1 || el.tagName !== "A") return false;
+  const uuid = el.getAttribute("data-uuid") || "";
+  return el.getAttribute("data-type") === "Item" || /(^|\.)Item\.[^.]+$/.test(uuid);
+};
+
+export function absorbKeywordLinkTail(anchor, root) {
+  try {
+    const doc = anchor.ownerDocument;
+    const block = blockOf(anchor, root);
+
+    const before = doc.createRange();
+    before.setStart(block, 0);
+    before.setEndBefore(anchor);
+    if (before.toString().trim()) return null;   // not the block's opener
+
+    const links = Array.from(block.querySelectorAll("a")).filter((a) =>
+      a !== anchor && (anchor.compareDocumentPosition(a) & 4 /* FOLLOWING */));
+    if (!links.length || !links.every(isItemLink)) return null;
+
+    const after = doc.createRange();
+    after.setStartAfter(anchor);
+    after.setEnd(block, block.childNodes.length);
+    let rest = after.toString();
+    const names = [];
+    for (const a of links) {
+      const text = (a.textContent || "").replace(/[\s ]+/g, " ").trim();
+      if (!text) return null;
+      names.push(text);
+      rest = rest.replace(a.textContent || "", " ");
+    }
+    if (rest.replace(/[\s ,]/g, "")) return null;   // other words → real prose
+
+    after.deleteContents();
+    return names.join(", ");
+  } catch {
+    return null;
+  }
+}

@@ -36,7 +36,7 @@ import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
 import { formatRange, chainAccuracyRange, isDrawnChainPreviewSpec, extendChainPreview } from "./chain-preview.js";
 import { lookupTerm, lookupLinkTerm } from "./keyword-registry.js";
-import { absorbKeywordValue, normalizeKeywordLabel } from "./keyword-value.js";
+import { absorbKeywordValue, absorbKeywordLinkTail, normalizeKeywordLabel } from "./keyword-value.js";
 import { DAMAGE as DAMAGE_TYPE_STYLE } from "../linked-text/lt-terms.js";
 import { formatHitChance, isConcealedRoll } from "./check.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
@@ -839,6 +839,8 @@ export function ensureStyles() {
     .fud-bf-card .fud-kw-term.is-keyword .fud-kw-label {
       text-transform: uppercase; letter-spacing: .3px; font-size: 12px;
     }
+    /* "Transform 【Zarg's Bow - Light】": the lead-in's Item sits after the label, as written. */
+    .fud-bf-card .fud-kw-term.is-keyword .fud-kw-detail { margin-left: 4px; font-size: 12px; font-weight: 600; color: #4a3a22; }
     .fud-bf-card .fud-kw-term .fud-kw-bullet {
       color: #c98a2a; font-size: 9px; line-height: 1;
       transform: translateY(-1px); flex-shrink: 0;
@@ -1062,9 +1064,6 @@ export function ensureStyles() {
       padding: 1px 6px 1px 2px; border-radius: 999px; border: 1px solid #8e2a8a; color: #6e1f66; background: rgba(154,59,143,.12); line-height: 1.2; }
     .fud-bf-card .t-revpill img { width: 13px; height: 13px; border-radius: 3px; image-rendering: pixelated; border: 0; }
     .fud-bf-card .t-revpill.ud { border-color: #5a5a5a; color: #3a3a3a; background: rgba(58,50,40,.08); padding-left: 6px; }
-    .fud-bf-card .fud-bf-heal-rev-sum { display: flex; align-items: center; gap: 6px; margin-top: 5px; padding: 4px 7px; border-radius: 6px;
-      border: 1px solid rgba(180,0,0,.45); background: rgba(180,0,0,.07); color: #8e1a14; font-size: 11.5px; font-weight: 700; }
-    .fud-bf-card .fud-bf-heal-rev-sum img { width: 15px; height: 15px; image-rendering: pixelated; border: 0; }
     .fud-bf-card .fud-bf-target-row .t-affinity {
       display: inline-flex; align-items: center;
       margin-left: 6px;
@@ -3090,15 +3089,8 @@ export function healRevPillHTML(r) {
   if (r.healReversedReason === "effect") return "";
   return `<span class="t-revpill ud">Undead</span>`;
 }
-// The Result summary line: "2 of 3 targets take this heal as damage." (mockup renderB).
-export function healRevSummaryHTML(rows) {
-  const heal = (rows ?? []).filter((r) => typeof r?.grantAmount === "number" && r.grantResource === "hp");
-  const n = heal.filter(isHealRevShown).length;
-  if (!n) return "";
-  const lead = n === heal.length ? (heal.length === 1 ? "This target takes" : `All ${heal.length} targets take`) : `${n} of ${heal.length} targets take`;
-  const ic = heal.some((r) => isHealRevShown(r) && r.healReversedReason === "zombie") ? `<img src="${escapeHtml(healRevIcon())}" alt="">` : "";
-  return `<div class="fud-bf-heal-rev-sum">${ic}${lead} this heal as damage.</div>`;
-}
+// No Result summary line under a reversed heal: the red DAMAGE row says it
+// (user 2026-11-28, "over-clarification").
 
 export function resultClsFor(r) {
   // Fickle: one neutral hue for every row. The normal classes are outcome
@@ -3329,7 +3321,6 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     <fieldset class="fud-bf-section">
       <legend>Result${suffix}</legend>
       <div class="fud-bf-target-list">${rows || `<div style="opacity:0.6;font-size:12px;">No targets.</div>`}</div>
-      ${healRevSummaryHTML(perTargetResults)}
     </fieldset>
   `;
 }
@@ -5718,11 +5709,15 @@ function chipIconHTML(icon) {
 // the SAME keyword chips this card does — they carry the shared `fud-kw-term`
 // styling and tooltip wiring, so a chip looks and behaves identically wherever
 // it appears. Pure render, no behaviour change for BD.
-export function keywordChipHTML({ key, label, icon }) {
+export function keywordChipHTML({ key, label, icon, detail = null }) {
+  // `detail` = the Item a keyword lead-in names ("Transform 【Zarg's Bow - Light】"),
+  // shown as written after the label; brackets added when the text has none.
+  const d = String(detail ?? "").trim();
+  const detailHTML = d ? `<span class="fud-kw-detail">${escapeHtml(d.startsWith("【") ? d : `【${d}】`)}</span>` : "";
   return `<span class="fud-kw-term is-keyword" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}">`
     + `<span class="fud-kw-bullet" aria-hidden="true">◆</span>`
     + `${chipIconHTML(icon)}`
-    + `<span class="fud-kw-label">${escapeHtml(label)}</span></span>`;
+    + `<span class="fud-kw-label">${escapeHtml(label)}</span>${detailHTML}</span>`;
 }
 
 // Status term — icon + bold/underline label, inline in the prose.
@@ -5787,6 +5782,27 @@ export function parseEffectDescription(html) {
       // A keyword INSIDE a sentence ("Generates no Resonance this turn") still gets its badge (unchanged), but the word
       // also stays in the prose as a clickable term: removing the anchor left a hole in the sentence. A keyword that IS
       // its line ("Chain 2", "Unleash") is lifted as before.
+      //
+      // A keyword that OPENS its line with a value or an Item after it is a lead-in, not
+      // prose — checked FIRST, or the inline test (which sees the words after it) keeps the
+      // keyword in the body and the card shows it twice (user 2026-11-28):
+      //   "Chain 3: call down three bolts…"      → chip CHAIN 3, body "Call down three bolts…"
+      //   "Transform 【Zarg's Bow - Light】"      → chip TRANSFORM 【Zarg's Bow - Light】, line gone
+      if (entry?.kind === "keyword") {
+        const key = entry.key ?? uuid;
+        const value = absorbKeywordValue(a, root);
+        const detail = value ? null : absorbKeywordLinkTail(a, root);
+        if (value || detail) {
+          const chipLabel = value ? `${label} ${value}` : normalizeKeywordLabel(label);
+          const dedup = `${key}|${chipLabel}|${detail ?? ""}`;
+          if (!seenKw.has(dedup)) {
+            seenKw.add(dedup);
+            keywords.push({ key, label: chipLabel, icon: entry.icon ?? null, ...(detail ? { detail } : {}) });
+          }
+          a.remove();
+          continue;
+        }
+      }
       if (entry?.kind === "keyword" && isInlineKeyword(a)) {
         const key = entry.key ?? uuid, chipLabel = normalizeKeywordLabel(label), dedup = `${key}|${chipLabel}`;
         if (!seenKw.has(dedup)) { seenKw.add(dedup); keywords.push({ key, label: chipLabel, icon: entry.icon ?? null }); }
@@ -5835,6 +5851,10 @@ export function parseEffectDescription(html) {
     }
     for (const ul of Array.from(root.querySelectorAll("ul, ol"))) {
       if (!ul.querySelector("li")) ul.remove();
+    }
+    // A lead-in line lifted whole (keyword + Item) leaves an empty <p>.
+    for (const p of Array.from(root.querySelectorAll("p"))) {
+      if (!p.textContent.replace(/[\s ]/g, "") && !p.querySelector("img, .fud-bf-effect-chip, .fud-kw-term")) p.remove();
     }
 
     const bodyHtml = root.innerHTML.trim();
