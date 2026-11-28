@@ -25,6 +25,7 @@ import { hasOverflow } from "../hp-overflow.js";
 import { resolveAffinity } from "../snapshot.js";
 import { lookupTerm } from "../keyword-registry.js";
 import { ATTR_ICON, ATTR_NAME, WEAPON_ICON, costChip, rankInfo, rankKeyOf } from "./study-visuals.js";
+import { withLiveDetails } from "./live-details.js";
 
 const NS = "fabula-ultima-companion";
 export const HP_RULE_SETTING = "unitInspectEnemyHp";
@@ -266,7 +267,11 @@ export function buildInspectModel(token, { side = null, asPlayer = false, capBes
     : "";
 
   // ── weapons + statuses (enemies; null while locked) ──
-  const det = enemy ? (entry?.details ?? null) : null;
+  // The Encyclopedia gates WHAT shows (Study 13+, GM peek); the VALUES of these
+  // battle-variable sections come from THIS token (live-details.js). An unlinked
+  // token carries its own actor, so Adaptive Defense's 25% bow lives here, not on
+  // the prototype the entry reads.
+  const det = enemy ? withLiveDetails(entry?.details ?? null, p) : null;
   const detGmOnly = !!det?.hidden;
   const weapons = det ? det.weapons.map((w) => ({
     key: w.type, pct: w.pct, icon: WEAPON_ICON[w.type] ?? "fa-khanda", cls: w.pct > 100 ? "up" : w.pct < 100 ? "down" : "",

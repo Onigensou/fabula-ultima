@@ -1850,6 +1850,9 @@ async function resolveAction(director, ar, opts = {}) {
           // Counter Pass) silently never fired on a missed basic Attack.
           actionIntent:      ar.actionIntent ?? (isAttackAction ? "harmful" : null),
           actionKind:        ar.kind ?? null,
+          // Spells are stamped ar.kind "Skill"; the spell fact is the item skill_type
+          // (Adaptive Defense reads a missed spell as Arcane off it).
+          actionSkillType:   payloadForPassives.actionSkillType ?? null,
           sourceSkillName:   skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
           weaponUuid:        ar.weapon?.uuid ?? null,
           weaponType:        ar.weapon?.weaponType ?? null,
@@ -1902,6 +1905,8 @@ async function resolveAction(director, ar, opts = {}) {
           missedTargetCount: seenMissActors.size,
           actionIntent:      ar.actionIntent ?? (isAttackAction ? "harmful" : null),
           actionKind:        ar.kind ?? null,
+          // Same spell fact as the per-target miss payload above.
+          actionSkillType:   payloadForPassives.actionSkillType ?? null,
           actionCanMiss:     !!ar.canMiss,
           sourceSkillName:   skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
           weaponUuid:        ar.weapon?.uuid ?? null,

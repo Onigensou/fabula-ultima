@@ -66,6 +66,7 @@ import { resolveWornSlots } from "../shared/equipped-gear.js";
 import { deferVfxTable } from "./impact-offsets.js";
 import { flushPendingFollowUpsFor } from "./deferred-followups.js";
 import { bakedStatusesFor } from "./summon-clone-status.js";
+import { WEAPON_READ_FAMILIES, weaponReadFamilyOf } from "./weapon-read-family.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -5666,47 +5667,19 @@ async function applyTriggerOpportunityEffect(row, ctx) {
 // ⚠ Values are floored at 1, never 0. `readWeaponEfficiency` (snapshot.js:125)
 // treats a stored 0 as 100 while apply-damage-core honours it, so a 0 lane would
 // behave differently depending on which damage path fired.
-const WEAPON_READ_FAMILIES = Object.freeze([
-  "arcane", "bow", "brawling", "dagger", "firearm", "flail", "heavy",
-  "spear", "sword", "thrown",
-]);
+// (WEAPON_READ_FAMILIES comes from weapon-read-family.js.)
 
-// Which lane did this attack come from? Resolution order matters — see §4.4.
-//   1. the weapon item        (a SHIELD maps to brawling: a shield cannot be
-//                              wielded as a weapon, so a shield attack is always
-//                              a virtual brawling profile)
-//   2. payload.weaponType     (the only thing a VIRTUAL attack carries — Dual
-//                              Shieldbearer's Twin Shields has no item, so no
-//                              weaponUuid, and step 1 finds nothing)
-//   3. a Spell                -> arcane, matching action-profile.js:242, which is
-//                              the engine's own "spells count as Arcane" rule
-// Returns null when nothing resolves, so the row fails CLOSED rather than
-// charging some arbitrary lane.
+// Which lane did this attack come from? The rule (item → payload.weaponType →
+// spell = arcane) lives in weapon-read-family.js so it can be unit-tested; this
+// only looks the weapon item up. Returns null when nothing resolves, so the row
+// fails CLOSED rather than charging some arbitrary lane.
 async function resolveWeaponReadFamily(payload) {
-  const norm = (v) => {
-    const s = String(v ?? "").trim().toLowerCase();
-    return WEAPON_READ_FAMILIES.includes(s) ? s : null;
-  };
-
+  let itemProps = null;
   const uuid = String(payload?.weaponUuid ?? "").trim();
   if (uuid) {
-    let item = null;
-    try { item = await fromUuid(uuid); } catch (_e) { item = null; }
-    const p = item?.system?.props ?? null;
-    if (p) {
-      if (String(p.item_type ?? "").toLowerCase() === "shield") return "brawling";
-      const cat = norm(p.category ?? p.weapon_type ?? p.type);
-      if (cat) return cat;
-    }
+    try { itemProps = (await fromUuid(uuid))?.system?.props ?? null; } catch (_e) { itemProps = null; }
   }
-
-  const fromPayload = norm(payload?.weaponType);
-  if (fromPayload) return fromPayload;
-
-  const kind = String(payload?.actionKind ?? "").toLowerCase();
-  if (kind === "spell") return "arcane";
-
-  return null;
+  return weaponReadFamilyOf(payload, itemProps);
 }
 
 function weaponReadEfficiency(counter, window, curve) {

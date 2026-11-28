@@ -97,7 +97,7 @@ const tokenUuidOf = (dc) => dc?.tokenUuid ?? dc?.tokenDoc?.uuid ?? null;
 //     off-hand only    → "off"
 //     virtual attack   → "virtual:N"   (Blanche's Twin Shields)
 //     nothing at all   → null → Guard
-function resolveAttackMode(actorDoc) {
+export function resolveAttackMode(actorDoc) {
   // Polymorph: the form attacks with its own Attack items (bestNpcAttack), never
   // the bearer's equipped weapon — same as actor-shape.getActorKind → "npc".
   if (isPolymorphed(actorDoc)) return null;
