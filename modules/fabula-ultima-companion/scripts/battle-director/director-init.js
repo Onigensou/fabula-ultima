@@ -721,8 +721,13 @@ async function liveFormation(scene, disposition, { anchor = null, casterTokenId 
     // (a test dummy left on the scene) must never be counted or moved by a re-form.
     const inFight = (t) => !!t.flags?.[FLAG_NS]?.[FLAG_DIRECTOR_SPAWNED]
       || !!game.combat?.combatants?.some?.((c) => c.tokenId === t.id);
+    // A summon_hidden token (alpha 0, flag revealAfterAnim, skill-effects.js) is
+    // already standing there, just not shown until its cinematic ends: it must
+    // block its spot, or every copy of a multi-summon (3 Missile Fists, each
+    // spawned on its own) lands on the same "nearest clean spot" (playtest 11-28).
+    const pendingReveal = (t) => t.flags?.[FLAG_NS]?.revealAfterAnim === true;
     const live = (scene.tokens?.contents ?? []).filter((t) =>
-      t.disposition === disposition && !t.hidden && (t.alpha ?? 1) > 0.05 && t.actor && inFight(t));
+      t.disposition === disposition && !t.hidden && ((t.alpha ?? 1) > 0.05 || pendingReveal(t)) && t.actor && inFight(t));
     const placed = [], current = {};
     for (const t of live) {
       const kind = disposition === -1 ? "enemy" : (isNpcActor(t.actor) ? "summon" : "pc");

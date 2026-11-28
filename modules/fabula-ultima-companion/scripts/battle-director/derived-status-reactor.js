@@ -162,8 +162,23 @@ function netEvents(events) {
   return out;
 }
 
+// A token actor whose token is gone (a Missile Fist that Detonated and was
+// consumed, any summon despawned) can still be queued: the safety net hooks
+// updateActor, the HP drop that killed it fires that hook, and the drain runs a
+// microtask later, after the token was deleted. Writing a status onto it then
+// throws "<token id> does not exist in the EmbeddedCollection collection" as a
+// red toast (playtest 11-28). Nothing to reconcile on a creature that left.
+function actorGone(actor) {
+  if (!actor?.isToken) return false;
+  const td = actor.token;
+  if (!td?.id) return true;
+  const scene = td.parent;
+  return !scene?.tokens?.get?.(td.id);
+}
+
 async function _reconcile(actor) {
   if (!actor?.createEmbeddedDocuments) return { changed: false, events: [] };
+  if (actorGone(actor)) return { changed: false, events: [] };
   let changed = false;
   const events = [];
   for (let pass = 1; pass <= MAX_RECONCILE_PASSES; pass++) {
@@ -267,6 +282,9 @@ async function _reconcileOnce(actor) {
   // briefly showing two of anything.
   // Prong A, Prong B and crisis-reactor can all remove the same status in one
   // frame; deleteEffectsOnce sends each delete once (no "does not exist!" toast).
+  // Re-checked here: buildStatusData / the formula import awaited, and the token
+  // can be deleted in that gap.
+  if (actorGone(actor)) return { changed: false, events: [] };
   if (toDelete.length) await deleteEffectsOnce(actor, toDelete);
   if (toCreate.length) await actor.createEmbeddedDocuments("ActiveEffect", toCreate);
   if (toUpdate.length) await actor.updateEmbeddedDocuments("ActiveEffect", toUpdate);
@@ -331,6 +349,7 @@ function queueReconcile(actor) {
   // which may be the Co-DM.) Fail-open to isGM if the helper isn't loaded.
   const primary = globalThis.FUCompanion?.isPrimaryGM;
   if (primary ? !primary() : !game.user?.isGM) return;     // primary GM authority only
+  if (actorGone(actor)) return;
   _pending.add(actor);
   if (_draining) return;
   _draining = true;

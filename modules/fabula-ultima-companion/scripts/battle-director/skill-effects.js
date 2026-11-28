@@ -5078,6 +5078,8 @@ async function applyDestroySummonEffect(row, ctx) {
             subjectTokenUuid: token.uuid ?? null,
             summonedBy: flags.summonedBy ?? null,
             isPhantasm: !!(actor?.system?.props?.isPhantasm || flags.isPhantasm),
+            summonKind: flags.persistentSummonKind ?? actor?.flags?.[NS]?.persistentSummonKind ?? null,
+            isClone: !!flags.cloneActorUuid,
             cause: "shatter",
             causeActorUuid: ctx.reactorActor?.uuid ?? null,   // who shattered it
           },

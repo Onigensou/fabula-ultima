@@ -913,6 +913,10 @@
     {
       "key": "2026-11-28-deva-area-skills",
       "path": "data-migrations/2026-11-28-deva-area-skills.js"
+    },
+    {
+      "key": "2026-11-28-botc-untoll-minion-only",
+      "path": "data-migrations/2026-11-28-botc-untoll-minion-only.js"
     }
   ]
 }

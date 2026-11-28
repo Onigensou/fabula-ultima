@@ -78,6 +78,8 @@
       defeatedActorUuid: actorUuid,
       summonedBy: tokenFlags.summonedBy ?? null,
       isPhantasm: !!(foundry.utils.getProperty(actor, "system.props.isPhantasm") || tokenFlags.isPhantasm),
+      summonKind: tokenFlags.persistentSummonKind ?? actor?.flags?.[NS]?.persistentSummonKind ?? null,
+      isClone: !!tokenFlags.cloneActorUuid,
       hpCur: 0,
       hpMax: Number(foundry.utils.getProperty(actor, "system.props.max_hp")) || null,
       source: "creature-defeated-emitter",

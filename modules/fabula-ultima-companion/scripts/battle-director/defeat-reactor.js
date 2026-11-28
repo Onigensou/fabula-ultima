@@ -634,6 +634,10 @@ function buildDefeatPayload(trigger, actor, tokenDoc, payload, batch) {
     subjectTokenUuid: tokenDoc?.uuid ?? null,
     summonedBy:       tokenFlags.summonedBy ?? null,
     isPhantasm:       !!(actor?.system?.props?.isPhantasm || tokenFlags.isPhantasm),
+    // Which persistent-summon role it held (Birth of the Cruel's Minion = "minion"),
+    // and whether it was an engine clone: SUBJECT_IS_MY_MINION reads both.
+    summonKind:       tokenFlags.persistentSummonKind ?? actor?.flags?.[NS]?.persistentSummonKind ?? null,
+    isClone:          !!tokenFlags.cloneActorUuid,
     element:          payload?.element ?? null,
     cause:            payload?.cause ?? null,
     causeActorUuid:   payload?.causeActorUuid ?? null,

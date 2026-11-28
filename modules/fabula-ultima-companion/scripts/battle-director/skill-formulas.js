@@ -1952,6 +1952,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const me = String(actor?.uuid ?? "").trim();
         return (by && me && by === me) ? 1 : 0;
       }
+      // 1 when the trigger SUBJECT is MY Minion (a persistent summon of kind
+      // "minion": Birth of the Cruel's reanimated corpse), not just any summon of
+      // mine. SUBJECT_IS_MY_SUMMON also matched Keren's Numen, so Crysta falling
+      // refunded the Grave Toll while the Minion still stood (playtest 11-28).
+      // A clone with no kind stamp (made before summon_kind existed) still counts,
+      // matching ownPersistentSummonCount's legacy rule.
+      case "SUBJECT_IS_MY_MINION": {
+        const by = String(payload?.summonedBy ?? "").trim();
+        const me = String(actor?.uuid ?? "").trim();
+        if (!(by && me && by === me)) return 0;
+        const kind = String(payload?.summonKind ?? "").trim().toLowerCase();
+        return (kind === "minion" || (!kind && payload?.isClone === true)) ? 1 : 0;
+      }
       // The inverse question, asked FROM the summon: 1 when the trigger SUBJECT
       // (turn_start / turn_end: the acting creature) is the creature that owns
       // THIS actor as its summon. Lets a companion / minion carry its own
