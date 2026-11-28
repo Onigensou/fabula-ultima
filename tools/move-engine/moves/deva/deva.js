@@ -139,7 +139,7 @@ def("boom", { boss: "fist", status: "approved", icon: "fistA", fists: true, name
         const t = C.targets[i]; const q = center(t); f.bob = false; sfx("launch", .55, 1.3);
         const y0 = OY(f) - (f.lift || 0); f.lift = 0; setPos(f, f.dx, y0 - f.y);
         await moveActor(f, q.x, q.y + hgt(f) * .5, tv(C, "rocket"), EASE.inCubic);
-        f.gone = true; f.el.style.display = "none"; sfx("explode", .9); sfx("explosion", .45);
+        f.gone = true; f.el.style.display = "none"; f.el.style.opacity = 0; sfx("explode", .9); sfx("explosion", .45);
         clip("ro_rl_explosion__boom", q, { scale: t.s * tv(C, "boomScale") / 100 }); clip("gg_explosion_anim01", q, { scale: .32 * t.s * tv(C, "boomScale") / 100, blend: "screen" });
         flash("#fff", .35, 30, 200).catch(() => {}); shake(tv(C, "shakePx"), 380).catch(() => {});
         dmgNum(t.id + i, numAt(t), tv(C, "dmg"), { element: "physical" }); hitReact(t, "strong"); }))); } },
@@ -148,7 +148,7 @@ def("boom", { boss: "fist", status: "approved", icon: "fistA", fists: true, name
 
 // break: the party cracks a fist (3 damaging hits), or one area attack cracks both
 async function partyHitFx(f) { sfx("crack", .7); clip("001_hit_physical", fistPt(f), { scale: .8 }); f.hits = (f.hits || 0) + 1; drawCracks(f);
-  if (f.media) { f.media.style.filter = `drop-shadow(0 0 6px rgba(${RED},.9)) brightness(1.8)`; const h = f.hits; setTimeout(() => { if (!f.gone) f.media.style.filter = `drop-shadow(0 0 6px rgba(${RED},.9)) brightness(${1 - h * .08})`; }, 120 / SPEED); }
+  if (f.media) { f.media.style.filter = `drop-shadow(0 0 6px rgba(${RED},.9)) brightness(1.8)`; const h = f.hits; wait(120).then(() => { if (!f.gone) f.media.style.filter = `drop-shadow(0 0 6px rgba(${RED},.9)) brightness(${1 - h * .08})`; }, 120 / SPEED); }
   await tween(240, EASE.lin, (u) => setPos(f, Math.sin(u * Math.PI * 6) * 6 * (1 - u), f.dy)); setPos(f, 0, f.dy); }
 async function shatter(f, C) { f.gone = true; sfx("break", .9); sfx("crash", .35);
   const p = fistPt(f); flash("#fff", .25, 30, 160).catch(() => {}); clip("gg_burst_anim02", p, { scale: .32, blend: "screen", filter: tint(5, 6, 1.2) });
@@ -199,7 +199,7 @@ def("enl", { boss: "offense", status: "approved", icon: "deva", name: "Enlighten
     T("outMs", "Fade back + camera reset (ms)", 1000, 300, 2500, 50),
     TO("from", "The form her stacks picked", ["Fury → becomes Focus", "Focus → becomes Fury"], 0)],
   beats: [
-    { name: "In the steered form", note: "the form her stacks picked", run: async (C) => { setForm(["fury", "focus"][tv(C, "from")]); await wait(500); } },
+    { name: "In the steered form", note: "the form her stacks picked", run: async (C) => { setForm(["fury", "focus"][devaFrom(C)]); await wait(500); } },
     { name: "Blackout", note: "camera zooms in on her, the field and the party fade to black", run: async (C) => { const D = DV(), ms = tv(C, "still"); sfx("saint", .35);
       const c = center(D);
       await Promise.all([FCAM.to({ x: c.x, y: c.y - tv(C, "rise") * .6, z: tv(C, "zoom"), r: 0 }, ms, EASE.sine), fdim(tv(C, "dim"), ms), partyFade(0, ms * .8)]); } },
@@ -213,16 +213,16 @@ def("enl", { boss: "offense", status: "approved", icon: "deva", name: "Enlighten
       await tween(ms, EASE.sine, (u) => devaGlow(u)); } },
     { name: "The orb gathers", note: "red and blue motes spiral in", run: async (C) => {
       devaGlow(1); C.orb = makeOrb(C); sfx("magic", .45); const p = C.orb.p;
-      if (tv(C, "from") === 1) C.orb.swap = 1;   // the orb's red half follows her current colour
+      if (devaFrom(C) === 1) C.orb.swap = 1;   // the orb's red half follows her current colour
       for (let k = 0; k < 28; k++) { const a = rnd(0, Math.PI * 2), r = rnd(110, 200); homing("field", { x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r * .7 }, p, k % 2 ? RED : BLUE, { ms: 900, arc: 60, r: 3 }); }
       await wait(500); await tween(700, EASE.outBack, (u) => C.orb.scale = u); } },
     { name: "Spin", note: "slow, then faster and faster", run: async (C) => {
-      if (!C.orb) { C.orb = makeOrb(C); C.orb.scale = 1; if (tv(C, "from") === 1) C.orb.swap = 1; }
+      if (!C.orb) { C.orb = makeOrb(C); C.orb.scale = 1; if (devaFrom(C) === 1) C.orb.swap = 1; }
       const turns = tv(C, "turns"); sfx("up", .35);
       await tween(tv(C, "spinUp"), EASE.inCubic, (u) => { C.orb.rot = u * turns * Math.PI * 2; C.orb.glow = .6 + u * .9; }); } },
     { name: "Reversal", note: "halves trade places, the form flips", gate: true, run: async (C) => {
-      const D = DV(); if (!C.orb) { C.orb = makeOrb(C); C.orb.scale = 1; if (tv(C, "from") === 1) C.orb.swap = 1; }
-      markGate(); const to = tv(C, "from") === 0 ? "focus" : "fury"; sfx("reflection", .8); sfx("bell", .6);
+      const D = DV(); if (!C.orb) { C.orb = makeOrb(C); C.orb.scale = 1; if (devaFrom(C) === 1) C.orb.swap = 1; }
+      markGate(); const to = devaFrom(C) === 0 ? "focus" : "fury"; sfx("reflection", .8); sfx("bell", .6);
       C.burst = prepBurst(to, tv(C, "burstN"));   // hidden now, so the copies are decoded when the burst fires
       flash("#fff", .35, 40, 260).catch(() => {}); clip("d4_flash_ring_white", C.orb.p, { scale: 3 });
       clip("d4_flash_ring_white", center(D), { scale: 3 * D.s, filter: tint(to === "focus" ? 205 : 5, 5, 1.2) });
@@ -230,14 +230,14 @@ def("enl", { boss: "offense", status: "approved", icon: "deva", name: "Enlighten
       await Promise.all([tween(700, EASE.outCubic, (u) => { C.orb.swap = lerp(s0, 1 - s0, u); C.orb.rot = r0 + u * Math.PI; }), squash(D, 1, 1, 380, EASE.outBack)]);
       for (let k = 0; k < 16; k++) ember("field", OX(D) + rnd(-90, 90), OY(D) - (D.lift || 0) - rnd(40, 200), formRgb(to)); await wait(300); } },
     { name: "Burst", note: "the orb shatters, afterimages of her new form explode outward", run: async (C) => {
-      const D = DV(), to = tv(C, "from") === 0 ? "focus" : "fury", p = C.orb ? C.orb.p : { x: OX(D), y: OY(D) - (D.lift || 0) - hgt(D) - 40 };
+      const D = DV(), to = devaFrom(C) === 0 ? "focus" : "fury", p = C.orb ? C.orb.p : { x: OX(D), y: OY(D) - (D.lift || 0) - hgt(D) - 40 };
       sfx("saint", .5); sfx("powerup", .45); if (C.orb) C.orb.remove(); shake(6, 300).catch(() => {});
       clip("d4_flash_ring_white", center(D), { scale: 4.2 * D.s, filter: tint(to === "focus" ? 205 : 5, 5, 1.2) });
       for (let k = 0; k < 30; k++) { const a = rnd(0, Math.PI * 2), sp = rnd(.12, .32); addP("field", { x: p.x, y: p.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, drag: .985, life: rnd(600, 1100), r: rnd(2, 4), rgb: k % 2 ? RED : BLUE,
         draw: (c, q, t) => glow(c, q.x, q.y, q.r * 3, q.rgb, 1 - t) }); }
       await Promise.all([formBurst(to, { n: tv(C, "burstN"), dist: tv(C, "burstDist"), ms: tv(C, "burstMs"), copies: C.burst }), tween(tv(C, "burstMs"), EASE.out, (u) => devaGlow(1 - u * .6, formRgb(to)))]); } },
     { name: "Return", note: "the field fades back in, she settles, the camera resets", run: async (C) => {
-      const D = DV(), ms = tv(C, "outMs"), to = tv(C, "from") === 0 ? "focus" : "fury";
+      const D = DV(), ms = tv(C, "outMs"), to = devaFrom(C) === 0 ? "focus" : "fury";
       await Promise.all([fdim(0, ms), partyFade(1, ms), FCAM.to({ x: W / 2, y: H / 2, z: 1, r: 0 }, ms, EASE.sine), liftTo(D, 0, ms, EASE.sine),
         tween(ms, EASE.sine, (u) => devaGlow(.4 * (1 - u), formRgb(to)))]);
       devaGlow(0); await wait(600); } },
@@ -264,7 +264,7 @@ def("slam", { boss: "strike", status: "approved", icon: "deva_fury", name: "Grou
         c.shadowColor = "rgba(255,140,60,.8)"; c.shadowBlur = 18; c.strokeStyle = `rgba(255,200,140,${.9 * (1 - u * .6)})`; c.lineWidth = 6; c.beginPath(); c.ellipse(p.x, p.y, r, r * .32, 0, 0, 7); c.stroke();
         if (Math.random() < .5) dust("field", p.x + r * rndFx(.7, 1), p.y + rndFx(-r * .3, r * .3), "200,150,100", { life: 500, r: rndFx(2, 4) }); } });
       await wait(ms); markGate(); clip("088_earth_all_1", partyCentre(), { scale: 1.1 });
-      for (const t of DEVA_TARGETS()) { if (rollHit(tv(C, "hit") / 100)) { sfx("blowB", .4); hitFx(t, tv(C, "dmg"), "earth", { clipKey: "086_earth_one_1", scale: .3 });
+      for (const t of DEVA_TARGETS()) { if (rollHit(tv(C, "hit") / 100, t)) { sfx("blowB", .4); hitFx(t, tv(C, "dmg"), "earth", { clipKey: "086_earth_one_1", scale: .3 });
           wait(420).then(() => { clip("055_powerdown_2", feet(t), { scale: t.s * .8 }); statusTag(t, "Slow", "190,200,255"); }).catch(() => {}); } else missFx(t); await wait(90); }
       sfx("slow", .35); } },
     { name: "Dust settles", note: "", run: async () => { await wait(1200); } },
@@ -289,12 +289,12 @@ def("surya", { boss: "strike", status: "approved", icon: "deva_fury", name: "Sur
 // ───────── Magic Form (Focus, blue)
 // Rahu's Eclipse on our pixelfx clip (fu/rahu-eclipse: back / front / light), impact at 3.1 s
 const RAHU_IMPACT = 3100;
-function rahuClips(pt, scale, fromMs = 0) { return ["back", "front", "light"].map((l) => { const c = clip("pxfx_dark_rahu_eclipse_" + l, pt, { scale, blend: l === "light" ? "screen" : "", z: l === "light" ? 2 : 1 });
+function rahuClips(pt, scale, fromMs = 0, fadeMs = 0) { return ["back", "front", "light"].map((l) => { const c = clip("pxfx_dark_rahu_eclipse_" + l, pt, { scale, blend: l === "light" ? "screen" : "", z: l === "light" ? 2 : 1, fadeIn: fadeMs });
   if (fromMs && c.el) c.el.currentTime = fromMs / 1000; return c; }); }
 const rahuPt = () => { const L = DEVA_TARGETS(); return { x: partyCentre().x, y: Math.min(...L.map((t) => head(t).y)) + 6 }; };
 // the eclipse is started by its own beat; jumping past that beat starts it here at the right point instead
-function ensureEclipse(C, atMs, fadeMs = 0) { if (C.clips && C.clips[0].el) return; C.pt = rahuPt();
-  C.clips = rahuClips(C.pt, 1.1 * tv(C, "size") / 100 / .55, atMs); C.t0 = TRACE.now() - atMs;
+function ensureEclipse(C, atMs, fadeMs = 0) { if (C.clips && (C.clips[0].el || IN_GAME)) return; C.pt = rahuPt();
+  C.clips = rahuClips(C.pt, 1.1 * tv(C, "size") / 100 / .55, atMs, fadeMs); C.t0 = TRACE.now() - atMs;
   if (fadeMs) C.clips.forEach((c) => { if (!c.el) return; c.el.style.opacity = 0; tween(fadeMs, EASE.sine, (u) => c.el.style.opacity = u).catch(() => {}); }); }
 def("rahu", { boss: "magic", status: "approved", icon: "deva_focus", name: "Rahu's Eclipse", tag: "Spell · all enemies · no roll · MP then Dark", changes: [],
   intro: "Night falls and Rahu's black sun fades in over the party, its violet corona brightening. Motes of the party's magic are dragged up out of them into its rim; then the corona flares white and Dark rains down on each of them in proportion to what they lost.",
@@ -344,9 +344,11 @@ const BARRAGE_GLIDE = { id: "barrage-glide", re: "She is too static during the b
 // v19: her barrage afterimage, brighter than the shared one: a copy tinted to her form colour with a glow, fading out where she was
 function barrageGhost(a, blue, opacity = .65, ms = 620) {
   if (FAST) return; const rgb = blue ? BLUE : RED, hue = blue ? 223 : 8;
-  const g = sprite(a.media.getAttribute("src"), $("factors"), { x: OX(a), y: OY(a) - (a.lift || 0), h: hgt(a), opacity, z: Math.round(OY(a)) - 1, flip: a.flip,
+  const g = sprite(IN_GAME ? null : a.media.getAttribute("src"), $("factors"), { actor: IN_GAME ? a : null, x: OX(a), y: OY(a) - (a.lift || 0), h: hgt(a), opacity, z: Math.round(OY(a)) - 1, flip: a.flip,
     filter: `sepia(1) saturate(5) hue-rotate(${hue - 38}deg) brightness(1.5) drop-shadow(0 0 10px rgba(${rgb},1))` });
   g.set({ rot: a.rot, sx: a.kx ?? 1, sy: a.ky ?? 1 }); tween(ms, EASE.out, (u) => { g.opacity = opacity * (1 - u); g.sx = (a.kx ?? 1) * (1 + .06 * u); g.sy = (a.ky ?? 1) * (1 + .06 * u); g.apply(); }).then(() => g.remove(), () => g.remove()); }
+// the page's barrage blink lands 230 px ahead of her spot (330 → 560): 642 px short of the nearest party member (Hina, 1202)
+const DEVA_BLINK_GAP = 1202 - (330 + 230);
 function barrageMove(color) {
   const blue = color === "blue", elem = blue ? "dark" : "physical", per = blue ? 18 : 36;
   return { boss: "shipped", status: "changes", icon: blue ? "deva_focus" : "deva_fury", name: blue ? "Fists of Focus" : "Fists of Fury", changes: [BARRAGE_V20, BARRAGE_V19, BARRAGE_CFG, BARRAGE_GLIDE],
@@ -367,7 +369,7 @@ function barrageMove(color) {
       T("iframe", "Anime impact frame (0 = off, 1 = on)", 1, 0, 1, 1), T("finalZoom", "Final camera push (x)", 1.15, 1, 1.5, .01)],
     beats: [
       inForm(blue ? "focus" : "fury"),
-      { name: "Teleport in", note: "fade + squeeze out, reappear in front of the party", run: async (C) => { const D = DV(); await devaBlink(D, D.x + tv(C, "step"), D.y + 8, { ms: tv(C, "tp"), blue }); } },
+      { name: "Teleport in", note: "fade + squeeze out, reappear in front of the party", run: async (C) => { const D = DV(); await devaBlink(D, IN_GAME ? Math.max(D.x, Math.min(...DEVA_TARGETS().map((t) => OX(t))) - DEVA_BLINK_GAP) : D.x + tv(C, "step"), D.y + 8, { ms: tv(C, "tp"), blue }); } },
       { name: "Zoom in", note: "camera pushes in on the midpoint between her and the party", run: async (C) => {
         if (tv(C, "zoom") <= 1.001) return; const pc = partyCentre(), dc = center(DV());
         await FCAM.to({ x: (dc.x + pc.x) / 2, y: (dc.y + pc.y) / 2, z: tv(C, "zoom"), r: 0 }, tv(C, "zoomMs"), EASE.outCubic); } },
@@ -380,8 +382,9 @@ function barrageMove(color) {
         hits.forEach((x) => { const n = x.ticks.length;   // damage ticks: each lands with a full GG hit
           for (let k = 0; k < n; k++) { const at = dur * .06 + dur * .88 * (k + rnd(.1, .9)) / n;
             all.push(wait(at).then(() => { ggImpact(x.t, dirTo(x.t) + rndFx(-.25, .25), blue, { big: tv(C, "spark") });
-              dmgNum(x.t.id, numAt(x.t), x.ticks[k], { element: elem, cascade: (k % 4) + 1 }); if (k % 3 === 0) hitReact(x.t, "normal");
+              if (!IN_GAME) dmgNum(x.t.id, numAt(x.t), x.ticks[k], { element: elem, cascade: (k % 4) + 1 }); if (k % 3 === 0) hitReact(x.t, "normal");
               if (k % 2) sfx(k % 4 ? "blowA" : "blowB", .4, 1.05 + (k % 5) * .07); })); } });
+        if (IN_GAME && !blue) { const n = moveStrikes(moveTarget()).length || 12; for (let k = 0; k < n; k++) all.push(wait(dur * .06 + dur * .88 * (k + .5) / n).then(() => gameNum(moveTarget(), 1))); }
         const lineRgb = blue ? "170,215,255" : "255,215,190"; rumble(true, 3);
         // v18: she tilts forward on the diagonal and glides slowly at the party for the whole barrage (the fists' source follows her)
         // v19: on top of the glide her body jabs back and forth along her facing with a small rocking tilt (a punch flurry)
@@ -418,21 +421,24 @@ function barrageMove(color) {
         for (let k = 0; k < 18; k++) { const a = rnd(0, Math.PI * 2), r = rnd(90, 170), c = center(D); homing("field", { x: c.x + Math.cos(a) * r, y: c.y + Math.sin(a) * r * .7 }, handPt(1), rgb, { ms: ms * .8, arc: 40, r: 3 }); }
         const x0 = OX(D), y0 = OY(D), r0 = D.rot, c = FCAM.screen ? { x: FCAM.x, y: FCAM.y, z: FCAM.z } : null;
         const cam = c ? FCAM.to({ x: lerp(c.x, OX(D), .25), y: c.y, z: c.z * tv(C, "finalZoom"), r: 0 }, ms, EASE.sine) : null;
+        const ghosts = (async () => { for (let el = 0; el < ms; el += 64) { if (!FAST) barrageGhost(D, blue, tv(C, "ghostOp") * .6, 380); await wait(64); } })();
         await Promise.all([tween(ms, EASE.outCubic, (u) => { D.rot = lerp(r0, -tv(C, "windTilt"), u); D.kx = lerp(1, 1.06, u); D.ky = lerp(1, .95, u);
-            setPos(D, x0 - face(D) * tv(C, "pull") * u - D.x, y0 - D.y); if (!FAST && Math.random() < .25) barrageGhost(D, blue, tv(C, "ghostOp") * .6, 380); }), cam]);
+            setPos(D, x0 - face(D) * tv(C, "pull") * u - D.x, y0 - D.y); }), cam, ghosts]);
         await wait(90); } },
       { name: "Final punch", note: "she lunges and throws one huge fist: the closing impact", run: async (C) => { const D = DV(), hits = C.hits || [], rgb = blue ? BLUE : RED;
         const dirTo = (t) => { const a = center(D), b = center(t); return Math.atan2(b.y - a.y, b.x - a.x); };
         const x0 = OX(D), y0 = OY(D), r0 = D.rot, pc = partyCentre(), fms = tv(C, "bigMs");
         sfx("swing", .7); sfx(blue ? "dark" : "blowL", .5, .8);
         const lunge = tween(140, EASE.outExpo, (u) => { D.rot = lerp(r0, tv(C, "tilt") + 10, u); D.kx = lerp(1.06, .94, u); D.ky = lerp(.95, 1.05, u);
-          setPos(D, x0 + face(D) * tv(C, "lunge") * u - D.x, y0 - D.y); if (!FAST) barrageGhost(D, blue, tv(C, "ghostOp"), tv(C, "ghostMs")); });
+          setPos(D, x0 + face(D) * tv(C, "lunge") * u - D.x, y0 - D.y); });
+        (async () => { for (let el = 0; el < 140; el += 20) { await wait(20); if (!FAST) barrageGhost(D, blue, tv(C, "ghostOp"), tv(C, "ghostMs")); } })();
         speedLines(true, { vp: FCAM.screen(pc), color: blue ? "170,215,255" : "255,215,190", alpha: .7, n: 120 });
         const from = handPt(1);
         await Promise.all([lunge, barrageFist(color, from, pc, C, { h: tv(C, "bigFist"), grow: 1.6, ms: fms, ease: EASE.inCubic, z: 4100, trail: 5, hold: true, linger: 160 })]);
         if (tv(C, "iframe") && hits.length) await impactFrame(hits.map((x) => x.t), 60);
         speedLines(false);
         // the closing impact lands hard on everyone the barrage connected with
+        if (IN_GAME && blue) gameNum(moveTarget(), 1);
         sfx("blowL", 1); flash("#fff", .4, 25, 260).catch(() => {}); shake(16, 460).catch(() => {});
         ring(feet(hits[0] ? hits[0].t : DV()), { rgb, r1: 260, ms: 600 });
         for (const x of hits) { ggImpact(x.t, dirTo(x.t), blue, { big: 2.1 * tv(C, "spark") }); ggImpact(x.t, dirTo(x.t), blue, { big: 1.3 * tv(C, "spark") }); hitReact(x.t, "strong");

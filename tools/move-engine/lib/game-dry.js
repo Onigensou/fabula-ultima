@@ -16,14 +16,16 @@ async function dryRun({ key, files, actors, preset, assets, tune = {}, outcome =
   const P = preset;
   const tokenScaleAt = (y) => { const den = P.refRow - P.horizon, num = Math.max(y - P.horizon, den * .05); return Math.min(P.maxScale, Math.max(P.minScale, Math.pow(num / den, P.strength))); };
   const tokOf = (a) => { const h = a.hb * a.s, w = a.wb * a.s; return { x: a.x, y: a.y - h / 2, w, h, foot: 1, flip: 1, token: {} }; };
-  const TL = { STAGE: { x: 0, y: 0, w: 1682, h: 788 }, TOK: { k: tokOf(actors.caster), t0: tokOf(actors.target) }, POSE: {}, load: async () => {},
+  const tlist = actors.targets && actors.targets.length ? actors.targets : [actors.target];
+  const TOK = { k: tokOf(actors.caster) }; tlist.forEach((a, i) => { TOK["t" + i] = tokOf(a); });
+  const TL = { STAGE: { x: 0, y: 0, w: 1682, h: 788 }, TOK, POSE: {}, REST: { cx: 841, cy: 394 }, load: async () => {},
     feet: (T) => ({ x: T.x, y: T.y - T.h / 2 + T.h * T.foot }), art: () => null, depthS: (x, y) => tokenScaleAt(y), depthRatio: (a, b) => tokenScaleAt(b.y) / tokenScaleAt(a.y),
     mk: (T) => ({ clip(k, t0, o) { T.push({ t0, t1: t0 + 1000, clip: {}, o }); return {}; }, flash() {}, shake() {}, hold(t0, t1, fn) { T.push({ t0, t1, fn }); } }) };
   const el = () => ({ setAttribute() {}, style: {}, getContext: () => null, appendChild() {}, innerHTML: "" });
   globalThis.document = globalThis.document || { getElementById: () => null, createElementNS: el, createElement: el, body: { appendChild() {} }, querySelector: () => null };
   globalThis.Hooks = globalThis.Hooks || { callAll() {} };
   const inner = GB.innerSource({ files, key, playOpts: { tune, ...playOpts } });
-  const ctx = { casterToken: { center: {} }, targetTokens: [{ center: {} }],
+  const ctx = { casterToken: { center: {} }, targetTokens: tlist.map(() => ({ center: {} })),
     params: { cfg: { dryOnly: true, trace: true, seed }, assets, outcomes: outcome ? [{ tokenUuid: "t0", ...outcome }] : null, strikes: strikes || [], variant } };
   const oni = { timeline: () => TL, fireDone() {}, hit() {}, sfx() {} };
   const fn = new Function("ctx", "canvas", "PIXI", "FAudioHelper", "loadTexture", "fromUuid", "wait", "foundry", "oni", "Sequence", '"use strict"; return (async () => {\n' + inner + "\n})();");

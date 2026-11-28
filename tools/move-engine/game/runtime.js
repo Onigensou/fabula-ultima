@@ -43,6 +43,8 @@ ME_TARGET_TOKS.forEach((t, i) => { ME_TOKENS["t" + i] = { token: t, foot: ME_CFG
 // the camera (FCAM): the timeline then owns the board (not LIVE: every token painted, the camera follows S.cam, the 3D stage
 // flattens for the shot, like the shipped v1.0.575 Deva barrage). Without it the camera is left alone (FCAM.to = a wait).
 const ME_POSES = ME_CFG.poses ? { k: Object.fromEntries(Object.entries(ME_CFG.poses).map(([p, url]) => [p, { url }])) } : {};
+// cfg.targetPoses { pose: sheetProp } (1.3.0): each target's own sheet art as poses (a.pose = name), e.g. its walk clips
+if (ME_CFG.targetPoses) ME_TARGET_TOKS.forEach((t, i) => { ME_POSES["t" + i] = Object.fromEntries(Object.entries(ME_CFG.targetPoses).map(([p, prop]) => [p, { prop }])); });
 const ME_CAM = !!ME_CFG.camera;
 const TL = oni.timeline({ tokens: ME_TOKENS, clips: M.clips, images: {}, poses: ME_POSES, live: !ME_CAM, depthRef: "k" });
 await TL.load();
@@ -88,7 +90,7 @@ function meActor(key, id, dir) {
   const style = meRec({ opacity: "", zIndex: 0, filter: "", transform: "" }), mstyle = meRec({ filter: "", transform: "", transformOrigin: "" });
   const raw = { id, key, kind, on: true, x: bot.x, y: bot.y, cx: bot.x, cy: bot.y - T.h / KP / 2, dx: 0, dy: 0, rot: 0, s, hb: T.h / KP / s, wb: T.w / KP / s,
     flip: kind === "party" ? 1 : -1, baseFlip: kind === "party" ? 1 : -1, lift: 0, bob: 0, kx: 1, ky: 1, pose: null,
-    el: { style }, body: { style: mstyle }, media: { style: mstyle, tagName: "IMG", getAttribute: () => null, play() {} }, src: null, resize() {} };
+    el: { style }, body: { style: mstyle }, media: { style: mstyle, tagName: "IMG", getAttribute: () => null, play: () => Promise.resolve(), pause() {} }, src: null, resize() {} };
   return meRec(raw);
 }
 const CASTER = meActor("k", "caster", ME_DIR);
@@ -172,14 +174,15 @@ function addP(layer, p) { if (PHASE !== "dry") return; const q = Object.assign({
 function meStepParticle(p, dt) { if (p.update) p.update(p, dt); else { p.vy += p.g * dt; p.vx *= Math.pow(p.drag, dt / 16); p.vy *= Math.pow(p.drag, dt / 16); p.x += p.vx * dt; p.y += p.vy * dt; } }
 function meSimParticle(c, life) { let t = 0; while (t < life) { const dt = Math.min(16, life - t); c.t += dt; t += dt; meStepParticle(c, dt); } return c; }
 const ME_CLIP_DUMMY = { done: Promise.resolve(), impact: Promise.resolve(), el: null, stop() { return Promise.resolve(); } };
-function clip(key, pt, { scale = 1, filter = "", blend = "", rate = 1, flip = false, rot = 0, opacity = 1, parent = null, loop = false, z = 0, sy = 1 } = {}) {
+// fadeIn (1.3.0): the clip's opacity rises over its first fadeIn ms (the mockup fades its <video> element instead)
+function clip(key, pt, { scale = 1, filter = "", blend = "", rate = 1, flip = false, rot = 0, opacity = 1, parent = null, loop = false, z = 0, sy = 1, fadeIn = 0 } = {}) {
   const c = M.clips[key];
   traceEv("clip", { key, at2: tracePt(pt), scale: Math.round(scale * 1000) / 1000, rate, ...(filter ? { filter } : {}), ...(flip ? { flip } : {}), ...(rot ? { rot } : {}), ...(loop ? { loop } : {}), ...(c ? {} : { missing: true }) });
   if (PHASE !== "dry" || !c) { if (!c) meWarn("clip missing: " + key); return ME_CLIP_DUMMY; }
   const k = scale * (c.k != null ? c.k : (c.ro ? 1.1 : .55)), wp = toW(pt), at = VT, dur = (c.dur || 1000) / (rate || 1);
   const under = !!(parent && parent.id === "fground");
   const o = { x: wp.x, y: wp.y, w: c.w * k * KP, rate, flip, rot: rot * Math.PI / 180, filter: filter || undefined, add: (c.add || /plus-lighter/.test(blend || "")) ? "plus" : /screen|lighter/.test(blend || ""), depth: false,
-    z: under ? 3 : 26 + clamp((z || 0) / 10000, 0, 2.9), sy: sy !== 1 ? sy : undefined, loop, hold: loop ? 1e9 : undefined, alpha: opacity !== 1 ? () => opacity : undefined };
+    z: under ? 3 : 26 + clamp((z || 0) / 10000, 0, 2.9), sy: sy !== 1 ? sy : undefined, loop, hold: loop ? 1e9 : undefined, alpha: fadeIn > 0 ? (u) => opacity * Math.min(1, u * (loop ? 1e9 : dur) / fadeIn) : opacity !== 1 ? () => opacity : undefined };
   TM.clip(key, at, o); const tr = TRK[TRK.length - 1];
   return { done: loop ? new Promise(() => {}) : wait(dur), impact: wait((c.impact != null ? c.impact : (c.dur || 1000) * .4) / (rate || 1)), el: null,
     stop: (ms = 300) => { const ts = VT, span = loop ? 1e9 : dur; o.alpha = (u) => { const t = at + u * span; return t < ts ? opacity : opacity * Math.max(0, 1 - (t - ts) / ms); }; tr.t1 = Math.min(tr.t1, ts + ms); return wait(ms); } };

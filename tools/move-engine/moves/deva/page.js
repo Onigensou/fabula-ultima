@@ -99,7 +99,7 @@ function build({ out, version = "test", publish = false } = {}) {
 // the game side: can the move files build? (same check the README's `move-engine.js check` runs)
 function gameCheck() { const GB = require("../../build/game-build.js"); return GB.checkMoveSource(["head", "deva"].map((f) => path.join(__dirname, f + ".js"))); }
 
-module.exports = { build, gameCheck, ACTORS, PRESET, SFX };
+module.exports = { build, gameCheck, ACTORS, PRESET, SFX, CLIPS, ASSETS };
 if (require.main === module) {
   const a = process.argv.slice(2), pub = a.includes("--publish"), vi = a.indexOf("--version");
   const out = a.find((x) => !x.startsWith("--") && a[a.indexOf(x) - 1] !== "--version") || path.join(__dirname, "..", "..", "out", "deva", "deva-anim.html");

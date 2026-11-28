@@ -42,16 +42,20 @@ async function parity(family, keys, { gpu = true, game = true, code = null, out 
   fs.mkdirSync(outDir, { recursive: true });
 
   log("1/4 building the mockup page from the repo");
-  const page = require(path.join(dir, fam.page)).build({ out: path.join(outDir, "page.html") });
+  const built = require(path.join(dir, fam.page)).build({ out: path.join(outDir, "page.html") });
+  const page = typeof built === "string" ? built : built.out;   // a page builder may return { out, files }
   log("2/4 playing " + keys.length + " move(s) on the page");
-  const mock = await runMockup({ page, gpu, shotsDir: path.join(outDir, "mockup-frames"), actorKeys: [fam.mockupActors.caster, fam.mockupActors.target],
+  const actorKeys = [...new Set([fam.mockupActors.caster, fam.mockupActors.target, ...(fam.mockupActors.targets || []),
+    ...Object.values(fam.moves).flatMap((m) => m.dryActors ? [m.dryActors.caster, ...(m.dryActors.targets || [])] : [])].filter(Boolean))];
+  const mock = await runMockup({ page, gpu, shotsDir: path.join(outDir, "mockup-frames"), actorKeys,
     moves: keys.map((k) => ({ key: k, tune: fam.moves[k].pageTune, shots: fam.moves[k].shots })) });
   log("3/4 game runtime dry runs (exact)");
-  const actors = { caster: mock.actors[fam.mockupActors.caster], target: mock.actors[fam.mockupActors.target] };
+  const actorsFor = (m) => { const d = m.dryActors || {}; const tk = d.targets || fam.mockupActors.targets || [fam.mockupActors.target];
+    return { caster: mock.actors[d.caster || fam.mockupActors.caster], target: mock.actors[tk[0]], targets: tk.map((k) => mock.actors[k]) }; };
   const moves = [];
   for (const k of keys) {
     const m = fam.moves[k], files = m.files.map(file);
-    const rep = await dryRun({ key: k, files, actors, preset: mock.preset, assets, tune: m.pageTune, outcome: m.gameOutcome || null, strikes: m.gameStrikes ? strikesFrom(m.gameStrikes) : null });
+    const rep = await dryRun({ key: k, files, actors: actorsFor(m), preset: mock.preset, assets, tune: m.pageTune, outcome: m.gameOutcome || null, strikes: m.gameStrikes ? strikesFrom(m.gameStrikes) : null, ...(fam.seed != null ? { seed: fam.seed } : {}) });   // the page's MOVE_SEED
     const cmp = compareTraces(mock.moves[k].trace, rep.trace);
     moves.push({ key: k, label: m.label, files: m.files, mock: { repeat: mock.moves[k].repeat, lag: mock.moves[k].lag },
       dry: { ...cmp, warnings: rep.check.warnings, errors: rep.check.errors, gate: rep.gate, end: rep.end } });

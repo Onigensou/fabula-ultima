@@ -6,6 +6,12 @@
 // "Shaken" style status tags and the Enlightenment stack read are page DOM stand-ins (move-engine.js check lists them).
 const GROUPS = { guard: "Guard round", fist: "Missile Fist", offense: "Offense round", strike: "Strike Form · Fury", magic: "Magic Form · Focus", shipped: "Barrages · in game, v20 tuning" };
 const IN_GAME = typeof TARGETS !== "undefined";
+// game host only: the caster's actor (a Missile Fist casting its own Detonate / Fuse break, else Deva) and the form she holds
+const DV_GAME_ACTOR = IN_GAME ? (ctx.casterToken && ctx.casterToken.actor) || null : null;
+const DV_IS_FIST = !!(DV_GAME_ACTOR && /missile fist/i.test(DV_GAME_ACTOR.name || ""));
+const devaFormNow = () => { if (!DV_GAME_ACTOR) return "std"; const has = (n) => DV_GAME_ACTOR.effects.some((e) => !e.disabled && e.name === n); return has("Magic Form") ? "focus" : has("Strike Form") ? "fury" : "std"; };
+// Enlightenment's starting form: the page's select; in the game the form she holds when it plays
+const devaFrom = (C) => (IN_GAME ? (devaFormNow() === "focus" ? 1 : 0) : tv(C, "from"));
 const DV = () => moveCaster();
 const DEVA_TARGETS = () => (IN_GAME ? TARGETS : PARTY);
 const RED = "255,74,58", BLUE = "58,168,255", VIOLET = "176,140,255";   // GOLD comes from shared/fx-melee.js
@@ -17,27 +23,28 @@ const DEVA_STATE = { stance: "vajra", form: "std" };
 const PC_MP = { hina: 116, zarg: 81, keren: 111, blanche: 76 };
 // afterimage hue per state (shared afterimage(): sepia + hue-rotate(hue - 38))
 const devaHue = () => DEVA_STATE.form === "fury" ? 8 : DEVA_STATE.form === "focus" ? 223 : DEVA_STATE.stance === "vajra" ? 43 : 243;
-function applyStance() { const D = DV(); if (!D || !D.media) return; D.media.style.filter = (DEVA_STATE.form === "std" ? STANCE[DEVA_STATE.stance] + " " : "") + "drop-shadow(0 4px 3px rgba(0,0,0,.35))"; }
+function applyStance() { const D = DV(); if (!D || !D.media) return; if (IN_GAME) { D.media.style.filter = ""; return; } D.media.style.filter = (DEVA_STATE.form === "std" ? STANCE[DEVA_STATE.stance] + " " : "") + "drop-shadow(0 4px 3px rgba(0,0,0,.35))"; }
 // The three idle clips share one 307 x 283 canvas (Beastiary/Deva_Battle_Idle, Deva/Deva_Fury_Battle_Idle, Deva/Deva_Focus_Battle_Idle),
 // so a form change is a plain art swap at the same size. Game: the token's art swap (battler-pose), not swapArt.
 const FORM_ART = { std: "deva", fury: "deva_fury", focus: "deva_focus" };
-function setForm(form) { const D = DV(); DEVA_STATE.form = form; const src = M.sprites[FORM_ART[form]];
+function setForm(form) { const D = DV(); DEVA_STATE.form = form; if (IN_GAME) { D.pose = form; applyStance(); return; } const src = M.sprites[FORM_ART[form]];
   if (D.media && src && D.media.getAttribute("src") !== src) { D.media.src = src; D.media.loop = true; D.media.play && D.media.play().catch(() => {}); }
   applyStance(); }
 const formRgb = (form) => form === "focus" ? BLUE : RED;
 const inForm = (form) => ({ name: form === "fury" ? "In Fury form" : "In Focus form", note: "Offense round, arms and halo up", run: async () => { setForm(form); await wait(400); } });
-const rollHit = (p = .65) => MOVE_RNG() < p;
+const rollHit = (p = .65, t = null) => { const r = MOVE_RNG() < p; if (IN_GAME && t) { const m = moveResult(t); if (m) return m.hit; } return r; };
 const handPt = (side = 1) => { const D = DV(); return { x: OX(D) + side * wid(D) * .42, y: OY(D) - hgt(D) * .55 }; };
 const mix = (a, b, t) => { const A = a.split(",").map(Number), B = b.split(",").map(Number); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], t))).join(",")})`; };
 
 // ───────── shared pieces
 function hitFx(t, dmg, element, { tier = "normal", clipKey = "001_hit_physical", scale = 1, filter = "" } = {}) {
+  if (IN_GAME) { const m = moveResult(t); if (m && !m.hit) return missFx(t); }
   clip(clipKey, center(t), { scale: t.s * scale, filter }); dmgNum(t.id, numAt(t), dmg, { element }); hitReact(t, tier); }
 function missFx(t) { sfx("miss", .5); statusTag(t, "Miss", "220,220,220"); slide(t, -face(t) * 22, 160).then(() => slide(t, 0, 300, 0)).catch(() => {}); }
 const mpFx = (t, n) => { if (n > 0) dmgNum(t.id + "mp", () => { const p = numAt(t)(); return { x: p.x + 26, y: p.y + 22 }; }, n, { element: "mp" }); };
 function motes(from, to, rgb, n = 10, ms = 800) { for (let k = 0; k < n; k++) homing("field", { x: from.x + rnd(-14, 14), y: from.y + rnd(-14, 14) }, to, rgb, { ms, arc: 70, r: 3 }); }
 // stand-in for Battle Director's own status display (the real script draws no text)
-function statusTag(t, text, rgb) { if (FAST) return; const p = FCAM.screen(head(t)); const n = document.createElement("div");
+function statusTag(t, text, rgb) { if (FAST || IN_GAME) return; const p = FCAM.screen(head(t)); const n = document.createElement("div");
   Object.assign(n.style, { position: "absolute", left: p.x + "px", top: (p.y - 6) + "px", transform: "translate(-50%,-100%)", font: "700 15px Signika, sans-serif", color: `rgb(${rgb})`,
     letterSpacing: ".06em", textShadow: "0 2px 0 #000, 0 0 6px #000", whiteSpace: "nowrap", zIndex: 61, opacity: 0 });
   DNL.appendChild(n); n.textContent = text;
@@ -59,9 +66,9 @@ async function punch(f, t, ms) { const p0 = { x: f.x, y: f.y }, q = center(t), a
 // ───────── the Missile Fists: two summoned actors on the enemy side (page: ACT.fistA / ACT.fistB, in-game token scale 1).
 // Token art = fist_red.png turned 90° counter-clockwise (points RIGHT at the party, fingers over the top), no mirror,
 // with an idle float bob. In the game BD mirrors enemy tokens, so the shipped token art must point LEFT to read the same.
-const FISTS = () => (IN_GAME ? [CASTER] : [ACT.fistA, ACT.fistB].filter(Boolean));
+const FISTS = () => (IN_GAME ? (DV_IS_FIST ? [CASTER] : TARGETS) : [ACT.fistA, ACT.fistB].filter(Boolean));
 const FIST_BOB = { on: false, t0: 0 };
-function fistsShow(on) { if (IN_GAME) return; for (const f of FISTS()) { f.el.style.display = on ? "" : "none"; f.flip = f.baseFlip = 1; f.gone = !on; setPos(f, f.dx, f.dy); } }
+function fistsShow(on) { if (IN_GAME) { for (const f of FISTS()) f.el.style.opacity = on ? 1 : 0; return; } for (const f of FISTS()) { f.el.style.display = on ? "" : "none"; f.flip = f.baseFlip = 1; f.gone = !on; setPos(f, f.dx, f.dy); } }
 function fistBobLoop() { if (IN_GAME) return; const step = (now) => { if (FIST_BOB.on) for (const f of FISTS()) if (!f.gone && f.bob !== false) { f.lift = Math.sin((now - FIST_BOB.t0) / 520 + f.i * 1.7) * 6 + 6; setPos(f, f.dx, f.dy); }
   requestAnimationFrame(step); }; requestAnimationFrame(step); }
 const fistPt = (f) => ({ x: OX(f), y: OY(f) - (f.lift || 0) - hgt(f) * .5 });
@@ -82,7 +89,7 @@ function drawCracks(f) { if (!f.cracks) return; const c = f.cracks.getContext("2
 // ───────── the comedic spin (Double Slap): the target's own 8-direction walk sprites (down → down-left → up-left → up-right →
 // down-right → down), mirrored for the right-hand side; no directional art → a Paper Mario flip through its own width.
 const SPIN_DIRS = [["walkd", 1], ["walkdl", 1], ["walkul", 1], ["walkul", -1], ["walkdl", -1], ["walkd", 1]];
-const hasDirs = (t) => !!(M.sprites && M.sprites[`pose_${t.id}_walkdl`]);
+const hasDirs = (t) => (IN_GAME ? !!(TL.POSE[meRaw(t).key] && TL.POSE[meRaw(t).key].walkdl) : !!(M.sprites && M.sprites[`pose_${t.id}_walkdl`]));
 async function spin(t, C) {
   const turns = tv(C, "spinTurns"), step0 = tv(C, "spinStep"), hop = tv(C, "spinHop");
   const style = tv(C, "spin") === 0 && hasDirs(t) ? "dirs" : "flip";
@@ -92,8 +99,8 @@ async function spin(t, C) {
     const frames = []; for (let i = 0; i < turns; i++) frames.push(...SPIN_DIRS.slice(0, 5)); frames.push(SPIN_DIRS[5]);
     m.loop = true;
     for (let i = 0; i < frames.length; i++) {
-      const [pose, flip] = frames[i]; const src = M.sprites[`pose_${t.id}_${pose}`];
-      if (m.getAttribute("src") !== src) { m.src = src; m.play().catch(() => {}); }
+      const [pose, flip] = frames[i];
+      if (IN_GAME) t.pose = pose; else { const src = M.sprites[`pose_${t.id}_${pose}`]; if (m.getAttribute("src") !== src) { m.src = src; m.play().catch(() => {}); } }
       t.flip = base * flip; const u = i / (frames.length - 1); setPos(t, t.dx, t.dy, lift(u));
       await wait(step0 * (1 + 1.6 * u * u));   // fast, then winding down
     }
@@ -101,7 +108,7 @@ async function spin(t, C) {
     const ms = turns * step0 * 6 * 1.5;
     await tween(ms, EASE.outCubic, (u) => { let k = Math.cos(u * turns * Math.PI * 2); if (Math.abs(k) < .08) k = .08 * Math.sign(k || 1); t.flip = base * k; setPos(t, t.dx, t.dy, lift(u)); });
   }
-  t.flip = base; setPos(t, t.dx, t.dy, 0); m.src = idle; m.loop = true; m.play().catch(() => {});
+  t.flip = base; setPos(t, t.dx, t.dy, 0); if (IN_GAME) { t.pose = null; return; } m.src = idle; m.loop = true; m.play().catch(() => {});
 }
 const wobble = (t, ms = 520) => tween(ms, EASE.lin, (u) => { t.rot = Math.sin(u * Math.PI * 3) * 6 * (1 - u); setPos(t, t.dx, t.dy); }).then(() => { t.rot = 0; setPos(t, t.dx, t.dy); });
 
@@ -150,6 +157,7 @@ function barrageFist(color, from, to, C, { h, ms, z = 4000, peak = 1, trail = 3,
   const dir = Math.atan2(to.y - from.y, to.x - from.x); f.rot = dir * 180 / Math.PI - 90;
   for (let k = 1; k <= trail; k++) { const g = f.m.cloneNode(); Object.assign(g.style, { position: "absolute", left: 0, top: 0, width: "100%", height: "100%",
     transform: `translateY(${-k * 38}%)`, opacity: String(.45 / k), pointerEvents: "none" }); f.el.appendChild(g); }
+  if (IN_GAME) f.trail = trail;
   f.m.style.filter += " drop-shadow(0 0 4px #fff)"; f.apply();
   return tween(ms, ease, (u) => { f.x = lerp(from.x, to.x, u); f.y = lerp(from.y, to.y, u); f.sx = f.sy = lerp(1, gr, u);
     f.opacity = peak * Math.min(1, u / .12, hold || linger ? 1 : (1 - u) / .3); f.apply();
@@ -159,13 +167,15 @@ function barrageFist(color, from, to, C, { h, ms, z = 4000, peak = 1, trail = 3,
 const GG_DEF = { burst01: ["ggs_burst_anim01", 2, 2, 4], burst07: ["ggs_burst_anim07", 2, 2, 4], burst05: ["ggs_burst_anim05", 5, 2, 10], spark01: ["ggs_spark_anim01", 3, 2, 6] };
 const GGS = {};
 function ggSheet(k, color) {
-  const d = GGS[k] || (GGS[k] = (() => { const [src, cols, rows, frames] = GG_DEF[k]; const img = new Image(); img.src = M.sprites[src]; return { img, cols, rows, frames, tint: {} }; })());
+  if (typeof Image === "undefined" || !M.sprites[GG_DEF[k][0]]) return null;   // no images here (the Node dry run) or no sheet given
+  const d = GGS[k] || (GGS[k] = (() => { const [src, cols, rows, frames] = GG_DEF[k]; const img = new Image(); if (IN_GAME) img.crossOrigin = "anonymous"; const ready = new Promise((r) => { img.onload = r; img.onerror = r; }); img.src = M.sprites[src]; return { img, cols, rows, frames, tint: {}, ready }; })());
   if (!d.img.complete || !d.img.naturalWidth) return null;
   if (!d.tint[color]) { const c = document.createElement("canvas"); c.width = d.img.naturalWidth; c.height = d.img.naturalHeight; const x = c.getContext("2d"); x.drawImage(d.img, 0, 0);
     if (color !== "#fff") { x.globalCompositeOperation = "multiply"; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height); x.globalCompositeOperation = "destination-in"; x.drawImage(d.img, 0, 0); }
     d.tint[color] = c; }
   return d; }
 if (!IN_GAME) Object.keys(GG_DEF).forEach((k) => ggSheet(k, "#fff"));
+else if (M.sprites.ggs_burst_anim01) ME_PRELOAD.push(...Object.keys(GG_DEF).map((k) => { ggSheet(k, "#fff"); return GGS[k].ready; }));
 function ggPlay(k, pt, { color = "#fff", size = 120, rot = 0, ms = 240, comp = "lighter", alpha = 1 } = {}) {
   if (FAST) return; const d = ggSheet(k, color); if (!d) return; const cv = d.tint[color], fw = cv.width / d.cols, fh = cv.height / d.rows;
   addP("hit", { x: pt.x, y: pt.y, life: ms, comp, draw: (c, p, t) => { const f = Math.min(d.frames - 1, Math.floor(t * d.frames));
@@ -197,6 +207,6 @@ async function devaBlink(a, x, y, { ms = 220, blue = false } = {}) {
   await tween(ms * 1.1, EASE.outCubic, (u) => squeeze(1 - u));
   a.kx = a.ky = 1; a.el.style.opacity = "1"; setPos(a, a.dx, a.dy); }
 // every enemy rolls once; a landed target's damage is split into ticks
-function rollAll(C, per, chance = .65) { const targets = DEVA_TARGETS().map((t) => ({ t, hit: rollHit(chance) }));
+function rollAll(C, per, chance = .65) { const targets = DEVA_TARGETS().map((t) => ({ t, hit: rollHit(chance, t) }));
   targets.forEach((x) => { x.ticks = x.hit ? splitTicks(per, tv(C, "ticks")) : []; }); targets.filter((x) => !x.hit).forEach((x) => missFx(x.t)); return targets; }
 async function focusDrainEnd(targets, per) { sfx("absorb", .6); for (const x of targets) if (x.hit) { mpFx(x.t, per * 3); motes(center(x.t), center(DV()), BLUE, 8, 800); } await wait(700); }
