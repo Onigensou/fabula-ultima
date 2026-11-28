@@ -83,9 +83,9 @@ const DESC = {
   // 2026-11-28-deva-tuning: 30% Stunned, otherwise Shaken (the migration writes the Stunned link)
   slap: bullets(LK.multi) + `<p>She slaps the insolent aside. Deals ${L.physical}&nbsp;damage.</p><p>Each target hit has a 30% chance to be Stunned; otherwise it is ${L.shaken}.</p>`,
   mfist:
-    "<p>Two of her fists burn into being and hover over the field. Each one detonates on a random enemy " +
+    "<p>Three of her fists burn into being and hover over the field. Each one detonates on a random enemy " +
     "on its second turn, dealing <strong>heavy</strong>&nbsp;" + `${L.physical}&nbsp;damage, unless it is broken first.</p>` +
-    "<p>Each fist breaks after taking damage three times.</p>",
+    "<p>Each fist breaks after taking damage twice.</p>",
   slam: bullets(LK.overflow) + `<p>She drives both fists into the ground. Deal ${L.earth}&nbsp;damage to all enemies and inflict ${L.slow}. Fury form.</p>`,
   fury: bullets(LK.chain) + `<p>A wall of fists slams across the whole field. Deal ${L.physical}&nbsp;damage to all enemies. Fury form.</p>`,
   surya: `<p>She plants a palm of blazing light on one enemy. Deal <strong>heavy</strong>&nbsp;${LK.light}&nbsp;damage and inflict ${LK.blind}. Fury form.</p>`,
@@ -260,7 +260,7 @@ run(async ({ changes }) => {
       chain("mf_chain", ["mf_spend", "mf_summon", "mf_anim"]),   // skill timing "resolve": the animation plays on the spawned fists
       put("mf_anim", "play_animation", { action_ref: "Missile Fist", target_ref: "mf_summon", on_condition_fail: "skip" }),
       removeAe("mf_spend", "Fist Ready"),
-      put("mf_summon", "summon", { summon_actor: `Actor.${F}`, summon_count: "2", summon_max: "2", summon_act_this_round: false }),
+      put("mf_summon", "summon", { summon_actor: `Actor.${F}`, summon_count: "3", summon_max: "3", summon_act_this_round: false }),
     ]),
   });
   changes.push([ik(A, IDS.MFIST), mfist, "NEW item — Missile Fist (summons 2 fists, once per Guard round)"]);
@@ -447,7 +447,7 @@ run(async ({ changes }) => {
     def_mod: "+3", mdef_mod: "+3", defense: 13, magic_defense: 13,
     // 1 damage per hit: the hidden actor AE "Fist Shell" (MsAeFistShell001, migration 2026-11-28-deva-tuning) caps every hit
     // on the HP-write path. The Fuse item's fu_cap row below runs post-resolve and never capped anything.
-    max_hp: "3", current_hp: "3", max_mp: "0", current_mp: "0", init: "6",
+    max_hp: "2", current_hp: "2",   // 2026-11-28: 2 hits (was 3), three fists max_mp: "0", current_mp: "0", init: "6",
     zenit_reward_min: "0", zenit_reward_max: "0",
     study_text: "A fist of light that has left its owner. It counts down, and then it finds someone.",
   });

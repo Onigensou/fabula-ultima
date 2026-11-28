@@ -99,6 +99,20 @@ export async function migrate(game, log = () => {}) {
     if (String(P.description ?? "").includes(PHYS)) upd["system.props.description"] = String(P.description).split(PHYS).join(LIGHT);
     if (Object.keys(upd).length) { await it.update(upd); out.push(`~ ${a.name}${a.isToken ? " (token)" : ""} / Detonate: Light`); }
   }
+  // 5. Three Missile Fists, 2 hits each (user 2026-11-28: "tight but breakable in time if the party focuses on them";
+//    a 3-target spell cracks all three; Detonate stays 60). HP 3 → 2 with the 1-per-hit Fist Shell = 2 hits.
+  for (const a of actorsNamed(/^deva$/i, DEVA)) {
+    const it = a.items.find((i) => i.name === "Missile Fist"); if (!it) continue; const P = it.system?.props ?? {}, upd = {};
+    for (const [k, r] of Object.entries(P.effect_table ?? {})) if (r?.effect_label === "mf_summon" && (String(r.summon_count) !== "3" || String(r.summon_max) !== "3")) { upd[`system.props.effect_table.${k}.summon_count`] = "3"; upd[`system.props.effect_table.${k}.summon_max`] = "3"; }
+    const d = String(P.description ?? ""); const d2 = d.replace("Two of her fists", "Three of her fists").replace("after taking damage three times", "after taking damage twice");
+    if (d2 !== d) upd["system.props.description"] = d2;
+    if (Object.keys(upd).length) { await it.update(upd); out.push(`~ ${a.name}${a.isToken ? " (token)" : ""} / Missile Fist: 3 fists, 2 hits`); }
+  }
+  for (const a of game.actors) {
+    if (a.id !== FIST && !/^missile fist$/i.test(a.name ?? "")) continue;
+    const P = a.system?.props ?? {};
+    if (String(P.max_hp) !== "2" || String(P.current_hp) !== "2") { await a.update({ "system.props.max_hp": "2", "system.props.current_hp": "2" }); out.push(`~ ${a.name}: HP 2 (2 hits)`); }
+  }
   if (!out.length) out.push("= Deva tuning already applied (or no Deva in the world)");
   for (const l of out) log(l);
   return { applied: true, summary: out.join(" | ") };

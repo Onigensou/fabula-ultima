@@ -45,7 +45,8 @@
     "caster": "deva",
     "targets": [
      "fistA",
-     "fistB"
+     "fistB",
+     "fistC"
     ]
    }
   },

@@ -63,10 +63,10 @@ async function punch(f, t, ms) { const p0 = { x: f.x, y: f.y }, q = center(t), a
   await tween(ms, EASE.inCubic, (u) => { f.x = lerp(p0.x, q.x, u); f.y = lerp(p0.y, q.y + f.h * .5, u); f.rot = lerp(r0, ang, Math.min(1, u * 2)); f.z = Math.round(f.y) + 2; f.apply();
     if (Math.random() < .6) dust("field", f.x, f.y - f.h * .5, f.rgb, { life: 260, r: rndFx(2, 4) }); }); }
 
-// ───────── the Missile Fists: two summoned actors on the enemy side (page: ACT.fistA / ACT.fistB, in-game token scale 1).
+// ───────── the Missile Fists: three summoned actors (two until 2026-11-28) on the enemy side (page: ACT.fistA / ACT.fistB, in-game token scale 1).
 // Token art = fist_red.png turned 90° counter-clockwise (points RIGHT at the party, fingers over the top), no mirror,
 // with an idle float bob. In the game BD mirrors enemy tokens, so the shipped token art must point LEFT to read the same.
-const FISTS = () => (IN_GAME ? (DV_IS_FIST ? [CASTER] : TARGETS) : [ACT.fistA, ACT.fistB].filter(Boolean));
+const FISTS = () => (IN_GAME ? (DV_IS_FIST ? [CASTER] : TARGETS) : [ACT.fistA, ACT.fistB, ACT.fistC].filter(Boolean));
 const FIST_BOB = { on: false, t0: 0 };
 function fistsShow(on) { if (IN_GAME) { for (const f of FISTS()) f.el.style.opacity = on ? 1 : 0; return; } for (const f of FISTS()) { f.el.style.display = on ? "" : "none"; f.flip = f.baseFlip = 1; f.gone = !on; setPos(f, f.dx, f.dy); } }
 function fistBobLoop() { if (IN_GAME) return; const step = (now) => { if (FIST_BOB.on) for (const f of FISTS()) if (!f.gone && f.bob !== false) { f.lift = Math.sin((now - FIST_BOB.t0) / 520 + f.i * 1.7) * 6 + 6; setPos(f, f.dx, f.dy); }

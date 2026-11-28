@@ -93,8 +93,8 @@ def("lance", { boss: "guard", status: "approved", icon: "deva", name: "Mudra Lan
 
 // ───────── Missile Fist (summon, detonation, break)
 const FIST_ANGLE = (C) => tv(C, "fistAngle");
-def("fist", { boss: "fist", status: "approved", icon: "fistA", fists: true, name: "Missile Fist", tag: "Action · summons two Missile Fists", changes: [],
-  intro: "She raises a hand and two fists burn into being at her shoulders, then rocket out to their spots on her side of the field and hover there, each showing its two-pip fuse.",
+def("fist", { boss: "fist", status: "approved", icon: "fistA", fists: true, name: "Missile Fist", tag: "Action · summons three Missile Fists", changes: [],
+  intro: "She raises a hand and three fists burn into being, two at her shoulders and one above her head,, then rocket out to their spots on her side of the field and hover there, each showing its two-pip fuse.",
   rules: "The fists are summoned actors on her side. In the game they take their own turns: a pip drops on each, and they detonate on the turn after. Fuse pips are a stand-in for the summon's countdown display.",
   tune: [T("form", "Forming (ms)", 900, 300, 2000, 50), T("fly", "Flight to hover spot (ms)", 800, 300, 1800, 50), T("arc", "Flight arc height (px)", 110, 0, 240, 10), T("fistAngle", "Fist angle at rest (deg, 0 = at the party)", 0, -90, 90, 5)],
   beats: [
@@ -102,7 +102,7 @@ def("fist", { boss: "fist", status: "approved", icon: "fistA", fists: true, name
       sfx("up", .4); clip("ro_efst_magiccircle__mc", feet(D), { scale: 1.6 * D.s, filter: tint(5, 6, 1.2), blend: "screen", parent: $("fground") });
       await moveActor(D, D.x, D.y, 500, EASE.sine, { hop: 10 }); } },
     { name: "Fists burn into being", note: "embers gather at her shoulders", run: async (C) => { const D = DV(); const fs = FISTS(); fistsShow(true);
-      fs.forEach((f, i) => { f.bob = false; f.lift = 0; f.rot = FIST_ANGLE(C); const sh = { x: OX(D) + (i ? 34 : -34), y: OY(D) - hgt(D) * .78 + 30 }; f.kx = f.ky = 0; f.s = tokenScaleAt(sh.y); setPos(f, sh.x - f.x, sh.y - f.y); });
+      fs.forEach((f, i) => { f.bob = false; f.lift = 0; f.rot = FIST_ANGLE(C); const sh = i === 2 ? { x: OX(D), y: OY(D) - hgt(D) * 1.02 + 30 } : { x: OX(D) + (i ? 34 : -34), y: OY(D) - hgt(D) * .78 + 30 }; f.kx = f.ky = 0; f.s = tokenScaleAt(sh.y); setPos(f, sh.x - f.x, sh.y - f.y); });
       sfx("machine", .35); sfx("magic", .4);
       for (const f of fs) for (let k = 0; k < 18; k++) { const p = fistPt(f); homing("field", { x: p.x + rnd(-120, 120), y: p.y + rnd(-90, 90) }, p, RED, { ms: tv(C, "form") * .8, arc: 40, r: 3 }); }
       await tween(tv(C, "form"), EASE.outBack, (t) => fs.forEach((f) => { f.kx = f.ky = t; setPos(f, f.dx, f.dy); }));
