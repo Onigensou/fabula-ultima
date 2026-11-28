@@ -14,6 +14,11 @@
 //   sleep     three Zs drifting up from the head
 //   stun      three yellow stars circling the head (Stunned, 2026-11-27)
 //   berserk   red rage aura: a throbbing red underglow, red streaks ripping up off the body + red wash
+//   zombie    deep-purple miasma rising from the feet up the body, a third of it BEHIND the
+//             body (status-cues-back.js) + the Zombie grade (token-tint.js grade mode: a
+//             violet-grey keep-lightness tint, gamma lift and a rim glow). The STATUS only:
+//             a creature that is Undead by species draws nothing (2026-11-28).
+//   bleed     a pierced heart beside the head on its back side, red glow pulsing (2026-11-28)
 //   armorbreak / magicbreak   beside the chest on the unit's back side, just outside the
 //             frame: the word DEF / MDEF + a small bobbing down arrow, no tile or frame,
 //             orange = DEF (Armor Break, and Rakshasa's Crippled), blue = M.DEF (Magic
@@ -59,7 +64,8 @@ import { log, warn } from "./logger.js";
 import { cueOf } from "./status-classifier.js";
 import { battleActive } from "./battle-focus.js";
 import { spriteRect } from "./unit-anchors.js";
-import { setStatusTintProvider, syncActorTint } from "./token-tint.js";
+import { setStatusTintProvider, syncActorTint, makeGradeSpec } from "./token-tint.js";
+import { installBackCues, syncBackCues, setBackCuesHidden, miasmaPuffs } from "./status-cues-back.js";
 import { installChargeOrbitFx } from "./charge-orbit-fx.js";
 import { installSlayerFx } from "./slayer-fx.js";
 import { applySpellFencerCues, sfCueCss, sfCueHTML } from "./spell-fencer-cues.js";
@@ -70,9 +76,33 @@ const STYLE_ID = "fu-status-cue-style";
 const REF_H = 250;                 // the sprite height the particle sizes were tuned at
 const EYE_Y = 0.15;
 
+// ── Zombie + Bleed: ONE constants block, copied from the approved mockup ─────
+// claude.ai/artifact/6yk4Vym4JdmTq8fP7LuGwX (page v38), sections "Zombie" and
+// "Bleed", both "Approved 2026-11-28". Names follow the mockup's config (its LOCKED /
+// DEF objects). Sizes are px at a 250 px sprite (REF_H) and scale with --k.
+export const ZOMBIE_LOOK = Object.freeze({
+  // Tint (token-tint.js grade mode): blend "Colour, keep lightness"; base sprite
+  // saturation 2, contrast 1, drain 0, exposure 0.64; tint violet-grey #a99fbe turned
+  // +60°, amount 1, brightness lift 0, gamma 1.38; rim glow amount 1, size 6.5 px.
+  grade: Object.freeze({ blend: "col", sat: 2, con: 1, drain: 0, exp: 0.64, tintHex: "#a99fbe", hue: 60, str: 1, bright: 0,
+    gamma: 1.38, glow: 1, glowPx: 6.5, refH: REF_H }),
+  // Miasma: coverage 0.7 (feet → body), density 19, particle size 2×, drift speed 2.5×,
+  // opacity 0.4, colour Deep purple (rgb 96,58,140). ~1/3 of the body puffs go BEHIND.
+  miasma: Object.freeze({ cov: 0.7, rate: 19, size: 2, spd: 2.5, mo: 0.4, mc: "96,58,140" }),
+});
+export const BLEED_LOOK = Object.freeze({
+  // Heart icon, Blade line, Back of the head. is = icon size, ox = side offset, oy = height
+  // above the eyes, gs = glow size, ga = glow strength, pp = pulse (s), lt = line thickness,
+  // la = line angle (deg).
+  icon: "heart", line: "blade", side: "back",
+  is: 44, ox: 70, oy: 31, gs: 76, ga: 0.85, pp: 1.4, lt: 2.4, la: -55,
+});
+
 // Body washes (multiply, 0..1 strength). One per token: first in this order wins.
-const WASH_ORDER = ["burn", "berserk", "poison", "wet", "paralyze"];
+// Zombie first (mockup "One wash per token"): it lasts longest and changes what a heal does.
+const WASH_ORDER = ["zombie", "burn", "berserk", "poison", "wet", "paralyze"];
 const WASH = {
+  zombie: { grade: ZOMBIE_LOOK.grade },
   burn: { color: "#ffc993", strength: 0.35 },
   berserk: { color: "#ff9a9a", strength: 0.3 },
   poison: { color: "#a6e58a", strength: 0.42 },
@@ -189,9 +219,32 @@ function ensureStyles() {
 @keyframes fuCueBrkIn { 0% { opacity: 0; transform: translateY(-50%) scale(.5); } 100% { opacity: 1; transform: translateY(-50%) scale(1); } }
 @keyframes fuCueBrkGlow { 50% { filter: drop-shadow(0 0 1px rgba(0,0,0,.9)) drop-shadow(0 0 calc(var(--c) * .28) var(--glow)); } }
 @keyframes fuCueBrkArrow { 0%, 100% { transform: translateY(-6%); } 50% { transform: translateY(14%); } }
+/* zombie: deep-purple miasma from the feet up the body (mockup .zb-cue .pool / .ms + zbMist).
+   The puffs that pass BEHIND the body are PIXI, in status-cues-back.js. */
+.fu-cue .zm { left: 0; top: 0; width: 100%; height: 100%; animation: fuCueFadeIn .5s ease both; }
+.fu-cue .zm .pool { left: 4%; right: 4%; bottom: -3%; height: 14%; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(var(--mc), calc(var(--mo) * .8)), rgba(var(--mc), calc(var(--mo) * .3)) 50%, rgba(var(--mc), 0) 72%);
+  filter: blur(calc(2px * var(--k))); animation: fuCueZPool 3.2s ease-in-out infinite alternate; }
+.fu-cue .zm .ms { width: var(--s); height: calc(var(--s) * var(--sq, .5)); margin-left: calc(var(--s) * -.5); border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(var(--mc), .9), rgba(var(--mc), .4) 45%, rgba(var(--mc), 0) 70%);
+  filter: blur(calc(2.4px * var(--k))); opacity: 0; animation: fuCueZMist 4s ease-in-out infinite; }
+@keyframes fuCueZPool { from { opacity: .65; transform: scaleX(.94); } to { opacity: 1; transform: scaleX(1.05); } }
+@keyframes fuCueZMist { 0% { opacity: 0; transform: translate(0,0) scale(.6); } 30% { opacity: var(--mo); } 70% { opacity: calc(var(--mo) * .8); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--rise)) scale(1.45); } }
+@keyframes fuCueFadeIn { from { opacity: 0; } to { opacity: 1; } }
+/* bleed: a pierced heart beside the head, on its back side, glow pulsing (mockup .bl-cue .pc).
+   --is icon size, --gs glow size, --ga glow strength, --pp pulse period (px at a 250 px sprite). */
+.fu-cue .bld { width: 0; height: 0; animation: fuCueFadeIn .4s ease both; }
+.fu-cue .bld .halo { left: calc(var(--gs) * -.5 * var(--k)); top: calc(var(--gs) * -.5 * var(--k)); width: calc(var(--gs) * var(--k)); height: calc(var(--gs) * var(--k)); border-radius: 50%;
+  background: radial-gradient(circle, rgba(230,10,20,var(--ga)) 0, rgba(170,0,10,calc(var(--ga) * .6)) 32%, rgba(110,0,6,calc(var(--ga) * .25)) 52%, rgba(90,0,0,0) 70%);
+  animation: fuCueBlHalo var(--pp) ease-in-out infinite; }
+@keyframes fuCueBlHalo { 0%, 100% { transform: scale(.86); opacity: .75; } 50% { transform: scale(1.1); opacity: 1; } }
+.fu-cue .bld svg { left: calc(var(--is) * -.5 * var(--k)); top: calc(var(--is) * -.5 * var(--k)); width: calc(var(--is) * var(--k)); height: calc(var(--is) * var(--k));
+  overflow: visible; filter: drop-shadow(0 1px 1px rgba(40,0,0,.6)); animation: fuCueBlBeat var(--pp) ease-in-out infinite; }
+@keyframes fuCueBlBeat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.1); } 24% { transform: scale(.97); } 36% { transform: scale(1.05); } }
 /* clip cues (an effect's own looping clip, e.g. Asura's blade slashes) */
 .fu-cue video.clip { position: absolute; display: block; pointer-events: none; object-fit: contain; }
-@media (prefers-reduced-motion: reduce) { .fu-cue * { animation-play-state: paused !important; } }
+@media (prefers-reduced-motion: reduce) { .fu-cue * { animation-play-state: paused !important; } .fu-cue .zm, .fu-cue .bld { animation: none !important; } }
 ` + sfCueCss();   // Spell Fencer rhythm auras (spell-fencer-cues.js)
   document.head.appendChild(st);
 }
@@ -383,19 +436,86 @@ function cueHTML(token, cues, w, H) {
       + [0, 1, 2].map((i) => `<b style="animation-delay:-${(i * 0.5).toFixed(1)}s">★</b>`).join("")
       + `</span>`;
   }
+  if (cues.has("zombie")) {
+    // The in-front two thirds of the miasma + the pool at the feet; the rest is PIXI, behind
+    // the body (status-cues-back.js), from the SAME puff list.
+    const M = ZOMBIE_LOOK.miasma;
+    h += `<span class="zm" style="--mc:${M.mc};--mo:${M.mo}"><i class="pool"></i>`
+      + miasmaPuffs(id, M).filter((p) => !p.back).map((p) =>
+        `<i class="ms" style="left:${px(w * p.x)};bottom:${px(H * p.yb)};--s:${px(p.s * k)};--sq:${p.sq};--dx:${px(p.dx * k)};--rise:${px(p.rise * k)};animation-duration:${p.d.toFixed(2)}s;animation-delay:-${p.delay.toFixed(2)}s"></i>`).join("")
+      + `</span>`;
+  }
+  if (cues.has("bleed")) {
+    // Beside the head on its BACK side (away from where the unit looks), the blade entering
+    // from outside: the line mirrors with the side it sits on (mockup paintCue).
+    const B = BLEED_LOOK, dir = B.side === "back" ? -facingOf(token) : facingOf(token);
+    h += `<span class="bld" style="left:${px(hx + dir * B.ox * k)};top:${px(hy - B.oy * k)};--is:${B.is}px;--gs:${B.gs}px;--ga:${B.ga};--pp:${B.pp}s">`
+      + `<i class="halo"></i>${pierceSVG(id, B.icon, B.line, B.lt, B.la, dir < 0)}</span>`;
+  }
   h += sfCueHTML(id, cues, w, H, rng, px);   // Spell Fencer rhythm auras (spell-fencer-cues.js)
   return h;
 }
 
+// Which way a battler looks on screen: +1 right, -1 left. Battle art is drawn facing
+// LEFT unless its token carries "Art is drawn facing right" (spriteFacesRight, the
+// same mark leave-exit-fx / the walk maps read); a mirrored mesh turns it round.
+function facingOf(token) {
+  let drawnRight = false;
+  try {
+    const f = token.document?.getFlag?.(NS, "spriteFacesRight")
+      ?? game.actors?.get?.(token.document?.actorId)?.prototypeToken?.flags?.[NS]?.spriteFacesRight;
+    drawnRight = f === true || String(f ?? "").toLowerCase() === "true";
+  } catch { /* */ }
+  const flip = (token.mesh?.scale?.x ?? 1) < 0;
+  return (drawnRight ? 1 : -1) * (flip ? -1 : 1);
+}
+
+// The Bleed icon: viewBox -20..20, a glossy heart (or drop) and the line across it.
+// Straight port of the mockup's pierceSVG.
+function pierceSVG(id, ic, ln, lt, la, mirror) {
+  const g = `fuBlG-${id}`;
+  const shape = ic === "heart"
+    ? "M0 13 C-4 9.5 -15 3 -15 -5 C-15 -10.5 -10.5 -14 -6 -14 C-3 -14 -1 -12.4 0 -10.4 C1 -12.4 3 -14 6 -14 C10.5 -14 15 -10.5 15 -5 C15 3 4 9.5 0 13Z"
+    : "M0 -15 C4 -7 11 -1 11 5.5 A11 11 0 0 1 -11 5.5 C-11 -1 -4 -7 0 -15Z";
+  const a = mirror ? -la : la;
+  let L;
+  if (ln === "blade") {
+    // tapered blade from tip (-21) to guard (+14), grip past it
+    L = `<g transform="rotate(${a})">`
+      + `<polygon points="-22,0 13,${(-lt * 0.9).toFixed(2)} 13,${(lt * 0.9).toFixed(2)}" fill="#e9ecf2" stroke="#3a3a44" stroke-width=".7" stroke-linejoin="round"/>`
+      + `<line x1="-20" y1="0" x2="12" y2="0" stroke="#9aa2b0" stroke-width=".5"/>`
+      + `<rect x="13" y="${(-3.2 - lt * 0.4).toFixed(2)}" width="2.2" height="${(6.4 + lt * 0.8).toFixed(2)}" rx=".8" fill="#c9a24a" stroke="#4a3410" stroke-width=".6"/>`
+      + `<rect x="15.2" y="-1.1" width="6" height="2.2" rx="1" fill="#5a3a22" stroke="#2a1a0c" stroke-width=".5"/>`
+      + `<circle cx="21.6" cy="0" r="1.6" fill="#c9a24a" stroke="#4a3410" stroke-width=".5"/></g>`;
+  } else {
+    L = `<g transform="rotate(${a})"><line x1="-19" y1="0" x2="19" y2="0" stroke="#2a0a0c" stroke-width="${(lt + 1.6).toFixed(2)}" stroke-linecap="round"/>`
+      + `<line x1="-19" y1="0" x2="19" y2="0" stroke="#fff2ee" stroke-width="${lt.toFixed(2)}" stroke-linecap="round"/></g>`;
+  }
+  const hy = ic === "heart" ? -8 : -1;
+  return `<svg viewBox="-20 -20 40 40" aria-hidden="true"><defs><radialGradient id="${g}" cx="38%" cy="32%" r="75%">`
+    + `<stop offset="0" stop-color="#ffb0a8"/><stop offset=".28" stop-color="#ff3b3b"/><stop offset=".7" stop-color="#c00814"/><stop offset="1" stop-color="#6a020a"/></radialGradient></defs>`
+    + `<path d="${shape}" fill="url(#${g})" stroke="#4a0006" stroke-width="1.1"/>`
+    + `<ellipse cx="-6" cy="${hy}" rx="3.4" ry="2.1" transform="rotate(-30 -6 ${hy})" fill="#fff" opacity=".6"/>`
+    + L + `</svg>`;
+}
+
+// The behind-the-body half of a token's cues (today: the Zombie miasma), or null.
+function backWant(token, cues) {
+  if (!cues.has("zombie")) return null;
+  const M = ZOMBIE_LOOK.miasma;
+  return { key: `zombie|${token.id}`, mc: M.mc, mo: M.mo, puffs: miasmaPuffs(token.id, M) };
+}
+
 function wants(token) { return !!(battleActive() && token?.actor && !token.destroyed); }
 
-function drop(id) { const r = S.recs.get(id); if (r) { stopClips(r); r.el.remove(); S.recs.delete(id); } }
+function drop(id) { const r = S.recs.get(id); if (r) { stopClips(r); r.el.remove(); S.recs.delete(id); } try { syncBackCues({ id }, null); } catch { /* */ } }
 
 /** (Re)build one token's cue layer. */
 export function renderCues(token) {
   if (!token) return;
   const cues = wants(token) ? cuesOf(token.actor) : new Set();
   const clips = wants(token) ? clipCuesOf(token.actor) : [];
+  try { syncBackCues(token, backWant(token, cues)); } catch (e) { warn("[StatusCues] back layer sync failed", e); }
   if (!cues.size && !clips.length) { drop(token.id); return; }
   const rect = spriteRect(token);
   if (!rect) return;
@@ -451,12 +571,17 @@ export function renderAllCues() {
 }
 
 // Wash: the first cue in WASH_ORDER that the actor carries, in battle only.
+const _gradeSpecs = {};
 function statusTint(actor) {
   if (!battleActive() || !actor) return null;
   const cues = cuesOf(actor);
   for (const c of WASH_ORDER) {
     if (!cues.has(c)) continue;
     const w = WASH[c];
+    if (w.grade) {
+      _gradeSpecs[c] ??= makeGradeSpec(w.grade);   // built once, shared by every token
+      return { color: [1, 1, 1], strength: 1, mode: "grade", grade: _gradeSpecs[c], target: "bearer", applierActorUuid: null };
+    }
     const col = foundry.utils.Color.from(w.color);
     return { color: [col.r, col.g, col.b], strength: w.strength, mode: "multiply", target: "bearer", applierActorUuid: null };
   }
@@ -466,6 +591,7 @@ function syncTint(actor) { try { if (actor) syncActorTint(actor); } catch (e) { 
 
 function setHidden(hidden) {
   S.hidden = !!hidden;
+  setBackCuesHidden(S.hidden);
   for (const rec of S.recs.values()) rec.el.classList.toggle("is-anim-hidden", S.hidden);
 }
 
@@ -480,6 +606,8 @@ export function initStatusCues() {
   // this DOM layer, which sits over the whole canvas; they are PIXI, in their own module.
   try { installChargeOrbitFx(); } catch (e) { warn("[StatusCues] charge orbit install threw", e); }
   try { installSlayerFx(); } catch (e) { warn("[StatusCues] slayer fx install threw", e); }
+  // The behind-the-body cue layer (Zombie miasma's back puffs), PIXI in canvas.primary.
+  try { installBackCues(); } catch (e) { warn("[StatusCues] back layer install threw", e); }
   const onAE = (eff) => {
     const actor = actorOfEffect(eff);
     if (!actor) return;
