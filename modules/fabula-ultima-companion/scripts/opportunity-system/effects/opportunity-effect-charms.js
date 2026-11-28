@@ -3,9 +3,9 @@
 //
 //   Misfortune  (Hex Coin)          Deals 1d100 non-elemental damage to one enemy.   battle only
 //   Calamity    (Doomsayer's Bell)  Deals 1d50 non-elemental damage to all enemies.  battle only
-//   Succor      (Mender's Ribbon)   One creature recovers 50 HP.
+//   Succor      (Saint's Rosary)    One creature recovers 50 HP.
 //   Calm        (Moonstone Pendant) One creature recovers 50 MP.
-//   Sooth       (Saint's Rosary)    One creature recovers from all negative statuses.
+//   Sooth       (Ribbon)            One creature recovers from all negative statuses.
 //
 // Each option is gated by `requiresFlag: "opp_<id>"` in opportunity-config.js;
 // the accessory's equip-toggled AE sets that flag (Bunny Tail / Lucky pattern).

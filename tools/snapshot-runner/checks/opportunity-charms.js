@@ -6,7 +6,7 @@ const out = { steps: {}, fails: [], errors: [] };
 const ok = (name, cond, detail) => { out.steps[name] = { pass: !!cond, detail }; if (!cond) out.fails.push(name); };
 const safe = async (name, fn) => { try { await fn(); } catch (e) { out.errors.push(`${name}: ${String(e?.stack ?? e).slice(0, 700)}`); ok(name, false, "threw"); } };
 const ID = { hex: "OppCharmHexCoin1", bell: "OppCharmDoomBel1", ribbon: "OppCharmMendRib1", moon: "OppCharmMoonPen1", rosary: "OppCharmSaintRo1" };
-const OPP = { hex: "misfortune", bell: "calamity", ribbon: "succor", moon: "calm", rosary: "sooth" };
+const OPP = { hex: "misfortune", bell: "calamity", ribbon: "sooth", moon: "calm", rosary: "succor" };
 for (let i = 0; i < 240 && !game.items.get(ID.rosary); i++) await wait(250);
 for (let i = 0; i < 120 && !window["oni.OpportunityEffects"]?.sooth; i++) await wait(250);
 await wait(1500);
@@ -28,14 +28,14 @@ await safe("items", async () => {
       kids: game.items.filter((i) => i.system?.container === id).length, def: p.item_def_bonus, mdef: p.item_mdef_bonus }];
   }));
   const I = out.items;
-  ok("names", I.hex.name === "Hex Coin" && I.bell.name === "Doomsayer's Bell" && I.ribbon.name === "Mender's Ribbon" && I.moon.name === "Moonstone Pendant" && I.rosary.name === "Saint's Rosary", Object.values(I).map((x) => x.name));
-  ok("rarity/cost: Uncommon 1500, Rare 2000", ["hex", "ribbon", "moon"].every((k) => I[k].rar === "Uncommon" && I[k].cost === "1500") && ["bell", "rosary"].every((k) => I[k].rar === "Rare" && I[k].cost === "2000"));
+  ok("names", I.hex.name === "Hex Coin" && I.bell.name === "Doomsayer's Bell" && I.ribbon.name === "Ribbon" && I.moon.name === "Moonstone Pendant" && I.rosary.name === "Saint's Rosary", Object.values(I).map((x) => x.name));
+  ok("rarity/cost: Uncommon 1500, Rare 2000", ["hex", "rosary", "moon"].every((k) => I[k].rar === "Uncommon" && I[k].cost === "1500") && ["bell", "ribbon"].every((k) => I[k].rar === "Rare" && I[k].cost === "2000"));
   ok("accessory, no set, DEF/MDEF 0, no kids, forge icon", Object.values(I).every((x) => x.type === "accessory" && !x.isSet && x.set === "" && x.def === "0" && x.mdef === "0" && !x.kids && x.forge), I);
   ok("one AE each, mode 5 opp flag", Object.entries(I).every(([k, x]) => x.aes?.length === 1 && x.aes[0].includes(`flags.${NS}.opp_${OPP[k]}:5:\${isEquipped ? 1 : 0}$`) && x.aes[0].includes("|true|")), Object.values(I).map((x) => x.aes));
   ok("texts", /new Opportunity , 【⏳ Misfortune 】 Deals 【1d100】 non-elemental damage to one enemy\./.test(I.hex.text)
     && /Calamity 】 Deals 【1d50】 non-elemental damage to all enemies\./.test(I.bell.text)
-    && /Succor 】 One creature recovers 50 HP\./.test(I.ribbon.text) && /Calm 】 One creature recovers 50 MP\./.test(I.moon.text)
-    && /Sooth 】 One creature recovers from all negative statuses\./.test(I.rosary.text) && Object.values(I).every((x) => x.flavor.length > 10), Object.values(I).map((x) => x.text));
+    && /Succor 】 One creature recovers 50 HP\./.test(I.rosary.text) && /Calm 】 One creature recovers 50 MP\./.test(I.moon.text)
+    && /Sooth 】 One creature recovers from all negative statuses\./.test(I.ribbon.text) && Object.values(I).every((x) => x.flavor.length > 10), Object.values(I).map((x) => x.text));
 });
 
 // ── 2. tables ────────────────────────────────────────────────────────────────
@@ -46,12 +46,12 @@ await safe("tables", async () => {
   let good = true;
   for (const [tid, kind] of Object.entries(T)) {
     const t = game.tables.get(tid);
-    const want = kind === "acc" ? [ID.hex, ID.ribbon, ID.moon] : [ID.bell, ID.rosary];
+    const want = kind === "acc" ? [ID.hex, ID.rosary, ID.moon] : [ID.bell, ID.ribbon];
     const nums = t.results.contents.flatMap((r) => { const a = []; for (let n = r.range[0]; n <= r.range[1]; n++) a.push(n); return a; });
     const max = Math.max(...nums);
     const full = nums.length === max && new Set(nums).size === max;
     const has = want.every((id) => t.results.filter((r) => r.documentId === id).length === 1);
-    const noOther = ![ID.hex, ID.ribbon, ID.moon, ID.bell, ID.rosary].filter((id) => !want.includes(id)).some((id) => t.results.some((r) => r.documentId === id));
+    const noOther = ![ID.hex, ID.rosary, ID.moon, ID.bell, ID.ribbon].filter((id) => !want.includes(id)).some((id) => t.results.some((r) => r.documentId === id));
     out.tables[t.name] = { formula: t.formula, rows: t.results.size, full, has, noOther, new: t.results.filter((r) => want.includes(r.documentId)).map((r) => `${r.text}@${r.range[0]}`) };
     if (!(t.formula === `1d${max}` && full && has && noOther)) good = false;
   }
@@ -65,8 +65,8 @@ await safe("tables", async () => {
 await safe("hako", async () => {
   const st = game.actors.get("srAH3OHOoK0tvFih").flags[NS].shopRoster;
   const ent = (id) => st.pool.find((e) => e.id === id);
-  out.hako = { bell: ent(ID.bell), rosary: ent(ID.rosary), uncommonIn: [ID.hex, ID.ribbon, ID.moon].filter(ent), size: st.pool.length };
-  ok("Hako pool: Bell + Rosary at 2000, no Uncommons", out.hako.bell?.price === 2000 && out.hako.rosary?.price === 2000 && !out.hako.uncommonIn.length, out.hako);
+  out.hako = { bell: ent(ID.bell), ribbon: ent(ID.ribbon), uncommonIn: [ID.hex, ID.rosary, ID.moon].filter(ent), size: st.pool.length };
+  ok("Hako pool: Bell + Ribbon at 2000, no Uncommons", out.hako.bell?.price === 2000 && out.hako.ribbon?.price === 2000 && !out.hako.uncommonIn.length, out.hako);
 });
 
 // ── 4. config + equip flags ──────────────────────────────────────────────────
@@ -87,10 +87,10 @@ await safe("config", async () => {
   ok("5 options, gated + handlers; only damage ones battleOnly", out.config.every((c) => c.flag === `opp_${c.id}` && c.handler && c.battleOnly === ["misfortune", "calamity"].includes(c.id)), out.config);
 });
 await safe("equip flags", async () => {
-  H = await hero("OC Hina", [ID.hex, ID.rosary, ID.moon]);
+  H = await hero("OC Hina", [ID.hex, ID.ribbon, ID.moon]);
   const { a, got } = H;
   out.flags0 = flags(a);
-  await applyEquipmentSwap(a, { main: null, off: null, accessory1: got[ID.hex].id, accessory2: got[ID.rosary].id });
+  await applyEquipmentSwap(a, { main: null, off: null, accessory1: got[ID.hex].id, accessory2: got[ID.ribbon].id });
   await wait(2000);
   out.flagsOn = flags(a);
   await applyEquipmentSwap(a, { main: null, off: null, accessory1: got[ID.moon].id, accessory2: null });
@@ -101,7 +101,7 @@ await safe("equip flags", async () => {
   out.flagsOff = flags(a);
   const on = (f, list) => Object.entries(f).every(([k, v]) => (list.includes(k) ? Number(v) === 1 : !Number(v)));
   ok("unequipped: no opp flags", on(out.flags0, []), out.flags0);
-  ok("Hex Coin + Rosary → misfortune + sooth", on(out.flagsOn, ["misfortune", "sooth"]), out.flagsOn);
+  ok("Hex Coin + Ribbon → misfortune + sooth", on(out.flagsOn, ["misfortune", "sooth"]), out.flagsOn);
   ok("swap to Moonstone → calm only", on(out.flagsSwap, ["calm"]), out.flagsSwap);
   ok("all off → cleared", on(out.flagsOff, []), out.flagsOff);
 });

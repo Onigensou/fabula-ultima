@@ -7,9 +7,9 @@
  *
  *   Hex Coin           Uncommon  1500z  Opportunity Misfortune: 1d100 non-elemental damage, one enemy
  *   Doomsayer's Bell   Rare      2000z  Opportunity Calamity:   1d50 non-elemental damage, all enemies
- *   Mender's Ribbon    Uncommon  1500z  Opportunity Succor:     one creature recovers 50 HP
+ *   Saint's Rosary     Uncommon  1500z  Opportunity Succor:     one creature recovers 50 HP
  *   Moonstone Pendant  Uncommon  1500z  Opportunity Calm:       one creature recovers 50 MP
- *   Saint's Rosary     Rare      2000z  Opportunity Sooth:      one creature recovers from all negative statuses
+ *   Ribbon             Rare      2000z  Opportunity Sooth:      one creature recovers from all negative statuses (FF Ribbon nod)
  *
  * Each item carries ONE equip-toggled AE setting flags.fabula-ultima-companion.opp_<id>
  * (Bunny Tail / Lucky pattern); the wheel option is gated by requiresFlag (opportunity-config.js).
@@ -24,7 +24,7 @@
  */
 
 export const key = "2026-11-28-opportunity-charms";
-export const description = "Hex Coin, Doomsayer's Bell, Mender's Ribbon, Moonstone Pendant, Saint's Rosary (gear-granted Opportunities) + dungeon loot rows + Hako pool.";
+export const description = "Hex Coin, Doomsayer's Bell, Saint's Rosary, Moonstone Pendant, Ribbon (gear-granted Opportunities) + dungeon loot rows + Hako pool.";
 
 const M = "fabula-ultima-companion";
 const FLAG = "opportunityCharms";
@@ -48,18 +48,18 @@ const ITEMS = [
     img: `${FORGE}Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Instrument/Icon-Rune_Bell.webp`,
     effect: `Deals ${B("【1d50】")} non-elemental damage to all enemies.`,
     flavor: "Rung once by a prophet who was right about everything. Nobody thanked him." },
-  { id: "OppCharmMendRib1", ae: "OppCharmMendRAE1", opp: "succor", oppLabel: "Succor", name: "Mender's Ribbon", rarity: "Uncommon",
+  { id: "OppCharmMendRib1", ae: "OppCharmMendRAE1", opp: "sooth", oppLabel: "Sooth", name: "Ribbon", rarity: "Rare",
     img: `${FORGE}Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Big_Red_Ribbon.webp`,
-    effect: `One creature recovers ${B("50")} HP.`,
-    flavor: "Tied around a wound by a stranger who never gave a name." },
+    effect: `One creature recovers from all negative statuses.`,
+    flavor: "A plain red ribbon that wards off nearly every ailment. Nobody knows why it works." },
   { id: "OppCharmMoonPen1", ae: "OppCharmMoonPAE1", opp: "calm", oppLabel: "Calm", name: "Moonstone Pendant", rarity: "Uncommon",
     img: `${FORGE}Item%20Icon/Accessories/Ys/Blue_Moon_Charm.webp`,
     effect: `One creature recovers ${B("50")} MP.`,
     flavor: "Cool to the touch even at noon. Holding it slows the breath." },
-  { id: "OppCharmSaintRo1", ae: "OppCharmSaintAE1", opp: "sooth", oppLabel: "Sooth", name: "Saint's Rosary", rarity: "Rare",
+  { id: "OppCharmSaintRo1", ae: "OppCharmSaintAE1", opp: "succor", oppLabel: "Succor", name: "Saint's Rosary", rarity: "Uncommon",
     img: `${FORGE}Item%20Icon/Accessories/Ys/Ys9-Apis_Bead.webp`,
-    effect: `One creature recovers from all negative statuses.`,
-    flavor: "Worn smooth by a hundred years of prayers. A few of them were answered." },
+    effect: `One creature recovers ${B("50")} HP.`,
+    flavor: "Worn smooth by a hundred years of prayers. Each bead still holds a little warmth." },
 ];
 
 const DUNGEONS = [
