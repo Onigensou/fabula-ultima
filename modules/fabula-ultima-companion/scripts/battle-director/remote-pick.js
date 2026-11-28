@@ -98,6 +98,8 @@ async function renderLocalPick({ kind, spec = {}, externalCancel = null }) {
       includeDL: !!spec.includeDL && !!game.user?.isGM,
       defaultDL: spec.defaultDL,
       requireAnyOf: spec.requireAnyOf ?? null,
+      lockPair: !!spec.lockPair,
+      noCancel: !!spec.noCancel,
       externalCancel,
     });
   }

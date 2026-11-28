@@ -92,4 +92,15 @@ await t("a throwing roll counts as a fail", async () => {
   assert.equal(s.deleted, false);
 });
 
+await t("ask runs before each roll (the player's prompt), and a throwing ask still rolls", async () => {
+  const s = fakeEffect("Stunned", { attr1: "MIG", attr2: "WLP", dl: 10 });
+  const z = fakeEffect("Sleep", { attr1: "INS", attr2: "WLP", dl: 10 });
+  const log = [];
+  const r = await runRecoveryChecks(actorWith(s, z), { chat: false,
+    ask: async ({ status, spec }) => { log.push("ask " + status + " " + spec.attr1); if (status === "Sleep") throw new Error("closed"); },
+    roll: async ({ A1 }) => { log.push("roll " + A1); return { total: 12, dA: 6, dB: 6 }; } });
+  assert.deepEqual(log, ["ask Stunned MIG", "roll MIG", "ask Sleep INS", "roll INS"]);
+  assert.equal(r.blocked, false);
+});
+
 console.log(`${n} passed`);
