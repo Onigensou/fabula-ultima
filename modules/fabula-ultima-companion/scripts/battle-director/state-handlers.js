@@ -24,7 +24,7 @@ import { requestTargeting } from "./target-picker.js";
 // The shared pre-picker target resolution — the same question the autopilot asks
 // before it chooses an action. See target-survey.js's header for why the count
 // and the pick must come from one place.
-import { surveyActionTargets } from "./target-survey.js";
+import { surveyActionTargets, restoresHp } from "./target-survey.js";
 import { postActionCard, BattlefieldActionCard, composeActionCardRenderPayload, ownerUserIdForActor } from "./action-card.js";
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
@@ -4132,6 +4132,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
       mode: "exact", count: eligibleForPicker.length,
       lockSelection: true,
       titleText: lockedTitle, cancelLabel, secondaryAction, remote,
+      healWarn: !!skill && restoresHp(skill),
     });
   } else {
     const titleText = (_presetShown?.prompt ? `${attackerSnap.name}: ${_presetShown.prompt}` : null)
@@ -4146,6 +4147,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
       count: showLockedPool ? Math.max(1, count) : count,
       titleText, card: _presetShown?.card ?? null, cancelLabel, secondaryAction, randomizeCount,
       mandatoryTokenUuids: mandatoryPins, remote,
+      healWarn: !!skill && restoresHp(skill),   // "Heal hurts" chips (heal-warning.js)
     });
   }
 

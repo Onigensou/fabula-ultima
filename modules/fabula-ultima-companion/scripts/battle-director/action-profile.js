@@ -15,11 +15,12 @@
 // live `actionResult` before any caller is switched (Phase 1+).
 
 import { log, warn } from "./logger.js";
+import { speciesKnown } from "./heal-warning.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveOutgoingPct, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
   applyCritDamage, resolveIncomingReduction, applyHealReceiving, applyMpReceiving, normalizeDamageType, applyAdjustOp,
-  shouldReverseHeal,
+  shouldReverseHeal, healReversalReason,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense,
          attackerHitRuleInverted } from "./snapshot.js";
@@ -92,22 +93,14 @@ const NON_ELEMENTAL_DT = new Set(["", "none", "healing", "heal", "hp", "recovery
 // ── Studied-mask gate ────────────────────────────────────────────────────────
 // A player attacker shouldn't see an enemy's DEF/MDEF/outcome/affinity until the
 // party has Studied them to Identity tier. Mirrors COMPUTE's checkStudied.
+// The rule lives in heal-warning.js (speciesKnown) so the target picker's "Heal hurts"
+// chip reads the same gate (Identity also reveals Species). Behaviour unchanged.
 function makeStudiedGate(attacker) {
   const encApi = globalThis.FUCompanion?.api?.encyclopedia;
-  const attackerIsFriendly = attacker?.disposition === 1;
-  return (target) => {
-    if (!attackerIsFriendly) return true;
-    if (target.disposition !== -1) return true;
-    if (!encApi?.getPageForActor) return true;
-    for (const uuid of [target.worldActorUuid, target.actorUuid].filter(Boolean)) {
-      try {
-        const page = encApi.getPageForActor(uuid);
-        const best = Number(page?.getFlag?.("fabula-ultima-companion", "encyclopedia")?.bestResult ?? 0) || 0;
-        if (best >= TIER_IDENTITY) return true;
-      } catch (_) { /* try next */ }
-    }
-    return false;
-  };
+  return (target) => speciesKnown({
+    casterDisposition: attacker?.disposition, targetDisposition: target.disposition,
+    uuids: [target.worldActorUuid, target.actorUuid], enc: encApi,
+  });
 }
 
 // ── Primary-effect descriptor ────────────────────────────────────────────────
@@ -1022,7 +1015,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 // yet (pure heal). Heal shares the roster's hit determination instead of producing
 // a separate row set. Mutates `rows`; returns { healingObj }.
 const SELF_SIDE_GRANT_REFS = new Set(["self", "own_summons", "own_phantasms", "own_persistent_summons", "own_minions", "own_numen", "last_summoned", "field"]);
-async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttacker = null, check, kind, primary, chainVars = null }) {
+async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttacker = null, check, kind, primary, chainVars = null, studiedGate = null }) {
   const rolled = !!(check?.required && check?.total != null);
   const isPreRoll = !!(check?.required && check?.total == null);
   const fireLabel = String(view?.fire_points?.on_activate_effect_ref ?? "").trim();
@@ -1135,6 +1128,14 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
     // card-mutation (a reaction), folded into this amount post-recompute via
     // grantOverride in recomputeActionProfile. Uniform with adjust_accuracy.
     const amount = recipBase;
+    // Card / picker wording for a reversed heal (2026-11-28): WHY it hurts, and whether the
+    // party may be told. A Zombie status (on the token) or an effect field is always shown;
+    // an Undead SPECIES only once the party knows it: Studied to Identity, the tier that
+    // reveals Species (the same gate that masks DEF / affinity). Unknown -> the row previews
+    // a normal heal (masked amount = what a normal heal would show); the heal still reverses
+    // when it lands: `amount` (what grantApply reads) is untouched.
+    const revReason = healReversed ? (healReversalReason(tActor, { row: grantRow }) ?? "undead") : null;
+    const revHidden = revReason === "undead" && typeof studiedGate === "function" && !studiedGate(e);
     const healEffect = {
       id: `primary-heal:${e.tokenUuid}`, type: "resource_delta", valence: "beneficial", actionKind: kind,
       source: "skill", targetRef: e.tokenUuid, resource: canonRes, value: amount,
@@ -1142,7 +1143,8 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
       // the flat grant row from effects alone.
       resourceCur: cur, resourceMax: max,
       ...(vismagusSuppress ? { vismagusSuppressed: true } : {}),
-      ...(healReversed ? { healReversed: true } : {}),
+      ...(healReversed ? { healReversed: true, healReversedReason: revReason } : {}),
+      ...(revHidden ? { healWarnHidden: true, healMaskAmount: applyHealReceiving(tActor, grantAmount) } : {}),
     };
     // Attach to the target's existing roster row (shares its hit determination);
     // create an auto-hit row only when none exists yet (pure heal — no damage/check).
@@ -1370,7 +1372,7 @@ export async function computeActionProfile(input) {
     perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon, gmHitOverrides, gmDamage, defenseOverrides });
   }
   if (primary.mode !== "damage") {
-    const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary, chainVars });
+    const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary, chainVars, studiedGate });
     healingObj = heal.healingObj;
   }
 
@@ -1490,7 +1492,8 @@ function flattenRow(r, kind) {
       resourceCur: heal.resourceCur, resourceMax: heal.resourceMax,
       ...(typeof o.hitChance === "number" ? { hitChance: o.hitChance } : {}),
       ...(heal.vismagusSuppressed ? { vismagusSuppressed: true } : {}),
-      ...(heal.healReversed ? { healReversed: true } : {}),
+      ...(heal.healReversed ? { healReversed: true, healReversedReason: heal.healReversedReason ?? null } : {}),
+      ...(heal.healWarnHidden ? { healWarnHidden: true, healMaskAmount: heal.healMaskAmount } : {}),
     };
   }
   // Damage row — WHO from target/outcome, WHAT from the primary damage effect.

@@ -81,8 +81,9 @@ check("living non-undead: not a target",         F.isReviveKillTarget(actor({ sp
 // ── card label (preview) ─────────────────────────────────────────────────────
 const healRow = { hit: true, grantAmount: 25, grantResource: "hp", resourceCur: 60, resourceMax: 60 };
 check("normal full-HP heal label",   C.resultLabelFor(healRow), "FULL · NO EFFECT");
-check("reversed heal label",         C.resultLabelFor({ ...healRow, healReversed: true }), `UNDEAD · HIT <span class="t-num">25</span>`);
-check("reversed heal class",         C.resultClsFor({ ...healRow, healReversed: true }), "hit");
+// 2026-11-28 (approved mockup): printed like a damage result, red, reason as a pill.
+check("reversed heal label",         C.resultLabelFor({ ...healRow, healReversed: true }), `<span class="vb">DAMAGE</span> <span class="t-num">25</span>`);
+check("reversed heal class",         C.resultClsFor({ ...healRow, healReversed: true }), "rev");
 
 console.log(failed ? `\n${failed} FAILED` : "\nall passed");
 process.exit(failed ? 1 : 0);
