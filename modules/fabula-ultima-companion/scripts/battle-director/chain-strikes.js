@@ -252,6 +252,24 @@ export function redirectSeek(targets = [], pool = [], standing = () => true, rng
   });
 }
 
+// Random / Volley mode: a strike drawn onto a creature that is no longer on the
+// card — Protect swapped its row for the protector's — is re-drawn among the
+// card's targets, the way Seek redirects a strike (user decision, 2026-11-28:
+// without it that strike was simply lost). Only an off-card pick moves; a pick
+// still on the card keeps its draw, even onto a creature already down (that
+// strike is lost, as Random / Volley always did). `standing` narrows the pool to
+// creatures that can still be hit; with nobody standing the pick is kept.
+//   strikeTargets: string[][]   one list per strike (the drawn targets)
+//   pool:          string[]     the card's targets
+export function redrawOffCard(strikeTargets = [], pool = [], standing = () => true, rng = Math.random) {
+  const onCard = new Set((pool ?? []).filter(Boolean));
+  const alive = [...onCard].filter((u) => standing(u));
+  return (strikeTargets ?? []).map((list) => (list ?? []).map((u) => {
+    if (!u || onCard.has(u) || !alive.length) return u;
+    return alive[Math.floor(rng() * alive.length) % alive.length];
+  }));
+}
+
 // Apply one strike's damage to a target's running state. Mirrors the engine's
 // order: affinity has already been applied by the caller (amount is final);
 // absorb heals up to max HP; otherwise shield soaks first, then HP.

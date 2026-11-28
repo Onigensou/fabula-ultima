@@ -735,8 +735,11 @@ function outcomesFromDirector(director) {
         amount: typeof r?.damage === "number" ? r.damage : null,
         element: String(r?.element ?? ar?.damageType ?? ar?.damage?.element ?? ar?.weapon?.damageType ?? "").toLowerCase() || null,
         affinity: r?.affinity ?? null,
-        hit: t ? t.landed > 0 : !!r?.hit,
-        crit: t ? t.crits > 0 : !!r?.crit,
+        // A card target no strike went to (a seek / random / volley Chain keeps
+        // every target on the card) was not hit — its row is strike 1's verdict
+        // against it, which never happened.
+        hit: t ? t.landed > 0 : (chain ? false : !!r?.hit),
+        crit: t ? t.crits > 0 : (chain ? false : !!r?.crit),
       };
     });
   } catch (e) {

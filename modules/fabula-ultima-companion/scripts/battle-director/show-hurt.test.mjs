@@ -94,6 +94,8 @@ eq("no scriptId never poses", showHurtRule(undefined).mode, "none");
   eq("unknown damage (non-number) is no loss", hpLossPlan({ kind: "Attack", perTargetResults: [{ tokenUuid: A, hit: true, damage: null }] }), { [A]: false });
   eq("Chain: landed decides", hpLossPlan({ kind: "Attack", chainPlan: { single: false, perTarget: { [A]: { landed: 0 }, [B]: { landed: 2 } } },
     perTargetResults: [{ tokenUuid: A, hit: true, damage: 4 }, { tokenUuid: B, hit: false, damage: 4 }] }), { [A]: false, [B]: true });
+  eq("Chain: a card target no strike went to is no loss", hpLossPlan({ kind: "Attack", chainPlan: { single: false, perTarget: { [B]: { landed: 1 } } },
+    perTargetResults: [{ tokenUuid: A, hit: true, damage: 4 }, { tokenUuid: B, hit: true, damage: 4 }] }), { [A]: false, [B]: true });
   eq("no rows = no plan", hpLossPlan({ kind: "Attack", perTargetResults: [] }), null);
   eq("no action = no plan", hpLossPlan(null), null);
   eq("hurtFromPlan: planned yes", hurtFromPlan({ [A]: true }, A), true);

@@ -50,7 +50,8 @@ eq("old Combo items never chain", chainSpecFor({ kind: "Skill", skillItem: skill
 {
   const d = drawChainTargets({ count: 4, mode: "random" }, ["A", "B", "C"], makeRng(3));
   eq("random: spec carries 4 strike targets", d.spec.strikeTargets.length, 4);
-  eq("random: keep = the distinct drawn set", [...new Set(d.spec.strikeTargets.flat())].sort(), [...d.keep].sort());
+  // Random-target Chain card (2026-11-28): random keeps every target on the card, like seek.
+  eq("random: keeps every target on the card", d.keep, null);
   const n = narrowToTargets({
     targets: [{ tokenUuid: "A" }, { tokenUuid: "B" }, { tokenUuid: "C" }],
     perTargetResults: [{ tokenUuid: "A" }, { tokenUuid: "B" }, { tokenUuid: "C" }],
@@ -258,7 +259,8 @@ eq("row: element falls back to the action's", ev({ hit: true, damage: 5 }, { dam
   eq("no check: volley refused", chainSpecFor({ kind: "Skill", skillItem: skill("chain 5 volley"), isCheck: false, hasDamage: true }), null);
   const d = drawChainTargets({ count: 5, mode: "volley" }, ["A", "B", "C"], makeRng(3));
   eq("volley draws a target per shot", d.spec.strikeTargets.length === 5 && d.spec.strikeTargets.every((l) => l.length === 1), true);
-  eq("volley narrows the card to the drawn set", [...d.keep].sort(), [...new Set(d.spec.strikeTargets.flat())].sort());
+  eq("volley keeps every target on the card", d.keep, null);
+  eq("pick still keeps the picked set", drawChainTargets({ count: 2, mode: "pick" }, ["A", "B", "C"]).keep, ["A", "B"]);
   eq("volley pins a provoker like random",
     pinProvokerStrike({ spec: { count: 3, mode: "volley", strikeTargets: [["h"], ["k"], ["k"]] }, keep: ["h", "k"] }, ["b"]).spec.strikeTargets,
     [["b"], ["k"], ["k"]]);
