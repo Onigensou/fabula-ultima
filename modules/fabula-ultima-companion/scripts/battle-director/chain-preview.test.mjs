@@ -130,5 +130,18 @@ const merged = mergeChainPreview(storm, { perTarget: { kirin: { min: 1, max: 2 }
 eq("merge keeps priced rows, adds new", [merged.perTarget.hina.min, merged.perTarget.kirin.max], [7, 2]);
 eq("non-drawn chain: no preview", assembleChainPreview({ spec: { count: 8, mode: "single", hidden: true } }), null);
 
+// ── the card's row label: a Pierce miss deals half, so it never reads MISS ──
+{
+  globalThis.Hooks = globalThis.Hooks ?? { on() {}, once() {}, callAll() {} };
+  const C = await import("./action-card.js");
+  eq("plain miss", [C.resultLabelFor({ hit: false, damage: 0 }), C.resultClsFor({ hit: false, damage: 0 })], ["MISS", "miss"]);
+  eq("pierce miss: half damage", [C.resultLabelFor({ hit: false, pierceMiss: true, damage: 20, affinity: "NE" }), C.resultClsFor({ hit: false, pierceMiss: true, damage: 20, affinity: "NE" })],
+    [`PIERCE ½ <span class="t-num">20</span>`, "hit"]);
+  eq("pierce miss: resisted", C.resultClsFor({ hit: false, pierceMiss: true, damage: 10, affinity: "RS" }), "resist");
+  eq("pierce miss: absorbed", C.resultLabelFor({ hit: false, pierceMiss: true, damage: 10, affinity: "AB" }), `ABSORB <span class="t-num">10</span>`);
+  eq("pierce miss: immune", C.resultLabelFor({ hit: false, pierceMiss: true, damage: 0, affinity: "IM" }), "IMMUNED");
+  eq("hit unchanged", C.resultLabelFor({ hit: true, damage: 20, affinity: "NE" }), `HIT <span class="t-num">20</span>`);
+}
+
 console.log(`chain-preview: ${passed} passed, ${failed} failed`);
 if (failed) process.exit(1);

@@ -3023,7 +3023,16 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
   // Damage skill — HIT/MISS/AB/IM/NO-EFFECT logic, with affinity baked into
   // the verb so the result line reads the outcome on its own (VU → "WEAK",
   // RS → "RESIST") without relying on the separate affinity pill.
-  if (!r.hit) return "MISS";
+  // A Pierce miss is not a MISS: it still deals half (action-profile.js
+  // pierceMiss), so it reads "PIERCE ½ n" — after affinity, like a hit.
+  if (!r.hit && !r.pierceMiss) return "MISS";
+  if (!r.hit && r.pierceMiss) {
+    const n = Math.max(0, Number(r.damage) || 0);
+    if (r.affinity === "AB") return `ABSORB <span class="t-num">${n}</span>`;
+    if (r.affinity === "IM") return "IMMUNED";
+    if (n <= 0) return "NO EFFECT";
+    return `PIERCE ½ <span class="t-num">${n}</span>${r.resource === "mp" ? ` <span class="t-unit">MP</span>` : ""}`;
+  }
   // Incoming damage NULLIFIED by a defender reaction (Ninja Log's adjust_damage
   // → 0). This is a HIT that deals 0 — NOT a miss (on-hit riders still apply) —
   // so credit the soak instead of the generic "NO EFFECT" / affinity verb, and
@@ -3051,7 +3060,15 @@ export function resultClsFor(r) {
   // colours (muted for a miss, gold for vulnerable) — any of them would read the
   // result off the card without a word being printed.
   if (typeof r.hitChance === "number" && typeof r.grantAmount !== "number") return "fickle";
-  if (!r.hit) return "miss";
+  if (!r.hit && !r.pierceMiss) return "miss";
+  // A Pierce miss lands half: coloured by its affinity like a hit, never as a crit.
+  if (!r.hit) {
+    if (r.affinity === "AB") return "absorb";
+    if (r.affinity === "IM" || !(Number(r.damage) > 0)) return "miss";
+    if (r.affinity === "VU") return "weak";
+    if (r.affinity === "RS") return "resist";
+    return "hit";
+  }
   // Nullified hit (Ninja Log) — muted, same as IM/miss, since 0 landed.
   if (r.damageOverride && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) return "miss";
   if (typeof r.grantAmount === "number") {
@@ -3877,7 +3894,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
           // (WEAK / RESIST / NO EFFECT / HEALS) stay in sync everywhere.
           const shim = {
             hit: r.newHit, crit: r.newCrit, affinity: r.newAffinity,
-            damage: r.newDamage, resource: r.resource,
+            damage: r.newDamage, resource: r.resource, pierceMiss: !!r.newPierceMiss,
             ...(rConcealed ? { hitChance: r.newHitChance } : {}),
           };
           const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
@@ -3929,7 +3946,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     // Verdict — re-derive (keep it authoritative alongside the DEF/hover).
     const resultSpan = rowEl.querySelector(".t-result");
     if (resultSpan) {
-      const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage,
+      const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage, pierceMiss: !!d.pierceMiss,
         ...(dConcealed ? { hitChance: d.hitChance } : {}) };
       resultSpan.className = `t-result ${resultClsFor(shim)}`;
       resultSpan.innerHTML = resultLabelFor(shim);
@@ -6165,6 +6182,8 @@ export function projectActionResultForRender(ar) {
         tokenUuid: r.tokenUuid ?? null,
         name: r.name ?? null,
         hit: r.hit, crit: r.crit, isCrit: r.isCrit,
+        // A Pierce miss deals half; without this the mirror's repaint reads MISS.
+        pierceMiss: !!r.pierceMiss,
         damage: r.damage, affinity: r.affinity ?? null,
         resource: r.resource ?? null,
         // Fickle: without this the mirror's repaint calls resultLabelFor with no
@@ -9630,6 +9649,8 @@ export async function postActionCard({ director, kind, payload }) {
               newHit: !!entry.hit,
               newCrit: !!entry.crit,
               newDamage: entry.damage,
+              // A Pierce miss still deals half: the row must not read MISS.
+              newPierceMiss: !!entry.pierceMiss,
               // Fickle: the concealed odds, re-derived against the PROTECTOR's
               // defence. These delta payloads enumerate their fields, so a
               // concealed row that crossed the wire without this would repaint
@@ -9679,6 +9700,7 @@ export async function postActionCard({ director, kind, payload }) {
               to: entry.defenseOverride.to,
               via: entry.defenseOverride.via,
               hit: !!entry.hit, crit: !!entry.crit, damage: entry.damage,
+              pierceMiss: !!entry.pierceMiss,
               affinity: entry.affinity ?? null,
               ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
             });
@@ -9875,6 +9897,7 @@ export async function postActionCard({ director, kind, payload }) {
                 name: entry.name ?? origEntry.name ?? "",
                 hit: entry.hit,
                 crit: entry.crit,
+                pierceMiss: !!entry.pierceMiss,
                 affinity: entry.affinity ?? null,
                 damage: entry.damage,
                 resource: entry.resource ?? null,
