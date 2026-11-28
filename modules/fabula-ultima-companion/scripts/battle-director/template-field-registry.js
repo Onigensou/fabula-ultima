@@ -602,6 +602,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   textCol("summon_type", "Summon: Type", { tooltip: 'summon: "phantasm" / "numen" stamp the Illusionist token flags (isPhantasm / isNumen) that own_phantasms / own_numen and OWN_PHANTASM_COUNT read. Blank = a plain summon.', vis: SUMMON_VIS }),
   checkboxCol("suppress_defeat", "Silent Shatter", { tooltip: "destroy_summon: shatter WITHOUT emitting creature_defeated or the HP→0 trip, so no on-shatter reaction fires (Phantasmal Echo, Zero Trigger). Phantasmal Recovery / Recycling, Zero Power: Last Den of Cinders.", vis: `equalText(sameRow("effect_kind",''), "destroy_summon")` }),
   textCol("summon_clone_suffix", "Summon: Clone Suffix", { tooltip: "summon (clone rows): what to append to the source creature's name for the clone. Blank = \"(Reanimated)\", Birth of the Cruel's wording. A captured monster or a doppelganger wants its own.", vis: SUMMON_VIS }),
+  textCol("summon_clone_statuses", "Summon: Clone Statuses", { tooltip: "summon (clone rows): statuses the clone wears PERMANENTLY, by name or status id, comma-separated (Birth of the Cruel: \"Zombie\" — the Minion shows the Zombie cue and its heals read as damage). Never ticks off; Cleanse / Rest / dispels skip it.", vis: SUMMON_VIS }),
   // adjust_charges config — charge arithmetic on a target's named charge-AE
   // (Enkindle: double the target's Burn = Burn × 2). Mirrors adjust_damage.
   textCol("charge_ae_name", "Charge AE Name", { tooltip: "adjust_charges: the charge-AE to modify, by name (e.g. Burn).", vis: ADJUST_CHARGES_VIS }),

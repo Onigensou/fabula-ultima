@@ -65,6 +65,7 @@ import { actorHpFloor, floorHp } from "../shared/hp-floor.js";
 import { resolveWornSlots } from "../shared/equipped-gear.js";
 import { deferVfxTable } from "./impact-offsets.js";
 import { flushPendingFollowUpsFor } from "./deferred-followups.js";
+import { bakedStatusesFor } from "./summon-clone-status.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -13352,6 +13353,14 @@ async function applySummonEffect(row, ctx) {
       if (folderId) data.folder = folderId;
       if (stripTypes.length && Array.isArray(data.items)) {
         data.items = data.items.filter((it) => !stripTypes.includes(String(it.system?.props?.item_type ?? "").toLowerCase()));
+      }
+      // summon_clone_statuses — statuses the clone wears permanently (Birth of the
+      // Cruel: Zombie, so the raised Minion shows the Zombie cue; user 2026-11-28).
+      // Baked into the ACTOR's effects, so they persist with a standing clone.
+      if (String(row.summon_clone_statuses ?? "").trim()) {
+        const { add, missing } = bakedStatusesFor(row.summon_clone_statuses, data.effects ?? []);
+        if (add.length) data.effects = [...(data.effects ?? []), ...add];
+        if (missing.length) warn(`skill-effects.summon: summon_clone_statuses on "${row.effect_label}" — no status template for ${missing.join(", ")}`);
       }
       // A PERSISTED clone is a standing ally of its summoner across battles:
       // tag the clone ACTOR (tokens are transient — gone between battles) with
