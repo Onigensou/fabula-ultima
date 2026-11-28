@@ -547,8 +547,14 @@
     // Opportunity cannot be chosen twice") — a filtered list is equivalent to
     // greying them out, since an absent option can't be picked.
     const ex = new Set(excludeIds ?? []);
+    // `battleOnly` options (Misfortune, Calamity) only appear during a battle.
+    // Battle tokens carry `directorSpawned` on every client; the director
+    // instance itself may exist only on the GM.
+    const inBattle = () => !!globalThis.FUCompanion?.api?.experimental?.battleDirector?.isRunning?.()
+      || (canvas?.tokens?.placeables ?? []).some(t => !!t.document?.flags?.["fabula-ultima-companion"]?.directorSpawned);
     const options = (cfg.OPTIONS ?? [])
-      .filter(o => !ex.has(o.id) && (!o.requiresFlag || hasOptionFlag(o.requiresFlag)));
+      .filter(o => !ex.has(o.id) && (!o.requiresFlag || hasOptionFlag(o.requiresFlag))
+        && (!o.battleOnly || inBattle()));
 
     // Open the read-only mirror on every other client. Broadcast the ALREADY
     // FILTERED option list (post excludeIds + requiresFlag) — a mirror built
