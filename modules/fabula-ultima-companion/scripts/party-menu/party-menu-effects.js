@@ -53,6 +53,10 @@ const KEY_LABEL = {
   cannot_target_uuids: "Can't target", must_include_applier: "Must include caster in",
   can_target_flying_with: "Hits flyers with",
   disable_action: "Can't use", enable_action_only: "Can only use",
+  // Recovery received (Bleed, Wither, Vitality Up, King's Castle; False Idol), 2026-11-28.
+  heal_receiving_mod_all: "Healing received", heal_receiving_flat_all: "Healing received",
+  mp_receiving_mod_all: "MP gained", mp_receiving_flat_all: "MP gained",
+  heal_reversed_all: "Healing hurts", mp_reversed_all: "MP gain hurts", species_override: "Species",
 };
 
 const cap = (w) => (w ? w[0].toUpperCase() + w.slice(1) : w);
@@ -97,6 +101,7 @@ const CHIP_LABEL = {
   check_mod_all: "All checks", extra_damage_mod_all: "Damage", extra_damage_mod_item: "Item damage",
   item_restore_mod: "Item healing", ip_reduction_value: "IP cost", damage_receiving_mod_all: "Dmg taken",
   bonus_hp: "HP", bonus_mp: "MP", bonus_ip: "IP",
+  heal_receiving_mod_all: "Healing", heal_receiving_flat_all: "Healing", mp_receiving_mod_all: "MP gain", mp_receiving_flat_all: "MP gain",
   override_attack_damage_type: "Attack type", override_damage_type: "Damage type", override_all_damage_type: "Damage type",
 };
 
@@ -129,6 +134,21 @@ function present(key, mode, n, shown) {
   const reduces = /^damage_receiving_(mod|percentage)_/.test(k) || k === "ip_reduction_value";
   const worse = /^damage_taken_increased_/.test(k);
   const pct = /^damage_(outgoing|receiving)_percentage_/.test(k) ? "%" : "";
+  // Recovery received as a fraction (Bleed / Wither: −0.5) reads as the multiplier it is:
+  // "Healing ×½" (approved status checklist 2026-11-28).
+  if (mode === MODES.ADD && n != null && /^(heal|mp)_receiving_mod_all$/.test(k)) {
+    const m = Math.max(0, 1 + n), v = m === 0.5 ? "×½" : `×${fmtNum(m)}`;
+    return { text: `${label} ${v}`, chip: { k: ck, v, bad: m < 1, el } };
+  }
+  // A recovery that becomes a loss (False Idol), and the Zombie status's species stamp
+  // (UNDEAD: an HP heal lands as damage, skill-formulas.js isHealReversedActor).
+  if (/^(heal|mp)_reversed_all$/.test(k) && (n ?? 0) > 0) return { text: label, chip: { k: label, v: "", bad: true, el } };
+  if (k === "species_override") {
+    const sp = String(shown ?? "").trim();
+    if (/^undead$/i.test(sp)) return { text: "Undead: healing hurts", chip: { k: "Healing hurts", v: "", bad: true, el } };
+    const nice = sp ? sp[0].toUpperCase() + sp.slice(1).toLowerCase() : "?";
+    return { text: `Species: ${nice}`, chip: { k: "Species", v: nice, el } };
+  }
   if (mode === MODES.ADD && n != null) {
     const v = reduces ? -n : n;
     const bad = reduces || worse ? v > 0 : v < 0;

@@ -1047,6 +1047,24 @@ export function ensureStyles() {
     .fud-bf-card .fud-bf-target-row .t-result.heal       { color: #2a8a3a; font-weight: 800; text-shadow: 0 0 6px rgba(42,138,58,0.25); }
     .fud-bf-card .fud-bf-target-row .t-result.restore-mp { color: #1e6cff; font-weight: 800; text-shadow: 0 0 6px rgba(30,108,255,0.25); }
     .fud-bf-card .fud-bf-target-row .t-result.shield     { color: #1f8a9e; font-weight: 800; text-shadow: 0 0 6px rgba(31,138,158,0.25); }
+    /* A heal that lands as DAMAGE (Zombie / Undead / False Idol), approved mockup 2026-11-28:
+       red like a damage result, small verb + large number, a reason pill, a red row wash. */
+    .fud-bf-card .fud-bf-target-row .t-result.rev        { color: #b40000; font-weight: 900; }
+    .fud-bf-card .fud-bf-target-row .t-result.rev .vb    { font-size: 10.5px; letter-spacing: .3px; }
+    /* The wash runs to the fieldset border (its 9px side padding): the list is a scroll box
+       (overflow-y auto), so it takes the 9px itself and the rows bleed into it, no scrollbar. */
+    .fud-bf-card .fud-bf-target-list:has(> .is-heal-rev) { margin: 0 -9px; padding: 0 9px; }
+    .fud-bf-card .fud-bf-target-row.is-heal-rev { background: linear-gradient(90deg, rgba(180,0,0,.1), rgba(180,0,0,.03)); box-shadow: inset 3px 0 0 #b40000;
+      margin: 0 -9px; padding-left: 9px; padding-right: 9px; }
+    .fud-bf-card .fud-bf-target-row.is-heal-rev .t-def { opacity: 1; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .fud-bf-card .fud-bf-target-row.is-heal-rev .t-def .t-hp { opacity: .6; }
+    .fud-bf-card .t-revpill { display: inline-flex; align-items: center; gap: 3px; font-size: 9.5px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase;
+      padding: 1px 6px 1px 2px; border-radius: 999px; border: 1px solid #8e2a8a; color: #6e1f66; background: rgba(154,59,143,.12); line-height: 1.2; }
+    .fud-bf-card .t-revpill img { width: 13px; height: 13px; border-radius: 3px; image-rendering: pixelated; border: 0; }
+    .fud-bf-card .t-revpill.ud { border-color: #5a5a5a; color: #3a3a3a; background: rgba(58,50,40,.08); padding-left: 6px; }
+    .fud-bf-card .fud-bf-heal-rev-sum { display: flex; align-items: center; gap: 6px; margin-top: 5px; padding: 4px 7px; border-radius: 6px;
+      border: 1px solid rgba(180,0,0,.45); background: rgba(180,0,0,.07); color: #8e1a14; font-size: 11.5px; font-weight: 700; }
+    .fud-bf-card .fud-bf-heal-rev-sum img { width: 15px; height: 15px; image-rendering: pixelated; border: 0; }
     .fud-bf-card .fud-bf-target-row .t-affinity {
       display: inline-flex; align-items: center;
       margin-left: 6px;
@@ -2997,10 +3015,14 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
     // Render an explicit "no heal" label so the card doesn't show a
     // green number that contradicts what actually happens.
     if (r.vismagusSuppressed) return "NO HEAL · VISMAGUS";
-    const amt = Math.max(0, r.grantAmount);
     // Undead / Zombie heal reversal (A1): the heal lands as damage. Checked
-    // before the FULL test — a full-HP undead still takes the hit.
-    if (r.healReversed) return `UNDEAD · HIT <span class="t-num">${amt}</span>`;
+    // before the FULL test — a full-HP undead still takes the hit. Printed like a
+    // damage result, "DAMAGE 40" in red (approved mockup 2026-11-28); the reason
+    // (Zombie / Undead) is the pill beside the HP. A natural Undead the party hasn't
+    // Studied (healWarnHidden) previews as a normal heal: healMaskAmount.
+    const revShown = isHealRevShown(r);
+    const amt = Math.max(0, (r.healReversed && !revShown && typeof r.healMaskAmount === "number") ? r.healMaskAmount : r.grantAmount);
+    if (revShown) return `<span class="vb">DAMAGE</span> <span class="t-num">${amt}</span>`;
     // Target already at cap → the restore lands nothing. Say so explicitly
     // instead of a green number that contradicts what happens (shields have no
     // cap, so they always show the amount).
@@ -3055,6 +3077,29 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
   return `HIT ${big(r.damage)}${unit}`;
 }
 
+// A reversed heal the card says out loud (Zombie status, an effect, or a Studied Undead).
+export function isHealRevShown(r) {
+  return !!(r && r.healReversed && typeof r.grantAmount === "number" && !r.vismagusSuppressed && !r.healWarnHidden);
+}
+const HEAL_REV_ZOMBIE_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png";
+function healRevIcon() { return lookupTerm("Zombie")?.icon || HEAL_REV_ZOMBIE_ICON; }
+// The reason pill on a shown reversed-heal row: Zombie (the status, with its icon) or Undead.
+export function healRevPillHTML(r) {
+  if (!isHealRevShown(r)) return "";
+  if (r.healReversedReason === "zombie") return `<span class="t-revpill"><img src="${escapeHtml(healRevIcon())}" alt="">Zombie</span>`;
+  if (r.healReversedReason === "effect") return "";
+  return `<span class="t-revpill ud">Undead</span>`;
+}
+// The Result summary line: "2 of 3 targets take this heal as damage." (mockup renderB).
+export function healRevSummaryHTML(rows) {
+  const heal = (rows ?? []).filter((r) => typeof r?.grantAmount === "number" && r.grantResource === "hp");
+  const n = heal.filter(isHealRevShown).length;
+  if (!n) return "";
+  const lead = n === heal.length ? (heal.length === 1 ? "This target takes" : `All ${heal.length} targets take`) : `${n} of ${heal.length} targets take`;
+  const ic = heal.some((r) => isHealRevShown(r) && r.healReversedReason === "zombie") ? `<img src="${escapeHtml(healRevIcon())}" alt="">` : "";
+  return `<div class="fud-bf-heal-rev-sum">${ic}${lead} this heal as damage.</div>`;
+}
+
 export function resultClsFor(r) {
   // Fickle: one neutral hue for every row. The normal classes are outcome
   // colours (muted for a miss, gold for vulnerable) — any of them would read the
@@ -3073,7 +3118,7 @@ export function resultClsFor(r) {
   if (r.damageOverride && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) return "miss";
   if (typeof r.grantAmount === "number") {
     if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
-    if (r.healReversed) return "hit";        // Undead / Zombie: the heal hurts
+    if (isHealRevShown(r)) return "rev";     // Undead / Zombie: the heal hurts (red, like damage)
     if (r.grantResource === "mp")     return "restore-mp";
     if (r.grantResource === "shield") return "shield";
     return "heal";
@@ -3267,13 +3312,14 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     // through this same pipeline so a multi-target redirect shows one row per
     // covered ally, all reading as the reactor.
     const rf = r.redirectedFrom;
-    const rowClass = rf ? "fud-bf-target-row is-redirected" : "fud-bf-target-row";
+    const revPill = healRevPillHTML(r);
+    const rowClass = (rf ? "fud-bf-target-row is-redirected" : "fud-bf-target-row") + (isHealRevShown(r) ? " is-heal-rev" : "");
     const redirectMarker = rf
       ? ` <small class="t-redirect-from" title="Redirected from ${escapeHtml(String(rf.name ?? "?"))}">🔄</small>`
       : "";
     return `<div class="${rowClass}"${rowDataAttrs}${tipAttrs}>
       <span class="t-name">${escapeHtml(r.name)}${redirectMarker}${aff ? ` ${aff}` : ""}</span>
-      <span class="t-def">${defLabel}</span>
+      <span class="t-def">${isHealRevShown(r) ? `<span class="t-hp">${defLabel}</span>${revPill}` : defLabel}</span>
       <span class="t-result ${cls}">${label}</span>
     </div>`;
   }).join("");
@@ -3283,6 +3329,7 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     <fieldset class="fud-bf-section">
       <legend>Result${suffix}</legend>
       <div class="fud-bf-target-list">${rows || `<div style="opacity:0.6;font-size:12px;">No targets.</div>`}</div>
+      ${healRevSummaryHTML(perTargetResults)}
     </fieldset>
   `;
 }
@@ -6199,6 +6246,9 @@ export function projectActionResultForRender(ar) {
         resourceMax: r.resourceMax ?? null,
         vismagusSuppressed: r.vismagusSuppressed ?? null,
         healReversed: r.healReversed ?? null,
+        healReversedReason: r.healReversedReason ?? null,
+        healWarnHidden: r.healWarnHidden ?? null,
+        healMaskAmount: r.healMaskAmount ?? null,
         damageOverride: r.damageOverride
           ? { from: r.damageOverride.from ?? null, to: r.damageOverride.to ?? null }
           : null,
@@ -9677,6 +9727,10 @@ export async function postActionCard({ director, kind, payload }) {
               grantAmount: entry.grantAmount, grantResource: entry.grantResource,
               resourceCur: entry.resourceCur, resourceMax: entry.resourceMax,
               vismagusSuppressed: !!entry.vismagusSuppressed,
+              // A heal that lands as damage keeps its DAMAGE label through the repaint
+              // (without these a recompute turned "DAMAGE 40" back into a heal label).
+              ...(entry.healReversed ? { healReversed: true, healReversedReason: entry.healReversedReason ?? null,
+                healWarnHidden: !!entry.healWarnHidden, healMaskAmount: entry.healMaskAmount ?? null } : {}),
               studied: entry.studied, hit: entry.hit, crit: entry.crit,
               ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
             });
