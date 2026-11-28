@@ -6,6 +6,9 @@
 // design mockup artifacts (v4.5). Run from tools/safe-edit; --apply to write.
 //
 // NUMBERS UPDATED 2026-11-21 (Valley trio tuning, dossiers/deva.md): HP 1400, attacks check +6, damage
+// 2026-11-28 (migration 2026-11-28-deva-anims): animation scripts, timing "resolve" on Missile Fist / Enlightenment /
+// Detonate, the play_animation rows below, the Missile Fist token art (Beastiary/Deva/Missile_Fist.png), its float idle and
+// defeat style "consumed" live in the WORLD; the scripts and actor fields are not rebuilt here.
 // Vajra/Mudra 52, Slap 36, Slam 45, Fury 42, Focus 18, Surya 78, Kala 38; Surya + Kala players-only;
 // Detonate victim pool "party". 2026-11-24 (_deva-affinity-ef.js): HP 1550, form-bound Light/Dark
 // affinity + attribute on the form AEs, EF spear 150 / brawling 50. The WORLD is the source of truth — diff against it before any --apply.
@@ -77,11 +80,12 @@ const DESC = {
     `<p>She cannot be ${LK.provoked}.</p>`,
   vajra: `<p>A golden fist of energy forms at her side and drives into one enemy. Deal ${L.physical}&nbsp;damage to one creature. Only usable in Vajra Stance.</p>`,
   lance: `<p>A violet hand forms a mudra and a lance of light leaves the palm. Deal ${LK.light}&nbsp;damage to one creature. Only usable in Maya Stance.</p>`,
-  slap: bullets(LK.multi) + `<p>She slaps the insolent aside. Deal ${L.physical}&nbsp;damage and inflict ${L.shaken}.</p>`,
+  // 2026-11-28-deva-tuning: 30% Stunned, otherwise Shaken (the migration writes the Stunned link)
+  slap: bullets(LK.multi) + `<p>She slaps the insolent aside. Deals ${L.physical}&nbsp;damage.</p><p>Each target hit has a 30% chance to be Stunned; otherwise it is ${L.shaken}.</p>`,
   mfist:
-    "<p>Two of her fists burn into being and hover over the field. Each one detonates on a random enemy " +
+    "<p>Three of her fists burn into being and hover over the field. Each one detonates on a random enemy " +
     "on its second turn, dealing <strong>heavy</strong>&nbsp;" + `${L.physical}&nbsp;damage, unless it is broken first.</p>` +
-    "<p>Each fist breaks after taking damage three times.</p>",
+    "<p>Each fist breaks after taking damage twice.</p>",
   slam: bullets(LK.overflow) + `<p>She drives both fists into the ground. Deal ${L.earth}&nbsp;damage to all enemies and inflict ${L.slow}. Fury form.</p>`,
   fury: bullets(LK.chain) + `<p>A wall of fists slams across the whole field. Deal ${L.physical}&nbsp;damage to all enemies. Fury form.</p>`,
   surya: `<p>She plants a palm of blazing light on one enemy. Deal <strong>heavy</strong>&nbsp;${LK.light}&nbsp;damage and inflict ${LK.blind}. Fury form.</p>`,
@@ -188,16 +192,23 @@ run(async ({ changes }) => {
     effect_table: table([
       applyAe("st_strike", "Strike Stack", { ae_duplicate_mode: "add_charges", ae_initial_charges: "1" }),
       applyAe("st_magic", "Magic Stack", { ae_duplicate_mode: "add_charges", ae_initial_charges: "1" }),
-      chain("guard", ["g_clear_off", "g_clear_st", "g_mark", "g_stance", "g_fist"]),
-      chain("guard_nf", ["g_clear_off", "g_clear_st", "g_mark", "g_stance"]),
+      // 2026-11-28-deva-anims: Stance Change plays when the drawn stance differs from the last Guard round's (memory AE)
+      chain("guard", ["g_clear_off", "g_clear_st", "g_mark", "g_stance", "g_anim_m", "g_anim_v", "g_mem_m", "g_mem_v", "g_fist"]),
+      chain("guard_nf", ["g_clear_off", "g_clear_st", "g_mark", "g_stance", "g_anim_m", "g_anim_v", "g_mem_m", "g_mem_v"]),
+      put("g_anim_m", "play_animation", { action_ref: "Celestial Discipline#stance_maya", target_ref: "self", on_condition_fail: "skip", condition_formula: "AE_COUNT_MAYA_STANCE > 0 && AE_COUNT_LAST_STANCE_MAYA == 0" }),
+      put("g_anim_v", "play_animation", { action_ref: "Celestial Discipline#stance_vajra", target_ref: "self", on_condition_fail: "skip", condition_formula: "AE_COUNT_VAJRA_STANCE > 0 && AE_COUNT_LAST_STANCE_MAYA > 0" }),
+      applyAe("g_mem_m", "Last Stance Maya", { ae_duplicate_mode: "skip", condition_formula: "AE_COUNT_MAYA_STANCE > 0", on_condition_fail: "skip" }),
+      removeAe("g_mem_v", "Last Stance Maya", { condition_formula: "AE_COUNT_VAJRA_STANCE > 0", on_condition_fail: "skip" }),
       removeTag("g_clear_off", "deva_offense"),
       removeTag("g_clear_st", "deva_guard"),
       applyAe("g_mark", "Guard Round"),
       // a fresh draw each Guard round, WITH replacement: the same stance can come up again
       put("g_stance", "apply_ae", { ae_name_pool: "Vajra Stance,Maya Stance", target_ref: "self", ae_duplicate_mode: "replace" }),
       applyAe("g_fist", "Fist Ready"),
-      chain("to_strike", ["o_clear", "s_form", "s_open", "s_mem", "o_reset", "o_enl"]),
-      chain("to_magic", ["o_clear", "m_form", "m_open", "m_mem", "o_reset", "o_enl"]),
+      // Form Change plays before the form AE lands (she starts in her Standard art)
+      chain("to_strike", ["o_clear", "s_anim", "s_form", "s_open", "s_mem", "o_reset", "o_enl"]),
+      chain("to_magic", ["o_clear", "m_anim", "m_form", "m_open", "m_mem", "o_reset", "o_enl"]),
+      put("s_anim", "play_animation", { action_ref: "Celestial Discipline#form_fury", target_ref: "self", on_condition_fail: "skip" }), put("m_anim", "play_animation", { action_ref: "Celestial Discipline#form_focus", target_ref: "self", on_condition_fail: "skip" }),
       removeTag("o_clear", "deva_guard"),
       applyAe("s_form", "Strike Form"), applyAe("s_open", "Strike Opener"), applyAe("s_mem", "Last Form Strike", { ae_duplicate_mode: "skip" }),
       applyAe("m_form", "Magic Form"), applyAe("m_open", "Magic Opener"), removeAe("m_mem", "Last Form Strike"),
@@ -220,6 +231,7 @@ run(async ({ changes }) => {
     ae(D, "DvAeStrikeStack1", "Strike Stack", { tags: ["deva_stack"], blurb: "Attacks aimed at her Defense." }),
     ae(D, "DvAeMagicStack01", "Magic Stack", { tags: ["deva_stack"], blurb: "Attacks aimed at her Magic Defense." }),
     ae(D, "DvAeLastStrike01", "Last Form Strike", MARK("deva_memory")),
+    ae(D, "DvAeLastMaya0001", "Last Stance Maya", MARK("deva_memory")),
   ];
   disc.effects = discAes.map((c) => c[1]._id);
   changes.push([ik(A, D), disc, "NEW item — Celestial Discipline (round clock, stacks, Provoked immunity)"]);
@@ -237,15 +249,18 @@ run(async ({ changes }) => {
   changes.push([ik(A, IDS.SLAP), attack(IDS.SLAP, "Double Slap", {
     skill_target: "Up to two creatures", rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "36", type_damage: "Physical",
     action_keywords: "multi", description: DESC.slap, isReaction: true,
-    reaction_config_table: table([rider("Double Slap", "sl_shaken")]),
-    effect_table: table([applyAe("sl_shaken", "Shaken", { target_ref: "trigger_subject" })]),
+    reaction_config_table: table([rider("Double Slap", "sl_roll")]),
+    effect_table: table([applyAe("sl_shaken", "Shaken", { target_ref: "trigger_subject" }),
+      put("sl_roll", "chance", { chance_percent: "30", chance_then_ref: "sl_stun", chance_else_ref: "sl_shaken" }),
+      applyAe("sl_stun", "Stunned", { target_ref: "trigger_subject" })]),
   }), "NEW item — Double Slap (up to two, Shaken)"]);
   const mfist = active(A, IDS.MFIST, "Missile Fist", ICON.active, {
     description: DESC.mfist, on_activate_effect_ref: "mf_chain",
     effect_table: table([
-      chain("mf_chain", ["mf_spend", "mf_summon"]),
+      chain("mf_chain", ["mf_spend", "mf_summon", "mf_anim"]),   // skill timing "resolve": the animation plays on the spawned fists
+      put("mf_anim", "play_animation", { action_ref: "Missile Fist", target_ref: "mf_summon", on_condition_fail: "skip" }),
       removeAe("mf_spend", "Fist Ready"),
-      put("mf_summon", "summon", { summon_actor: `Actor.${F}`, summon_count: "2", summon_max: "2", summon_act_this_round: false }),
+      put("mf_summon", "summon", { summon_actor: `Actor.${F}`, summon_count: "3", summon_max: "3", summon_act_this_round: false }),
     ]),
   });
   changes.push([ik(A, IDS.MFIST), mfist, "NEW item — Missile Fist (summons 2 fists, once per Guard round)"]);
@@ -330,7 +345,8 @@ run(async ({ changes }) => {
   const enl = active(A, E, "Enlightenment", ICON.spell, {
     description: DESC.enl, on_activate_effect_ref: "en_chain",
     effect_table: table([
-      chain("en_chain", ["en_ready", "en_pm", "en_ps", "en_clear", "en_m1", "en_m2", "en_s1", "en_s2", "en_done"]),
+      chain("en_chain", ["en_ready", "en_pm", "en_ps", "en_anim", "en_clear", "en_m1", "en_m2", "en_s1", "en_s2", "en_done"]),   // timing "resolve"
+      put("en_anim", "play_animation", { action_ref: "Enlightenment", target_ref: "self", on_condition_fail: "skip" }),
       removeAe("en_ready", "Enlightenment Ready"),
       applyAe("en_pm", "Swap To Magic", { condition_formula: "AE_COUNT_STRIKE_FORM > 0" }),
       applyAe("en_ps", "Swap To Strike", { condition_formula: "AE_COUNT_MAGIC_FORM > 0" }),
@@ -379,6 +395,7 @@ run(async ({ changes }) => {
     condition_charm: "IM", condition_frightened: "IM", condition_fatigue: "IM",
     // boss rule 2026-11-28: Doomed and Grappled break a lone enemy
     condition_doom: "IM", condition_grappled: "IM",
+    condition_paralyzed: "IM",   // 2026-11-28: Paralyzed bars Skills = her Enlightenment / Missile Fist / Rahu's Eclipse rows
   });
   if ("uuid" in p) p.uuid = `Actor.${A}`;
   a.img = ART;
@@ -428,7 +445,9 @@ run(async ({ changes }) => {
     level: "40", species: "Construct", npc_rank: "soldier", activation: "1",
     traits: "One of Deva's fists, loosed", dex_base: "10", ins_base: "10", mig_base: "6", wlp_base: "6",
     def_mod: "+3", mdef_mod: "+3", defense: 13, magic_defense: 13,
-    max_hp: "3", current_hp: "3", max_mp: "0", current_mp: "0", init: "6",
+    // 1 damage per hit: the hidden actor AE "Fist Shell" (MsAeFistShell001, migration 2026-11-28-deva-tuning) caps every hit
+    // on the HP-write path. The Fuse item's fu_cap row below runs post-resolve and never capped anything.
+    max_hp: "2", current_hp: "2",   // 2026-11-28: 2 hits (was 3), three fists max_mp: "0", current_mp: "0", init: "6",
     zenit_reward_min: "0", zenit_reward_max: "0",
     study_text: "A fist of light that has left its owner. It counts down, and then it finds someone.",
   });
@@ -444,10 +463,12 @@ run(async ({ changes }) => {
     reaction_config_table: table([
       react("turn_start", "fu_tick"),
       react("creature_takes_damage", "fu_cap"),
+      react("creature_defeated", "fu_break", { condition_formula: "SUBJECT_IS_SELF == 1" }),   // the break animation (its own shatter)
     ]),
     effect_table: table([
       applyAe("fu_tick", "Fuse", { ae_duplicate_mode: "add_charges", ae_initial_charges: "1" }),
       put("fu_cap", "adjust_damage", { damage_stage: "incoming", damage_operation: "cap", damage_amount: "1" }),
+      put("fu_break", "play_animation", { action_ref: "Fuse", target_ref: "self", on_condition_fail: "skip" }),
     ]),
   });
   clock.effects = [IDS.F_FUSE];
@@ -455,7 +476,8 @@ run(async ({ changes }) => {
   const boom = active(F, IDS.F_BOOM, "Detonate", ICON.active, {
     description: fdesc.boom, on_activate_effect_ref: "fd_chain",
     effect_table: table([
-      chain("fd_chain", ["fd_hit", "fd_die"]),
+      chain("fd_chain", ["fd_anim", "fd_hit", "fd_die"]),   // timing "resolve": the rocket flies at the random victim
+      put("fd_anim", "play_animation", { action_ref: "Detonate", target_ref: "fd_victim", on_condition_fail: "skip" }),
       // "party" (absolute side), not "enemy": "enemy" is relative to the acting token and fails open when a
       // fist acts without one, which once picked the other Missile Fist (playtest 2026-11-21).
       put("fd_victim", "targeting", { candidate_source: "combat", category: "party", exclude_self: true, mode: "random", count: 1 }),

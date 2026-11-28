@@ -1,0 +1,214 @@
+{
+ "name": "deva",
+ "note": "Deva (Valley elite) action animations: the approved mockup (page deva-anim v20, artifact C7wZxC2jSAo15AAsJfQxRb, all 15 moves approved 2026-11-28). Page: page.js (node moves/deva/page.js <out> [--publish --version vN]). Game: build/deva-anims.js → data-migrations/_deva-anims.js (migration 2026-11-28-deva-anims). Engine 1.3.0 (sprite props, poses, camera, impact frame).",
+ "page": "page.js",
+ "mockupActors": {
+  "caster": "deva",
+  "target": "hina",
+  "targets": [
+   "hina",
+   "zarg",
+   "keren",
+   "blanche"
+  ]
+ },
+ "game": {
+  "scene": "Valley_Battlemap007",
+  "caster": "Deva"
+ },
+ "moves": {
+  "slap": {
+   "label": "Double Slap",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null,
+   "dryActors": {
+    "caster": "deva",
+    "targets": [
+     "keren",
+     "zarg"
+    ]
+   }
+  },
+  "fist": {
+   "label": "Missile Fist · summon",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null,
+   "dryActors": {
+    "caster": "deva",
+    "targets": [
+     "fistA",
+     "fistB",
+     "fistC"
+    ]
+   }
+  },
+  "boom": {
+   "label": "Missile Fist · detonation",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null,
+   "dryActors": {
+    "caster": "fistA",
+    "targets": [
+     "hina",
+     "zarg",
+     "keren",
+     "blanche"
+    ]
+   }
+  },
+  "brk": {
+   "label": "Missile Fist · break",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null,
+   "dryActors": {
+    "caster": "fistA",
+    "targets": [
+     "hina",
+     "zarg",
+     "keren",
+     "blanche"
+    ]
+   }
+  },
+  "stance": {
+   "label": "Stance Change",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "vajra": {
+   "label": "Vajra Fist",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "lance": {
+   "label": "Mudra Lance",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "form": {
+   "label": "Form Change",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "enl": {
+   "label": "Enlightenment",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "slam": {
+   "label": "Ground Slam",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "surya": {
+   "label": "Surya Palm",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "rahu": {
+   "label": "Rahu's Eclipse",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "kala": {
+   "label": "Kala Strike",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "fury": {
+   "label": "Fists of Fury",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  },
+  "focus": {
+   "label": "Fists of Focus",
+   "files": [
+    "head",
+    "deva"
+   ],
+   "pageTune": {},
+   "gameOutcome": null
+  }
+ },
+ "assets": {
+  "map": "assets.json"
+ },
+ "shipped": {
+  "module": "modules/fabula-ultima-companion/data-migrations/_deva-anims.js",
+  "rebuild": "node tools/move-engine/build/deva-anims.js",
+  "moves": {
+   "vajra": "VAJRA_SCRIPT",
+   "lance": "LANCE_SCRIPT",
+   "slap": "SLAP_SCRIPT",
+   "slam": "SLAM_SCRIPT",
+   "surya": "SURYA_SCRIPT",
+   "rahu": "RAHU_SCRIPT",
+   "kala": "KALA_SCRIPT",
+   "fury": "FURY_SCRIPT",
+   "focus": "FOCUS_SCRIPT",
+   "enl": "ENL_SCRIPT",
+   "fist": "MFIST_SCRIPT",
+   "boom": "F_BOOM_SCRIPT",
+   "brk": "F_BREAK_SCRIPT",
+   "stance": "DISC_SCRIPT",
+   "form": "DISC_SCRIPT"
+  }
+ },
+ "seed": 1109
+}

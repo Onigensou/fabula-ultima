@@ -76,6 +76,7 @@ const _tokens = new Map();
 //           ready, failed, waiters: [] }
 const _arts = new Map();
 const _failedSrcs = new Set();
+const _midPlayErrors = new Map();   // src → mid-play error count (loadArt fail)
 let _stripTicker = null;
 
 // Debug trace (off by default): globalThis.ONI_BATTLER_POSE_DEBUG = true, then
@@ -752,6 +753,19 @@ function loadArt(token, src) {
     // releaseArt clears the video's src, which fires its error event. That is
     // our own cleanup, not a bad file, so it must not blacklist the URL.
     if (art.released) return;
+    // A clip that loaded fine and errors LATER (a dropped stream, the browser reclaiming the decoder) is not a bad file.
+    // Blacklisting it left the mesh on the dead video's texture: the battler drew as nothing (Deva after Enlightenment,
+    // 2026-11-28). Drop it, show the token's own image, and load it fresh (3 tries a session, then it counts as failed).
+    if (art.ready && (_midPlayErrors.get(src) ?? 0) < 3) {
+      _midPlayErrors.set(src, (_midPlayErrors.get(src) ?? 0) + 1);
+      warn(`battler-pose: ${src} errored mid-play — reloading it`, err ?? "");
+      const t = canvas?.tokens?.get?.(art.tokenId);
+      const e = t ? _tokens.get(t.id) : null;
+      if (e?.shownArt === art) { e.shownArt = null; showOwnImage(t, e); }
+      releaseArt(key);
+      if (t && !t.destroyed) render(t);
+      return;
+    }
     art.failed = true;
     _failedSrcs.add(src);
     warn(`battler-pose: could not load ${src} — falling back`, err ?? "");
