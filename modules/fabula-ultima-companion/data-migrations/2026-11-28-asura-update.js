@@ -13,8 +13,9 @@
  *      While Air is his Aspect, Elemental Slash (and Overflow) can hit flyers.
  *      Text: one line on the Air Aspect AE, and "Can target Flying creatures." on
  *      the Air line of both Elemental Slash items.
- *   C. AI hunts flyers. New pattern row: Sword Enchant - Air, priority 7 (above
- *      Asura Strike's 6), condition `formula`:
+ *   C. AI hunts flyers. New pattern row: Sword Enchant - Air, priority 9 (3 above
+ *      Asura Strike's 6: the picker's priority window then drops every other row,
+ *      so the hunt is deterministic), condition `formula`:
  *        ENEMY_COUNT_FLYING > 0 && ENEMY_COUNT_GROUNDED == 0 && AE_COUNT_AIR_ASPECT == 0
  *      = every enemy still standing is Flying and Air is not his Aspect yet.
  *      The Enchant's 10 Air self-damage sets the Air Aspect (Elemental Aspect row 3).
@@ -46,6 +47,10 @@ const SLASH = "Elemental Slash";
 const OVERFLOW = "Elemental Slash: Overflow";
 const PATTERN_FORMULA = "ENEMY_COUNT_FLYING > 0 && ENEMY_COUNT_GROUNDED == 0 && AE_COUNT_AIR_ASPECT == 0";
 const IGNORE_PROVOKE = "ignore_provoke";
+// The pattern picker weighs every feasible row inside a 2-point window under the top
+// one (gap 0/1/2 = weight 3/2/1, gap 3+ = out; actionReader-matchAndPickAction.js).
+// 9 = 3 above Asura Strike (6), so the flyer hunt is deterministic when it is live.
+const PRIORITY = "9";
 
 // A. ───────────────────────────────────────────────────────────────────────────
 async function immuneParalyzed(actor, out) {
@@ -69,7 +74,8 @@ async function airAspectReachesFlying(actor, out) {
   if (changes) patch.changes = changes;
   const desc = String(ae.description ?? "");
   if (!desc.includes(FLYING_ID)) patch.description = desc + AIR_AE_LINE;
-  if (Object.keys(patch).length) { await ae.update(patch); out.push(`~ B: Air Aspect template ${Object.keys(patch).join(" + ")}`); }
+  const parts = Object.keys(patch); // read before update(), which stamps _id onto the patch
+  if (parts.length) { await ae.update(patch); out.push(`~ B: Air Aspect template ${parts.join(" + ")}`); }
   else out.push("= B: Air Aspect template already reaches Flying");
 
   // A copy already applied to the actor (mid-fight save) gets the same change.
@@ -96,8 +102,13 @@ async function airAspectReachesFlying(actor, out) {
 async function airHuntPattern(actor, out) {
   const table = actor.system?.props?.action_pattern_table ?? {};
   const live = Object.entries(table).filter(([, r]) => r && !r.$deleted);
-  if (live.some(([, r]) => r.action_pattern_condition === "formula" && String(r.action_pattern_string ?? "").includes("ENEMY_COUNT_FLYING"))) {
-    out.push("= C: flyer-hunt pattern row already present"); return;
+  const found = live.find(([, r]) => r.action_pattern_condition === "formula" && String(r.action_pattern_string ?? "").includes("ENEMY_COUNT_FLYING"));
+  if (found) {
+    const [k, r] = found;
+    if (String(r.action_pattern_priority) === PRIORITY && r.action_pattern_string === PATTERN_FORMULA) { out.push("= C: flyer-hunt pattern row already present"); return; }
+    await actor.update({ [`system.props.action_pattern_table.${k}.action_pattern_priority`]: PRIORITY,
+      [`system.props.action_pattern_table.${k}.action_pattern_string`]: PATTERN_FORMULA });
+    out.push(`~ C: flyer-hunt pattern row ${k} priority ${r.action_pattern_priority} -> ${PRIORITY}`); return;
   }
   const next = String(Math.max(-1, ...Object.keys(table).map((k) => Number(k)).filter(Number.isFinite)) + 1);
   await actor.update({ [`system.props.action_pattern_table.${next}`]: {
@@ -106,11 +117,11 @@ async function airHuntPattern(actor, out) {
     action_pattern_condition: "formula",
     action_pattern_string: PATTERN_FORMULA,
     action_pattern_value_1: "0", action_pattern_value_2: "0",
-    action_pattern_priority: "7", action_pattern_cooldown: "0",
+    action_pattern_priority: PRIORITY, action_pattern_cooldown: "0",
     action_pattern_hp_ceiling: "0", action_pattern_hp_reserve: "0",
     action_pattern_target_focus: "auto",
   } });
-  out.push(`+ C: pattern row ${next} Sword Enchant - Air (priority 7, formula)`);
+  out.push(`+ C: pattern row ${next} Sword Enchant - Air (priority ${PRIORITY}, formula)`);
 }
 
 // D. ───────────────────────────────────────────────────────────────────────────
