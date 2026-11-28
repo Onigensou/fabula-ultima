@@ -861,6 +861,10 @@
     {
       "key": "2026-11-28-deva-anims",
       "path": "data-migrations/2026-11-28-deva-anims.js"
+    },
+    {
+      "key": "2026-11-28-deva-tuning",
+      "path": "data-migrations/2026-11-28-deva-tuning.js"
     }
   ]
 }

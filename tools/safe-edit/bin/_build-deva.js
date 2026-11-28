@@ -80,7 +80,8 @@ const DESC = {
     `<p>She cannot be ${LK.provoked}.</p>`,
   vajra: `<p>A golden fist of energy forms at her side and drives into one enemy. Deal ${L.physical}&nbsp;damage to one creature. Only usable in Vajra Stance.</p>`,
   lance: `<p>A violet hand forms a mudra and a lance of light leaves the palm. Deal ${LK.light}&nbsp;damage to one creature. Only usable in Maya Stance.</p>`,
-  slap: bullets(LK.multi) + `<p>She slaps the insolent aside. Deal ${L.physical}&nbsp;damage and inflict ${L.shaken}.</p>`,
+  // 2026-11-28-deva-tuning: 30% Stunned, otherwise Shaken (the migration writes the Stunned link)
+  slap: bullets(LK.multi) + `<p>She slaps the insolent aside. Deals ${L.physical}&nbsp;damage.</p><p>Each target hit has a 30% chance to be Stunned; otherwise it is ${L.shaken}.</p>`,
   mfist:
     "<p>Two of her fists burn into being and hover over the field. Each one detonates on a random enemy " +
     "on its second turn, dealing <strong>heavy</strong>&nbsp;" + `${L.physical}&nbsp;damage, unless it is broken first.</p>` +
@@ -248,8 +249,10 @@ run(async ({ changes }) => {
   changes.push([ik(A, IDS.SLAP), attack(IDS.SLAP, "Double Slap", {
     skill_target: "Up to two creatures", rolled_atr1: "DEX", rolled_atr2: "MIG", damage_bonus: "36", type_damage: "Physical",
     action_keywords: "multi", description: DESC.slap, isReaction: true,
-    reaction_config_table: table([rider("Double Slap", "sl_shaken")]),
-    effect_table: table([applyAe("sl_shaken", "Shaken", { target_ref: "trigger_subject" })]),
+    reaction_config_table: table([rider("Double Slap", "sl_roll")]),
+    effect_table: table([applyAe("sl_shaken", "Shaken", { target_ref: "trigger_subject" }),
+      put("sl_roll", "chance", { chance_percent: "30", chance_then_ref: "sl_stun", chance_else_ref: "sl_shaken" }),
+      applyAe("sl_stun", "Stunned", { target_ref: "trigger_subject" })]),
   }), "NEW item — Double Slap (up to two, Shaken)"]);
   const mfist = active(A, IDS.MFIST, "Missile Fist", ICON.active, {
     description: DESC.mfist, on_activate_effect_ref: "mf_chain",
@@ -392,6 +395,7 @@ run(async ({ changes }) => {
     condition_charm: "IM", condition_frightened: "IM", condition_fatigue: "IM",
     // boss rule 2026-11-28: Doomed and Grappled break a lone enemy
     condition_doom: "IM", condition_grappled: "IM",
+    condition_paralyzed: "IM",   // 2026-11-28: Paralyzed bars Skills = her Enlightenment / Missile Fist / Rahu's Eclipse rows
   });
   if ("uuid" in p) p.uuid = `Actor.${A}`;
   a.img = ART;
@@ -441,6 +445,8 @@ run(async ({ changes }) => {
     level: "40", species: "Construct", npc_rank: "soldier", activation: "1",
     traits: "One of Deva's fists, loosed", dex_base: "10", ins_base: "10", mig_base: "6", wlp_base: "6",
     def_mod: "+3", mdef_mod: "+3", defense: 13, magic_defense: 13,
+    // 1 damage per hit: the hidden actor AE "Fist Shell" (MsAeFistShell001, migration 2026-11-28-deva-tuning) caps every hit
+    // on the HP-write path. The Fuse item's fu_cap row below runs post-resolve and never capped anything.
     max_hp: "3", current_hp: "3", max_mp: "0", current_mp: "0", init: "6",
     zenit_reward_min: "0", zenit_reward_max: "0",
     study_text: "A fist of light that has left its owner. It counts down, and then it finds someone.",
