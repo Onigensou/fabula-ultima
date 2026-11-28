@@ -82,7 +82,16 @@ function fistDeco(f) { if (IN_GAME || f.pips) return;
   f.body.appendChild(cv); f.cracks = cv; }
 function fistReset() { if (IN_GAME) return; FISTS().forEach((f, i) => { fistDeco(f); f.i = i; f.hits = 0; f.bob = true; f.pips.forEach((p) => { p.style.opacity = 0; p.style.transform = ""; });
   f.cracks.getContext("2d").clearRect(0, 0, 160, 110); f.kx = f.ky = 1; f.rot = 0; f.el.style.opacity = 1; f.media.style.filter = `saturate(1.5) contrast(1.15) drop-shadow(0 0 3px rgba(${RED},1)) drop-shadow(0 0 1px #fff)`; }); }
-function drawCracks(f) { if (!f.cracks) return; const c = f.cracks.getContext("2d"); c.clearRect(0, 0, 160, 110); c.strokeStyle = "rgba(255,245,220,.95)"; c.lineWidth = 2.2; c.shadowColor = `rgba(${RED},1)`; c.shadowBlur = 6;
+// game: the page's crack canvas (160 x 110 stretched over the fist's box) as a particle over the token, same seeds and
+// strokes. Fixed where the fist is when drawn; each redraw replaces the last; it goes when the fist shatters (f.gone).
+function gameCracks(f) { const gen = f.crackGen = (f.crackGen || 0) + 1;
+  const w = wid(f), h = hgt(f), x0 = OX(f) - w / 2, y0 = OY(f) - (f.lift || 0) - h, kx = w / 160, ky = h / 110;
+  const seeds = [[80, 52], [110, 40], [120, 70], [64, 66]], lines = [];
+  for (let k = 0; k < f.hits * 2; k++) { const [sx, sy] = seeds[k % seeds.length]; let x = sx, y = sy; const pts = [[x, y]]; for (let s = 0; s < 5; s++) { x += rnd(-16, 16); y += rnd(-12, 12); pts.push([x, y]); } lines.push(pts); }
+  addP("hit", { x: 0, y: 0, life: 1e9, comp: "source-over", update: (p) => { if (f.gone || f.crackGen !== gen) p.dead = true; },
+    draw: (c) => { c.strokeStyle = "rgba(255,245,220,.95)"; c.lineWidth = 2.2 * kx; c.shadowColor = `rgba(${RED},1)`; c.shadowBlur = 6 * kx;
+      for (const pts of lines) { c.beginPath(); pts.forEach(([x, y], i) => (i ? c.lineTo : c.moveTo).call(c, x0 + x * kx, y0 + y * ky)); c.stroke(); } } }); }
+function drawCracks(f) { if (IN_GAME) return gameCracks(f); if (!f.cracks) return; const c = f.cracks.getContext("2d"); c.clearRect(0, 0, 160, 110); c.strokeStyle = "rgba(255,245,220,.95)"; c.lineWidth = 2.2; c.shadowColor = `rgba(${RED},1)`; c.shadowBlur = 6;
   const seeds = [[80, 52], [110, 40], [120, 70], [64, 66]]; for (let k = 0; k < f.hits * 2; k++) { const [sx, sy] = seeds[k % seeds.length]; let x = sx, y = sy; c.beginPath(); c.moveTo(x, y);
     for (let s = 0; s < 5; s++) { x += rnd(-16, 16); y += rnd(-12, 12); c.lineTo(x, y); } c.stroke(); } }
 

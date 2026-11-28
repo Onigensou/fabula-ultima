@@ -155,6 +155,7 @@ async function shatter(f, C) { f.gone = true; sfx("break", .9); sfx("crash", .35
   const p = fistPt(f); flash("#fff", .25, 30, 160).catch(() => {}); clip("gg_burst_anim02", p, { scale: .32, blend: "screen", filter: tint(5, 6, 1.2) });
   shards("field", p, "255,120,90", tv(C, "shards"), .55); shards("field", p, "255,230,200", Math.round(tv(C, "shards") / 2), .4);
   await tween(160, EASE.in, (u) => { f.kx = f.ky = 1 + .3 * u; f.el.style.opacity = String(1 - u); setPos(f, f.dx, f.dy); }); f.el.style.display = "none"; }
+const FIST_PRIOR_HITS = 1;   // the fist breaks on its 2nd hit (HP 2, 2026-11-28): one hit already landed when it breaks
 const breakSet = (C) => (tv(C, "by") === 0 ? FISTS() : FISTS().slice(0, 1));
 def("brk", { boss: "fist", status: "approved", icon: "fistA", fists: true, name: "Missile Fist · break", tag: "Party breaks it · 3 damaging hits", changes: [],
   intro: "Each damaging hit cracks the fist a little more; the third shatters it into red shards before it can blow.",
@@ -166,6 +167,8 @@ def("brk", { boss: "fist", status: "approved", icon: "fistA", fists: true, name:
     { name: "First hit", note: "a crack", run: async (C) => { await Promise.all(breakSet(C).map((f) => partyHitFx(f))); await wait(tv(C, "gap")); } },
     { name: "Second hit", note: "more cracks, the glow dims", run: async (C) => { await Promise.all(breakSet(C).map((f) => partyHitFx(f))); await wait(tv(C, "gap")); } },
     { name: "Third hit", note: "it shatters", gate: true, run: async (C) => { markGate(); const tg = breakSet(C);
+      // game: only this beat plays (on the fist's defeat), after real hits: show the hits it already took (cracks + dim)
+      if (IN_GAME) for (const f of tg) if (!f.hits) { f.hits = FIST_PRIOR_HITS; drawCracks(f); if (f.media) f.media.style.filter = `drop-shadow(0 0 6px rgba(${RED},.9)) brightness(${1 - f.hits * .08})`; }
       await Promise.all(tg.map((f) => partyHitFx(f))); await Promise.all(tg.map((f) => shatter(f, C))); await wait(900); } },
   ] });
 

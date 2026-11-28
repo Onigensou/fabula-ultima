@@ -5394,6 +5394,24 @@ async function applyDelayEffect(row, ctx) {
   return { ok: true, kind: "delay", ms };
 }
 
+// ── summon_hidden reveal ───────────────────────────────────────────────────
+// A summon_hidden token spawns at alpha 0 flagged REVEAL_AFTER_ANIM; the play_animation that targets it shows it when
+// the cinematic ends. The fallback shows it anyway after REVEAL_FALLBACK_MS (no animation row, a skipped or hung
+// cinematic), so a summon can never stay invisible. GM writes only.
+const REVEAL_AFTER_ANIM = "revealAfterAnim";
+const REVEAL_FALLBACK_MS = 20000;
+async function revealAfterAnim(tokenUuids) {
+  if (!game.user?.isGM) return;
+  for (const uuid of tokenUuids ?? []) {
+    try {
+      const doc = await fromUuid(uuid);
+      if (!doc?.getFlag?.(FLAG_NS, REVEAL_AFTER_ANIM)) continue;
+      await doc.update({ alpha: 1, [`flags.${FLAG_NS}.-=${REVEAL_AFTER_ANIM}`]: null });
+    } catch (e) { warn("skill-effects: summon reveal failed", uuid, e); }
+  }
+}
+function scheduleRevealFallback(uuid) { setTimeout(() => { revealAfterAnim([uuid]); }, REVEAL_FALLBACK_MS); }
+
 // ── play_animation ─────────────────────────────────────────────────────────
 //
 // Play a referenced skill's authored `animation_script` cinematic from the effect
@@ -5468,6 +5486,9 @@ async function applyPlayAnimationEffect(row, ctx) {
       if (!Array.isArray(ctx.pendingAnimations)) ctx.pendingAnimations = [];
       ctx.pendingAnimations.push(res.endPromise);
     }
+    // summon_hidden tokens among the targets appear when the whole cinematic has ended (not at the gate)
+    if (res?.endPromise) Promise.resolve(res.endPromise).finally(() => revealAfterAnim(targetTokenUuids));
+    else revealAfterAnim(targetTokenUuids);
     if (restoreOverlays) {
       // Hang the restore off the end-promise so the overlays come back when
       // the cinematic actually finishes. finally() so a rejected or aborted
@@ -5478,6 +5499,7 @@ async function applyPlayAnimationEffect(row, ctx) {
     return { ok: true, kind: "play_animation", played: !!res?.played };
   } catch (e) {
     warn("skill-effects.play_animation: threw", e);
+    revealAfterAnim(targetTokenUuids);
     try { if (restoreOverlays) restoreOverlays(); } catch {}
     return { ok: true, kind: "play_animation", played: false, reason: "threw" };
   }
@@ -12995,6 +13017,9 @@ async function applyTransferAeEffect(row, ctx) {
 //     summon_actor: "Flame Drake,Lightning Drake", // uuid / bare id / NAME, comma-list
 //     summon_count: "1",                           // copies of EACH ref (default 1)
 //     summon_act_this_round: false,                // true = acts THIS round; false = next round
+//     summon_hidden: false,                        // true = spawn invisible; the chain's play_animation on
+//                                                  // these tokens shows them when it ends (Deva's Missile Fist:
+//                                                  // the cinematic flies them in, they must not pop in first)
 //     summon_max: "3",                             // optional hard cap on this kind on the
 //                                                  // field at once (phantasm rows count own
 //                                                  // isPhantasm tokens; 0/absent = unlimited)
@@ -13447,7 +13472,10 @@ async function applySummonEffect(row, ctx) {
       }
       let tokenDoc = null;
       try {
-        const out = await spawnLiveDirectorTokens({ scene, actorUuids: [actor.uuid], disposition, anchor: spawnAnchor, casterTokenId: casterTok?.id ?? null });
+        const hiddenSpawn = row.summon_hidden === true || String(row.summon_hidden ?? "").trim().toLowerCase() === "true";
+        const out = await spawnLiveDirectorTokens({ scene, actorUuids: [actor.uuid], disposition, anchor: spawnAnchor, casterTokenId: casterTok?.id ?? null,
+          tokenData: hiddenSpawn ? { alpha: 0, flags: { [FLAG_NS]: { [REVEAL_AFTER_ANIM]: true } } } : null });
+        if (hiddenSpawn && out?.[0]) scheduleRevealFallback(out[0].uuid);
         tokenDoc = out?.[0] ?? null;
       } catch (e) { warn(`skill-effects.summon: spawn threw for ${actor.name}`, e); }
       // No orphan cleanup here on purpose. The post-loop sweep below already
