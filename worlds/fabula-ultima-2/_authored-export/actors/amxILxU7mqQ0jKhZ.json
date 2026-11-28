@@ -308,6 +308,12 @@
           },
           "flags": {
             "fabula-ultima-companion": {
+              "bossLine": {
+                "hold": 2600,
+                "speaker": "Deva",
+                "switch": "Deva Focus Line",
+                "text": "So fond of your little spells. Let's see you cast them empty."
+              },
               "charges": 1,
               "crossScene": false,
               "lifetimeMode": "persistent_counter",
@@ -508,6 +514,12 @@
           },
           "flags": {
             "fabula-ultima-companion": {
+              "bossLine": {
+                "hold": 2600,
+                "speaker": "Deva",
+                "switch": "Deva Fury Line",
+                "text": "Steel, and more steel. ...Then let me show you how it's swung."
+              },
               "charges": 1,
               "crossScene": false,
               "lifetimeMode": "persistent_counter",
@@ -1664,7 +1676,8 @@
           "version": "4.8.4"
         },
         "fabula-ultima-companion": {
-          "moveEngine": "1.3.0"
+          "moveEngine": "1.3.0",
+          "notNormalAttack": true
         }
       },
       "folder": null,
@@ -1776,7 +1789,8 @@
           "version": "4.8.4"
         },
         "fabula-ultima-companion": {
-          "moveEngine": "1.3.0"
+          "moveEngine": "1.3.0",
+          "notNormalAttack": true
         }
       },
       "folder": null,
@@ -1912,13 +1926,8 @@
           "version": "4.8.4"
         },
         "fabula-ultima-companion": {
-          "bossLine": {
-            "hold": 2600,
-            "speaker": "Deva",
-            "switch": "Deva Fury Line",
-            "text": "Steel, and more steel. ...Then let me show you how it's swung."
-          },
-          "moveEngine": "1.3.0"
+          "moveEngine": "1.3.0",
+          "notNormalAttack": true
         }
       },
       "folder": null,
@@ -2202,7 +2211,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>Three of her fists burn into being and hover over the field. Each one detonates on a random enemy on its second turn, dealing <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Light</strong></a>&nbsp;damage, unless it is broken first.</p><p>Each fist breaks after taking damage twice.</p>",
+          "description": "<p>Three of her fists burn into being and hover over the field. Each one detonates on a random enemy on its first turn, dealing <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Light</strong></a>&nbsp;damage, unless it is broken first.</p><p>Each fist breaks after taking damage twice.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -2228,6 +2237,7 @@
               "summon_act_this_round": false,
               "summon_actor": "Actor.MsFistSummon0001",
               "summon_count": "3",
+              "summon_hidden": true,
               "summon_max": "3"
             },
             "3": {
@@ -2413,12 +2423,6 @@
           "version": "4.8.4"
         },
         "fabula-ultima-companion": {
-          "bossLine": {
-            "hold": 2600,
-            "speaker": "Deva",
-            "switch": "Deva Focus Line",
-            "text": "So fond of your little spells. Let's see you cast them empty."
-          },
           "moveEngine": "1.3.0"
         }
       },

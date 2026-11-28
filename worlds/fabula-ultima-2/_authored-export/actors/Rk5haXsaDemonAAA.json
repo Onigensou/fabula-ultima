@@ -57,7 +57,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;the Rakshasa is attacked with a weapon</p></li></ul><p>Lower the efficiency of the triggering weapon type, but increase efficiency against other weapons.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;the Rakshasa is hit by an attack or a spell</p></li></ul><p>Lower the efficiency of the triggering weapon type, but increase efficiency against other weapons.</p>",
           "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {
@@ -93,13 +93,6 @@
               "reaction_passive_mode": "force",
               "reaction_source": "self",
               "reaction_trigger": "creature_hit_by_action"
-            },
-            "1": {
-              "$deleted": false,
-              "reaction_effect_ref": "ad_read",
-              "reaction_passive_mode": "force",
-              "reaction_source": "enemy",
-              "reaction_trigger": "creature_miss_action"
             }
           },
           "rolled_atr1": "-",
