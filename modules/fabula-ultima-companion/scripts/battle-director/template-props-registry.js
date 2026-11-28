@@ -60,6 +60,8 @@
 export const SKILL_TEMPLATE_ID = "j0F5Msw5RZ8aIB3j";
 /** Nidhogg's NPC actor template. */
 export const NPC_TEMPLATE_ID = "yegF6R8aaymhrvCg";
+/** CSB "_Item Template": every carried item (weapons, armour, accessories, consumables). */
+export const GEAR_TEMPLATE_ID = "ZoiV53VaLzeRsEps";
 
 /** The tab the managed fields live in, so the sync never touches hand-authored layout. */
 export const MANAGED_TAB_KEY = "fu_engine_fields";
@@ -167,10 +169,23 @@ export const NPC_HUD_PROPS = Object.freeze([
   areaProp("zero_power_description", "Zero Power Description", "Zero Power rules text (HTML)."),
 ]);
 
+/**
+ * Gear template (every carried item). `out_of_battle_only` (to-do #13,
+ * 2026-11-28): a consumable meant for field use only (Forget me Nut's skill
+ * reset). The battle Item menu shows it greyed out, "Out of battle only", and
+ * DECLARE refuses it (field-only-items.js). A checkbox, no default, so it
+ * stamps nothing onto the thousands of gear documents.
+ */
+export const GEAR_PROPS = Object.freeze([
+  checkProp("out_of_battle_only", "Out of Battle Only",
+    "Consumable for field use only: greyed out in the battle Item menu (camp, skill reset, travel)."),
+]);
+
 /** template id -> the props it receives. */
 export const MANAGED_PROPS_BY_TEMPLATE = Object.freeze({
   [SKILL_TEMPLATE_ID]: MANAGED_PROPS,
   [NPC_TEMPLATE_ID]: NPC_HUD_PROPS,
+  [GEAR_TEMPLATE_ID]: GEAR_PROPS,
 });
 
 export const MANAGED_PROP_TEMPLATES = Object.freeze(Object.keys(MANAGED_PROPS_BY_TEMPLATE));

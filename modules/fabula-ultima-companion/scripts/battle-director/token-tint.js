@@ -15,6 +15,10 @@
 //   flags.fabula-ultima-companion.tokenTintTarget   "bearer" (default) | "applier"
 //   flags.fabula-ultima-companion.tokenTintStrength 0..1 (default 1)
 //
+// A third mode, "grade" (a colour matrix + gamma + rim glow, see "Grade mode"
+// below), is reachable only through the status tint provider (the Zombie
+// status), never through these flags.
+//
 // Two MODES, because "tint the body" means two different things:
 //   multiply — classic mesh.tint: every pixel is multiplied by the colour, so a
 //              white belly turns the colour too and the whole sprite is dyed
@@ -121,6 +125,207 @@ function makeRecolorFilter() {
   return new _RecolorFilter();
 }
 
+/* ── Grade mode (a colour grade + gamma + outer rim glow) ──────────────── */
+//
+// Built for the Zombie status (approved 2026-11-28, claude.ai/artifact/6yk4Vym4JdmTq8fP7LuGwX,
+// section "Zombie"). `mesh.tint` can only multiply; the approved look is a
+// pipeline, run in this order (the mockup's order bar):
+//   sprite → saturation → contrast → drain → exposure → tint (blend) → brightness lift
+//          → gamma → rim glow
+// Everything up to the brightness lift is linear, so it folds into ONE 3×4 colour
+// matrix per token (built once, never per frame). Gamma is not linear: it is a
+// per-channel pow() in the same shader pass. The rim glow is the mockup's CSS
+// `drop-shadow(0 0 R px rim)`: a Gaussian blur of the sprite's alpha (σ = R/2),
+// filled with the rim colour and drawn BEHIND the sprite — two cheap 1-D blur
+// passes. Neutral values (saturation 1, contrast 1, drain 0, exposure 1, tint 0,
+// lift 0, gamma 1, glow 0) give the identity: the sprite as drawn.
+//
+// The maths is a straight port of the mockup's buildMatrix / hueShift (pure, so
+// the tests can check it without Foundry).
+
+export const IDENTITY_3X4 = Object.freeze([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0]);
+const LW = [0.299, 0.587, 0.114];
+// 3×4 row-major [r g b offset] per row; B·A (A first).
+function mm(B, A) {
+  const o = [];
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) o.push(B[i * 4] * A[j] + B[i * 4 + 1] * A[4 + j] + B[i * 4 + 2] * A[8 + j]);
+    o.push(B[i * 4] * A[3] + B[i * 4 + 1] * A[7] + B[i * 4 + 2] * A[11] + B[i * 4 + 3]);
+  }
+  return o;
+}
+function diag(a, b, c, o = [0, 0, 0]) { return [a, 0, 0, o[0], 0, b, 0, o[1], 0, 0, c, o[2]]; }
+function satM(s) {
+  return [0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0,
+    0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s, 0,
+    0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s, 0];
+}
+/** Rotate an rgb (0..1) colour's hue by `deg` in HSL (the mockup's hueShift). */
+export function hueShiftHsl(c, deg) {
+  const [r, g, b] = c; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  let h = 0, s = 0;
+  if (d) {
+    s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+    h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    h /= 6;
+  }
+  h = ((h + deg / 360) % 1 + 1) % 1;
+  const f = (p, q, t) => { t = (t + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < 0.5 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; };
+  if (!s) return [l, l, l];
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+  return [f(p, q, h + 1 / 3), f(p, q, h), f(p, q, h - 1 / 3)];
+}
+/**
+ * The grade's colour matrix (3×4 row-major). `tint` = rgb 0..1, `str` = tint amount,
+ * `blend` = "mul" (multiply, = today's mesh.tint wash) | "col" (colour, keep lightness)
+ * | "scr" (screen). Port of the mockup's buildMatrix.
+ */
+export function buildGradeMatrix({ sat = 1, con = 1, drain = 0, exp = 1, blend = "mul", tint = [1, 1, 1], str = 0, bright = 0 } = {}) {
+  const C = tint, a = str, b = bright;
+  let M = IDENTITY_3X4.slice();
+  M = mm(satM(sat), M);
+  M = mm(diag(con, con, con, [0.5 - 0.5 * con, 0.5 - 0.5 * con, 0.5 - 0.5 * con]), M);
+  M = mm(satM(1 - drain), M);
+  M = mm(diag(exp, exp, exp), M);
+  let Tm;
+  if (blend === "mul") Tm = diag(1 + (C[0] - 1) * a, 1 + (C[1] - 1) * a, 1 + (C[2] - 1) * a);
+  else if (blend === "scr") Tm = diag(1 - a * C[0], 1 - a * C[1], 1 - a * C[2], [a * C[0], a * C[1], a * C[2]]);
+  else {
+    // colour, keep lightness: x -> lerp(x, L(x)·C/L(C), a)
+    const Lc = LW[0] * C[0] + LW[1] * C[1] + LW[2] * C[2] || 1; Tm = [];
+    for (let i = 0; i < 3; i++) { for (let j = 0; j < 3; j++) Tm.push((i === j ? 1 - a : 0) + a * C[i] / Lc * LW[j]); Tm.push(0); }
+  }
+  M = mm(Tm, M);
+  M = mm(diag(1 - b * C[0], 1 - b * C[1], 1 - b * C[2], [b * C[0], b * C[1], b * C[2]]), M);   // brightness: screen lift toward the tint
+  return M;
+}
+/**
+ * A full grade spec from the mockup's config names: { tintHex, hue, sat, con, drain, exp,
+ * blend, str, bright, gamma, glow, glowPx, refH }. Returns the frozen object token-tint
+ * carries per token: { key, matrix, gamma, glow, glowPx, refH, rim }.
+ */
+export function makeGradeSpec(cfg) {
+  const hex = String(cfg.tintHex ?? "#ffffff").replace("#", "");
+  const base = [parseInt(hex.slice(0, 2), 16) / 255, parseInt(hex.slice(2, 4), 16) / 255, parseInt(hex.slice(4, 6), 16) / 255];
+  const tint = hueShiftHsl(base, Number(cfg.hue) || 0);
+  const matrix = buildGradeMatrix({ ...cfg, tint });
+  // Rim = the tint colour lightened 35% toward white (mockup applyTint).
+  const rim = tint.map((x) => Math.round((x + (1 - x) * 0.35) * 255) / 255);
+  return Object.freeze({
+    key: JSON.stringify(cfg), matrix: Object.freeze(matrix), gamma: Number(cfg.gamma) || 1,
+    glow: Number(cfg.glow) || 0, glowPx: Number(cfg.glowPx) || 0, refH: Number(cfg.refH) || 250, rim: Object.freeze(rim), tint,
+  });
+}
+/** The grade at fade progress p (0 = the sprite as drawn, 1 = the full look). */
+export function gradeAt(spec, p) {
+  const t = Math.max(0, Math.min(1, Number(p) || 0));
+  const matrix = spec.matrix.map((v, i) => IDENTITY_3X4[i] + (v - IDENTITY_3X4[i]) * t);
+  return { matrix, exponent: 1 / (1 + (spec.gamma - 1) * t), glowA: spec.glow * t };
+}
+// Column-major mat3 + offset vector for the shader.
+function matUniforms(m) {
+  return { m3: new Float32Array([m[0], m[4], m[8], m[1], m[5], m[9], m[2], m[6], m[10]]), off: new Float32Array([m[3], m[7], m[11]]) };
+}
+
+const GRADE_FRAG = `
+varying vec2 vTextureCoord;
+uniform sampler2D uSampler;
+uniform mat3 uM;
+uniform vec3 uO;
+uniform float uExp;
+void main(void) {
+  vec4 c = texture2D(uSampler, vTextureCoord);
+  if (c.a <= 0.0001) { gl_FragColor = vec4(0.0); return; }
+  vec3 rgb = clamp(uM * (c.rgb / c.a) + uO, 0.0, 1.0);
+  rgb = pow(rgb, vec3(uExp));
+  gl_FragColor = vec4(rgb * c.a, c.a);
+}`;
+// 1-D Gaussian of the alpha channel, 12 taps each side at σ/4 (covers 3σ).
+const BLUR_H_FRAG = `
+varying vec2 vTextureCoord;
+uniform sampler2D uSampler;
+uniform highp vec4 inputSize;   // highp: must match the filter vertex shader
+uniform highp vec4 inputClamp;
+uniform vec2 uStep;
+void main(void) {
+  float s = 0.0, w = 0.0;
+  for (int i = -12; i <= 12; i++) {
+    float fi = float(i);
+    float wi = exp(-0.5 * fi * fi / 16.0);
+    vec2 uv = clamp(vTextureCoord + uStep * inputSize.zw * fi, inputClamp.xy, inputClamp.zw);
+    s += texture2D(uSampler, uv).a * wi; w += wi;
+  }
+  gl_FragColor = vec4(0.0, 0.0, 0.0, s / w);
+}`;
+// Second blur direction + the glow composited UNDER the graded sprite.
+const GLOW_FRAG = `
+varying vec2 vTextureCoord;
+uniform sampler2D uSampler;
+uniform sampler2D uGraded;
+uniform highp vec4 inputSize;   // highp: must match the filter vertex shader
+uniform highp vec4 inputClamp;
+uniform vec2 uStep;
+uniform vec3 uRim;
+uniform float uGlowA;
+void main(void) {
+  float s = 0.0, w = 0.0;
+  for (int i = -12; i <= 12; i++) {
+    float fi = float(i);
+    float wi = exp(-0.5 * fi * fi / 16.0);
+    vec2 uv = clamp(vTextureCoord + uStep * inputSize.zw * fi, inputClamp.xy, inputClamp.zw);
+    s += texture2D(uSampler, uv).a * wi; w += wi;
+  }
+  float sa = clamp(s / w, 0.0, 1.0) * uGlowA;
+  vec4 g = texture2D(uGraded, vTextureCoord);
+  gl_FragColor = g + vec4(uRim * sa, sa) * (1.0 - g.a);
+}`;
+
+let _GradeFilter = null;
+function makeGradeFilter() {
+  if (!_GradeFilter) {
+    _GradeFilter = class GradeFilter extends PIXI.Filter {
+      constructor() {
+        super(undefined, GRADE_FRAG, { uM: new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]), uO: new Float32Array(3), uExp: 1 });
+        this.fudTokenTint = true;
+        this.fudTintKind = "grade";
+        this.blurH = new PIXI.Filter(undefined, BLUR_H_FRAG, { uStep: new Float32Array([1, 0]) });
+        this.glowPass = new PIXI.Filter(undefined, GLOW_FRAG, { uStep: new Float32Array([0, 1]), uGraded: PIXI.Texture.EMPTY, uRim: new Float32Array([1, 1, 1]), uGlowA: 0 });
+        this.glowA = 0; this.glowPx = 0; this.refH = 250;
+        this.padding = 8;
+      }
+      /** Push one fade state (called on fades / re-asserts only, never per frame). */
+      setGrade(spec, p) {
+        const g = gradeAt(spec, p), u = matUniforms(g.matrix);
+        this.uniforms.uM = u.m3; this.uniforms.uO = u.off; this.uniforms.uExp = g.exponent;
+        this.glowA = g.glowA; this.glowPx = spec.glowPx; this.refH = spec.refH;
+        this.glowPass.uniforms.uRim = new Float32Array(spec.rim); this.glowPass.uniforms.uGlowA = g.glowA;
+      }
+      apply(fm, input, output, clearMode, state) {
+        // Glow size follows the DRAWN body (zoom, depth, 3D stage) like the cue --k:
+        // σ = (glowPx at a refH-tall sprite) / 2, read off the filtered object itself,
+        // so a cinematic clone sharing this filter gets its own size.
+        let h = 0;
+        try { h = state?.target?.getBounds?.(true)?.height || 0; } catch { h = 0; }
+        const sigma = h > 0 ? (this.glowPx * (h / this.refH)) / 2 : 0;
+        this.padding = Math.ceil(sigma * 3) + 2;        // takes effect next frame
+        if (!(this.glowA > 0.003) || sigma < 0.05) { fm.applyFilter(this, input, output, clearMode); return; }
+        const a = fm.getFilterTexture(input), b = fm.getFilterTexture(input);
+        fm.applyFilter(this, input, a, PIXI.CLEAR_MODES.CLEAR);
+        const step = sigma / 4;
+        this.blurH.uniforms.uStep[0] = step; this.blurH.uniforms.uStep[1] = 0;
+        fm.applyFilter(this.blurH, a, b, PIXI.CLEAR_MODES.CLEAR);
+        this.glowPass.uniforms.uStep[0] = 0; this.glowPass.uniforms.uStep[1] = step;
+        this.glowPass.uniforms.uGraded = a;
+        fm.applyFilter(this.glowPass, b, output, clearMode);
+        this.glowPass.uniforms.uGraded = PIXI.Texture.EMPTY;
+        fm.returnFilterTexture(a); fm.returnFilterTexture(b);
+      }
+      destroy() { try { this.blurH.destroy(); this.glowPass.destroy(); } catch { /* */ } super.destroy(); }
+    };
+  }
+  return new _GradeFilter();
+}
+
 /* ── Reading the flag ───────────────────────────────────────────────────── */
 
 function tintFlagOf(effect) {
@@ -196,12 +401,18 @@ function docTintOf(token) {
   } catch { return WHITE; }
 }
 
-function setFilter(mesh, on, color, amount) {
+// One tint filter per mesh, of one kind ("recolor" | "grade"); a kind change swaps it.
+function setFilter(mesh, kind, rec, amount) {
   const existing = (mesh.filters ?? []).find((f) => f?.fudTokenTint);
-  if (on) {
+  if (kind && existing && (existing.fudTintKind ?? "recolor") !== kind) { setFilter(mesh, null); setFilter(mesh, kind, rec, amount); return; }
+  if (kind === "recolor") {
     const f = existing ?? makeRecolorFilter();
-    f.uniforms.uTint = color;
+    f.uniforms.uTint = rec.color;
     f.uniforms.uStrength = amount;
+    if (!existing) mesh.filters = [...(mesh.filters ?? []), f];
+  } else if (kind === "grade") {
+    const f = existing ?? makeGradeFilter();
+    f.setGrade(rec.grade, amount);
     if (!existing) mesh.filters = [...(mesh.filters ?? []), f];
   } else if (existing) {
     const rest = (mesh.filters ?? []).filter((f) => f !== existing);
@@ -216,14 +427,14 @@ function applyRec(token, rec) {
   if (!mesh || mesh.destroyed) return;
   const amount = rec ? rec.strength * rec.cur : 0;
   try {
-    if (rec?.mode === "recolor") {
+    if (rec?.mode === "recolor" || (rec?.mode === "grade" && rec.grade)) {
       mesh.tint = toHexNumber(docTintOf(token));
       // Attach the filter as soon as the record exists — even at progress 0 —
       // so a cinematic clone taken in the same tick the AE lands (oni.cloneToken
       // copies mesh.filters) carries it and fades in along with the real mesh.
-      setFilter(mesh, true, rec.color, amount);
+      setFilter(mesh, rec.mode, rec, amount);
     } else {
-      setFilter(mesh, false);
+      setFilter(mesh, null);
       mesh.tint = toHexNumber(mul3(docTintOf(token), rec ? lerp3(WHITE, rec.color, amount) : WHITE));
     }
   } catch {}
@@ -264,15 +475,15 @@ function setTokenTint(token, spec) {
   if (!token?.id) return;
   const rec = _tints.get(token.id);
   if (spec) {
-    if (rec && rec.mode === spec.mode && same3(rec.color, spec.color) && rec.strength === spec.strength && rec.tgt === 1) return;
+    if (rec && rec.mode === spec.mode && same3(rec.color, spec.color) && rec.strength === spec.strength && rec.grade?.key === spec.grade?.key && rec.tgt === 1) return;
     if (rec && rec.mode === spec.mode) {
       // Colour / strength swap in the same mode: cross-fade the progress from
       // wherever it is, re-pointed at the new colour.
-      rec.color = spec.color; rec.strength = spec.strength;
+      rec.color = spec.color; rec.strength = spec.strength; rec.grade = spec.grade ?? null;
       rec.from = rec.cur; rec.tgt = 1; rec.t0 = performance.now(); rec.dur = FADE_IN_MS;
     } else {
       if (rec) applyRec(token, null); // mode change: drop the old representation first
-      _tints.set(token.id, { mode: spec.mode, color: spec.color, strength: spec.strength, cur: 0, from: 0, tgt: 1, t0: performance.now(), dur: FADE_IN_MS });
+      _tints.set(token.id, { mode: spec.mode, color: spec.color, strength: spec.strength, grade: spec.grade ?? null, cur: 0, from: 0, tgt: 1, t0: performance.now(), dur: FADE_IN_MS });
     }
   } else {
     if (!rec || rec.tgt === 0) return; // already neutral / fading out
@@ -306,7 +517,7 @@ function rescanCanvas() {
     if (!token?.actor) continue;
     const spec = readTokenTint(token.actor);
     if (spec) {
-      const rec = { mode: spec.mode, color: spec.color, strength: spec.strength, cur: 1, from: 1, tgt: 1, t0: performance.now(), dur: 0 };
+      const rec = { mode: spec.mode, color: spec.color, strength: spec.strength, grade: spec.grade ?? null, cur: 1, from: 1, tgt: 1, t0: performance.now(), dur: 0 };
       _tints.set(token.id, rec);
       applyRec(token, rec);
     } else if (_tints.has(token.id)) {

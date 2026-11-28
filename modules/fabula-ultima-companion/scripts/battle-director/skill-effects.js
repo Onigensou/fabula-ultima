@@ -24,6 +24,7 @@ import { readTimedStrikeConfig, strikeDamage, finisherDamage } from "./timed-str
 import { resolveOutgoingDamageParts } from "./skill-formulas.js";
 import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock, shouldReverseHeal, isHealReversedActor, isReviveKillImmune, rowIgnoresUndead } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
+import { sourceSkillMatches } from "./source-skill-filter.js";
 import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
 // The amount selector lives in its own leaf module so remote-pick can render it
 // on a player's client without dragging the effect engine along. Re-exported
@@ -65,6 +66,8 @@ import { actorHpFloor, floorHp } from "../shared/hp-floor.js";
 import { resolveWornSlots } from "../shared/equipped-gear.js";
 import { deferVfxTable } from "./impact-offsets.js";
 import { flushPendingFollowUpsFor } from "./deferred-followups.js";
+import { bakedStatusesFor } from "./summon-clone-status.js";
+import { WEAPON_READ_FAMILIES, weaponReadFamilyOf } from "./weapon-read-family.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -1240,8 +1243,9 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
   //     = any (no-op for every existing row). Lets a follow-up reaction key off a
   //     SPECIFIC named skill ("after you use Crossfire …") as DATA, with no
   //     skill-name branch in the engine. Primarily for creature_completes_skill.
+  //     A comma list names several skills; any of them passes (source-skill-filter.js).
   const wantSkill = String(row.reaction_source_skill ?? "").trim().toLowerCase();
-  if (wantSkill && String(payload?.sourceSkillName ?? "").trim().toLowerCase() !== wantSkill) {
+  if (wantSkill && !sourceSkillMatches(wantSkill, payload?.sourceSkillName)) {
     log(`passive ${item.name}: source_skill filter failed — want="${wantSkill}" got="${payload?.sourceSkillName}"`);
     return false;
   }
@@ -5665,47 +5669,19 @@ async function applyTriggerOpportunityEffect(row, ctx) {
 // ⚠ Values are floored at 1, never 0. `readWeaponEfficiency` (snapshot.js:125)
 // treats a stored 0 as 100 while apply-damage-core honours it, so a 0 lane would
 // behave differently depending on which damage path fired.
-const WEAPON_READ_FAMILIES = Object.freeze([
-  "arcane", "bow", "brawling", "dagger", "firearm", "flail", "heavy",
-  "spear", "sword", "thrown",
-]);
+// (WEAPON_READ_FAMILIES comes from weapon-read-family.js.)
 
-// Which lane did this attack come from? Resolution order matters — see §4.4.
-//   1. the weapon item        (a SHIELD maps to brawling: a shield cannot be
-//                              wielded as a weapon, so a shield attack is always
-//                              a virtual brawling profile)
-//   2. payload.weaponType     (the only thing a VIRTUAL attack carries — Dual
-//                              Shieldbearer's Twin Shields has no item, so no
-//                              weaponUuid, and step 1 finds nothing)
-//   3. a Spell                -> arcane, matching action-profile.js:242, which is
-//                              the engine's own "spells count as Arcane" rule
-// Returns null when nothing resolves, so the row fails CLOSED rather than
-// charging some arbitrary lane.
+// Which lane did this attack come from? The rule (item → payload.weaponType →
+// spell = arcane) lives in weapon-read-family.js so it can be unit-tested; this
+// only looks the weapon item up. Returns null when nothing resolves, so the row
+// fails CLOSED rather than charging some arbitrary lane.
 async function resolveWeaponReadFamily(payload) {
-  const norm = (v) => {
-    const s = String(v ?? "").trim().toLowerCase();
-    return WEAPON_READ_FAMILIES.includes(s) ? s : null;
-  };
-
+  let itemProps = null;
   const uuid = String(payload?.weaponUuid ?? "").trim();
   if (uuid) {
-    let item = null;
-    try { item = await fromUuid(uuid); } catch (_e) { item = null; }
-    const p = item?.system?.props ?? null;
-    if (p) {
-      if (String(p.item_type ?? "").toLowerCase() === "shield") return "brawling";
-      const cat = norm(p.category ?? p.weapon_type ?? p.type);
-      if (cat) return cat;
-    }
+    try { itemProps = (await fromUuid(uuid))?.system?.props ?? null; } catch (_e) { itemProps = null; }
   }
-
-  const fromPayload = norm(payload?.weaponType);
-  if (fromPayload) return fromPayload;
-
-  const kind = String(payload?.actionKind ?? "").toLowerCase();
-  if (kind === "spell") return "arcane";
-
-  return null;
+  return weaponReadFamilyOf(payload, itemProps);
 }
 
 function weaponReadEfficiency(counter, window, curve) {
@@ -13352,6 +13328,14 @@ async function applySummonEffect(row, ctx) {
       if (folderId) data.folder = folderId;
       if (stripTypes.length && Array.isArray(data.items)) {
         data.items = data.items.filter((it) => !stripTypes.includes(String(it.system?.props?.item_type ?? "").toLowerCase()));
+      }
+      // summon_clone_statuses — statuses the clone wears permanently (Birth of the
+      // Cruel: Zombie, so the raised Minion shows the Zombie cue; user 2026-11-28).
+      // Baked into the ACTOR's effects, so they persist with a standing clone.
+      if (String(row.summon_clone_statuses ?? "").trim()) {
+        const { add, missing } = bakedStatusesFor(row.summon_clone_statuses, data.effects ?? []);
+        if (add.length) data.effects = [...(data.effects ?? []), ...add];
+        if (missing.length) warn(`skill-effects.summon: summon_clone_statuses on "${row.effect_label}" — no status template for ${missing.join(", ")}`);
       }
       // A PERSISTED clone is a standing ally of its summoner across battles:
       // tag the clone ACTOR (tokens are transient — gone between battles) with

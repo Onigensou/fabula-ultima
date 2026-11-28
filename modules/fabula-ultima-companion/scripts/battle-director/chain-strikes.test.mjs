@@ -318,6 +318,22 @@ eq("seek is a separate chain", isSeparateChain({ count: 3, mode: "seek" }), true
   eq("seek walk: B took 40", states.get("B").hp, 10);
 }
 
+// ── random / volley: a strike on a creature Protect took off the card is re-drawn ──
+{
+  const { redrawOffCard } = await import("./chain-strikes.js");
+  // Hina (H) was drawn twice, then Protect swapped her row for Blanche (B): she is off the card.
+  const drawn = [["H"], ["Z"], ["H"], ["G"]];
+  const pool = ["B", "Z", "G"];
+  const out = redrawOffCard(drawn, pool, () => true, makeRng(4));
+  eq("random: on-card picks keep their draw", [out[1], out[3]], [["Z"], ["G"]]);
+  eq("random: off-card picks are re-drawn onto the card", [out[0][0], out[2][0]].every((u) => pool.includes(u)), true);
+  eq("random: nothing off the card, nothing moves", redrawOffCard([["Z"], ["G"]], pool, () => true), [["Z"], ["G"]]);
+  // A downed creature still on the card keeps its strike (lost, as random always did).
+  eq("random: a downed pick on the card stays", redrawOffCard([["Z"]], pool, (u) => u !== "Z"), [["Z"]]);
+  eq("random: re-draw skips the downed", redrawOffCard([["H"]], pool, (u) => u === "G"), [["G"]]);
+  eq("random: nobody standing keeps the pick", redrawOffCard([["H"]], pool, () => false), [["H"]]);
+}
+
 // ── volley: N shots, flat bonuses counted once ───────────────────────────────
 {
   const {

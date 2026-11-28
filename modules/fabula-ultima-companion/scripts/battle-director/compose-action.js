@@ -45,7 +45,7 @@ import { pickItem } from "./item-picker.js";
 import { getLinkedSkillUuid, gatherConsumables, gatherCreatables, readActorIp } from "./item-resource.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
-import { resolveTargetPlan } from "./target-survey.js";
+import { resolveTargetPlan, restoresHp } from "./target-survey.js";
 import { applyNoxMassiveGate } from "./massive-keyword.js";
 import { applyStealLockExclusion } from "./steal-lock.js";
 import { isNoxServant } from "./nox-servant.js";
@@ -56,6 +56,7 @@ import { buildUltimaMenuSpec } from "./domination.js";
 import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
 import { potionTargetText } from "../polymorph/polymorph-potions.js";
+import { provokePinKind } from "./provoke-bypass.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, snapshotEligibleTargetsFromDCombat,
          attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate, applyAreaGate, targetsKnockedOut,
          targetsKnockedOutAlly, mergeUndeadRevivePool } from "./snapshot.js";
@@ -370,9 +371,15 @@ async function unavailableCommands(snap, actorUuid) {
     }
   } catch (e) { warn("composeAction: skill availability check threw — leaving Skill/Spell open", e); }
   try {
-    const [use, create] = await Promise.all([gatherConsumables(actor), gatherCreatables(actor)]);
+    const [allUse, allCreate] = await Promise.all([gatherConsumables(actor), gatherCreatables(actor)]);
+    // "Out of battle only" rows are shown greyed in the picker but never count
+    // as something to do (to-do #13).
+    const use = allUse.filter((c) => !c.outOfBattleOnly);
+    const create = allCreate.filter((c) => !c.outOfBattleOnly);
     const ip = Number(readActorIp(actor)?.current ?? 0) || 0;
-    if (!use.length && !create.length) out.push({ label: "Item", reason: "No items to use and no recipes to craft.", tag: "None" });
+    if (!use.length && !create.length && (allUse.length || allCreate.length)) {
+      out.push({ label: "Item", reason: "Your items can only be used out of battle.", tag: "Field only" });
+    } else if (!use.length && !create.length) out.push({ label: "Item", reason: "No items to use and no recipes to craft.", tag: "None" });
     else if (!use.length && !create.some((c) => Number(c.ipCost) <= ip)) {
       out.push({ label: "Item", reason: `No items to use, and not enough IP to craft (IP ${ip}).`, tag: "Low IP" });
     }
@@ -698,7 +705,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   // free (distinct from "can only target"/Provoked, which restricts the whole pool).
   let attackerActorDoc = null;
   try { attackerActorDoc = await fromUuid(snap.actorUuid); } catch {}
-  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, currentWeapon?.range, attackerActorDoc, "attack")
+  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, currentWeapon?.range, attackerActorDoc, provokePinKind("attack", currentWeapon))
     .map((e) => e.tokenUuid);
 
   // Multi-pass (two-weapon) deliberately picks only ONE target for the FIRST
@@ -910,7 +917,7 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel, gran
 
   // "Must include X" taunt (must_be_targeted_by) — pin any candidate that forces
   // inclusion for this attack's range (Apple o' Archer). Spare slots stay free.
-  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, range, actor, "attack")
+  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, range, actor, provokePinKind("attack", attackItem))
     .map((e) => e.tokenUuid);
 
   // Target count. NPC attacks read the same `skill_target` text as skills
@@ -1091,7 +1098,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     const selfEligible = [{ tokenUuid: snap.tokenUuid, tokenId: snap.tokenId, name: snap.name }];
     const r = await raceCancel(
       requestTargeting({
-        director, eligible: selfEligible, mode: "exact", count: 1, lockSelection: true,
+        director, eligible: selfEligible, mode: "exact", count: 1, lockSelection: true, healWarn: restoresHp(source),
         titleText: `${snap.name}: ${source.name} (self)`, externalCancel: cancelSentinel,
       }),
       cancelSentinel,
@@ -1185,7 +1192,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   // spell, while an "any"-scoped taunt still does. Defaults to "any" (non-weapon
   // action) so only universal taunts apply here.
   const sourceRange = String(source?.system?.props?.skill_range ?? "").trim().toLowerCase() || "any";
-  const mandatoryTokenUuids = collectForcedIncludeTargets(targetList, sourceRange, actor, pinActionKindForSkill(source))
+  const mandatoryTokenUuids = collectForcedIncludeTargets(targetList, sourceRange, actor, provokePinKind(pinActionKindForSkill(source), source))
     .map((e) => e.tokenUuid);
   // The locked target is pinned like a taunt: always in, spare slots stay free.
   if (lockedTargetTokenUuid && !mandatoryTokenUuids.includes(lockedTargetTokenUuid)) {
@@ -1219,7 +1226,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   if (plan.mode === "all") {
     const r = await raceCancel(
       requestTargeting({
-        director, eligible: targetList, mode: "exact", count: targetList.length, lockSelection: true,
+        director, eligible: targetList, mode: "exact", count: targetList.length, lockSelection: true, healWarn: restoresHp(source),
         titleText: `${snap.name}: ${source.name} (all ${categoryLabel})`, externalCancel: cancelSentinel,
       }),
       cancelSentinel,
@@ -1236,6 +1243,8 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
       mode: plan.mode,
       count: plan.count,
       mandatoryTokenUuids,
+      // An HP heal: rows it would hurt (Zombie / known Undead) get a "Heal hurts" chip.
+      healWarn: restoresHp(source),
       titleText: `${snap.name}: pick target${plan.count > 1 ? "s" : ""} for ${source.name}`,
       externalCancel: cancelSentinel,
     }),

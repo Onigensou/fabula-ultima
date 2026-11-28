@@ -15,6 +15,10 @@ import { playUiHoverSfx } from "./director-ui-sfx.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { plateDrawerHost, readActorHp } from "./director-player-hud.js";
 import { mountDockedTargets, scrollPlateCard, keysBlockedFor, htmlToCardText } from "./drawer-views.js";
+import { healHurtsChip, speciesKnown } from "./heal-warning.js";
+
+// The Zombie status icon (keyword-registry "Zombie") for the "Heal hurts" chip.
+const ZOMBIE_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png";
 
 const STYLE_ID = "fud-targetpicker-style";
 
@@ -328,7 +332,10 @@ function clearTargetingDim(dimState) {
 //   { ok: true, skipped: true, secondaryValue: value, tokenUuids: [] }.
 //   Used for Guard's "Skip Cover" — confirms an "I'm proceeding without
 //   making a target selection" path distinct from cancel.
-export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, card = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null, lockSelection = false, mandatoryTokenUuids = [], remote = null } = {}) {
+export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, card = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null, lockSelection = false, mandatoryTokenUuids = [], remote = null, healWarn = false } = {}) {
+  // `healWarn`: this pick is for an HP heal — rows of creatures the heal would HURT
+  // (Zombie, a known Undead, False Idol) get a red "Heal hurts" chip (heal-warning.js).
+  // It warns, never blocks.
   // `mandatoryTokenUuids`: tokens that MUST be among the final selection — the
   // "must include X as one of your targets" taunt (Apple o' Archer via
   // must_be_targeted_by). Distinct from `lockSelection` (which locks ALL targets)
@@ -456,7 +463,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         // `.excluded` / `.showWhenNoneLeft` are properties ON the array and would
         // not survive the socket's JSON — send them as fields; remote-pick re-attaches.
         spec: {
-          eligible, mode, count, titleText, card, cancelLabel, secondaryAction, randomizeCount, randomPool, lockSelection, mandatoryTokenUuids,
+          eligible, mode, count, titleText, card, cancelLabel, secondaryAction, randomizeCount, randomPool, lockSelection, mandatoryTokenUuids, healWarn: !!healWarn,
           excluded: Array.isArray(eligible?.excluded) ? [...eligible.excluded] : [],
           showWhenNoneLeft: eligible?.showWhenNoneLeft === true,
         },
@@ -601,6 +608,19 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       const rowOf = (token, entry, excluded = null) => {
         const actor = token?.actor ?? null;
         const hp = actor ? readActorHp(actor) : null;
+        // An HP heal that would hurt this creature (2026-11-28). A species-only Undead is
+        // named only once the caster's side knows it (Studied to Identity, or an ally).
+        let hurt = null;
+        if (healWarn && actor && !excluded) {
+          try {
+            const casterDisposition = host?.actorSide === "enemy" ? -1 : 1;
+            hurt = healHurtsChip(actor, { known: () => speciesKnown({
+              casterDisposition, targetDisposition: token?.document?.disposition ?? 0,
+              uuids: [game.actors?.get?.(token?.document?.actorId)?.uuid, actor.uuid],
+            }) });
+          } catch { hurt = null; }
+        }
+        const must = !excluded && mustInclude.has(entry.tokenUuid);
         return {
           uuid: entry.tokenUuid,
           name: token?.name ?? entry.name ?? "?",
@@ -608,7 +628,9 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
           hp: hp ? { v: Math.round(hp.v), m: Math.round(hp.m) } : null,
           you: !!actor && actor.id === host.actorId,
           // A taunt's mandatory target (pre-picked, can't be dropped): say why.
-          status: !excluded && mustInclude.has(entry.tokenUuid) ? "Must target" : null,
+          status: must ? "Must target" : hurt?.text ?? null,
+          statusCls: !must && hurt ? "t-healhurt" : null,
+          statusIcon: !must && hurt?.zombie ? ZOMBIE_ICON : null,
           excluded,
           y: token?.document?.y ?? 0,
         };

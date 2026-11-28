@@ -53,6 +53,7 @@ import { presenceOf, isGone, listWaits, runWaitAction, awayForMs } from "./playe
 import { setGmFocus, focusState, setFocusPart, setFocusAll, FOCUS_PARTS, FOCUS_TOOLS, toolAvailable, openTool } from "./battle-focus.js";
 
 import { deskDotClass } from "./turn-priority-ui.js";
+import { srxKeyOf, srxCarryOver, srxOpenRows, srxNeedsAutoPass } from "./srx-carry.js";
 const MODULE_ID = "fabula-ultima-companion";
 const STYLE_ID = "fud-gm-desk-style";
 const ROOT_ID = "fud-gm-desk";
@@ -1061,6 +1062,7 @@ function onWaitClick(e) {
   if (!b) return;
   e.stopPropagation();
   playUiClickSfx();
+  if (b.dataset.rxpass) { const rx = D.rx.get(b.dataset.rxpass); if (rx?.srx && !rx.closed) srxPass(rx); return; }
   if (b.dataset.cmd) { runOnHost(b.dataset.cmd).catch((err) => warn("[GmDesk] unstick failed", err)); return; }
   const kind = b.dataset.kind;
   if (kind === "unlock") { if (D.locked) toggleLock(); return; }
@@ -1090,13 +1092,32 @@ function paintUnstick() {
   const card = document.getElementById("fud-battlefield-card-root");
   const cardOpen = !!card?.querySelector(".fud-btn-confirm") && !!s?.running;
   const locked = cardOpen && card.querySelector(".fud-bf-card")?.hasAttribute("data-fud-reactions-pending");
+  // An Invoke window open on the card (to-do #22): "remote" = a player's, which
+  // only a forced Confirm can pass (their window closes with the card); "own" or
+  // mid-apply = this client's, closed or finished right here, so no Confirm.
+  const cardEl = cardOpen ? card.querySelector(".fud-bf-card") : null;
+  const invokeMode = cardEl?.getAttribute("data-fud-invoke-hud") || (cardEl?.hasAttribute("data-fud-invoke-applying") ? "applying" : null);
+  const confirmBtn = !cardOpen || locked ? ""
+    : invokeMode === "remote" ? `<span class="gmd-wb" data-cmd="confirmCardDropInvoke">Confirm, drop their Invoke</span>`
+    : invokeMode ? ""
+    : `<span class="gmd-wb" data-cmd="confirmCard">Confirm the card</span>`;
   const waits = listWaits();
+  // Reaction menus open on this desk wait on an answer too (a player's or the
+  // GM's): list them with a Pass way out (bug #17, 2026-11-28).
+  const rxOpen = srxEntries();
+  const rxLines = rxOpen.map((e) => {
+    const owner = liveOwnerOf(e.actor);
+    const who = owner && D.locked ? `${esc(owner.name)} decides` : "Waiting on you";
+    const btn = e.onPass ? `<span class="gmd-wb" data-rxpass="${esc(e.key)}">${esc(e.passLabel || "Pass")}</span>` : "";
+    return `<div class="ln"><span>${esc(e.name)} <small>${who}</small><br><small>${esc(e.label ?? "Reaction")} · ${srxOpenRows(e).length} to answer</small></span><span class="sp"></span>${btn}</div>`;
+  }).join("");
   const h = `<div class="h">What is holding the game</div>
     <div class="none">${where}</div>
     ${waits.length ? waits.map((w) => `<div class="ln"><span>${waitWho(w)} <small>${PRESENCE_LABEL[presenceOf(w.userId)] ?? "Connected"}</small><br><small>${esc(w.label)}</small></span><span class="sp"></span>${waitBtns(w)}</div>`).join("")
-      : `<div class="none">Nothing is waiting on a player.</div>`}
+      : rxOpen.length ? "" : `<div class="none">Nothing is waiting on a player.</div>`}
+    ${rxLines}
     <hr><div class="h">Force it along</div>
-    <div class="ln">${locked ? `<span class="gmd-wb" data-cmd="skipReactions">Skip open reactions</span>` : ""}${cardOpen && !locked ? `<span class="gmd-wb" data-cmd="confirmCard">Confirm the card</span>` : ""}<span class="gmd-wb" data-cmd="cancelOpp">Cancel Opportunity</span>${skipBlocked() ? "" : `<span class="gmd-wb" data-cmd="turn">Next Turn</span>`}</div>`;
+    <div class="ln">${locked ? `<span class="gmd-wb" data-cmd="skipReactions">Skip open reactions</span>` : ""}${confirmBtn}<span class="gmd-wb" data-cmd="cancelOpp">Cancel Opportunity</span>${skipBlocked() ? "" : `<span class="gmd-wb" data-cmd="turn">Next Turn</span>`}</div>`;
   if (D.unstick._h !== h) { D.unstick.innerHTML = h; D.unstick._h = h; }
 }
 
@@ -1117,6 +1138,13 @@ async function runCmd(cmd) {
     return null;
   }
   if (cmd === "confirmCard") { cardRoot?.querySelector(".fud-btn-confirm")?.click(); return null; }
+  if (cmd === "confirmCardDropInvoke") {
+    // Same as the card's GM padlock: unlock, then Confirm. Refused (by the
+    // card's own lock) if the window turned out to be this client's own.
+    cardRoot?.querySelector(".fud-bf-card")?.setAttribute("data-fud-gm-unlocked", "");
+    cardRoot?.querySelector(".fud-btn-confirm")?.click();
+    return null;
+  }
   if (cmd === "cancelOpp") {
     const n = globalThis.ONI?.OpportunitySystem?.withdrawBattleOffers?.({ reason: "cancelled from Unstick" }) ?? 0;
     ui.notifications?.info(n ? "Opportunity cancelled." : "No Opportunity is open.");
@@ -2030,15 +2058,13 @@ export function deskSpawnReaction({ key, token, candidates, onPick, onPass, labe
   // Start of conflict / round / turn reactions share ONE sectioned view with
   // the card's (user, 2026-10-23): a section per creature, Skip / Apply on each
   // reaction. A Use re-opens the creature's menu with what is left, so its
-  // record (what was applied, what was skipped) carries over from `prev`.
+  // record (what was applied, what was skipped) carries over from `prev` —
+  // ONLY for that Use re-open (srx-carry.js). A second ask landing on the same
+  // key after a Pass is a new ask and starts clean (bug #17, 2026-11-28).
   Object.assign(entry, {
     srx: true, node: srxView(), onPick, onPass: typeof onPass === "function" ? onPass : null,
     passLabel: passLabel ?? "Pass", disabled: new Map(Object.entries(disabledLabels ?? {})),
-    // The Use in flight landed if its reaction is no longer offered; one still
-    // offered was cancelled (its target pick) or aborted, and stays answerable.
-    history: prev?.srx ? [...prev.history, ...(prev.pending && !(candidates ?? []).some((c) => srxKeyOf(c) === srxKeyOf(prev.pending))
-      ? [{ c: prev.pending, status: "Applied" }] : [])] : [],
-    skipped: prev?.srx ? prev.skipped : new Set(), busy: false, pending: null,
+    ...srxCarryOver(prev, candidates), busy: false, pending: null,
   });
   _srxDone.delete(key);
   entry.rec = {
@@ -2055,6 +2081,15 @@ export function deskSpawnReaction({ key, token, candidates, onPick, onPass, labe
   paintRxCells();
   render();
   scrollRosterTo(entry.tokenId);
+  // Safety net: nothing left to Skip or Apply → its Pass is the only answer;
+  // give it rather than leave a dead entry the battle waits on forever. After
+  // this returns, so the caller has registered the record first.
+  setTimeout(() => {
+    if (D.rx.get(key) !== entry) return;
+    if (!srxNeedsAutoPass(entry, { theirs: !!liveOwnerOf(entry.actor) && D.locked })) return;
+    log(`[GmDesk] ${entry.name}: "${entry.label}" has nothing left to answer — passing it`);
+    srxPass(entry);
+  }, 0);
   return entry.rec;
 }
 // ── start of conflict / round / turn reactions: the sectioned view ──────────
@@ -2067,7 +2102,6 @@ export function deskSpawnReaction({ key, token, candidates, onPick, onPass, labe
 let _srxView = null;
 let _srxDone = new Map(); // key → a closed creature's section, kept while others still decide
 let _srxHover = null;   // "entryKey|carrier::row" whose description the detail card shows
-const srxKeyOf = (c) => `${c?.carrierUuid}::${c?.rowKey}`;
 function srxView() {
   if (_srxView) return _srxView;
   const v = document.createElement("div");
@@ -2087,10 +2121,7 @@ function srxView() {
   return v;
 }
 function srxEntries() { return D.rxOrder.map((k) => D.rx.get(k)).filter((e) => e?.srx && !e.closed); }
-// What a creature can still answer: not automatic, not unusable, not skipped.
-function srxOpenRows(e) {
-  return (e.candidates ?? []).filter((c) => c?.mode !== "on" && !e.disabled.get(srxKeyOf(c)) && !e.skipped.has(srxKeyOf(c)));
-}
+// srxOpenRows (what a creature can still answer) lives in srx-carry.js.
 function paintSrxView() {
   const v = srxView();
   let open = 0;

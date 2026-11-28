@@ -103,7 +103,10 @@ function asuraStrike(opts = {}) {
   t.landHome = t.leap + 180 + tune.jump;
   t.total = t.landHome + 1400;
   const cfg = Object.assign({
-    t, ...tune, el: EL, order: ["fire", "bolt", "ice", "air"],
+    // order = the ignite / blade sequence the review approved; strikeOrder = the DAMAGE order
+    // (Asura Strike's chainElements, strike 1 = the card's Bolt) — each cut + burst wears its
+    // strike's element (the inner prefers the planned strike's own element).
+    t, ...tune, el: EL, order: ["fire", "bolt", "ice", "air"], strikeOrder: ["bolt", "fire", "ice", "air"],
     redF: "sepia(1) saturate(9) hue-rotate(-52deg) brightness(.95)",
     casterFoot: 0.95, partyFoot: 0.97, seed: 7717, volume: 0.9,
     totalTimeoutMs: t.total + 15000,

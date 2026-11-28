@@ -13,7 +13,7 @@ import {
   canPay, payPoint, readActorBonds,
   rerollDice, applyBondBonus,
 } from "./invoke-core.js";
-import { resultLabelFor, resultClsFor, classifyStudyTierDisplay, patchStudyTierFieldset } from "../action-card.js";
+import { resultLabelFor, resultClsFor, classifyStudyTierDisplay, patchStudyTierFieldset, paintChainRangeCard } from "../action-card.js";
 
 function _getStampedCapability(ar) {
   return ar?.attacker?.invokeCapability ?? "full";
@@ -234,6 +234,10 @@ export function patchCardDom(root, newAr, invokeState) {
     if (String(newAr.kind ?? "") === "Study") {
       patchStudyTierFieldset(root, { roll, tier: newAr.tier, previousBest: newAr.previousBest ?? 0, improved: newAr.improved });
     }
+
+    // ── Random-target Chain card: the ranges go back over the rerolled strike 1
+    //    (no-op on any other card; a Bond's bonus moves the accuracy range). ──
+    paintChainRangeCard(root, undefined, { roll });
   } catch (e) {
     warn("[BD][Invoke] patchCardDom threw", e);
   }

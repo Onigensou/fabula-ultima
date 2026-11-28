@@ -35,7 +35,7 @@
 
 import { log, warn } from "./logger.js";
 import {
-  parseChainKeyword, resolveChainCount, assignStrikeTargets, createStrikeWalker, redirectSeek,
+  parseChainKeyword, resolveChainCount, assignStrikeTargets, createStrikeWalker, redirectSeek, redrawOffCard,
   breakdownForTarget, summarizeTarget, fallbackBeatMs,
   planSingleChain, singleBreakdown, isDrawnChainMode, volleyShotContext,
 } from "./chain-strikes.js";
@@ -103,9 +103,12 @@ export function strikeArFor(ar, spec, k) {
 // reaction sees the real targets. Random draws from the card's targets; pick
 // goes round-robin over them in the order they were picked. Returns the spec
 // with `strikeTargets` filled, plus the distinct set the card should keep.
-// Seek draws like random but keeps EVERY target on the card (keep: null): the
-// whole field is the storm's target, and a strike redirected at RESOLVE needs
-// the survivor's card row (buildChainPlan).
+// Every DRAWN mode (seek / random / volley) keeps EVERY target on the card
+// (keep: null): the card must not give the draw away (random-target Chain card,
+// user decision 2026-11-28 — it used to trim random / volley cards to the drawn
+// creatures), a seek strike redirected at RESOLVE needs the survivor's card row,
+// and a random / volley strike re-drawn off a Protect swap needs one too
+// (buildChainPlan). Pick still keeps only the picked creatures.
 export function drawChainTargets(spec, targetUuids, rng = Math.random) {
   if (!spec) return null;
   const draws = isDrawnChainMode(spec.mode) || spec.mode === "pick";
@@ -113,7 +116,7 @@ export function drawChainTargets(spec, targetUuids, rng = Math.random) {
   const { strikeTargets, cardTargets } = assignStrikeTargets({
     count: spec.count, mode: spec.mode, pool: targetUuids, picks: targetUuids, cardTargets: targetUuids, rng,
   });
-  return { spec: { ...spec, strikeTargets }, keep: spec.mode === "seek" ? null : cardTargets };
+  return { spec: { ...spec, strikeTargets }, keep: isDrawnChainMode(spec.mode) ? null : cardTargets };
 }
 
 // Provoked (must_include_applier) + a drawn Chain (random / seek): the card is ONE action, so the pin is
@@ -276,7 +279,7 @@ const rollLite = (roll) => (roll ? {
 // Returns plain data (safe to freeze + persist), or null when the action is not
 // a Chain that can strike (no check, negated, no damage rows).
 export async function buildChainPlan(director, ar, rng = Math.random) {
-  const spec = ar?.chain ?? null;
+  let spec = ar?.chain ?? null;
   if (!spec || !(spec.count >= 2)) return null;
   // A one-roll Chain needs no roll (an auto-hit card); strikes that each roll do.
   if (ar.negated || (!ar.roll && spec.mode !== "single")) return null;
@@ -288,9 +291,24 @@ export async function buildChainPlan(director, ar, rng = Math.random) {
   const { states, meta } = await readTargetStates(cardRows, ar);
   if (spec.mode === "single") return planOneRoll(ar, spec, cardRows, states, meta);
 
-  const strikeTargets = Array.isArray(spec.strikeTargets) && spec.strikeTargets.length === spec.count
+  let strikeTargets = Array.isArray(spec.strikeTargets) && spec.strikeTargets.length === spec.count
     ? spec.strikeTargets
     : assignStrikeTargets({ count: spec.count, mode: "same", cardTargets }).strikeTargets;
+  // Random / Volley: a strike drawn onto a creature Protect took off the card is
+  // re-drawn among the card's targets now standing (redrawOffCard); Seek does the
+  // same strike by strike below. The re-drawn lists also drive the Volley shares.
+  if (spec.mode === "random" || spec.mode === "volley") {
+    const redrawn = redrawOffCard(strikeTargets, cardTargets, (u) => {
+      const st = states.get(u);
+      return !!st && (st.noKo || st.hp > 0);
+    }, rng);
+    if (JSON.stringify(redrawn) !== JSON.stringify(strikeTargets)) {
+      const moved = redrawn.filter((l, i) => JSON.stringify(l) !== JSON.stringify(strikeTargets[i])).length;
+      log(`Chain ${spec.count} (${spec.mode}): re-drew ${moved} strike(s) aimed at a creature no longer on the card`);
+      strikeTargets = redrawn;
+      spec = { ...spec, strikeTargets };
+    }
+  }
 
   // Champion Gloves / Hot Pants read the attacker's per-turn hit tally. It is
   // only kept for Attacks (see resolveAction), and only bumped after an action

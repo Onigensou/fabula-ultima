@@ -188,6 +188,10 @@ export function ensureDrawerStyles() {
 .dhv-chip.t-warning { background: rgba(232,164,58,.2); color: #8a5512; }
 .dhv-chip.t-swap { background: rgba(179,38,30,.2); color: #8e2219; }
 .dhv-chip.t-tag { background: transparent; box-shadow: inset 0 0 0 1px rgba(122,106,85,.5); color: #6a5d4c; }
+/* "Heal hurts" (heal-warning.js, approved 2026-11-28): red, with the Zombie icon when it's the status. */
+.dhv-chip.t-healhurt { display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; background: rgba(179,38,30,.12); color: #b3261e; }
+.dhv-chip.t-healhurt.has-ic { padding-left: 3px; }
+.dhv-chip.t-healhurt img { width: 13px; height: 13px; image-rendering: pixelated; border: 0; flex: none; }
 .dhv-chip.t-mp { background: rgba(46,123,214,.14); color: #1f5aa0; }
 .dhv-chip.t-ip { background: rgba(232,164,58,.2); color: #8a5512; }
 
@@ -715,7 +719,7 @@ export function mountDockedTargets(host, { action = "Targets", onHover, onToggle
   let state = null;
   const rowHTML = (r, s) => `<div class="dhv-trow${s.focus === r.uuid ? " is-cur" : ""}${s.selected.has(r.uuid) ? " is-sel" : ""}${r.excluded ? " is-excl" : ""}${s.locked ? " is-lock" : ""}" data-uuid="${escapeHtml(r.uuid)}">`
     + `<span class="dhv-dia"></span>${r.img ? `<img class="dhv-face" src="${escapeHtml(r.img)}" alt="">` : `<span class="dhv-face"></span>`}`
-    + `<span class="nm">${escapeHtml(r.name)}${r.you ? " (you)" : ""}${r.status ? ` <span class="dhv-chip t-tag">${escapeHtml(r.status)}</span>` : ""}</span>`
+    + `<span class="nm">${escapeHtml(r.name)}${r.you ? " (you)" : ""}${r.status ? ` <span class="dhv-chip ${escapeHtml(r.statusCls ?? "t-tag")}${r.statusIcon ? " has-ic" : ""}">${r.statusIcon ? `<img src="${escapeHtml(r.statusIcon)}" alt="">` : ""}${escapeHtml(r.status)}</span>` : ""}</span>`
     + (r.excluded ? `<span class="why">${escapeHtml(r.excluded)}</span>`
       : r.hp ? `<span class="dhv-thp"><span>${r.hp.v} / ${r.hp.m}</span>${dhvHpBar(r.hp)}</span>` : `<span></span>`)
     + `</div>`;

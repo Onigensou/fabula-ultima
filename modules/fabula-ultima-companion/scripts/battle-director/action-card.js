@@ -34,8 +34,9 @@ import { resourceLabel, RESOURCE_REGISTRY } from "./resources.js";
 import { plateSettled } from "./director-player-hud.js";
 import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
+import { formatRange, chainAccuracyRange, isDrawnChainPreviewSpec, extendChainPreview } from "./chain-preview.js";
 import { lookupTerm, lookupLinkTerm } from "./keyword-registry.js";
-import { absorbKeywordValue, normalizeKeywordLabel } from "./keyword-value.js";
+import { absorbKeywordValue, absorbKeywordLinkTail, normalizeKeywordLabel } from "./keyword-value.js";
 import { DAMAGE as DAMAGE_TYPE_STYLE } from "../linked-text/lt-terms.js";
 import { formatHitChance, isConcealedRoll } from "./check.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
@@ -52,6 +53,7 @@ import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 import { simInvoke } from "./sim/invoke-brain.js";
 import { hotUrl } from "./hot-reload.js";
+import { readConfirmLock, setInvokeApplying, INVOKE_LOCK_LABEL } from "./invoke/invoke-confirm-lock.js";
 import { isMassiveJoinRowKey } from "./massive-keyword.js";
 
 // Resolve which active player client decides for the given actor doc. Returns
@@ -838,6 +840,8 @@ export function ensureStyles() {
     .fud-bf-card .fud-kw-term.is-keyword .fud-kw-label {
       text-transform: uppercase; letter-spacing: .3px; font-size: 12px;
     }
+    /* "Transform 【Zarg's Bow - Light】": the lead-in's Item sits after the label, as written. */
+    .fud-bf-card .fud-kw-term.is-keyword .fud-kw-detail { margin-left: 4px; font-size: 12px; font-weight: 600; color: #4a3a22; }
     .fud-bf-card .fud-kw-term .fud-kw-bullet {
       color: #c98a2a; font-size: 9px; line-height: 1;
       transform: translateY(-1px); flex-shrink: 0;
@@ -934,6 +938,35 @@ export function ensureStyles() {
       text-align: right;
     }
 
+    /* Random-target Chain card (seek / random / volley — paintChainRangeCard).
+       Values from the approved mockup "Random-target Chain HUD", round 7. The
+       Damage row keeps today's layout (range centred, element word right); the
+       "×N hit" badge, in the +HR pill's style, sits on the box's bottom-right
+       border. Each Result row shows its own range, blinking slowly. */
+    .fud-bf-card fieldset.fud-bf-section.fud-bf-dmg.is-chain-range { position: relative; margin-bottom: 14px; }
+    .fud-bf-card .fud-bf-dmg.is-chain-range .fud-bf-chain-hits {
+      position: absolute; right: 10px; bottom: -10px; z-index: 2; white-space: nowrap;
+      font-size: 10.5px; font-weight: 800; font-style: normal;
+      padding: 2px 6px; border-radius: 999px;
+      border: 1px solid #cfa057; color: #8a4b22; background: #f7ecd9;
+    }
+    .fud-bf-card .fud-bf-dmg-element.is-multi { cursor: help; }
+    .fud-bf-card .fud-bf-acc.is-chain-range .total { white-space: nowrap; }
+    .fud-bf-card .fud-bf-target-row .t-result.chain-range {
+      font-weight: 900;
+      animation: fud-chain-swing var(--fud-chain-blink, 1.15s) ease-in-out infinite alternate;
+    }
+    .fud-bf-card .fud-bf-target-row .t-result.chain-range .t-num { font-size: 18px; }
+    .fud-bf-card .fud-bf-target-row .t-result.chain-range small {
+      display: block; font-size: 9.5px; font-weight: 800; letter-spacing: 0.3px;
+      text-transform: uppercase; color: #2a8a3a; text-shadow: none; margin-top: 1px;
+    }
+    .fud-bf-card .fud-bf-target-row .t-result.chain-range small.im { color: #5a6a85; }
+    @keyframes fud-chain-swing { from { opacity: 1; } to { opacity: 0.3; } }
+    @media (prefers-reduced-motion: reduce) {
+      .fud-bf-card .fud-bf-target-row .t-result.chain-range { animation: none; opacity: 0.75; }
+    }
+
     /* Running-number direction cues — set by animateCardNumber() after a
        reaction bumps/reduces Accuracy or Damage. An INCREASE rises into place
        with a bright over-shoot; a DECREASE drops in desaturated and settles
@@ -1017,6 +1050,21 @@ export function ensureStyles() {
     .fud-bf-card .fud-bf-target-row .t-result.heal       { color: #2a8a3a; font-weight: 800; text-shadow: 0 0 6px rgba(42,138,58,0.25); }
     .fud-bf-card .fud-bf-target-row .t-result.restore-mp { color: #1e6cff; font-weight: 800; text-shadow: 0 0 6px rgba(30,108,255,0.25); }
     .fud-bf-card .fud-bf-target-row .t-result.shield     { color: #1f8a9e; font-weight: 800; text-shadow: 0 0 6px rgba(31,138,158,0.25); }
+    /* A heal that lands as DAMAGE (Zombie / Undead / False Idol), approved mockup 2026-11-28:
+       red like a damage result, small verb + large number, a reason pill, a red row wash. */
+    .fud-bf-card .fud-bf-target-row .t-result.rev        { color: #b40000; font-weight: 900; }
+    .fud-bf-card .fud-bf-target-row .t-result.rev .vb    { font-size: 10.5px; letter-spacing: .3px; }
+    /* The wash runs to the fieldset border (its 9px side padding): the list is a scroll box
+       (overflow-y auto), so it takes the 9px itself and the rows bleed into it, no scrollbar. */
+    .fud-bf-card .fud-bf-target-list:has(> .is-heal-rev) { margin: 0 -9px; padding: 0 9px; }
+    .fud-bf-card .fud-bf-target-row.is-heal-rev { background: linear-gradient(90deg, rgba(180,0,0,.1), rgba(180,0,0,.03)); box-shadow: inset 3px 0 0 #b40000;
+      margin: 0 -9px; padding-left: 9px; padding-right: 9px; }
+    .fud-bf-card .fud-bf-target-row.is-heal-rev .t-def { opacity: 1; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .fud-bf-card .fud-bf-target-row.is-heal-rev .t-def .t-hp { opacity: .6; }
+    .fud-bf-card .t-revpill { display: inline-flex; align-items: center; gap: 3px; font-size: 9.5px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase;
+      padding: 1px 6px 1px 2px; border-radius: 999px; border: 1px solid #8e2a8a; color: #6e1f66; background: rgba(154,59,143,.12); line-height: 1.2; }
+    .fud-bf-card .t-revpill img { width: 13px; height: 13px; border-radius: 3px; image-rendering: pixelated; border: 0; }
+    .fud-bf-card .t-revpill.ud { border-color: #5a5a5a; color: #3a3a3a; background: rgba(58,50,40,.08); padding-left: 6px; }
     .fud-bf-card .fud-bf-target-row .t-affinity {
       display: inline-flex; align-items: center;
       margin-left: 6px;
@@ -1262,6 +1310,27 @@ export function ensureStyles() {
       color: #4a2f87;
       pointer-events: none;
     }
+    /* Invoke window open (to-do #22): same lock, its own label. Declared after
+       the reactions rule so its label wins when both apply. data-fud-invoke-hud
+       follows invoke-hud's singleton ("own" = this client's HUD, "remote" = a
+       read-only spectator HUD); data-fud-invoke-applying covers the moment
+       between the pick and the card patch. See invoke/invoke-confirm-lock.js. */
+    .fud-bf-card:is([data-fud-invoke-hud], [data-fud-invoke-applying]) .fud-btn-confirm {
+      opacity: 0.45 !important;
+      pointer-events: none !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.4);
+      color: transparent !important;
+    }
+    .fud-bf-card:is([data-fud-invoke-hud], [data-fud-invoke-applying]) .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+      content: "${INVOKE_LOCK_LABEL}";
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; font-style: italic;
+      letter-spacing: 0.3px; text-transform: none;
+      color: #4a2f87;
+      pointer-events: none;
+    }
     /* GM lock toggle on Confirm (user, 2026-11-01). The pending counter has
        drifted out of step with the pills in live play and left the GM with no
        way forward. Locked (the default on every card) works as before; the GM
@@ -1272,7 +1341,7 @@ export function ensureStyles() {
        click. Both the toggle and the unlock need body.fud-bf-gm, which only a
        GM client sets, so neither can reach a player through broadcast HTML. */
     .fud-bf-card .fud-gm-confirm-lock { display: none; }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending] .fud-gm-confirm-lock {
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"]) .fud-gm-confirm-lock {
       display: flex; align-items: center; justify-content: center;
       position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
       z-index: 2;
@@ -1285,11 +1354,11 @@ export function ensureStyles() {
       cursor: pointer;
       box-shadow: none;
     }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending] .fud-gm-confirm-lock:hover { background: #fff; }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending][data-fud-gm-unlocked] .fud-gm-confirm-lock {
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"]) .fud-gm-confirm-lock:hover { background: #fff; }
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"])[data-fud-gm-unlocked] .fud-gm-confirm-lock {
       border-color: #a8662a; color: #a8662a;
     }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending][data-fud-gm-unlocked] .fud-btn-confirm {
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"])[data-fud-gm-unlocked] .fud-btn-confirm {
       opacity: 1 !important;
       pointer-events: auto !important;
       cursor: pointer !important;
@@ -1301,11 +1370,37 @@ export function ensureStyles() {
         0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset,
         0 0 0 2px rgba(200, 110, 40, 0.55);
     }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending][data-fud-gm-unlocked] .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"])[data-fud-gm-unlocked] .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
       content: "Confirm \\00B7  skip unanswered";
       font-size: 11.5px;
       font-style: normal;
       color: #4a2410;
+    }
+    /* The padlock also passes a REMOTE invoke (someone else's window is open:
+       an AFK player must not stall the table); confirming drops their invoke.
+       Never this client's own window, nor an invoke mid-apply: those end on
+       this client within moments, so they stay hard-locked and hide the
+       padlock. Higher specificity than the unlocked rules above. */
+    body.fud-bf-gm .fud-bf-card[data-fud-invoke-hud="remote"][data-fud-gm-unlocked] .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+      content: "Confirm \\00B7  drop their Invoke";
+    }
+    body.fud-bf-gm .fud-bf-card:is([data-fud-invoke-hud="own"], [data-fud-invoke-applying]) .fud-gm-confirm-lock { display: none !important; }
+    body.fud-bf-gm .fud-bf-card[data-fud-gm-unlocked]:is([data-fud-invoke-hud="own"], [data-fud-invoke-applying]) .fud-btn-confirm {
+      opacity: 0.45 !important;
+      pointer-events: none !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.4);
+      /* back to the plain Confirm look (base .fud-btn / .fud-btn-confirm) */
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
+      border-color: var(--fud-stroke, #7a6a55);
+      box-shadow:
+        0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)),
+        0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
+      color: transparent !important;
+    }
+    body.fud-bf-gm .fud-bf-card[data-fud-gm-unlocked]:is([data-fud-invoke-hud="own"], [data-fud-invoke-applying]) .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+      content: "${INVOKE_LOCK_LABEL}";
+      font-size: 13px; font-style: italic; color: #4a2f87;
     }
     /* Mode footer inside the reaction tooltip body — small chip-like
        hint so the player sees whether the pill is auto / ask / off. */
@@ -2967,10 +3062,14 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
     // Render an explicit "no heal" label so the card doesn't show a
     // green number that contradicts what actually happens.
     if (r.vismagusSuppressed) return "NO HEAL · VISMAGUS";
-    const amt = Math.max(0, r.grantAmount);
     // Undead / Zombie heal reversal (A1): the heal lands as damage. Checked
-    // before the FULL test — a full-HP undead still takes the hit.
-    if (r.healReversed) return `UNDEAD · HIT <span class="t-num">${amt}</span>`;
+    // before the FULL test — a full-HP undead still takes the hit. Printed like a
+    // damage result, "DAMAGE 40" in red (approved mockup 2026-11-28); the reason
+    // (Zombie / Undead) is the pill beside the HP. A natural Undead the party hasn't
+    // Studied (healWarnHidden) previews as a normal heal: healMaskAmount.
+    const revShown = isHealRevShown(r);
+    const amt = Math.max(0, (r.healReversed && !revShown && typeof r.healMaskAmount === "number") ? r.healMaskAmount : r.grantAmount);
+    if (revShown) return `<span class="vb">DAMAGE</span> <span class="t-num">${amt}</span>`;
     // Target already at cap → the restore lands nothing. Say so explicitly
     // instead of a green number that contradicts what happens (shields have no
     // cap, so they always show the amount).
@@ -2993,7 +3092,16 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
   // Damage skill — HIT/MISS/AB/IM/NO-EFFECT logic, with affinity baked into
   // the verb so the result line reads the outcome on its own (VU → "WEAK",
   // RS → "RESIST") without relying on the separate affinity pill.
-  if (!r.hit) return "MISS";
+  // A Pierce miss is not a MISS: it still deals half (action-profile.js
+  // pierceMiss), so it reads "PIERCE ½ n" — after affinity, like a hit.
+  if (!r.hit && !r.pierceMiss) return "MISS";
+  if (!r.hit && r.pierceMiss) {
+    const n = Math.max(0, Number(r.damage) || 0);
+    if (r.affinity === "AB") return `ABSORB <span class="t-num">${n}</span>`;
+    if (r.affinity === "IM") return "IMMUNED";
+    if (n <= 0) return "NO EFFECT";
+    return `PIERCE ½ <span class="t-num">${n}</span>${r.resource === "mp" ? ` <span class="t-unit">MP</span>` : ""}`;
+  }
   // Incoming damage NULLIFIED by a defender reaction (Ninja Log's adjust_damage
   // → 0). This is a HIT that deals 0 — NOT a miss (on-hit riders still apply) —
   // so credit the soak instead of the generic "NO EFFECT" / affinity verb, and
@@ -3016,17 +3124,41 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
   return `HIT ${big(r.damage)}${unit}`;
 }
 
+// A reversed heal the card says out loud (Zombie status, an effect, or a Studied Undead).
+export function isHealRevShown(r) {
+  return !!(r && r.healReversed && typeof r.grantAmount === "number" && !r.vismagusSuppressed && !r.healWarnHidden);
+}
+const HEAL_REV_ZOMBIE_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png";
+function healRevIcon() { return lookupTerm("Zombie")?.icon || HEAL_REV_ZOMBIE_ICON; }
+// The reason pill on a shown reversed-heal row: Zombie (the status, with its icon) or Undead.
+export function healRevPillHTML(r) {
+  if (!isHealRevShown(r)) return "";
+  if (r.healReversedReason === "zombie") return `<span class="t-revpill"><img src="${escapeHtml(healRevIcon())}" alt="">Zombie</span>`;
+  if (r.healReversedReason === "effect") return "";
+  return `<span class="t-revpill ud">Undead</span>`;
+}
+// No Result summary line under a reversed heal: the red DAMAGE row says it
+// (user 2026-11-28, "over-clarification").
+
 export function resultClsFor(r) {
   // Fickle: one neutral hue for every row. The normal classes are outcome
   // colours (muted for a miss, gold for vulnerable) — any of them would read the
   // result off the card without a word being printed.
   if (typeof r.hitChance === "number" && typeof r.grantAmount !== "number") return "fickle";
-  if (!r.hit) return "miss";
+  if (!r.hit && !r.pierceMiss) return "miss";
+  // A Pierce miss lands half: coloured by its affinity like a hit, never as a crit.
+  if (!r.hit) {
+    if (r.affinity === "AB") return "absorb";
+    if (r.affinity === "IM" || !(Number(r.damage) > 0)) return "miss";
+    if (r.affinity === "VU") return "weak";
+    if (r.affinity === "RS") return "resist";
+    return "hit";
+  }
   // Nullified hit (Ninja Log) — muted, same as IM/miss, since 0 landed.
   if (r.damageOverride && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) return "miss";
   if (typeof r.grantAmount === "number") {
     if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
-    if (r.healReversed) return "hit";        // Undead / Zombie: the heal hurts
+    if (isHealRevShown(r)) return "rev";     // Undead / Zombie: the heal hurts (red, like damage)
     if (r.grantResource === "mp")     return "restore-mp";
     if (r.grantResource === "shield") return "shield";
     return "heal";
@@ -3220,13 +3352,14 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     // through this same pipeline so a multi-target redirect shows one row per
     // covered ally, all reading as the reactor.
     const rf = r.redirectedFrom;
-    const rowClass = rf ? "fud-bf-target-row is-redirected" : "fud-bf-target-row";
+    const revPill = healRevPillHTML(r);
+    const rowClass = (rf ? "fud-bf-target-row is-redirected" : "fud-bf-target-row") + (isHealRevShown(r) ? " is-heal-rev" : "");
     const redirectMarker = rf
       ? ` <small class="t-redirect-from" title="Redirected from ${escapeHtml(String(rf.name ?? "?"))}">🔄</small>`
       : "";
     return `<div class="${rowClass}"${rowDataAttrs}${tipAttrs}>
       <span class="t-name">${escapeHtml(r.name)}${redirectMarker}${aff ? ` ${aff}` : ""}</span>
-      <span class="t-def">${defLabel}</span>
+      <span class="t-def">${isHealRevShown(r) ? `<span class="t-hp">${defLabel}</span>${revPill}` : defLabel}</span>
       <span class="t-result ${cls}">${label}</span>
     </div>`;
   }).join("");
@@ -3280,6 +3413,8 @@ function appendTargetRow(root, r, kind, payload) {
         + `<span class="t-result ${cls}">${label}</span>`;
     }
     list.appendChild(div);
+    // Random-target Chain card: the new row reads as a range, never a verdict.
+    paintChainRangeCard(root);
     // REPLACE these arrays; never push into them. They come straight off the
     // action result, which `freezeActionResult` deep-freezes — so `push` throws
     // in strict mode. The throw was swallowed by the catch below, AFTER the DOM
@@ -3672,9 +3807,21 @@ function projectRowsForWire(rows) {
 // real click but not a scripted element.click(), which confirmed a locked
 // card in a live run. Locked = third-party reactions open, unless this is a
 // GM who unlocked the card.
+// Also locked while an Invoke window is open or an invoke is still being
+// applied (to-do #22): invoke/invoke-confirm-lock.js holds the one decision.
+// Close whatever invoke window is up on this client when its card goes away
+// (confirm, cancel, despawn, battle end, card replace). Nothing it guarded
+// survives the card, so it must not linger either.
+function dismissInvokeHudForCard() {
+  import("./invoke/invoke-hud.js").then((hud) => {
+    const t = hud.getActiveType();
+    if (t === "trait" || t === "bond") hud.dismissActive();
+    else if (t === "spectator") hud.dismissSpectator({ cancelled: true });
+  }).catch(() => {});
+}
+
 function isConfirmLocked(cardEl) {
-  if (!cardEl?.hasAttribute("data-fud-reactions-pending")) return false;
-  return !(game.user?.isGM && cardEl.hasAttribute("data-fud-gm-unlocked"));
+  return readConfirmLock(cardEl, { isGM: !!game.user?.isGM }).locked;
 }
 
 export function mountGmConfirmLock(scopeEl) {
@@ -3689,8 +3836,8 @@ export function mountGmConfirmLock(scopeEl) {
     const unlocked = card.hasAttribute("data-fud-gm-unlocked");
     btn.innerHTML = `<i class="fas ${unlocked ? "fa-lock-open" : "fa-lock"}"></i>`;
     btn.title = unlocked
-      ? "Confirm unlocked: unanswered reactions are skipped. Click to lock."
-      : "Confirm waits for reactions. Click to unlock it.";
+      ? "Confirm unlocked: unanswered reactions are skipped, and an Invoke still open on a player's screen is dropped. Click to lock."
+      : "Confirm waits for reactions and for a player's open Invoke. Click to unlock it.";
     btn.setAttribute("aria-pressed", unlocked ? "true" : "false");
   };
   btn.addEventListener("click", (ev) => {
@@ -3845,7 +3992,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
           // (WEAK / RESIST / NO EFFECT / HEALS) stay in sync everywhere.
           const shim = {
             hit: r.newHit, crit: r.newCrit, affinity: r.newAffinity,
-            damage: r.newDamage, resource: r.resource,
+            damage: r.newDamage, resource: r.resource, pierceMiss: !!r.newPierceMiss,
             ...(rConcealed ? { hitChance: r.newHitChance } : {}),
           };
           const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
@@ -3897,7 +4044,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     // Verdict — re-derive (keep it authoritative alongside the DEF/hover).
     const resultSpan = rowEl.querySelector(".t-result");
     if (resultSpan) {
-      const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage,
+      const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage, pierceMiss: !!d.pierceMiss,
         ...(dConcealed ? { hitChance: d.hitChance } : {}) };
       resultSpan.className = `t-result ${resultClsFor(shim)}`;
       resultSpan.innerHTML = resultLabelFor(shim);
@@ -4346,6 +4493,10 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     acc?.classList?.toggle("is-gm-edited", !!delta.gmRollEdited);
     dmg?.classList?.toggle("is-gm-edited", !!delta.gmDamageEdited);
   }
+  // Random-target Chain card LAST among the paints: every section above writes
+  // strike 1's verdict / number back, and this puts the ranges over them. A
+  // delta that priced a creature the card just gained carries the grown preview.
+  paintChainRangeCard(rootEl, delta.chainPreview ?? undefined, { roll: delta.accuracyRoll ?? null });
   // Re-fit last: a delta can add a target row, inject a reaction pill or rebuild
   // the whole target surface, any of which changes what the growing regions need.
   // Runs on the GM card and on every mirror, since both come through here.
@@ -5203,7 +5354,8 @@ export function buildItemCard({ attacker, attackerActor, itemCandidates, ip }) {
     const isCreate = c.mode === "create";
     const cost = isCreate ? c.ipCost : null;
     const qty  = !isCreate ? (c.isUnique ? "∞" : (c.quantity ?? 0)) : null;
-    const disabled = isCreate && cost > curIp;
+    // "Out of battle only" (to-do #13) greys the row like an unaffordable recipe.
+    const disabled = (isCreate && cost > curIp) || !!c.outOfBattleOnly;
     const key = isCreate ? c.key : c.id;
     const desc = describeCandidateForTooltip(c);
     const descAttr = desc
@@ -5618,11 +5770,15 @@ function chipIconHTML(icon) {
 // the SAME keyword chips this card does — they carry the shared `fud-kw-term`
 // styling and tooltip wiring, so a chip looks and behaves identically wherever
 // it appears. Pure render, no behaviour change for BD.
-export function keywordChipHTML({ key, label, icon }) {
+export function keywordChipHTML({ key, label, icon, detail = null }) {
+  // `detail` = the Item a keyword lead-in names ("Transform 【Zarg's Bow - Light】"),
+  // shown as written after the label; brackets added when the text has none.
+  const d = String(detail ?? "").trim();
+  const detailHTML = d ? `<span class="fud-kw-detail">${escapeHtml(d.startsWith("【") ? d : `【${d}】`)}</span>` : "";
   return `<span class="fud-kw-term is-keyword" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}">`
     + `<span class="fud-kw-bullet" aria-hidden="true">◆</span>`
     + `${chipIconHTML(icon)}`
-    + `<span class="fud-kw-label">${escapeHtml(label)}</span></span>`;
+    + `<span class="fud-kw-label">${escapeHtml(label)}</span>${detailHTML}</span>`;
 }
 
 // Status term — icon + bold/underline label, inline in the prose.
@@ -5687,6 +5843,27 @@ export function parseEffectDescription(html) {
       // A keyword INSIDE a sentence ("Generates no Resonance this turn") still gets its badge (unchanged), but the word
       // also stays in the prose as a clickable term: removing the anchor left a hole in the sentence. A keyword that IS
       // its line ("Chain 2", "Unleash") is lifted as before.
+      //
+      // A keyword that OPENS its line with a value or an Item after it is a lead-in, not
+      // prose — checked FIRST, or the inline test (which sees the words after it) keeps the
+      // keyword in the body and the card shows it twice (user 2026-11-28):
+      //   "Chain 3: call down three bolts…"      → chip CHAIN 3, body "Call down three bolts…"
+      //   "Transform 【Zarg's Bow - Light】"      → chip TRANSFORM 【Zarg's Bow - Light】, line gone
+      if (entry?.kind === "keyword") {
+        const key = entry.key ?? uuid;
+        const value = absorbKeywordValue(a, root);
+        const detail = value ? null : absorbKeywordLinkTail(a, root);
+        if (value || detail) {
+          const chipLabel = value ? `${label} ${value}` : normalizeKeywordLabel(label);
+          const dedup = `${key}|${chipLabel}|${detail ?? ""}`;
+          if (!seenKw.has(dedup)) {
+            seenKw.add(dedup);
+            keywords.push({ key, label: chipLabel, icon: entry.icon ?? null, ...(detail ? { detail } : {}) });
+          }
+          a.remove();
+          continue;
+        }
+      }
       if (entry?.kind === "keyword" && isInlineKeyword(a)) {
         const key = entry.key ?? uuid, chipLabel = normalizeKeywordLabel(label), dedup = `${key}|${chipLabel}`;
         if (!seenKw.has(dedup)) { seenKw.add(dedup); keywords.push({ key, label: chipLabel, icon: entry.icon ?? null }); }
@@ -5735,6 +5912,10 @@ export function parseEffectDescription(html) {
     }
     for (const ul of Array.from(root.querySelectorAll("ul, ol"))) {
       if (!ul.querySelector("li")) ul.remove();
+    }
+    // A lead-in line lifted whole (keyword + Item) leaves an empty <p>.
+    for (const p of Array.from(root.querySelectorAll("p"))) {
+      if (!p.textContent.replace(/[\s ]/g, "") && !p.querySelector("img, .fud-bf-effect-chip, .fud-kw-term")) p.remove();
     }
 
     const bodyHtml = root.innerHTML.trim();
@@ -5919,7 +6100,10 @@ function rerenderActionCardBody(root, kind, payload) {
   }
   if (!card?.body) return null;
   bodyEl.innerHTML = card.body;
-  return card.body;
+  // The body came back as the builders draw it: re-apply the random-target
+  // Chain ranges (no-op for any other card).
+  paintChainRangeCard(root, undefined, { roll: payload?.roll ?? null });
+  return bodyEl.innerHTML;
 }
 
 // Single source of truth for the kind→builder dispatch. Shared by the spawn
@@ -5965,6 +6149,9 @@ const ACTION_CARD_RENDER_KEYS = [
   "attackMode", "passIndex", "totalPasses",
   // Chain N (chain-plan.js): { count, mode, strikeTargets? } — the header badge.
   "chain",
+  // Random-target Chain card (chain-preview.js): the ranges a seek / random /
+  // volley Chain shows instead of strike 1's verdict. Plain data.
+  "chainPreview",
   // Guard / Study / Hinder / Item:
   "coverTarget", "target", "tier", "previousBest", "improved", "dl", "success",
   "itemCandidates", "ip",
@@ -6123,6 +6310,8 @@ export function projectActionResultForRender(ar) {
         tokenUuid: r.tokenUuid ?? null,
         name: r.name ?? null,
         hit: r.hit, crit: r.crit, isCrit: r.isCrit,
+        // A Pierce miss deals half; without this the mirror's repaint reads MISS.
+        pierceMiss: !!r.pierceMiss,
         damage: r.damage, affinity: r.affinity ?? null,
         resource: r.resource ?? null,
         // Fickle: without this the mirror's repaint calls resultLabelFor with no
@@ -6138,6 +6327,9 @@ export function projectActionResultForRender(ar) {
         resourceMax: r.resourceMax ?? null,
         vismagusSuppressed: r.vismagusSuppressed ?? null,
         healReversed: r.healReversed ?? null,
+        healReversedReason: r.healReversedReason ?? null,
+        healWarnHidden: r.healWarnHidden ?? null,
+        healMaskAmount: r.healMaskAmount ?? null,
         damageOverride: r.damageOverride
           ? { from: r.damageOverride.from ?? null, to: r.damageOverride.to ?? null }
           : null,
@@ -7498,6 +7690,9 @@ export function fitActionCardToViewport(rootEl) {
     ? rootEl
     : rootEl?.querySelector?.(".fud-bf-card");
   if (!card) return;
+  // The random-target Chain card's range font needs layout, so it fits here —
+  // the one call every client makes once the card is in the document.
+  fitChainRangeDamage(card);
   try {
     const regions = [
       card.querySelector(".fud-bf-target-list"),
@@ -7632,7 +7827,11 @@ function chainBulletHTML(chain, targets) {
     let tip = chain.mode === "volley"
       ? `Chain ${n} Volley: ${n} shots on one card — each rolls its own Accuracy Check; damage bonuses are shared across the shots.`
       : `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
-    if (Array.isArray(chain.strikeTargets) && chain.strikeTargets.length) {
+    // A drawn Chain (seek / random / volley) never names its picks: who each
+    // strike lands on is the draw, decided on Confirm (random-target Chain card).
+    if (isDrawnChainPreviewSpec(chain)) {
+      if (chain.mode === "seek") tip += " A strike on a creature already at 0 HP seeks another target.";
+    } else if (Array.isArray(chain.strikeTargets) && chain.strikeTargets.length) {
       const nameOf = new Map((Array.isArray(targets) ? targets : []).map((t) => [t?.tokenUuid, t?.name ?? "?"]));
       const counts = new Map();
       for (const list of chain.strikeTargets) for (const u of list ?? []) counts.set(u, (counts.get(u) ?? 0) + 1);
@@ -7655,6 +7854,186 @@ function withChainBullet(subtitle, chain, targets) {
     return `${s.slice(0, -6)}<span class="dot">•</span>${bullet}</div>`;
   }
   return `${s}<div class="fud-bf-subtitle">${bullet}</div>`;
+}
+
+// ── Random-target Chain card ─────────────────────────────────────────────────
+// A Chain whose strikes draw their targets (seek / random / volley) shows the
+// RANGES chain-preview.js priced at COMPUTE instead of strike 1's roll and
+// verdict (approved mockup "Random-target Chain HUD", round 7, 2026-11-28):
+//   Accuracy — the dice-and-bonus range; the crit / fumble note in the hover.
+//   Damage   — one strike's range, centred where today's number sits; the
+//              element word on the right ("Multi-Type" + hover for mixed
+//              elements); no +HR pill; "×N hit" on the box's bottom-right border.
+//   Rows     — every card target keeps its row and shows its own range in the
+//              action's element colour, blinking slowly. No HIT / MISS.
+// It is a PAINT over the card the builders drew, so every path that repaints the
+// card (the mutation delta, an Invoke, a body re-render, every mirror) calls it
+// last and the ranges survive. The preview rides on the card element itself
+// (data-fud-chain-preview), so a repaint needs nothing but the card. After
+// Confirm the card closes; the strike reveal is unchanged.
+const CHAIN_PREVIEW_ATTR = "data-fud-chain-preview";
+const CHAIN_MULTI_INK = { color: "#3a3228", glow: "rgba(58,50,40,0.22)" };
+
+function chainPreviewColour(preview) {
+  if (preview?.mixed) return CHAIN_MULTI_INK;
+  const el = String(preview?.element ?? "physical").toLowerCase();
+  return { color: ELEMENT_COLOR[el] ?? ELEMENT_COLOR.physical, glow: ELEMENT_GLOW[el] ?? ELEMENT_GLOW.physical };
+}
+
+// Swap an element for a fresh copy, so a running-number tween started on the old
+// one (animateCardNumber keeps writing frames to the node it was given) can never
+// write a single number over the range painted here.
+function freshNode(el) {
+  if (!el) return el;
+  const copy = el.cloneNode(true);
+  copy.classList.remove("fud-num-up", "fud-num-down");
+  el.replaceWith(copy);
+  return copy;
+}
+
+// The range font steps down from 30 px (never below 16) while it would come
+// within 6 px of the element word. Needs layout, so it runs once the card is in
+// the document (fitActionCardToViewport calls it on every client).
+export function fitChainRangeDamage(rootEl) {
+  try {
+    const scope = rootEl?.querySelectorAll ? rootEl : null;
+    if (!scope) return;
+    const sets = [...(scope.matches?.("fieldset.fud-bf-dmg.is-chain-range") ? [scope] : []),
+      ...scope.querySelectorAll("fieldset.fud-bf-dmg.is-chain-range")];
+    for (const fs of sets) {
+      const num = fs.querySelector(".fud-bf-dmg-number"), del = fs.querySelector(".fud-bf-dmg-element");
+      if (!num || !del || !num.isConnected) continue;
+      let size = 30;
+      num.style.fontSize = `${size}px`;
+      while (size > 16 && num.getBoundingClientRect().right + 6 > del.getBoundingClientRect().left) {
+        size -= 1;
+        num.style.fontSize = `${size}px`;
+      }
+      num.dataset.fudFit = String(size);
+    }
+  } catch (e) { warn("fitChainRangeDamage threw", e); }
+}
+
+// Paint (or re-paint) the random-target Chain card on `rootEl` (the root, a
+// mirror wrapper or the card). `preview` undefined = the one already on the card.
+// `roll` (optional) = the current roll, so a Bond's bonus moves the accuracy range.
+export function paintChainRangeCard(rootEl, preview = undefined, { roll = null } = {}) {
+  const card = rootEl?.classList?.contains?.("fud-bf-card") ? rootEl : rootEl?.querySelector?.(".fud-bf-card");
+  if (!card) return;
+  try {
+    if (preview === undefined) {
+      try { preview = JSON.parse(card.getAttribute(CHAIN_PREVIEW_ATTR) || "null"); } catch { preview = null; }
+    } else if (preview) {
+      card.setAttribute(CHAIN_PREVIEW_ATTR, JSON.stringify(preview));
+    }
+    if (!preview || preview.v !== 1) return;
+    const col = chainPreviewColour(preview);
+    const strikeNoun = preview.mode === "volley" ? "shot" : "strike";
+
+    // ── Accuracy: the range the dice can make ─────────────────────────────
+    const accDiv = card.querySelector(".fud-bf-acc");
+    if (accDiv) {
+      const acc = chainAccuracyRange(roll) ?? preview.accuracy ?? null;
+      accDiv.classList.remove("is-crit", "is-fumble");
+      accDiv.classList.add("is-chain-range");
+      for (const el of accDiv.querySelectorAll(".die-result, .float-banner, .fud-bf-opportunity")) el.remove();
+      const dice = [...accDiv.querySelectorAll(".die-block")].map((b) => ({
+        attr: b.querySelector(".attr")?.textContent?.trim() ?? "", size: b.querySelector(".die-size")?.textContent?.trim() ?? "",
+      }));
+      const bonusText = accDiv.querySelector(".fud-bf-acc-row .bonus")?.textContent?.trim() ?? "";
+      const note = `Each ${strikeNoun} rolls its own. Any of them can be a critical (matching dice, 6 or more) or a fumble (1 + 1).`;
+      const tip = [
+        dice.map((d) => `<b>${escapeHtml(d.attr)}:</b> 1${escapeHtml(d.size)}`).join(" &nbsp; "),
+        bonusText ? `<b>Check Bonus:</b> ${escapeHtml(bonusText)}` : "",
+        acc ? `<b>Possible total:</b> <b>${acc.min}</b> to <b>${acc.max}</b>` : "",
+        note,
+      ].filter(Boolean).map((l) => `<p>${l}</p>`).join("");
+      let total = accDiv.querySelector(".fud-bf-acc-row .total");
+      if (total && acc) {
+        total = freshNode(total);
+        total.textContent = formatRange(acc.min, acc.max);
+        total.setAttribute("data-fud-equip-desc", `<p>${note}</p>`);
+        total.setAttribute("data-fud-equip-desc-name", "Accuracy Check");
+        total.style.cursor = "help";
+      }
+      const accFs = accDiv.closest("fieldset");
+      if (accFs) accFs.setAttribute("data-fud-equip-desc", tip);
+    }
+
+    // ── Damage: one strike's range, today's row ───────────────────────────
+    const dmgFs = card.querySelector("fieldset.fud-bf-dmg");
+    if (dmgFs && preview.damage) {
+      dmgFs.classList.add("is-chain-range");
+      let num = dmgFs.querySelector(".fud-bf-dmg-number");
+      if (num) {
+        num = freshNode(num);
+        num.textContent = formatRange(preview.damage.min, preview.damage.max);   // drops the +HR pill too
+        num.style.color = col.color;
+        num.style.textShadow = `0 0 15px ${col.glow}`;
+      }
+      const elEl = dmgFs.querySelector(".fud-bf-dmg-element");
+      if (elEl) {
+        if (preview.mixed) {
+          elEl.textContent = "Multi-Type";
+          elEl.classList.add("is-multi");
+          elEl.setAttribute("tabindex", "0");
+          const lines = (preview.elements ?? []).map((e, i) => {
+            const k = String(e ?? "").toLowerCase();
+            return `<li>${cap(strikeNoun)} ${i + 1} · <b style="color:${ELEMENT_COLOR[k] ?? ELEMENT_COLOR.physical};">${escapeHtml(displayElement(k))}</b></li>`;
+          }).join("");
+          elEl.setAttribute("data-fud-equip-desc",
+            `<ul style="margin:2px 0 0;padding:0;list-style:none;">${lines}</ul>`
+            + (preview.pierce ? `<p style="margin-top:5px;opacity:.85;">Pierce: a miss deals ½.</p>` : ""));
+          elEl.setAttribute("data-fud-equip-desc-name", "Multi-Type");
+        } else {
+          elEl.textContent = displayElement(preview.element ?? "physical");
+          elEl.classList.remove("is-multi");
+          elEl.removeAttribute("tabindex");
+          elEl.removeAttribute("data-fud-equip-desc");
+        }
+        elEl.style.color = col.color;
+      }
+      let badge = dmgFs.querySelector(".fud-bf-chain-hits");
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "fud-bf-chain-hits";
+        dmgFs.appendChild(badge);
+      }
+      badge.textContent = `×${preview.count} hit`;
+      dmgFs.setAttribute("data-fud-equip-desc",
+        `<p><b>One ${strikeNoun}, before the target:</b> ${escapeHtml(formatRange(preview.damage.min, preview.damage.max))}</p>`
+        + `<p>The High Roll is already in the range. Each ${strikeNoun} rolls its own.</p>`
+        + `<p style="opacity:.85;">Not in the range: critical hits, bonuses for every hit landing`
+        + `${preview.pierce ? ", and Pierce's half damage on a miss" : ""}.</p>`);
+      dmgFs.setAttribute("data-fud-equip-desc-name", "Damage Preview");
+    }
+
+    // ── Rows: every target, its own range ─────────────────────────────────
+    for (const rowEl of card.querySelectorAll(".fud-bf-target-row")) {
+      if (rowEl.classList.contains("is-unstudied") || rowEl.classList.contains("is-none")) continue;
+      const res = rowEl.querySelector(".t-result");
+      if (!res) continue;
+      // The affinity pill renders only on a hit: it would tell strike 1's verdict.
+      for (const pill of rowEl.querySelectorAll(".t-affinity")) pill.remove();
+      const uuid = rowEl.getAttribute("data-fud-target-token-uuid") ?? "";
+      const p = preview.perTarget?.[uuid] ?? null;
+      const name = rowEl.querySelector(".t-name")?.childNodes?.[0]?.textContent?.trim() || p?.name || "";
+      const fresh = freshNode(res);
+      fresh.className = "t-result chain-range";
+      fresh.style.color = col.color;
+      fresh.style.textShadow = `0 0 8px ${col.glow}`;
+      if (!p) { fresh.innerHTML = `<span class="t-num">—</span>`; continue; }
+      const numHtml = p.min != null ? `<span class="t-num">${escapeHtml(formatRange(p.min, p.max))}</span>` : "";
+      const notes = (p.heals?.length ? `<small>${escapeHtml(p.heals.join(", "))} heals</small>` : "")
+        + (p.zero?.length ? `<small class="im">${escapeHtml(p.zero.join(", "))} 0</small>` : "");
+      fresh.innerHTML = numHtml + notes;
+      rowEl.setAttribute("data-fud-equip-desc",
+        `<p><b>One ${strikeNoun} on ${escapeHtml(name)}:</b></p>`
+        + (p.why ?? []).map((l) => `<p>${escapeHtml(l)}</p>`).join(""));
+      rowEl.setAttribute("data-fud-equip-desc-name", name);
+    }
+    if (card.isConnected) fitChainRangeDamage(card);
+  } catch (e) { warn("paintChainRangeCard threw", e); }
 }
 
 function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, kind = null }) {
@@ -7714,6 +8093,11 @@ function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, k
   const root = document.createElement("div");
   root.id = rootId;
   root.innerHTML = innerHTML;
+  // Random-target Chain card: ranges instead of strike 1's verdict. Painted here,
+  // the one template every card (host and local mirror render) comes out of.
+  if (payload?.chainPreview && isDrawnChainPreviewSpec(payload?.chain)) {
+    paintChainRangeCard(root, payload.chainPreview, { roll: payload.roll ?? null });
+  }
   return { root, initialPending };
 }
 
@@ -8058,6 +8442,11 @@ export async function postActionCard({ director, kind, payload }) {
           ui.notifications?.warn("Reactions are still open on this card.");
           return;
         }
+        // An Invoke window is open (theirs, unless the padlock passed it).
+        if (isConfirmLocked(root.querySelector(".fud-bf-card"))) {
+          ui.notifications?.warn("An Invoke window is still open on this card: apply or close it first, or unlock Confirm.");
+          return;
+        }
         root.querySelector(".fud-btn-confirm")?.click();
       } }],
     });
@@ -8074,7 +8463,12 @@ export async function postActionCard({ director, kind, payload }) {
       if (--decisionsInFlight > 0 || !queuedConfirm || resolved) return;
       const extras = queuedConfirm.extras;
       queuedConfirm = null;
-      if (isConfirmLocked(root.querySelector(".fud-bf-card"))) {
+      // Reactions only: an invoke's own lock (to-do #22) is released just before
+      // this runs, and a spectator HUD still fading out must not eat a Confirm
+      // that was already acknowledged to its sender.
+      const heldCard = root.querySelector(".fud-bf-card");
+      if (heldCard?.hasAttribute("data-fud-reactions-pending")
+          && !(game.user?.isGM && heldCard.hasAttribute("data-fud-gm-unlocked"))) {
         log("postActionCard: held Confirm dropped — a new reaction needs an answer");
         return;
       }
@@ -8105,6 +8499,10 @@ export async function postActionCard({ director, kind, payload }) {
         // the next turn's matching intent. Defined below in this Promise
         // constructor; safe to reference via closure hoisting.
         try { abortPendingAwaits?.(); } catch {}
+        // An Invoke window still open belongs to this card: close it with the
+        // card (Cancel, or a GM passing a player's open invoke) instead of
+        // leaving it orphaned on screen.
+        dismissInvokeHudForCard();
         // Tell all non-primary clients (players + secondary GMs) to close
         // their mirror cards. GM-side DOM despawns via the timeout below.
         try {
@@ -9396,6 +9794,8 @@ export async function postActionCard({ director, kind, payload }) {
               newHit: !!entry.hit,
               newCrit: !!entry.crit,
               newDamage: entry.damage,
+              // A Pierce miss still deals half: the row must not read MISS.
+              newPierceMiss: !!entry.pierceMiss,
               // Fickle: the concealed odds, re-derived against the PROTECTOR's
               // defence. These delta payloads enumerate their fields, so a
               // concealed row that crossed the wire without this would repaint
@@ -9422,6 +9822,10 @@ export async function postActionCard({ director, kind, payload }) {
               grantAmount: entry.grantAmount, grantResource: entry.grantResource,
               resourceCur: entry.resourceCur, resourceMax: entry.resourceMax,
               vismagusSuppressed: !!entry.vismagusSuppressed,
+              // A heal that lands as damage keeps its DAMAGE label through the repaint
+              // (without these a recompute turned "DAMAGE 40" back into a heal label).
+              ...(entry.healReversed ? { healReversed: true, healReversedReason: entry.healReversedReason ?? null,
+                healWarnHidden: !!entry.healWarnHidden, healMaskAmount: entry.healMaskAmount ?? null } : {}),
               studied: entry.studied, hit: entry.hit, crit: entry.crit,
               ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
             });
@@ -9445,6 +9849,7 @@ export async function postActionCard({ director, kind, payload }) {
               to: entry.defenseOverride.to,
               via: entry.defenseOverride.via,
               hit: !!entry.hit, crit: !!entry.crit, damage: entry.damage,
+              pierceMiss: !!entry.pierceMiss,
               affinity: entry.affinity ?? null,
               ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
             });
@@ -9641,6 +10046,7 @@ export async function postActionCard({ director, kind, payload }) {
                 name: entry.name ?? origEntry.name ?? "",
                 hit: entry.hit,
                 crit: entry.crit,
+                pierceMiss: !!entry.pierceMiss,
                 affinity: entry.affinity ?? null,
                 damage: entry.damage,
                 resource: entry.resource ?? null,
@@ -9779,6 +10185,15 @@ export async function postActionCard({ director, kind, payload }) {
           } catch (e) {
             warn("recomputeTargetPreviews: re-gate threw — pending reactions stay as offered", e);
             delta.staleReactions = [];
+          }
+          // Random-target Chain card: a creature the mutation brought onto the
+          // card (Protect's protector, an added target) is priced before the
+          // paint, and the grown preview rides the delta to every mirror.
+          if (payload?.chainPreview && mutTargets.length) {
+            try {
+              const grown = await extendChainPreview(payload.chainPreview, liveAr ?? base, mutTargets);
+              if (grown !== payload.chainPreview) { payload.chainPreview = grown; delta.chainPreview = grown; }
+            } catch (e) { warn("recomputeTargetPreviews: random-target Chain preview extend threw", e); }
           }
           const wireDelta = toWireSafe(delta) ?? delta;
           applyCardTargetMutationDelta(root, wireDelta);
@@ -9947,6 +10362,30 @@ export async function postActionCard({ director, kind, payload }) {
     // After an invoke commits: the stash described the pre-invoke base, and the
     // worker's recompute knows nothing of the card's other accepted reactions —
     // re-run the shared preview so the card shows invoke + reactions together.
+    // Confirm lock while an invoke runs on this card (to-do #22): the window
+    // itself locks through invoke-hud (data-fud-invoke-hud); this covers the
+    // rest of the run, payment / reroll / recompute, until the card is patched.
+    // Counted, so a Trait superseded by a Bond (two runs overlapping) keeps the
+    // lock until both end. Every begin is paired with its release in a
+    // finally; the watchdog is a last net for a promise that never settles.
+    let invokeRuns = 0;
+    const beginInvokeRun = () => {
+      invokeRuns++;
+      setInvokeApplying(root.querySelector(".fud-bf-card"), true);
+      let released = false;
+      const release = () => {
+        if (released) return;
+        released = true;
+        clearTimeout(watchdog);
+        invokeRuns = Math.max(0, invokeRuns - 1);
+        if (invokeRuns === 0) setInvokeApplying(root.querySelector(".fud-bf-card"), false);
+      };
+      const watchdog = setTimeout(() => {
+        if (!released) warn("postActionCard: invoke run never settled — releasing the Confirm lock");
+        release();
+      }, INVOKE_RUN_WATCHDOG_MS);
+      return release;
+    };
     const afterInvokeCommitted = async () => {
       lastRollMutation = null;
       const anyApplied = [...reactionDecisionMap.values()].includes("apply");
@@ -10262,6 +10701,12 @@ export async function postActionCard({ director, kind, payload }) {
               armInvokeAwait();
               return;
             }
+            // Hold the card's Confirm until this invoke is applied: locally
+            // (beginInvokeRun) and for a remote Confirm that lands meanwhile
+            // (decisionsInFlight queues it, decisionSettled replays it).
+            const releaseRun = beginInvokeRun();
+            decisionsInFlight++;
+            try {
             let ok = false;      // truthy on success (trait: choice string, bond: true)
             let oldTotal = cardAr?.roll?.total ?? 0;
             try {
@@ -10302,6 +10747,7 @@ export async function postActionCard({ director, kind, payload }) {
               // null, so the actor isn't skipped); dismissSpectator is committing-aware.
               closeSpectatorHud({ excludeUserId: null, cancelled: true, type });
             }
+            } finally { releaseRun(); decisionSettled(); }
             armInvokeAwait();
           }).catch((e) => {
             if (expired(e)) { armInvokeAwait(); return; }
@@ -10667,6 +11113,8 @@ export async function postActionCard({ director, kind, payload }) {
               ui.notifications?.warn("This action is no longer active — invoke can't be applied.");
               return;
             }
+            const releaseRun = beginInvokeRun();
+            try {
             const worker = await import(hotUrl("./invoke/invoke-worker.js"));
             const ar = await arForInvoke();
             const oldTotal = ar?.roll?.total ?? 0;
@@ -10698,6 +11146,7 @@ export async function postActionCard({ director, kind, payload }) {
             } else {
               closeSpectatorHud({ excludeUserId: game.user?.id, cancelled: true, type });
             }
+            } finally { releaseRun(); }
           } catch (e) {
             warn("postActionCard: invoke handler threw", e);
             ui.notifications?.error("Invoke failed (see console).");
@@ -11042,11 +11491,17 @@ export async function postActionCard({ director, kind, payload }) {
       // is open and the card has stepped aside for it: Enter is the picker's.
       // Confirming here resolved the action before the choice was made.
       if (root.classList.contains("is-hidden-during-pick")) return;
+      // An Invoke window is open (or its invoke is being applied): Enter is the
+      // HUD's (it toggles a focused die / picks a focused bond). Confirming here
+      // dropped the invoke (to-do #22). Checked before preventDefault so the
+      // HUD's own key handling is untouched. No GM padlock bypass for Enter.
+      const keyCard = root.querySelector(".fud-bf-card");
+      if (keyCard?.hasAttribute("data-fud-invoke-hud") || keyCard?.hasAttribute("data-fud-invoke-applying")) return;
       ev.preventDefault();
       // Same lock as the Confirm button: while an ask-mode reaction pill is
       // still unanswered the button is disabled (CSS), and Enter must not
       // confirm past it either.
-      if (root.querySelector(".fud-bf-card")?.hasAttribute("data-fud-reactions-pending")) return;
+      if (keyCard?.hasAttribute("data-fud-reactions-pending")) return;
       finish("confirm");
     };
     window.addEventListener("keydown", keyListener, true);
@@ -11078,6 +11533,7 @@ export async function postActionCard({ director, kind, payload }) {
       try { hideDescTip(); } catch {}
       try { descTip?.remove(); } catch {}
       try { dismissKeywordTooltip(); } catch {}
+      dismissInvokeHudForCard();
       try { root.remove(); } catch {}
       _overlays.delete(director.combatId);
       if (!resolved) {
@@ -11181,6 +11637,12 @@ export async function postActionCard({ director, kind, payload }) {
         if (cardEl?.hasAttribute("data-fud-reactions-pending")) {
           deadline += sinceLast;
           if (countEl) countEl.textContent = "waiting on reactions";
+          return;
+        }
+        // Same pause while an Invoke window is open on this card (to-do #22).
+        if (cardEl?.hasAttribute("data-fud-invoke-hud") || cardEl?.hasAttribute("data-fud-invoke-applying")) {
+          deadline += sinceLast;
+          if (countEl) countEl.textContent = "waiting on Invoke";
           return;
         }
         const remaining = deadline - now;
@@ -11328,6 +11790,10 @@ let _mirrorCleanup = null;
 // (BEFORE running any secondary picker), so a legitimately slow resolution —
 // e.g. the player is still choosing a Protect target — does NOT trip this.
 const REACTION_SUBMIT_TIMEOUT_MS = 8000;
+// Last-resort release of the "invoke being applied" Confirm lock (to-do #22) if
+// an invoke run never settles. The window's own lock is separate (it follows
+// the HUD), so this only bounds the payment / reroll / recompute stretch.
+const INVOKE_RUN_WATCHDOG_MS = 45000;
 // After the GM acks a Confirm/Cancel it normally follows with the card-close that
 // tears the player's mirror down. If the host dies / refreshes MID-processing, that
 // close never arrives — so the ack re-arms this longer completion fallback (instead
@@ -11468,6 +11934,11 @@ function armInvokeSubmitTimer(invokeBtn, type) {
   invokeBtn._fudInvokeTimer = setTimeout(() => {
     invokeBtn._fudInvokeTimer = null;
     if (!invokeBtn.isConnected) return;
+    // No answer: the invoke never applied, so Confirm must not stay locked on it.
+    // A Trait window waits open ("committing") for the host's reroll; take it
+    // down too, or its own lock would outlive the failed invoke.
+    setInvokeApplying(invokeBtn.closest(".fud-bf-card"), false);
+    import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ cancelled: true })).catch(() => {});
     if (!invokeBtn.classList.contains("is-resolved")) return;
     invokeBtn.classList.remove("is-resolved");
     try { ui.notifications?.warn(`No response from the host — try invoking ${type === "trait" ? "the Trait" : "the Bond"} again.`); } catch {}
@@ -11480,9 +11951,10 @@ function cleanupMirror() {
     _mirrorCleanup = null;
   }
   try { dismissKeywordTooltip(); } catch {}
-  // Any read-only spectator invoke HUD belongs to this card — tear it down too
-  // (no-ops if none is up). Covers card replace AND card close.
-  import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ cancelled: true })).catch(() => {});
+  // Any invoke HUD belongs to this card — tear it down too (no-ops if none is
+  // up). Covers card replace AND card close. Includes this client's OWN open
+  // window: a GM who passed it with the padlock closes the card under it.
+  dismissInvokeHudForCard();
   const existing = document.getElementById(MIRROR_ROOT_ID);
   // Stand down any pending Confirm/Cancel no-response timer so a card close/replace
   // can't fire a stray "tap again" toast after the mirror is gone.
@@ -11522,7 +11994,9 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     clearInvokeSubmitTimers(wrapper); // GM responded — stop the no-response net
     import(hotUrl("./invoke/invoke-worker.js")).then((w) => {
       w.patchCardDom(wrapper, playerAr, playerInvokeState);
-    }).catch((e) => warn("action-card-invoke-update: patchCardDom threw", e));
+    }).catch((e) => warn("action-card-invoke-update: patchCardDom threw", e))
+      // Applied: the card now shows it, Confirm may go (to-do #22).
+      .finally(() => setInvokeApplying(wrapper.querySelector(".fud-bf-card"), false));
   });
 
   // Spectator invoke HUD — the GM broadcasts this while the ACTOR is deciding
@@ -11548,6 +12022,12 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (payload?.kind !== "invoke-hud-spectator") return;
     const { traitOutcome = null, cancelled = false, expectKind = null } = payload?.data ?? {};
     import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ traitOutcome, cancelled, expectKind })).catch(() => {});
+    // The host's failed-invoke teardown reaches the actor too: nothing will be
+    // applied, so the "applying" lock on this mirror ends here.
+    if (cancelled) {
+      setInvokeApplying(document.getElementById(MIRROR_ROOT_ID)?.querySelector(".fud-bf-card"), false);
+      clearInvokeSubmitTimers(document.getElementById(MIRROR_ROOT_ID));
+    }
   });
 
   // Trait reroll (Phase 3) — animate the dice on this client's open invoke HUD
@@ -11577,6 +12057,10 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
         // NOTE: the crit cut-in is fired ONCE by the GM (presentTraitReroll) and
         // socket-broadcast to every client, so we must NOT call it here too.
       } catch (e) { warn("invoke-trait-reroll receiver threw", e); }
+      finally {
+        // Applied and shown: Confirm may go (to-do #22).
+        setInvokeApplying(document.getElementById(MIRROR_ROOT_ID)?.querySelector(".fud-bf-card"), false);
+      }
     })();
   });
 
@@ -12143,6 +12627,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   body: { type: "trait", choice },
                   combatId: menuSpec.combatId,
                 });
+                setInvokeApplying(wrapper.querySelector(".fud-bf-card"), true);
                 armInvokeSubmitTimer(invokeBtn, "trait");
               } else {
                 const attackerUuid = menuSpec.attackerActorUuid ?? null;
@@ -12182,6 +12667,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   body: { type: "bond", bondIndex },
                   combatId: menuSpec.combatId,
                 });
+                setInvokeApplying(wrapper.querySelector(".fud-bf-card"), true);
                 armInvokeSubmitTimer(invokeBtn, "bond");
               }
             } catch (e) {
