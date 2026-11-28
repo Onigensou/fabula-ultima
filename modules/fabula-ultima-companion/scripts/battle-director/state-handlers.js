@@ -9658,7 +9658,18 @@ const Animation = {
     }
 
     const casterTokenUuid    = ar?.attacker?.tokenUuid ?? null;
-    const targetTokenUuids   = (ar?.targets ?? []).map((t) => t.tokenUuid).filter(Boolean);
+    let targetTokenUuids     = (ar?.targets ?? []).map((t) => t.tokenUuid).filter(Boolean);
+    // Random / Volley Chains now keep every target on the CARD (random-target Chain
+    // card), but the animation still plays on the creatures the strikes went to —
+    // the set the card used to be trimmed to (re-draws included). Seek keeps the
+    // whole field, as it always did.
+    if ((ar?.chain?.mode === "random" || ar?.chain?.mode === "volley") && ar?.chainPlan && !ar.chainPlan.single) {
+      const struck = [];
+      for (const s of ar.chainPlan.strikes ?? []) for (const o of s?.outcomes ?? []) {
+        if (o?.tokenUuid && o.kind !== "skip" && !struck.includes(o.tokenUuid)) struck.push(o.tokenUuid);
+      }
+      if (struck.length) targetTokenUuids = struck;
+    }
 
     // JRPG cinematic etiquette — fade the Dominance Crests out on every client
     // while the animation plays (restored in onExit/onAbort, which fire on

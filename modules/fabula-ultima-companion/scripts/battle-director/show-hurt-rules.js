@@ -121,6 +121,9 @@ export function hpLossPlan(ar) {
 
 function rowLosesHp(r, ar, chain) {
   const c = chain ? chain[r.tokenUuid] : null;
+  // A Chain card target no strike went to (seek / random / volley keep every
+  // target on the card) takes no hit, whatever strike 1's row says.
+  if (chain && !c) return false;
   const landed = c ? Number(c.landed) > 0 : (!!r.hit || !!r.pierceMiss);
   if (!landed) return false;
   if (r.grantResource != null || r.grantAmount != null) return false;   // a heal / grant row
