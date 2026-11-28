@@ -871,8 +871,8 @@
       "path": "data-migrations/2026-11-28-forget-me-nut-out-of-battle.js"
     },
     {
-      "key": "2026-11-28-adaptive-defense-miss-source",
-      "path": "data-migrations/2026-11-28-adaptive-defense-miss-source.js"
+      "key": "2026-11-28-adaptive-defense-hits-only",
+      "path": "data-migrations/2026-11-28-adaptive-defense-hits-only.js"
     },
     {
       "key": "2026-11-28-asura-update",
