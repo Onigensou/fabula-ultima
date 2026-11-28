@@ -53,6 +53,7 @@ import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 import { simInvoke } from "./sim/invoke-brain.js";
 import { hotUrl } from "./hot-reload.js";
+import { readConfirmLock, setInvokeApplying, INVOKE_LOCK_LABEL } from "./invoke/invoke-confirm-lock.js";
 import { isMassiveJoinRowKey } from "./massive-keyword.js";
 
 // Resolve which active player client decides for the given actor doc. Returns
@@ -1309,6 +1310,27 @@ export function ensureStyles() {
       color: #4a2f87;
       pointer-events: none;
     }
+    /* Invoke window open (to-do #22): same lock, its own label. Declared after
+       the reactions rule so its label wins when both apply. data-fud-invoke-hud
+       follows invoke-hud's singleton ("own" = this client's HUD, "remote" = a
+       read-only spectator HUD); data-fud-invoke-applying covers the moment
+       between the pick and the card patch. See invoke/invoke-confirm-lock.js. */
+    .fud-bf-card:is([data-fud-invoke-hud], [data-fud-invoke-applying]) .fud-btn-confirm {
+      opacity: 0.45 !important;
+      pointer-events: none !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.4);
+      color: transparent !important;
+    }
+    .fud-bf-card:is([data-fud-invoke-hud], [data-fud-invoke-applying]) .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+      content: "${INVOKE_LOCK_LABEL}";
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; font-style: italic;
+      letter-spacing: 0.3px; text-transform: none;
+      color: #4a2f87;
+      pointer-events: none;
+    }
     /* GM lock toggle on Confirm (user, 2026-11-01). The pending counter has
        drifted out of step with the pills in live play and left the GM with no
        way forward. Locked (the default on every card) works as before; the GM
@@ -1319,7 +1341,7 @@ export function ensureStyles() {
        click. Both the toggle and the unlock need body.fud-bf-gm, which only a
        GM client sets, so neither can reach a player through broadcast HTML. */
     .fud-bf-card .fud-gm-confirm-lock { display: none; }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending] .fud-gm-confirm-lock {
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"]) .fud-gm-confirm-lock {
       display: flex; align-items: center; justify-content: center;
       position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
       z-index: 2;
@@ -1332,11 +1354,11 @@ export function ensureStyles() {
       cursor: pointer;
       box-shadow: none;
     }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending] .fud-gm-confirm-lock:hover { background: #fff; }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending][data-fud-gm-unlocked] .fud-gm-confirm-lock {
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"]) .fud-gm-confirm-lock:hover { background: #fff; }
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"])[data-fud-gm-unlocked] .fud-gm-confirm-lock {
       border-color: #a8662a; color: #a8662a;
     }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending][data-fud-gm-unlocked] .fud-btn-confirm {
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"])[data-fud-gm-unlocked] .fud-btn-confirm {
       opacity: 1 !important;
       pointer-events: auto !important;
       cursor: pointer !important;
@@ -1348,11 +1370,37 @@ export function ensureStyles() {
         0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset,
         0 0 0 2px rgba(200, 110, 40, 0.55);
     }
-    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending][data-fud-gm-unlocked] .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+    body.fud-bf-gm .fud-bf-card:is([data-fud-reactions-pending], [data-fud-invoke-hud="remote"])[data-fud-gm-unlocked] .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
       content: "Confirm \\00B7  skip unanswered";
       font-size: 11.5px;
       font-style: normal;
       color: #4a2410;
+    }
+    /* The padlock also passes a REMOTE invoke (someone else's window is open:
+       an AFK player must not stall the table); confirming drops their invoke.
+       Never this client's own window, nor an invoke mid-apply: those end on
+       this client within moments, so they stay hard-locked and hide the
+       padlock. Higher specificity than the unlocked rules above. */
+    body.fud-bf-gm .fud-bf-card[data-fud-invoke-hud="remote"][data-fud-gm-unlocked] .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+      content: "Confirm \\00B7  drop their Invoke";
+    }
+    body.fud-bf-gm .fud-bf-card:is([data-fud-invoke-hud="own"], [data-fud-invoke-applying]) .fud-gm-confirm-lock { display: none !important; }
+    body.fud-bf-gm .fud-bf-card[data-fud-gm-unlocked]:is([data-fud-invoke-hud="own"], [data-fud-invoke-applying]) .fud-btn-confirm {
+      opacity: 0.45 !important;
+      pointer-events: none !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.4);
+      /* back to the plain Confirm look (base .fud-btn / .fud-btn-confirm) */
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
+      border-color: var(--fud-stroke, #7a6a55);
+      box-shadow:
+        0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)),
+        0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
+      color: transparent !important;
+    }
+    body.fud-bf-gm .fud-bf-card[data-fud-gm-unlocked]:is([data-fud-invoke-hud="own"], [data-fud-invoke-applying]) .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+      content: "${INVOKE_LOCK_LABEL}";
+      font-size: 13px; font-style: italic; color: #4a2f87;
     }
     /* Mode footer inside the reaction tooltip body — small chip-like
        hint so the player sees whether the pill is auto / ask / off. */
@@ -3759,9 +3807,21 @@ function projectRowsForWire(rows) {
 // real click but not a scripted element.click(), which confirmed a locked
 // card in a live run. Locked = third-party reactions open, unless this is a
 // GM who unlocked the card.
+// Also locked while an Invoke window is open or an invoke is still being
+// applied (to-do #22): invoke/invoke-confirm-lock.js holds the one decision.
+// Close whatever invoke window is up on this client when its card goes away
+// (confirm, cancel, despawn, battle end, card replace). Nothing it guarded
+// survives the card, so it must not linger either.
+function dismissInvokeHudForCard() {
+  import("./invoke/invoke-hud.js").then((hud) => {
+    const t = hud.getActiveType();
+    if (t === "trait" || t === "bond") hud.dismissActive();
+    else if (t === "spectator") hud.dismissSpectator({ cancelled: true });
+  }).catch(() => {});
+}
+
 function isConfirmLocked(cardEl) {
-  if (!cardEl?.hasAttribute("data-fud-reactions-pending")) return false;
-  return !(game.user?.isGM && cardEl.hasAttribute("data-fud-gm-unlocked"));
+  return readConfirmLock(cardEl, { isGM: !!game.user?.isGM }).locked;
 }
 
 export function mountGmConfirmLock(scopeEl) {
@@ -3776,8 +3836,8 @@ export function mountGmConfirmLock(scopeEl) {
     const unlocked = card.hasAttribute("data-fud-gm-unlocked");
     btn.innerHTML = `<i class="fas ${unlocked ? "fa-lock-open" : "fa-lock"}"></i>`;
     btn.title = unlocked
-      ? "Confirm unlocked: unanswered reactions are skipped. Click to lock."
-      : "Confirm waits for reactions. Click to unlock it.";
+      ? "Confirm unlocked: unanswered reactions are skipped, and an Invoke still open on a player's screen is dropped. Click to lock."
+      : "Confirm waits for reactions and for a player's open Invoke. Click to unlock it.";
     btn.setAttribute("aria-pressed", unlocked ? "true" : "false");
   };
   btn.addEventListener("click", (ev) => {
@@ -5294,7 +5354,8 @@ export function buildItemCard({ attacker, attackerActor, itemCandidates, ip }) {
     const isCreate = c.mode === "create";
     const cost = isCreate ? c.ipCost : null;
     const qty  = !isCreate ? (c.isUnique ? "∞" : (c.quantity ?? 0)) : null;
-    const disabled = isCreate && cost > curIp;
+    // "Out of battle only" (to-do #13) greys the row like an unaffordable recipe.
+    const disabled = (isCreate && cost > curIp) || !!c.outOfBattleOnly;
     const key = isCreate ? c.key : c.id;
     const desc = describeCandidateForTooltip(c);
     const descAttr = desc
@@ -8381,6 +8442,11 @@ export async function postActionCard({ director, kind, payload }) {
           ui.notifications?.warn("Reactions are still open on this card.");
           return;
         }
+        // An Invoke window is open (theirs, unless the padlock passed it).
+        if (isConfirmLocked(root.querySelector(".fud-bf-card"))) {
+          ui.notifications?.warn("An Invoke window is still open on this card: apply or close it first, or unlock Confirm.");
+          return;
+        }
         root.querySelector(".fud-btn-confirm")?.click();
       } }],
     });
@@ -8397,7 +8463,12 @@ export async function postActionCard({ director, kind, payload }) {
       if (--decisionsInFlight > 0 || !queuedConfirm || resolved) return;
       const extras = queuedConfirm.extras;
       queuedConfirm = null;
-      if (isConfirmLocked(root.querySelector(".fud-bf-card"))) {
+      // Reactions only: an invoke's own lock (to-do #22) is released just before
+      // this runs, and a spectator HUD still fading out must not eat a Confirm
+      // that was already acknowledged to its sender.
+      const heldCard = root.querySelector(".fud-bf-card");
+      if (heldCard?.hasAttribute("data-fud-reactions-pending")
+          && !(game.user?.isGM && heldCard.hasAttribute("data-fud-gm-unlocked"))) {
         log("postActionCard: held Confirm dropped — a new reaction needs an answer");
         return;
       }
@@ -8428,6 +8499,10 @@ export async function postActionCard({ director, kind, payload }) {
         // the next turn's matching intent. Defined below in this Promise
         // constructor; safe to reference via closure hoisting.
         try { abortPendingAwaits?.(); } catch {}
+        // An Invoke window still open belongs to this card: close it with the
+        // card (Cancel, or a GM passing a player's open invoke) instead of
+        // leaving it orphaned on screen.
+        dismissInvokeHudForCard();
         // Tell all non-primary clients (players + secondary GMs) to close
         // their mirror cards. GM-side DOM despawns via the timeout below.
         try {
@@ -10287,6 +10362,30 @@ export async function postActionCard({ director, kind, payload }) {
     // After an invoke commits: the stash described the pre-invoke base, and the
     // worker's recompute knows nothing of the card's other accepted reactions —
     // re-run the shared preview so the card shows invoke + reactions together.
+    // Confirm lock while an invoke runs on this card (to-do #22): the window
+    // itself locks through invoke-hud (data-fud-invoke-hud); this covers the
+    // rest of the run, payment / reroll / recompute, until the card is patched.
+    // Counted, so a Trait superseded by a Bond (two runs overlapping) keeps the
+    // lock until both end. Every begin is paired with its release in a
+    // finally; the watchdog is a last net for a promise that never settles.
+    let invokeRuns = 0;
+    const beginInvokeRun = () => {
+      invokeRuns++;
+      setInvokeApplying(root.querySelector(".fud-bf-card"), true);
+      let released = false;
+      const release = () => {
+        if (released) return;
+        released = true;
+        clearTimeout(watchdog);
+        invokeRuns = Math.max(0, invokeRuns - 1);
+        if (invokeRuns === 0) setInvokeApplying(root.querySelector(".fud-bf-card"), false);
+      };
+      const watchdog = setTimeout(() => {
+        if (!released) warn("postActionCard: invoke run never settled — releasing the Confirm lock");
+        release();
+      }, INVOKE_RUN_WATCHDOG_MS);
+      return release;
+    };
     const afterInvokeCommitted = async () => {
       lastRollMutation = null;
       const anyApplied = [...reactionDecisionMap.values()].includes("apply");
@@ -10602,6 +10701,12 @@ export async function postActionCard({ director, kind, payload }) {
               armInvokeAwait();
               return;
             }
+            // Hold the card's Confirm until this invoke is applied: locally
+            // (beginInvokeRun) and for a remote Confirm that lands meanwhile
+            // (decisionsInFlight queues it, decisionSettled replays it).
+            const releaseRun = beginInvokeRun();
+            decisionsInFlight++;
+            try {
             let ok = false;      // truthy on success (trait: choice string, bond: true)
             let oldTotal = cardAr?.roll?.total ?? 0;
             try {
@@ -10642,6 +10747,7 @@ export async function postActionCard({ director, kind, payload }) {
               // null, so the actor isn't skipped); dismissSpectator is committing-aware.
               closeSpectatorHud({ excludeUserId: null, cancelled: true, type });
             }
+            } finally { releaseRun(); decisionSettled(); }
             armInvokeAwait();
           }).catch((e) => {
             if (expired(e)) { armInvokeAwait(); return; }
@@ -11007,6 +11113,8 @@ export async function postActionCard({ director, kind, payload }) {
               ui.notifications?.warn("This action is no longer active — invoke can't be applied.");
               return;
             }
+            const releaseRun = beginInvokeRun();
+            try {
             const worker = await import(hotUrl("./invoke/invoke-worker.js"));
             const ar = await arForInvoke();
             const oldTotal = ar?.roll?.total ?? 0;
@@ -11038,6 +11146,7 @@ export async function postActionCard({ director, kind, payload }) {
             } else {
               closeSpectatorHud({ excludeUserId: game.user?.id, cancelled: true, type });
             }
+            } finally { releaseRun(); }
           } catch (e) {
             warn("postActionCard: invoke handler threw", e);
             ui.notifications?.error("Invoke failed (see console).");
@@ -11382,11 +11491,17 @@ export async function postActionCard({ director, kind, payload }) {
       // is open and the card has stepped aside for it: Enter is the picker's.
       // Confirming here resolved the action before the choice was made.
       if (root.classList.contains("is-hidden-during-pick")) return;
+      // An Invoke window is open (or its invoke is being applied): Enter is the
+      // HUD's (it toggles a focused die / picks a focused bond). Confirming here
+      // dropped the invoke (to-do #22). Checked before preventDefault so the
+      // HUD's own key handling is untouched. No GM padlock bypass for Enter.
+      const keyCard = root.querySelector(".fud-bf-card");
+      if (keyCard?.hasAttribute("data-fud-invoke-hud") || keyCard?.hasAttribute("data-fud-invoke-applying")) return;
       ev.preventDefault();
       // Same lock as the Confirm button: while an ask-mode reaction pill is
       // still unanswered the button is disabled (CSS), and Enter must not
       // confirm past it either.
-      if (root.querySelector(".fud-bf-card")?.hasAttribute("data-fud-reactions-pending")) return;
+      if (keyCard?.hasAttribute("data-fud-reactions-pending")) return;
       finish("confirm");
     };
     window.addEventListener("keydown", keyListener, true);
@@ -11418,6 +11533,7 @@ export async function postActionCard({ director, kind, payload }) {
       try { hideDescTip(); } catch {}
       try { descTip?.remove(); } catch {}
       try { dismissKeywordTooltip(); } catch {}
+      dismissInvokeHudForCard();
       try { root.remove(); } catch {}
       _overlays.delete(director.combatId);
       if (!resolved) {
@@ -11521,6 +11637,12 @@ export async function postActionCard({ director, kind, payload }) {
         if (cardEl?.hasAttribute("data-fud-reactions-pending")) {
           deadline += sinceLast;
           if (countEl) countEl.textContent = "waiting on reactions";
+          return;
+        }
+        // Same pause while an Invoke window is open on this card (to-do #22).
+        if (cardEl?.hasAttribute("data-fud-invoke-hud") || cardEl?.hasAttribute("data-fud-invoke-applying")) {
+          deadline += sinceLast;
+          if (countEl) countEl.textContent = "waiting on Invoke";
           return;
         }
         const remaining = deadline - now;
@@ -11668,6 +11790,10 @@ let _mirrorCleanup = null;
 // (BEFORE running any secondary picker), so a legitimately slow resolution —
 // e.g. the player is still choosing a Protect target — does NOT trip this.
 const REACTION_SUBMIT_TIMEOUT_MS = 8000;
+// Last-resort release of the "invoke being applied" Confirm lock (to-do #22) if
+// an invoke run never settles. The window's own lock is separate (it follows
+// the HUD), so this only bounds the payment / reroll / recompute stretch.
+const INVOKE_RUN_WATCHDOG_MS = 45000;
 // After the GM acks a Confirm/Cancel it normally follows with the card-close that
 // tears the player's mirror down. If the host dies / refreshes MID-processing, that
 // close never arrives — so the ack re-arms this longer completion fallback (instead
@@ -11808,6 +11934,11 @@ function armInvokeSubmitTimer(invokeBtn, type) {
   invokeBtn._fudInvokeTimer = setTimeout(() => {
     invokeBtn._fudInvokeTimer = null;
     if (!invokeBtn.isConnected) return;
+    // No answer: the invoke never applied, so Confirm must not stay locked on it.
+    // A Trait window waits open ("committing") for the host's reroll; take it
+    // down too, or its own lock would outlive the failed invoke.
+    setInvokeApplying(invokeBtn.closest(".fud-bf-card"), false);
+    import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ cancelled: true })).catch(() => {});
     if (!invokeBtn.classList.contains("is-resolved")) return;
     invokeBtn.classList.remove("is-resolved");
     try { ui.notifications?.warn(`No response from the host — try invoking ${type === "trait" ? "the Trait" : "the Bond"} again.`); } catch {}
@@ -11820,9 +11951,10 @@ function cleanupMirror() {
     _mirrorCleanup = null;
   }
   try { dismissKeywordTooltip(); } catch {}
-  // Any read-only spectator invoke HUD belongs to this card — tear it down too
-  // (no-ops if none is up). Covers card replace AND card close.
-  import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ cancelled: true })).catch(() => {});
+  // Any invoke HUD belongs to this card — tear it down too (no-ops if none is
+  // up). Covers card replace AND card close. Includes this client's OWN open
+  // window: a GM who passed it with the padlock closes the card under it.
+  dismissInvokeHudForCard();
   const existing = document.getElementById(MIRROR_ROOT_ID);
   // Stand down any pending Confirm/Cancel no-response timer so a card close/replace
   // can't fire a stray "tap again" toast after the mirror is gone.
@@ -11862,7 +11994,9 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     clearInvokeSubmitTimers(wrapper); // GM responded — stop the no-response net
     import(hotUrl("./invoke/invoke-worker.js")).then((w) => {
       w.patchCardDom(wrapper, playerAr, playerInvokeState);
-    }).catch((e) => warn("action-card-invoke-update: patchCardDom threw", e));
+    }).catch((e) => warn("action-card-invoke-update: patchCardDom threw", e))
+      // Applied: the card now shows it, Confirm may go (to-do #22).
+      .finally(() => setInvokeApplying(wrapper.querySelector(".fud-bf-card"), false));
   });
 
   // Spectator invoke HUD — the GM broadcasts this while the ACTOR is deciding
@@ -11888,6 +12022,12 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (payload?.kind !== "invoke-hud-spectator") return;
     const { traitOutcome = null, cancelled = false, expectKind = null } = payload?.data ?? {};
     import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ traitOutcome, cancelled, expectKind })).catch(() => {});
+    // The host's failed-invoke teardown reaches the actor too: nothing will be
+    // applied, so the "applying" lock on this mirror ends here.
+    if (cancelled) {
+      setInvokeApplying(document.getElementById(MIRROR_ROOT_ID)?.querySelector(".fud-bf-card"), false);
+      clearInvokeSubmitTimers(document.getElementById(MIRROR_ROOT_ID));
+    }
   });
 
   // Trait reroll (Phase 3) — animate the dice on this client's open invoke HUD
@@ -11917,6 +12057,10 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
         // NOTE: the crit cut-in is fired ONCE by the GM (presentTraitReroll) and
         // socket-broadcast to every client, so we must NOT call it here too.
       } catch (e) { warn("invoke-trait-reroll receiver threw", e); }
+      finally {
+        // Applied and shown: Confirm may go (to-do #22).
+        setInvokeApplying(document.getElementById(MIRROR_ROOT_ID)?.querySelector(".fud-bf-card"), false);
+      }
     })();
   });
 
@@ -12483,6 +12627,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   body: { type: "trait", choice },
                   combatId: menuSpec.combatId,
                 });
+                setInvokeApplying(wrapper.querySelector(".fud-bf-card"), true);
                 armInvokeSubmitTimer(invokeBtn, "trait");
               } else {
                 const attackerUuid = menuSpec.attackerActorUuid ?? null;
@@ -12522,6 +12667,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   body: { type: "bond", bondIndex },
                   combatId: menuSpec.combatId,
                 });
+                setInvokeApplying(wrapper.querySelector(".fud-bf-card"), true);
                 armInvokeSubmitTimer(invokeBtn, "bond");
               }
             } catch (e) {

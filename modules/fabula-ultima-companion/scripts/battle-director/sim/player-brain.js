@@ -30,6 +30,7 @@ import { SimMode } from "./sim-mode.js";
 import { Journal } from "./sim-journal.js";
 import { canAffordItem, parseCost } from "./cost.js";
 import { getLinkedSkillUuid } from "../item-resource.js";
+import { isOutOfBattleOnlyItem } from "../field-only-items.js";
 import { protectExhausted } from "./reaction-brain.js";
 import { resolveAttackerWeapon, resolveVirtualAttacks, resolvePrimaryAttackWeapon, getTargetSideBlocks } from "../snapshot.js";
 import { isLockedUuidBlockedInCombat, targetableRows } from "../free-action-lock-gate.js";
@@ -207,6 +208,7 @@ function findConsumableRestoring(actorDoc, resource) {
     const p = item?.system?.props ?? {};
     if (String(p.item_type ?? "").toLowerCase() !== "consumable") continue;
     if (Number(p.item_quantity ?? p.quantity ?? 0) <= 0) continue;
+    if (isOutOfBattleOnlyItem(item)) continue;   // field use only (to-do #13)
     const amt = itemRestoreAmount(item, resource);
     if (amt > bestAmt) { best = item; bestAmt = amt; }
   }
@@ -347,6 +349,7 @@ export async function fetchCreatables(actorDoc) {
       if (!c?.itemUuid) continue;
       const doc = await fromUuid(c.itemUuid).catch(() => null);
       if (!doc) continue;
+      if (c.outOfBattleOnly || isOutOfBattleOnlyItem(doc)) continue;   // field use only (to-do #13)
       out.push({
         key: c.key,
         name: c.name,
@@ -477,6 +480,7 @@ function makePolicyApi(director, snap, self, creatables = []) {
     useItem(item, targetDcs) {
       const uuids = targetDcs.map(tokenUuidOf).filter(Boolean);
       if (!item || !uuids.length) return null;
+      if (isOutOfBattleOnlyItem(item)) return null;   // field use only (to-do #13)
       return {
         command: "Item",
         skillUuid: item.uuid,

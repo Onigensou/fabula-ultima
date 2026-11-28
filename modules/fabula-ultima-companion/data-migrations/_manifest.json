@@ -865,6 +865,10 @@
     {
       "key": "2026-11-28-botc-minion-zombie",
       "path": "data-migrations/2026-11-28-botc-minion-zombie.js"
+    },
+    {
+      "key": "2026-11-28-forget-me-nut-out-of-battle",
+      "path": "data-migrations/2026-11-28-forget-me-nut-out-of-battle.js"
     }
   ]
 }

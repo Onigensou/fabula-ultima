@@ -12,6 +12,7 @@
 
 import { playSfx } from "../director-sfx.js";
 import { chanceAtShift, formatHitChance, isConcealedRoll } from "../check.js";
+import { syncInvokeHudLock } from "./invoke-confirm-lock.js";
 import { paintChainRangeCard } from "../action-card.js";
 
 // A random-target Chain card (action-card.js paintChainRangeCard) shows ranges,
@@ -49,6 +50,13 @@ let _active   = null; // { type, el, _resolve }
 let _dimmerEl = null;
 let _auraEl   = null;
 
+// Every write goes through here so the action card's Confirm lock follows the
+// HUD exactly (see invoke-confirm-lock.js): no HUD up = no invoke lock.
+function _setActive(next) {
+  _active = next;
+  try { syncInvokeHudLock(_active); } catch {}
+}
+
 export function getActiveType() {
   return _active?.type ?? null;
 }
@@ -57,7 +65,7 @@ export function getActiveType() {
 export function dismissActive({ root, ar } = {}) {
   if (!_active) return;
   const { el, _resolve, type, cardSnap } = _active;
-  _active = null;
+  _setActive(null);
   // Only a Bond HUD paints the card (its hover preview), so only it restores —
   // from what the card showed at open, never re-derived from `ar` (see
   // _snapshotCardSurfaces). The Trait HUD never touched the card: re-deriving
@@ -574,7 +582,7 @@ function _despawn(el, onDone) {
 
 // Despawns the HUD panel, dimmer, and aura, then resolves the Promise.
 function _resolveHud(el, resolveFn, result, sfxKey) {
-  if (_active?.el === el) _active = null;
+  if (_active?.el === el) _setActive(null);
   if (sfxKey) _playHud(SFX[sfxKey]);
   _despawnDimmer();
   _despawnAura();
@@ -763,7 +771,7 @@ export function showTraitHUD({ roll, root, tokenUuid = null, onSelectionChange =
   ensureStyles();
   if (_active) {
     const old = _active;
-    _active = null;
+    _setActive(null);
     _despawn(old.el, () => old._resolve(null));
   }
   _playHud(SFX.trait, 0.3);
@@ -803,7 +811,7 @@ export function showTraitHUD({ roll, root, tokenUuid = null, onSelectionChange =
   _spawnAura(tokenUuid);
 
   return new Promise((resolve) => {
-    _active = { type: "trait", el, _resolve: resolve };
+    _setActive({ type: "trait", el, _resolve: resolve });
     let committing = false;
 
     const confirmBtn = el.querySelector("[data-confirm]");
@@ -901,7 +909,7 @@ export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null,
   ensureStyles();
   if (_active) {
     const old = _active;
-    _active = null;
+    _setActive(null);
     _despawn(old.el, () => old._resolve(null));
   }
   _playHud(SFX.bond, 0.3);
@@ -932,7 +940,7 @@ export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null,
   };
 
   return new Promise((resolve) => {
-    _active = { type: "bond", el, _resolve: resolve, cardSnap };
+    _setActive({ type: "bond", el, _resolve: resolve, cardSnap });
 
     const list       = el.querySelector(".fud-ih-bond-list");
     const confirmBtn = el.querySelector("[data-confirm]");
@@ -1001,7 +1009,7 @@ export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null,
 function _supersedeForSpectator() {
   if (!_active) return;
   const old = _active;
-  _active = null;
+  _setActive(null);
   if (old._resolve) _despawn(old.el, () => old._resolve(null));
   else _despawn(old.el);
 }
@@ -1040,7 +1048,7 @@ export function showTraitSpectator({ roll, actorName, root, tokenUuid = null }) 
   el.classList.add("is-spectating");
   _spawnDimmer();
   _spawnAura(tokenUuid);
-  _active = { type: "spectator", kind: "trait", el, sel: { a: false, b: false } };
+  _setActive({ type: "spectator", kind: "trait", el, sel: { a: false, b: false } });
   return el;
 }
 
@@ -1073,7 +1081,7 @@ export function showBondSpectator({ bonds, actorName, root, tokenUuid = null }) 
   el.classList.add("is-spectating");
   _spawnDimmer();
   _spawnAura(tokenUuid);
-  _active = { type: "spectator", kind: "bond", el, sel: { idx: 0 } };
+  _setActive({ type: "spectator", kind: "bond", el, sel: { idx: 0 } });
   return el;
 }
 
@@ -1211,7 +1219,7 @@ export async function animateInvokeReroll({ choice, rA, rB, dA, dB, intense = fa
   await Promise.all(jobs);
 
   await _wait(1650); // linger so the rerolled number reads before proceeding
-  if (_active?.el === el) _active = null;
+  if (_active?.el === el) _setActive(null);
   _despawnDimmer();
   _despawnAura();
   _despawn(el);
@@ -1238,7 +1246,7 @@ export function dismissSpectator({ traitOutcome = null, cancelled = false, expec
   if (!isSpec && !isCommitting) return;
   if (expectKind && isSpec && _active.kind !== expectKind) return;
   const { el } = _active;
-  _active = null;
+  _setActive(null);
   if (traitOutcome) playTraitOutcomeSfx(traitOutcome.oldTotal, traitOutcome.newTotal);
   else _playHud(cancelled ? SFX.cancel : SFX.confirm, 0.6);
   _despawnDimmer();

@@ -1092,6 +1092,15 @@ function paintUnstick() {
   const card = document.getElementById("fud-battlefield-card-root");
   const cardOpen = !!card?.querySelector(".fud-btn-confirm") && !!s?.running;
   const locked = cardOpen && card.querySelector(".fud-bf-card")?.hasAttribute("data-fud-reactions-pending");
+  // An Invoke window open on the card (to-do #22): "remote" = a player's, which
+  // only a forced Confirm can pass (their window closes with the card); "own" or
+  // mid-apply = this client's, closed or finished right here, so no Confirm.
+  const cardEl = cardOpen ? card.querySelector(".fud-bf-card") : null;
+  const invokeMode = cardEl?.getAttribute("data-fud-invoke-hud") || (cardEl?.hasAttribute("data-fud-invoke-applying") ? "applying" : null);
+  const confirmBtn = !cardOpen || locked ? ""
+    : invokeMode === "remote" ? `<span class="gmd-wb" data-cmd="confirmCardDropInvoke">Confirm, drop their Invoke</span>`
+    : invokeMode ? ""
+    : `<span class="gmd-wb" data-cmd="confirmCard">Confirm the card</span>`;
   const waits = listWaits();
   // Reaction menus open on this desk wait on an answer too (a player's or the
   // GM's): list them with a Pass way out (bug #17, 2026-11-28).
@@ -1108,7 +1117,7 @@ function paintUnstick() {
       : rxOpen.length ? "" : `<div class="none">Nothing is waiting on a player.</div>`}
     ${rxLines}
     <hr><div class="h">Force it along</div>
-    <div class="ln">${locked ? `<span class="gmd-wb" data-cmd="skipReactions">Skip open reactions</span>` : ""}${cardOpen && !locked ? `<span class="gmd-wb" data-cmd="confirmCard">Confirm the card</span>` : ""}<span class="gmd-wb" data-cmd="cancelOpp">Cancel Opportunity</span>${skipBlocked() ? "" : `<span class="gmd-wb" data-cmd="turn">Next Turn</span>`}</div>`;
+    <div class="ln">${locked ? `<span class="gmd-wb" data-cmd="skipReactions">Skip open reactions</span>` : ""}${confirmBtn}<span class="gmd-wb" data-cmd="cancelOpp">Cancel Opportunity</span>${skipBlocked() ? "" : `<span class="gmd-wb" data-cmd="turn">Next Turn</span>`}</div>`;
   if (D.unstick._h !== h) { D.unstick.innerHTML = h; D.unstick._h = h; }
 }
 
@@ -1129,6 +1138,13 @@ async function runCmd(cmd) {
     return null;
   }
   if (cmd === "confirmCard") { cardRoot?.querySelector(".fud-btn-confirm")?.click(); return null; }
+  if (cmd === "confirmCardDropInvoke") {
+    // Same as the card's GM padlock: unlock, then Confirm. Refused (by the
+    // card's own lock) if the window turned out to be this client's own.
+    cardRoot?.querySelector(".fud-bf-card")?.setAttribute("data-fud-gm-unlocked", "");
+    cardRoot?.querySelector(".fud-btn-confirm")?.click();
+    return null;
+  }
   if (cmd === "cancelOpp") {
     const n = globalThis.ONI?.OpportunitySystem?.withdrawBattleOffers?.({ reason: "cancelled from Unstick" }) ?? 0;
     ui.notifications?.info(n ? "Opportunity cancelled." : "No Opportunity is open.");

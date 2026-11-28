@@ -28,6 +28,7 @@
 // the item description for the player's awareness.
 
 import { log, warn } from "./logger.js";
+import { isOutOfBattleOnly } from "./field-only-items.js";
 
 // ─── Public: gather owned consumables ───────────────────────────────
 
@@ -148,6 +149,8 @@ export async function gatherConsumables(actor) {
       descriptionHtml: String(entry.consume_description ?? ip.description ?? ""),
       skillNames,
       skillUuids,
+      // "Out of battle only" (to-do #13): still listed, greyed out by the menu.
+      outOfBattleOnly: isOutOfBattleOnly(ip),
     });
   }
   candidates.sort((a, b) => a.name.localeCompare(b.name, game.i18n?.lang));
@@ -215,6 +218,9 @@ export async function gatherCreatables(actor) {
       skillNames,
       skillUuids,
       itemUuid: c.itemUuid ?? c.item?.uuid ?? null,
+      // The item the recipe PRODUCES is field-only: crafting it mid-battle
+      // would spend IP on something the battle can't use (to-do #13).
+      outOfBattleOnly: isOutOfBattleOnly(c.itemProps ?? c.item?.system?.props),
     };
   });
 }
