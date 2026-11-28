@@ -107,5 +107,18 @@ export async function playBossLine(ar, { skill = null } = {}) {
   }
 }
 
+// A line can also ride an Active Effect: the speaker says it as the effect lands (Deva's form effects, so she speaks
+// as she ENTERS Fury / Focus, 2026-11-28). Only an effect the battle applied (directorAppliedBy), only on the client
+// that created it (the acting GM, so one GM speaks), once per playthrough like any line. Not awaited: the round goes on.
+export function shouldPlayEffectLine(effect, userId, myId) {
+  return userId === myId && !!effect?.flags?.[NS]?.directorAppliedBy && !!readBossLine(effect);
+}
+export function initBossLineEffects() {
+  Hooks.on("createActiveEffect", (effect, _opts, userId) => {
+    try { if (shouldPlayEffectLine(effect, userId, game.user?.id)) playBossLine(null, { skill: effect }); }
+    catch (e) { console.warn("[FU BossLine] effect line skipped", e); }
+  });
+}
+
 // Tests only.
 export function _resetBossLineMemory() { spokenThisLoad.clear(); }

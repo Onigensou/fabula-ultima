@@ -77,6 +77,7 @@ import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./
 import { initHitCounter } from "./hit-counter.js";
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
+import { initBossLineEffects } from "./boss-line.js";
 import { initBattlerPose, emitBattlerPose, playBattlerPoseLocal, describeToken as describeBattlerPose } from "./battler-pose.js";
 import { initShowHurt } from "./show-hurt.js";
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
@@ -2035,6 +2036,9 @@ Hooks.once("ready", () => {
   // every client from the actor's markers + one-shot broadcasts.
   try { initBattlerPose(); }
   catch (e) { warn("initBattlerPose on ready threw", e); }
+  // Boss lines on effects (a boss speaks as a form lands: Deva's Fury / Focus).
+  try { initBossLineEffects(); }
+  catch (e) { warn("initBossLineEffects on ready threw", e); }
   // Hurt pose inside the animation shows: a PC hit by a show holds its hurt
   // art from the visible contact (show-hurt.js; local on every client).
   try { initShowHurt(); }

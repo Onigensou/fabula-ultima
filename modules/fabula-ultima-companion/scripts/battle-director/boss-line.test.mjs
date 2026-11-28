@@ -8,7 +8,7 @@
 // the flag has no switch, and stays silent for players and unflagged skills.
 // ============================================================================
 
-const { readBossLine, bossLineMessage, playBossLine, _resetBossLineMemory } = await import("./boss-line.js");
+const { readBossLine, bossLineMessage, playBossLine, _resetBossLineMemory, shouldPlayEffectLine } = await import("./boss-line.js");
 
 let pass = 0, fail = 0;
 const eq = (name, got, want) => {
@@ -73,6 +73,12 @@ _resetBossLineMemory();
 eq("no GameState: 1st", await playBossLine(ar("strike")), true);
 eq("no GameState: 2nd", await playBossLine(ar("strike")), false);
 
+// a line on an effect: only the battle-applied copy, only on the creating client
+const fx = (applied) => ({ flags: { "fabula-ultima-companion": { bossLine: { text: "Hi", switch: "S" }, ...(applied ? { directorAppliedBy: { effectLabel: "s_form" } } : {}) } } });
+eq("effect line: applied, my create", shouldPlayEffectLine(fx(true), "gm1", "gm1"), true);
+eq("effect line: another client created it", shouldPlayEffectLine(fx(true), "gm2", "gm1"), false);
+eq("effect line: not applied by the battle", shouldPlayEffectLine(fx(false), "gm1", "gm1"), false);
+eq("effect line: no line", shouldPlayEffectLine({ flags: { "fabula-ultima-companion": { directorAppliedBy: {} } } }, "gm1", "gm1"), false);
 eq("shown count", shown.length, 5);
 console.log(`boss-line: ${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);
