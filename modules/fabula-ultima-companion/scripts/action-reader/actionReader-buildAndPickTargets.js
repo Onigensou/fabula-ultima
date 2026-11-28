@@ -200,8 +200,30 @@ function decorateCandidate(entry, context) {
   };
 }
 
+/*
+ * Field objects (actor flag `fieldObject`, Deva's Missile Fists, user rule 2026-11-28): a thing on the field
+ * that still acts and can be broken, but is not a creature. An AI action that deals damage may pick it (an
+ * ally's attack can break a fist); an action that deals none (King Gorger's Element Gorge, a heal, a buff,
+ * a status) never wastes itself on it. Unlike `bdObject` (battlefield-object.js: no turns, never an AI
+ * target at all), so the two flags are separate. Same zero-imports reading: the flag is the contract.
+ */
+export function isFieldObjectActor(actor) {
+  return actor?.flags?.["fabula-ultima-companion"]?.fieldObject === true;
+}
+export function actionDealsDamage(props) {
+  if (!props) return false;
+  if (AR.normalizeText(props.skill_type) === "attack") return true;
+  if (props.isOffensiveSpell === true || String(props.isOffensiveSpell).toLowerCase() === "true") return true;
+  const rows = Object.values(props.effect_table ?? {});
+  return rows.some((r) => r && r.$deleted !== true && AR.normalizeText(r.effect_kind) === "deal_damage");
+}
 function buildDecoratedCandidates(context, options = {}) {
-  return getCandidatePool(context, options).map(entry => decorateCandidate(entry, context));
+  const all = getCandidatePool(context, options).map(entry => decorateCandidate(entry, context));
+  const chosen = context?.chosenAction ?? null;
+  if (!chosen) return all;
+  const props = chosen?.itemSnapshot?.props ?? chosen?.item?.system?.props ?? null;
+  if (actionDealsDamage(props)) return all;
+  return all.filter((c) => c.isSelf || !isFieldObjectActor(c.actor));
 }
 
 function filterCandidatesByRule(context, candidates, targetRule, options = {}) {
