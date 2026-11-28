@@ -1,0 +1,56 @@
+{
+  "_id": "BrskSetDef000001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795825451656,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "berserkerGear": "created"
+    }
+  },
+  "folder": "5KFkUixjqI5c6PpK",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Berserker — Equipment Set",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "id": "BrskSetDef000001",
+      "img": "icons/svg/item-bag.svg",
+      "isSet": false,
+      "item_activeEffect": "",
+      "item_skill_active": {},
+      "item_skill_passive": {},
+      "name": "Berserker — Equipment Set",
+      "related_item_list": {},
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "",
+          "bonus_label": "+10% damage",
+          "bonus_skill_ref": "Berserker's Fury",
+          "pieces": "2"
+        }
+      },
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>You deal <strong>10%</strong> more damage.</p></li></ul>",
+      "set_name": "Berserker",
+      "uuid": "Item.BrskSetDef000001"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "BrskSetDef000001"
+  },
+  "type": "equippableItem"
+}

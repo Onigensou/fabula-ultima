@@ -1,0 +1,203 @@
+{
+  "_id": "BrskArmorPsv0001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795825448606,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "BrskRageMarker01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This Berserk comes from Berserker Armor; it ends when you leave Crisis.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "berserkerGear": "ae",
+          "hidden": true,
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "hidden"
+          ]
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Demon_Mail.webp",
+      "name": "Berserker Rage",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "berserkerGear": "created"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Demon_Mail.webp",
+  "name": "Berserker Armor (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "BrskArmor0000001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>While in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, gain <strong>+1</strong> DEF and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.aPF9gzkqnUkcQmIC\" data-id=\"aPF9gzkqnUkcQmIC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Berserk</span></strong></a></span></span>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "bk_berserk, bk_mark",
+          "effect_kind": "chain",
+          "effect_label": "bk_on"
+        },
+        "1": {
+          "ae_duplicate_mode": "skip",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Berserk",
+          "effect_kind": "apply_ae",
+          "effect_label": "bk_berserk",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "scene",
+          "ae_template_ref": "Berserker Rage",
+          "effect_kind": "apply_ae",
+          "effect_label": "bk_mark",
+          "target_ref": "self"
+        },
+        "3": {
+          "chain_steps": "bk_unberserk, bk_unmark",
+          "effect_kind": "chain",
+          "effect_label": "bk_off"
+        },
+        "4": {
+          "ae_template_ref": "Berserk",
+          "effect_kind": "remove_ae",
+          "effect_label": "bk_unberserk",
+          "include_persistent": true,
+          "target_ref": "self"
+        },
+        "5": {
+          "ae_template_ref": "Berserker Rage",
+          "effect_kind": "remove_ae",
+          "effect_label": "bk_unmark",
+          "include_persistent": true,
+          "target_ref": "self"
+        }
+      },
+      "id": "BrskArmorPsv0001",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Demon_Mail.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "item_activeEffect": "",
+      "item_skill_active": {},
+      "item_skill_passive": {},
+      "max_level": 1,
+      "name": "Berserker Armor (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1 && AE_COUNT_BERSERKER_RAGE == 0",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "bk_on",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        },
+        "1": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1 && (AE_COUNT_BERSERKER_RAGE == 0 || AE_COUNT_BERSERK == 0)",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "bk_on",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        },
+        "2": {
+          "condition_formula": "HAS_STATUS_CRISIS == 1",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "bk_on",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "3": {
+          "condition_formula": "HAS_STATUS_CRISIS == 0 && AE_COUNT_BERSERKER_RAGE > 0",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "bk_off",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_gain_resource"
+        },
+        "4": {
+          "condition_formula": "HAS_STATUS_CRISIS == 0 && AE_COUNT_BERSERKER_RAGE > 0",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "bk_off",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        }
+      },
+      "related_item_list": {},
+      "skill_description": "<ul><li><p>While in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, gain <strong>+1</strong> DEF and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.aPF9gzkqnUkcQmIC\" data-id=\"aPF9gzkqnUkcQmIC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Berserk</span></strong></a></span></span>.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.BrskArmorPsv0001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "BrskArmorPsv0001"
+  },
+  "type": "equippableItem"
+}

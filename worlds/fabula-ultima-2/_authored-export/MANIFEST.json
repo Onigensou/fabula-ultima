@@ -273,6 +273,12 @@
         "parent": "5fTI1CfujLAXR4wp"
       },
       {
+        "id": "BrskSetFolder001",
+        "name": "Berserker",
+        "type": "Item",
+        "parent": "5KFkUixjqI5c6PpK"
+      },
+      {
         "id": "HUFtgWKFvGOD3NOW",
         "name": "Berserker",
         "type": "Item",
@@ -397,6 +403,12 @@
         "name": "Class Macro",
         "type": "Macro",
         "parent": null
+      },
+      {
+        "id": "ClassRelEquipFd1",
+        "name": "Class Related Equipment",
+        "type": "Item",
+        "parent": "6mmwacB3WSm0f9bN"
       },
       {
         "id": "VVjpCERIXMrOJna7",
@@ -3587,6 +3599,36 @@
         "effects": 0
       },
       {
+        "id": "BrskSetDef000001",
+        "name": "Berserker — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "BrskArmor0000001",
+        "name": "Berserker Armor",
+        "type": "equippableItem",
+        "effects": 3
+      },
+      {
+        "id": "BrskArmorPsv0001",
+        "name": "Berserker Armor (Passive)",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "BrskAxe000000001",
+        "name": "Berserker Axe",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "BrskAxePsv000001",
+        "name": "Berserker Axe (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "PP9gGEGMKkYy2wc3",
         "name": "Berserker Showdown",
         "type": "equippableItem",
@@ -3595,6 +3637,12 @@
       {
         "id": "0WLTOUYT0Qa0B4Mb",
         "name": "Berserker Sword",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "BrskSetFury00001",
+        "name": "Berserker's Fury",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12555,6 +12603,18 @@
         "name": "Spectral Light",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "SpFnHat000000001",
+        "name": "Spell Fencer Hat",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SpFnHatPsv000001",
+        "name": "Spell Fencer Hat (Passive)",
+        "type": "equippableItem",
+        "effects": 2
       },
       {
         "id": "X8nWZK2iCZwZQ2dH",

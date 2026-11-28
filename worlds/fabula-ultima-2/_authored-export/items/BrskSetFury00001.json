@@ -1,0 +1,77 @@
+{
+  "_id": "BrskSetFury00001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795825452798,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "berserkerGear": "created"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Axe/Icon-Ulfhedinn_Axe.webp",
+  "name": "Berserker's Fury",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "BrskSetDef000001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>You deal <strong>10%</strong> more damage.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "damage_amount": "1.1",
+          "damage_operation": "multiply",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "bf_bonus"
+        }
+      },
+      "id": "BrskSetFury00001",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Axe/Icon-Ulfhedinn_Axe.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "item_activeEffect": "",
+      "item_skill_active": {},
+      "item_skill_passive": {},
+      "max_level": 1,
+      "name": "Berserker's Fury",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DAMAGE_IS_HP == 1",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "bf_bonus",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "related_item_list": {},
+      "skill_description": "<ul><li><p>You deal <strong>10%</strong> more damage.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.BrskSetFury00001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "BrskSetFury00001"
+  },
+  "type": "equippableItem"
+}

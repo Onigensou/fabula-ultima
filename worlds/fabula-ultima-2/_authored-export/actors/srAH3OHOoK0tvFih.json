@@ -43,7 +43,11 @@
       "layoutRef": "db62b3074a4e6674",
       "opp_lucky": 0,
       "shopRoster": {
-        "config": null,
+        "config": {
+          "allowedSets": [
+            "Berserker"
+          ]
+        },
         "current": [
           {
             "id": "CmfeUhDwT0Fwyy1t",
@@ -426,6 +430,18 @@
           },
           {
             "id": "lFAG6dMR89JX4H9h"
+          },
+          {
+            "id": "BrskArmor0000001",
+            "price": 3000
+          },
+          {
+            "id": "BrskAxe000000001",
+            "price": 2800
+          },
+          {
+            "id": "SpFnHat000000001",
+            "price": 1500
           }
         ],
         "previous": null

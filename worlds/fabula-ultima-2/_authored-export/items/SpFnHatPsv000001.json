@@ -1,0 +1,258 @@
+{
+  "_id": "SpFnHatPsv000001",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795825455255,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "SpFnHatBladeAE01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Round of your last weapon attack (Spell Fencer Hat).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "berserkerGear": "ae",
+          "hidden": true,
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "hidden"
+          ]
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Feathered_Cap.webp",
+      "name": "Fencer Hat Blade",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "SpFnHatSpellAE01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Round of your last Offensive Spell (Spell Fencer Hat).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "berserkerGear": "ae",
+          "hidden": true,
+          "lifetimeMode": "persistent_counter",
+          "tags": [
+            "hidden"
+          ]
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Feathered_Cap.webp",
+      "name": "Fencer Hat Spell",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "berserkerGear": "created"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Feathered_Cap.webp",
+  "name": "Spell Fencer Hat (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "SpFnHat000000001",
+    "props": {
+      "cost": "",
+      "description": "<ul><li><p>When you cast an 【⚡Offensive Spell】, if you attacked last turn, recover <strong>5</strong> MP.</p></li><li><p>When you attack, if you cast an 【⚡Offensive Spell】 last turn, deal <strong>5</strong> extra damage.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "ROUND",
+          "ae_initial_charges_max": "999",
+          "ae_lifetime_mode": "persistent_counter",
+          "ae_template_ref": "Fencer Hat Blade",
+          "effect_kind": "apply_ae",
+          "effect_label": "ht_atk",
+          "target_ref": "self"
+        },
+        "1": {
+          "chain_steps": "ht_mp, ht_spl_mark",
+          "effect_kind": "chain",
+          "effect_label": "ht_spl"
+        },
+        "2": {
+          "condition_formula": "AE_COUNT_FENCER_HAT_BLADE > 0 && AE_CHARGES_FENCER_HAT_BLADE == ROUND - 1",
+          "effect_kind": "grant",
+          "effect_label": "ht_mp",
+          "grant_amount": "5",
+          "grant_resource": "mp",
+          "on_condition_fail": "skip",
+          "target_ref": "self"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "ROUND",
+          "ae_initial_charges_max": "999",
+          "ae_lifetime_mode": "persistent_counter",
+          "ae_template_ref": "Fencer Hat Spell",
+          "effect_kind": "apply_ae",
+          "effect_label": "ht_spl_mark",
+          "target_ref": "self"
+        },
+        "4": {
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "ht_dmg",
+          "target_ref": "trigger_subject"
+        },
+        "5": {
+          "ae_template_ref": "Fencer Hat Blade, Fencer Hat Spell",
+          "effect_kind": "remove_ae",
+          "effect_label": "ht_clear",
+          "include_persistent": true,
+          "target_ref": "self"
+        }
+      },
+      "id": "SpFnHatPsv000001",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Feathered_Cap.webp",
+      "isCheck": false,
+      "isReaction": true,
+      "item_activeEffect": "",
+      "item_skill_active": {},
+      "item_skill_passive": {},
+      "max_level": 1,
+      "name": "Spell Fencer Hat (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ROUND > 0",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ht_atk",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_attack"
+        },
+        "1": {
+          "condition_formula": "ROUND > 0 && ACTION_IS_SPELL == 1 && ACTION_ROLLS_ACCURACY == 1",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ht_spl",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_spell"
+        },
+        "2": {
+          "condition_formula": "ROUND > 0 && ACTION_IS_ATTACK == 1 && DAMAGE_IS_HP == 1 && AE_COUNT_FENCER_HAT_SPELL > 0 && AE_CHARGES_FENCER_HAT_SPELL == ROUND - 1",
+          "reaction_action_target": "enemy",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ht_dmg",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        },
+        "3": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ht_clear",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "4": {
+          "condition_formula": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "ht_clear",
+          "reaction_max_per_round": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_end"
+        }
+      },
+      "related_item_list": {},
+      "skill_description": "<ul><li><p>When you cast an 【⚡Offensive Spell】, if you attacked last turn, recover <strong>5</strong> MP.</p></li><li><p>When you attack, if you cast an 【⚡Offensive Spell】 last turn, deal <strong>5</strong> extra damage.</p></li></ul>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "uuid": "Item.SpFnHatPsv000001"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "SpFnHatPsv000001"
+  },
+  "type": "equippableItem"
+}
