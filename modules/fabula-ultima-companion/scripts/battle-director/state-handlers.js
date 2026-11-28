@@ -128,6 +128,7 @@ import { holdsKnockoutRevive } from "./knockout-revive.js";
 import { holdsStaysDown } from "./stays-down.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
+import { provokePinKind } from "./provoke-bypass.js";
 import { volleyShotContext } from "./chain-strikes.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
 import { beginHitCounter, endHitCounter } from "./hit-counter.js";
@@ -4082,7 +4083,9 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   // pinned target locked in (and a random roulette lands on it), instead of the
   // pick being overwritten after Confirm. A RANDOM action gets no range, which
   // keeps taunter pins out of random mode exactly as before.
-  const pinKind = pinKindOpt ?? (skill ? pinActionKindForSkill(skill) : null);
+  // An `ignore_provoke` action (a boss signature move, provoke-bypass.js) gets no
+  // Provoked pin; taunter pins (range-based) still apply.
+  const pinKind = provokePinKind(pinKindOpt ?? (skill ? pinActionKindForSkill(skill) : null), skill, attackWeapon);
   const mandatoryPins = (!isSelf && pickerMode !== "all" && (pickerMode !== "random" || pinKind))
     ? collectForcedIncludeTargets(eligibleForPicker,
         pickerMode === "random" ? ""
@@ -5793,7 +5796,9 @@ const Compute = {
       const _chainSpec = chainSpecFor({ kind: "Skill", skillItem: skill, isCheck: !!skillProj?.roll, hasDamage: !!skillProj?.hasDamage, evalCount: _chainEval });
       // Provoked: one strike of a drawn Chain goes to the provoker (chain-plan.js pinProvokerStrike). The plain
       // pin covers attacks/spells only; a damaging Chain that rolls a check counts whatever the skill type.
-      const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(allTargets, "", _chainCasterActor, "attack").map((e) => e.tokenUuid) : [];
+      // An `ignore_provoke` skill (provoke-bypass.js) keeps its drawn strikes as drawn.
+      const _chainPinKind = provokePinKind("attack", skill);
+      const _chainProvokers = _chainSpec && _chainPinKind ? collectForcedIncludeTargets(allTargets, "", _chainCasterActor, _chainPinKind).map((e) => e.tokenUuid) : [];
       const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, allTargets.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
       // A volley Chain is only known now: re-derive the card (strike 1) with its
       // shot's share of the flat bonuses (chain-strikes.js volleyShotContext).
@@ -5932,7 +5937,8 @@ const Compute = {
         const _atkChainEval = (f) => evaluateFormula(String(f), buildSkillResolver({ actor: liveActor, payload: {}, skill: null, round: director.dCombat?.round ?? 0, vars: { CASTER_LEVEL: Number(liveActor?.system?.props?.level ?? 0) || 0 } }), 0);
         const _chainSpec = String(director.ctx.attackMode ?? "").startsWith("two-weapon")
           ? null : chainSpecFor({ kind: "Attack", weapon, isCheck: true, hasDamage: true, evalCount: _atkChainEval });
-        const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(targetSnapshots, "", liveActor, "attack").map((e) => e.tokenUuid) : [];
+        const _atkPinKind = provokePinKind("attack", weapon);
+        const _chainProvokers = _chainSpec && _atkPinKind ? collectForcedIncludeTargets(targetSnapshots, "", liveActor, _atkPinKind).map((e) => e.tokenUuid) : [];
         const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, targetSnapshots.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
         // Volley: re-derive the card (strike 1) with its shot's share of the flat
         // bonuses — see the Skill branch. Same dice, same grant.
@@ -6223,7 +6229,9 @@ const Confirm = {
       const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
       actingSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
       actingSkillDuration = String(actingSkill?.system?.props?.duration ?? "");
-      actingPinKind = ar.kind === "Attack" ? "attack" : (pinActionKindForSkill(actingSkill) ?? "");
+      // An `ignore_provoke` action presents no kind (provoke-bypass.js): the pin did
+      // not apply, so ACTION_IS_PROVOKABLE must not consume Peacock Dance either.
+      actingPinKind = provokePinKind(ar.kind === "Attack" ? "attack" : (pinActionKindForSkill(actingSkill) ?? ""), actingSkill, ar.weapon) ?? "";
     } catch (_) { /* noop — tags/duration are optional gates */ }
     const actionBase = Object.freeze({
       actionKind: ar.kind ?? null,

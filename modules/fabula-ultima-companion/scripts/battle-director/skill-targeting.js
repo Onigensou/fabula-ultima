@@ -34,6 +34,7 @@ import { classifyActionIntent } from "./skill-intent.js";
 import { requestTargeting as requestBdTargetPicker } from "./target-picker.js";
 import { isGrappled, tokensGrappledBy } from "./grappled.js";
 import { getAllegianceOverrides, applyAllegianceOverride, hasUnconditionalTargetBlock, getTargetSideBlocks, isTargetBlockedFor } from "./snapshot.js";
+import { actionIgnoresProvoke } from "./provoke-bypass.js";
 
 // Reserved strings that expand to inline targeting rows. Authoring sugar
 // — saves a row from the effect_table for the most common case.
@@ -575,7 +576,8 @@ async function resolveTargetingRow(row, ctx) {
   if (candidateSource === "combat" && ctx?.reactorActor) {
     const { getMustIncludeAppliers } = await import("./snapshot.js");
     const pins = getMustIncludeAppliers(ctx.reactorActor);
-    if (pins.size && isOwnPerformedAction(ctx) && pool.some((t) => matchesCategory(t, "enemy", ctx))) {
+    // An `ignore_provoke` skill (a boss signature move, provoke-bypass.js) is never narrowed.
+    if (pins.size && isOwnPerformedAction(ctx) && !actionIgnoresProvoke(ctx.skill) && pool.some((t) => matchesCategory(t, "enemy", ctx))) {
       const isPin = (t) => pins.has(String(t?.actor?.uuid ?? "")) || pins.has(String(t?.document?.actor?.uuid ?? ""));
       const before = pool.length;
       pool = mode === "all" && pool.some(isPin) ? pool : pool.filter((t) => isPin(t) || !matchesCategory(t, "enemy", ctx));

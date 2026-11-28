@@ -982,7 +982,7 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
   // Source-skill NAME filter — "the action came from <Skill>". Despite the old
   // wording this is used far more on the damage triggers (creature_deals_damage /
   // creature_will_deal_damage = 49 of 58 live rows) than on creature_completes_skill.
-  textCol("reaction_source_skill", "Source Skill Filter", { tooltip: "Action triggers: fire only when the skill/action driving the event has this NAME (e.g. \"Crossfire\"). Most often used on the damage triggers to scope a rider to one weapon or spell. Blank = any skill.", vis: ACTION_TRIG_VIS, reconcileVis: true }),
+  textCol("reaction_source_skill", "Source Skill Filter", { tooltip: "Action triggers: fire only when the skill/action driving the event has this NAME (e.g. \"Crossfire\"). Most often used on the damage triggers to scope a rider to one weapon or spell. Several names, comma-separated, = any of them (\"Elemental Slash, Elemental Slash: Overflow\"). Exact names, case-insensitive. Blank = any skill.", vis: ACTION_TRIG_VIS, reconcileVis: true }),
   // Per-round fire quota — bound how many times this reaction row may auto/ask-fire
   // within one BD round (counter resets each round, wiped at combat end). Wandering
   // Flame's Ignition caps Burn-triggered MP/ZP gains at 3/round.

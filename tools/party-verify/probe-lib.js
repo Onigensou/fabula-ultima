@@ -126,7 +126,8 @@ function payloadForRow(row, ctx, weaponUuid) {
   if (status) p.status = status;
   // reaction_source_skill matches payload.sourceSkillName — a rider that only
   // fires after ONE named skill (Bandit Gloves waits for "Soul Steal").
-  const srcSkill = String(row.reaction_source_skill ?? "").trim();
+  // A comma list names several skills (any passes): probe with the first.
+  const srcSkill = String(row.reaction_source_skill ?? "").split(",")[0].trim();
   if (srcSkill) p.sourceSkillName = srcSkill;
   // reaction_action_target ("ally"/"enemy"/"neutral") needs at least one target
   // of that disposition in payload.targetTokenUuids (skill-effects.js ~L914).
