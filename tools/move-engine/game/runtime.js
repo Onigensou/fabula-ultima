@@ -149,12 +149,14 @@ async function meDrive(main, { maxMs = 60000, tailMs = 8000 } = {}) {
   for (let n = 0; n < 200000; n++) {
     await meYield();
     if (err) throw err;
+    meProbeOpen();
     if (!ME_Q.length) { if (done) break; throw new Error("move stalled at " + VT + " ms: it awaits something the game runtime never resolves"); }
     ME_Q.sort((a, b) => a.target - b.target || a.seq - b.seq);
     if (done && ME_Q[0].target > endVT + tailMs) break;      // a forgotten loop after the move ended
     if (ME_Q[0].target > maxMs) throw new Error("move runs past " + maxMs + " ms");
     const d = ME_Q.shift(); VT = d.target; meAdvance(); d.res();
   }
+  meProbeOpen();
   return endVT == null ? VT : endVT;
 }
 
@@ -162,6 +164,13 @@ async function meDrive(main, { maxMs = 60000, tailMs = 8000 } = {}) {
 const ME_ONCE = [];                    // [{ at, fn }]
 const ME_SFX = [];                     // oni.timeline sfx list
 const ME_PARTS = [];                   // particles { t0, layer, p }
+// open-ended particles (life 1e9) that die on a flag the move flips later (speed lines, a shadow, a ground mark): the dry
+// run flips the flag long before playback starts, so they died on playback's first frame. The flag is read in virtual time
+// instead (meProbeOpen, every scheduler step): the particle's life ends at the ms it was switched off, then the flag is ignored.
+const ME_OPEN = [];
+function meProbeOpen() { for (let i = ME_OPEN.length - 1; i >= 0; i--) { const e = ME_OPEN[i], p = e.p; const c = Object.assign({}, p, { dead: false });
+  try { p.update(c, 0); } catch (er) {} if (!c.dead) continue; ME_OPEN.splice(i, 1); p.life = Math.max(1, VT - e.t0);
+  const up = p.update; p.update = (q, dt) => { up(q, dt); q.dead = false; }; } }
 const ME_AFTER = [];                   // afterimages
 let ME_GATE = null;
 const meOnce = (fn) => { if (PHASE === "dry") ME_ONCE.push({ at: VT, fn }); };
@@ -172,7 +181,7 @@ function sfx(key, vol = .55, rate = 1, stopAfter = 0) {
   return { pause() {}, play() {}, volume: v };
 }
 function addP(layer, p) { if (PHASE !== "dry") return; const q = Object.assign({ t: 0, life: 1000, vx: 0, vy: 0, g: 0, drag: 1 }, p);
-  ME_PARTS.push({ t0: VT, layer, p: q });
+  const e = { t0: VT, layer, p: q }; ME_PARTS.push(e); if (q.update && q.life >= 1e8) ME_OPEN.push(e);
   if (q.onDie) { const life = q.life; ME_Q.push({ target: VT + life, seq: ME_QSEQ++, res: () => { const c = meSimParticle(Object.assign({}, q), life); try { q.onDie(c); } catch (e) { console.warn("[move-engine] onDie threw", e); } } }); } }
 function meStepParticle(p, dt) { if (p.update) p.update(p, dt); else { p.vy += p.g * dt; p.vx *= Math.pow(p.drag, dt / 16); p.vy *= Math.pow(p.drag, dt / 16); p.x += p.vx * dt; p.y += p.vy * dt; } }
 function meSimParticle(c, life) { let t = 0; while (t < life) { const dt = Math.min(16, life - t); c.t += dt; t += dt; meStepParticle(c, dt); } return c; }
