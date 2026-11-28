@@ -242,13 +242,17 @@ eq("row: element falls back to the action's", ev({ hit: true, damage: 5 }, { dam
   eq("mixed absorb nets a heal", [view[2].damage, view[2].affinity], [80, "AB"]);
   const only = chainHitsView({ perTarget: { h: { landed: 1, hitsLanded: 1, crits: 0, damage: 87, hpLoss: 0, shieldLoss: 0, hpGain: 87 } } }, [{ tokenUuid: "h", affinity: "RS" }]);
   eq("only an absorbed strike heals (card affinity ignored)", [only[0].damage, only[0].affinity], [87, "AB"]);
-  // Provoke on a drawn Chain: one strike on the provoker satisfies it
+  // Provoke on a drawn Chain: no pin since 2026-11-28 (random targets ignore Provoke)
   const { pinProvokerStrike } = await import("./chain-plan.js");
+  eq("2026-11-28: a drawn chain ignores Provoke (seek)", pinProvokerStrike({ spec: { count: 4, mode: "seek", strikeTargets: [["h"], ["k"], ["k"], ["z"]] }, keep: null }, ["b"]).spec.strikeTargets, [["h"], ["k"], ["k"], ["z"]]);
+  eq("2026-11-28: a drawn chain ignores Provoke (random)", pinProvokerStrike({ spec: { count: 2, mode: "random", strikeTargets: [["h"], ["h"]] }, keep: null }, ["b"]).spec.strikeTargets, [["h"], ["h"]]);
+  // the retired 11-11 pin, behind its test flag
+  const L = { legacy11_11: true };
   const seek = (st) => ({ spec: { count: 4, mode: "seek", strikeTargets: st }, keep: null });
-  eq("provoker already struck: unchanged", pinProvokerStrike(seek([["h"], ["b"], ["k"], ["z"]]), ["b"]).spec.strikeTargets, [["h"], ["b"], ["k"], ["z"]]);
-  eq("provoker missed by the draw: strike 1 moves to it", pinProvokerStrike(seek([["h"], ["k"], ["k"], ["z"]]), ["b"]).spec.strikeTargets, [["b"], ["k"], ["k"], ["z"]]);
-  eq("no provoker: unchanged", pinProvokerStrike(seek([["h"], ["k"]]), []).spec.strikeTargets, [["h"], ["k"]]);
-  eq("random mode keeps the provoker on the card", pinProvokerStrike({ spec: { count: 2, mode: "random", strikeTargets: [["h"], ["h"]] }, keep: ["h"] }, ["b"]).keep, ["h", "b"]);
+  eq("provoker already struck: unchanged", pinProvokerStrike(seek([["h"], ["b"], ["k"], ["z"]]), ["b"], L).spec.strikeTargets, [["h"], ["b"], ["k"], ["z"]]);
+  eq("provoker missed by the draw: strike 1 moves to it", pinProvokerStrike(seek([["h"], ["k"], ["k"], ["z"]]), ["b"], L).spec.strikeTargets, [["b"], ["k"], ["k"], ["z"]]);
+  eq("no provoker: unchanged", pinProvokerStrike(seek([["h"], ["k"]]), [], L).spec.strikeTargets, [["h"], ["k"]]);
+  eq("random mode keeps the provoker on the card", pinProvokerStrike({ spec: { count: 2, mode: "random", strikeTargets: [["h"], ["h"]] }, keep: ["h"] }, ["b"], L).keep, ["h", "b"]);
   eq("pick mode untouched (the author chose)", pinProvokerStrike({ spec: { count: 2, mode: "pick", strikeTargets: [["h"], ["k"]] }, keep: ["h", "k"] }, ["b"]).spec.strikeTargets, [["h"], ["k"]]);
 }
 
@@ -261,9 +265,9 @@ eq("row: element falls back to the action's", ev({ hit: true, damage: 5 }, { dam
   eq("volley draws a target per shot", d.spec.strikeTargets.length === 5 && d.spec.strikeTargets.every((l) => l.length === 1), true);
   eq("volley keeps every target on the card", d.keep, null);
   eq("pick still keeps the picked set", drawChainTargets({ count: 2, mode: "pick" }, ["A", "B", "C"]).keep, ["A", "B"]);
-  eq("volley pins a provoker like random",
+  eq("volley ignores Provoke like random (2026-11-28)",
     pinProvokerStrike({ spec: { count: 3, mode: "volley", strikeTargets: [["h"], ["k"], ["k"]] }, keep: ["h", "k"] }, ["b"]).spec.strikeTargets,
-    [["b"], ["k"], ["k"]]);
+    [["h"], ["k"], ["k"]]);
   const spec = { count: 3, mode: "volley", strikeTargets: [["A"], ["A"], ["B"]] };
   const ar = { x: 1 };
   eq("volley strike 1 is the card", strikeArFor(ar, spec, 1), ar);

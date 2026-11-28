@@ -119,14 +119,14 @@ export function drawChainTargets(spec, targetUuids, rng = Math.random) {
   return { spec: { ...spec, strikeTargets }, keep: isDrawnChainMode(spec.mode) ? null : cardTargets };
 }
 
-// Provoked (must_include_applier) + a drawn Chain (random / seek): the card is ONE action, so the pin is
-// met when at least ONE strike goes to the provoker (user rule, 2026-11-11), never all of them. When no
-// drawn strike landed on a provoker that is on the card, strike 1 is moved onto it; the rest stay as drawn.
-// Applies to any damaging Chain that rolls a check, whatever the skill's type (Asura Strike is an Active
-// skill, which the plain attack/spell pin would skip). `draw` = drawChainTargets' result.
-export function pinProvokerStrike(draw, provokerUuids = []) {
+// Provoked (must_include_applier) + a drawn Chain (random / seek / volley): NO pin. User rule 2026-11-28
+// (supersedes the 11-11 "strike 1 goes to the provoker"): a move that does not declare its target outright
+// (random draws) ignores Provoke, like a hit-everyone move. The draw is returned as drawn. Kept as a
+// pass-through so the call sites stay put; `opts.legacy11_11` runs the old pin (tests only).
+export function pinProvokerStrike(draw, provokerUuids = [], opts = {}) {
   const spec = draw?.spec;
   if (!spec || !isDrawnChainMode(spec.mode)) return draw;
+  if (!opts.legacy11_11) return draw;
   const list = Array.isArray(spec.strikeTargets) ? spec.strikeTargets : null;
   const pins = (provokerUuids ?? []).filter(Boolean);
   if (!list?.length || !pins.length) return draw;

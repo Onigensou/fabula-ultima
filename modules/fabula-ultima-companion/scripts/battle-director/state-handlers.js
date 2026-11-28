@@ -129,7 +129,7 @@ import { holdsKnockoutRevive } from "./knockout-revive.js";
 import { holdsStaysDown } from "./stays-down.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
-import { provokePinKind } from "./provoke-bypass.js";
+import { provokePinKind, targetsAtRandom } from "./provoke-bypass.js";
 import { volleyShotContext } from "./chain-strikes.js";
 import { computeDrawnChainPreview, extendChainPreview, isDrawnChainPreviewSpec } from "./chain-preview.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
@@ -4130,8 +4130,11 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   // keeps taunter pins out of random mode exactly as before.
   // An `ignore_provoke` action (a boss signature move, provoke-bypass.js) gets no
   // Provoked pin; taunter pins (range-based) still apply.
+  // A RANDOM action ("One Random …") gets no Provoked pin either: it does not declare
+  // its target, so it ignores Provoke (user rule 2026-11-28; it used to land the
+  // roulette on the provoker).
   const pinKind = provokePinKind(pinKindOpt ?? (skill ? pinActionKindForSkill(skill) : null), skill, attackWeapon);
-  const mandatoryPins = (!isSelf && pickerMode !== "all" && (pickerMode !== "random" || pinKind))
+  const mandatoryPins = (!isSelf && pickerMode !== "all" && pickerMode !== "random")
     ? collectForcedIncludeTargets(eligibleForPicker,
         pickerMode === "random" ? ""
           : (String(attackRange ?? skill?.system?.props?.skill_range ?? "any").trim().toLowerCase() || "any"),
@@ -6289,6 +6292,11 @@ const Confirm = {
       // An `ignore_provoke` action presents no kind (provoke-bypass.js): the pin did
       // not apply, so ACTION_IS_PROVOKABLE must not consume Peacock Dance either.
       actingPinKind = provokePinKind(ar.kind === "Attack" ? "attack" : (pinActionKindForSkill(actingSkill) ?? ""), actingSkill, ar.weapon) ?? "";
+      // A random-target action ignores Provoke (2026-11-28), so it must not spend Peacock Dance.
+      if (actingPinKind && targetsAtRandom({
+        skillTarget: actingSkill?.system?.props?.skill_target ?? ar.weapon?.skillTarget ?? "",
+        hasRoulette: !!ar.weapon?.hasRoulette, chainMode: ar?.chain?.mode ?? "",
+      })) actingPinKind = "";
     } catch (_) { /* noop — tags/duration are optional gates */ }
     const actionBase = Object.freeze({
       actionKind: ar.kind ?? null,

@@ -79,10 +79,13 @@ for (const [key, s] of Object.entries(DEFEAT_STYLES)) {
   if (s.external) { ok(`${key}: external player named`, typeof s.external === "string" && s.external.length > 0); ok(`${key}: external is never offered`, s.internal === true); continue; }
   ok(`${key}: body fade finishes inside totalMs`,
      (s.body?.delayMs ?? 0) + (s.body?.fadeMs ?? 0) <= s.totalMs);
-  const cues = Array.isArray(s.sfx) ? s.sfx : [{ atMs: 0, ...s.sfx }];
-  ok(`${key}: has a sound`, cues.length > 0);
-  ok(`${key}: every cue is a URL inside totalMs`,
-     cues.every((c) => typeof c.url === "string" && c.url.startsWith("https://") && (c.atMs ?? 0) >= 0 && (c.atMs ?? 0) < s.totalMs));
+  // sfx: null = deliberately silent (consumed: its own animation already played the death, defeat-fx cueList → [])
+  if (s.sfx !== null) {
+    const cues = Array.isArray(s.sfx) ? s.sfx : [{ atMs: 0, ...s.sfx }];
+    ok(`${key}: has a sound`, cues.length > 0);
+    ok(`${key}: every cue is a URL inside totalMs`,
+       cues.every((c) => typeof c.url === "string" && c.url.startsWith("https://") && (c.atMs ?? 0) >= 0 && (c.atMs ?? 0) < s.totalMs));
+  } else ok(`${key}: a silent style is the consumed kind`, key === "consumed");
   for (const part of ["flash", "embers", "fluff", "screenFlash"]) {
     if (s[part]?.atMs == null) continue;
     ok(`${key}.${part}: ends inside totalMs`, s[part].atMs + s[part].ms <= s.totalMs);

@@ -112,7 +112,7 @@ const DESC = {
     `<strong>moderate</strong>&nbsp;${L.physical}&nbsp;damage to one creature and recover ` +
     "HP equal to half the damage dealt.</p>",
   adapt:
-    bullets(trig("the Rakshasa is attacked with a weapon")) +
+    bullets(trig("the Rakshasa is hit by an attack or a spell")) +
     "<p>Lower the efficiency of the triggering weapon type, but increase efficiency " +
     "against other weapons.</p>",
   shift2:
@@ -409,24 +409,20 @@ run(async ({ changes, deletes }) => {
   }), "NEW item — Devour (auto-hit, bypasses Strike immunity, self-heal)"]);
 
   // ── Adaptive Defense ─────────────────────────────────────────────────────
-  // Two rows, one per trigger, because "it does not matter whether the attack
-  // hits" is exactly the creature_hit_by_action + creature_miss_action pair.
+  // ONE row: creature_hit_by_action. User call 2026-11-28: "When he gets hit he
+  // adapts, that's it" — misses never feed the window (migration
+  // 2026-11-28-adaptive-defense-hits-only removed the old creature_miss_action row,
+  // which as "self" only ever matched Rakshasa's OWN misses).
   //
   // UNGATED. It used to carry `HAS_STATUS_CRISIS == 0` so Ten Thousand Arms
   // could take over the window at Crisis; that passive is gone (the Crisis
   // identity is now the dual-arm combo, and stacking a second escalation on top
   // of it overloads the phase). The read window therefore behaves identically
   // in both halves of the fight, which is also one less thing to explain.
-  //
-  // SOURCE differs per trigger (fixed 2026-11-28, migration
-  // 2026-11-28-adaptive-defense-miss-source): the hit row's subject is the struck
-  // creature ("self"), but the miss row is dispatched to the missed creature with the
-  // ATTACKER as subject ("enemy"). A "self" miss row only matched the attacker-side
-  // "I missed" twin, i.e. Rakshasa's own misses, and never read a party miss.
   const readRow = (idx, trigger, ref) => ({
     [String(idx)]: {
       $deleted: false, reaction_trigger: trigger,
-      reaction_source: trigger === "creature_miss_action" ? "enemy" : "self",
+      reaction_source: "self",
       reaction_passive_mode: "force", reaction_effect_ref: ref,
     },
   });
@@ -439,7 +435,6 @@ run(async ({ changes, deletes }) => {
     action_keywords: "", description: DESC.adapt,
     reaction_config_table: {
       ...readRow(0, "creature_hit_by_action", "ad_read"),
-      ...readRow(1, "creature_miss_action", "ad_read"),
     },
     effect_table: {
       "0": {

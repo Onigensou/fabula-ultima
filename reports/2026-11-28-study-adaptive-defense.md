@@ -82,3 +82,7 @@ There were three causes:
 ## Tests
 - `unit-inspect/live-details.test.mjs` (7), `weapon-read-family.test.mjs` (11),
   `data-migrations/2026-11-28-adaptive-defense-miss-source.test.mjs` (4).
+
+## Update 2026-11-28 (user call): hits only
+
+User: "When he gets hit he adapts, that is it." Misses never feed Adaptive Defense. The migration above was replaced by `2026-11-28-adaptive-defense-hits-only`: it REMOVES the creature_miss_action row on every copy and changes the trigger text to "the Rakshasa is hit by an attack or a spell". Spells still read as Arcane.

@@ -127,3 +127,11 @@ Driven with `FUCompanion.api.experimental.sim.run` / `testSkill`. Sandbox-only t
   (chain 12) / Ground Slam; Rakshasa Severing Verdict (+162); Hilde-Fafnir Zero Power: Reinslaughter;
   Nidhogg Wailing Breath (massive) / Call of the Master; Galvanic Paryashera Galvanic Drill (chain 6);
   Kirin Divine Railstream (chain 8); Crysta Zero Power: Water-Moon Mirage; Fafnir Condemn; Gigas Heavy Swing.
+
+## Update 2026-11-28 (user call): Enchant gate
+
+Open call 1 decided: switch the other Enchants off while only flyers remain. New migration `2026-11-28-asura-enchant-gate` (asura-update had already run on the real world): the Fire/Bolt/Ice Enchant rows become `AE_COUNT_<X>_MARK == 0 && ENEMY_COUNT_GROUNDED > 0`. Calls 2 (Overflow gets the Aspect bonus) and "no Ignores Provoked text" were confirmed by the user.
+
+## Update 2026-11-28 (user call): random targets ignore Provoke
+
+User rule: a move that does not declare its target outright ignores Provoke (hit-everyone moves already include the provoker; a declared single target, e.g. Gigas Heavy Swing, keeps the pin). Engine now: no Provoked pin for "One Random ..." skill_target / roulette weapons (picker), random-mode effect rows (skill-targeting), and drawn Chains random/seek/volley (pinProvokerStrike is a pass-through; the 11-11 strike-1 pin is retired). Peacock Dance is not spent by a random action. Asura Strike keeps its ignore_provoke keyword (now redundant, harmless). Unit tests only; not live-tested.

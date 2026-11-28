@@ -40,4 +40,16 @@ eq(provokePinKind(null, skill("ignore_provoke")), null, "heal/buff stays unpinne
 eq(provokePinKind("", skill("pierce")), "", "empty kind passes through (ACTION_IS_PROVOKABLE reads '')");
 eq(provokePinKind("attack", null, { actionKeywords: "ignore_provoke" }), null, "Attack command via the weapon");
 
+// Random-target actions ignore Provoke (user rule 2026-11-28)
+const { targetsAtRandom } = await import("./provoke-bypass.js");
+eq(targetsAtRandom({ skillTarget: "One Random Enemy" }), true, "One Random Enemy = random");
+eq(targetsAtRandom({ skillTarget: "One Random Creature" }), true, "roulette text = random");
+eq(targetsAtRandom({ hasRoulette: true }), true, "legacy roulette weapon = random");
+eq(targetsAtRandom({ skillTarget: "All Enemies", chainMode: "seek" }), true, "drawn chain (seek) = random");
+eq(targetsAtRandom({ chainMode: "volley" }), true, "volley = random");
+eq(targetsAtRandom({ skillTarget: "One Enemy", chainMode: "pick" }), false, "pick chain = declared");
+eq(targetsAtRandom({ skillTarget: "One Enemy" }), false, "declared single target keeps the pin (Gigas Heavy Swing)");
+eq(targetsAtRandom({ skillTarget: "Up to three enemies" }), false, "declared multi target keeps the pin");
+eq(targetsAtRandom({}), false, "nothing = declared");
+
 console.log(`provoke-bypass ok (${n} checks)`);
