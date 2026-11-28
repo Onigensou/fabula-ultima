@@ -16,7 +16,7 @@
     }
   },
   "folder": "IxpkbdLoQodYFW6Y",
-  "formula": "1d11",
+  "formula": "1d14",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
   "name": "Bandits Hideout - Accessory",
   "ownership": {
@@ -25,6 +25,21 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "0qeYhRr7GuDbXaO8",
+      "documentCollection": "Item",
+      "documentId": "OppCharmSaintRo1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Apis_Bead.webp",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Saint's Rosary",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "15JirGZ9jzcrvBiS",
       "documentCollection": "Item",
@@ -97,6 +112,21 @@
         10
       ],
       "text": "Beret",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "CA5iwOw1YkI4NXzl",
+      "documentCollection": "Item",
+      "documentId": "OppCharmHexCoin1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Gambler_Coin.webp",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Hex Coin",
       "type": "document",
       "weight": 1
     },
@@ -187,6 +217,21 @@
         11
       ],
       "text": "Binoculars",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "yTIYTkVoJGAFn9tG",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMoonPen1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Blue_Moon_Charm.webp",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Moonstone Pendant",
       "type": "document",
       "weight": 1
     }

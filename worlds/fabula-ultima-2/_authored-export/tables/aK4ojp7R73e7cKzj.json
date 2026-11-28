@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d6",
+  "formula": "1d8",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "Fafnir Castle - Treasure",
   "ownership": {
@@ -48,6 +48,36 @@
         3
       ],
       "text": "Shield of Egis",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "IZiZ5NpNXorQyumj",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMendRib1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Big_Red_Ribbon.webp",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Ribbon",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "jNdZKtmh05ectnUu",
+      "documentCollection": "Item",
+      "documentId": "OppCharmDoomBel1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Instrument/Icon-Rune_Bell.webp",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Doomsayer's Bell",
       "type": "document",
       "weight": 1
     },

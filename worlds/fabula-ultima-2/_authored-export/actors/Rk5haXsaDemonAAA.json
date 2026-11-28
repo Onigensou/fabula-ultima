@@ -98,7 +98,7 @@
               "$deleted": false,
               "reaction_effect_ref": "ad_read",
               "reaction_passive_mode": "force",
-              "reaction_source": "self",
+              "reaction_source": "enemy",
               "reaction_trigger": "creature_miss_action"
             }
           },

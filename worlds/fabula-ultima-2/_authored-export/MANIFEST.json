@@ -5363,6 +5363,12 @@
         "effects": 0
       },
       {
+        "id": "OppCharmDoomBel1",
+        "name": "Doomsayer's Bell",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "eCzSEIagUBh1JoRJ",
         "name": "Dorsal Fin",
         "type": "equippableItem",
@@ -7593,6 +7599,12 @@
         "name": "Hex",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "OppCharmHexCoin1",
+        "name": "Hex Coin",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "2jmr67iRKcFu0YwU",
@@ -9917,6 +9929,12 @@
         "effects": 2
       },
       {
+        "id": "OppCharmMoonPen1",
+        "name": "Moonstone Pendant",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "NrUzUjHLW2Id3PJC",
         "name": "Morning Star",
         "type": "equippableItem",
@@ -11435,6 +11453,12 @@
         "effects": 2
       },
       {
+        "id": "OppCharmMendRib1",
+        "name": "Ribbon",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "F00dStap1eRice00",
         "name": "Rice",
         "type": "equippableItem",
@@ -11829,6 +11853,12 @@
         "name": "Saint’s Retribution",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "OppCharmSaintRo1",
+        "name": "Saint's Rosary",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "9aAx6ZemtdxpTxUr",
@@ -23365,7 +23395,7 @@
             "name": "Volt Stinger"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "ZbCSKnZdB2cKlW9H",
@@ -23554,7 +23584,7 @@
             "name": "Hover"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "8kluKkqkcGFkmXNO",
@@ -28553,7 +28583,7 @@
       {
         "id": "jlDJQx6WUtsw7npK",
         "name": "Bandits Hideout - Accessory",
-        "results": 11
+        "results": 14
       },
       {
         "id": "UKUdnJ43VjD7yITi",
@@ -28598,7 +28628,7 @@
       {
         "id": "xcvyadSZsEqYvjJA",
         "name": "Bandits Hideout - Treasure",
-        "results": 18
+        "results": 20
       },
       {
         "id": "lts7pA0Id97apfQf",
@@ -28648,7 +28678,7 @@
       {
         "id": "h2UugZ9iirGWux94",
         "name": "Fafnir Castle - Accessory",
-        "results": 4
+        "results": 7
       },
       {
         "id": "xyoBbBh1C3nASU73",
@@ -28698,7 +28728,7 @@
       {
         "id": "aK4ojp7R73e7cKzj",
         "name": "Fafnir Castle - Treasure",
-        "results": 6
+        "results": 8
       },
       {
         "id": "Uzf4acZaV3JhTuY9",
@@ -28848,7 +28878,7 @@
       {
         "id": "CRGj5HutohiPQnl1",
         "name": "The Wyrmwood - Accessory",
-        "results": 7
+        "results": 10
       },
       {
         "id": "eXxNIQ3UcglIdF7F",
@@ -28893,7 +28923,7 @@
       {
         "id": "hS4XNu1vLtWbPSne",
         "name": "The Wyrmwood - Treasure",
-        "results": 9
+        "results": 11
       },
       {
         "id": "8zdktLBCbkf2u8RM",
@@ -28913,7 +28943,7 @@
       {
         "id": "86Lj4WaVPFkt286A",
         "name": "Valley of the Dragon - Accessory",
-        "results": 19
+        "results": 22
       },
       {
         "id": "VgiHGix1LOByKDdu",
@@ -28968,7 +28998,7 @@
       {
         "id": "DMeYaPoSPUxH6xVE",
         "name": "Valley of the Dragon - Treasure",
-        "results": 15
+        "results": 17
       },
       {
         "id": "StbIP7EczNqm98PR",
@@ -29003,7 +29033,7 @@
       {
         "id": "oDiuDJRoayGJwr1L",
         "name": "Vastwind Field - Accessory",
-        "results": 13
+        "results": 16
       },
       {
         "id": "TP1f76y3t190U1DS",
@@ -29048,7 +29078,7 @@
       {
         "id": "dRN7ElUZH86RVl4e",
         "name": "Vastwind Field - Treasure",
-        "results": 11
+        "results": 13
       },
       {
         "id": "zmFWPkL08OPmxnry",

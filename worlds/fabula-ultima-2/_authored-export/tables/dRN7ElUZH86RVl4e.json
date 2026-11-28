@@ -16,7 +16,7 @@
     }
   },
   "folder": "dfZOIscssH4Tgqd3",
-  "formula": "1d11",
+  "formula": "1d13",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "Vastwind Field - Treasure",
   "ownership": {
@@ -25,6 +25,21 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "01ypF5AgHggTV2uz",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMendRib1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Big_Red_Ribbon.webp",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Ribbon",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "6HicbCPpI71AG2Be",
       "documentCollection": "Item",
@@ -127,6 +142,21 @@
         7
       ],
       "text": "Soul of Pillage",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "qOBDreeTMU3Z3Yi6",
+      "documentCollection": "Item",
+      "documentId": "OppCharmDoomBel1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Instrument/Icon-Rune_Bell.webp",
+      "range": [
+        12,
+        12
+      ],
+      "text": "Doomsayer's Bell",
       "type": "document",
       "weight": 1
     },

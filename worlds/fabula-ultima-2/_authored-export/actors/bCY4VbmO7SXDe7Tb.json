@@ -690,6 +690,7 @@
           "monster_ef": "100",
           "name": "Forget me Nut",
           "optional_params": {},
+          "out_of_battle_only": true,
           "plant_ef": "100",
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",

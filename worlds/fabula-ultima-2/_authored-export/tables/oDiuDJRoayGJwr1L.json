@@ -2,7 +2,7 @@
   "_id": "oDiuDJRoayGJwr1L",
   "_stats": {
     "compendiumSource": null,
-    "coreVersion": "12.331",
+    "coreVersion": "12.343",
     "createdTime": 1769663395055,
     "duplicateSource": "RollTable.TP1f76y3t190U1DS",
     "systemId": "custom-system-builder",
@@ -16,7 +16,7 @@
     }
   },
   "folder": "dfZOIscssH4Tgqd3",
-  "formula": "1d13",
+  "formula": "1d16",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
   "name": "Vastwind Field - Accessory",
   "ownership": {
@@ -52,6 +52,21 @@
         1
       ],
       "text": "Air Pendant",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "bp2oHqe7UEISGy98",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMoonPen1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Blue_Moon_Charm.webp",
+      "range": [
+        15,
+        15
+      ],
+      "text": "Moonstone Pendant",
       "type": "document",
       "weight": 1
     },
@@ -131,6 +146,21 @@
       "weight": 1
     },
     {
+      "_id": "izzs6EQMrBTaTSgJ",
+      "documentCollection": "Item",
+      "documentId": "OppCharmSaintRo1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Apis_Bead.webp",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Saint's Rosary",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "k395oBDHidqLSYNx",
       "documentCollection": "Item",
       "documentId": "6KJ8orZCmaVj7nf2",
@@ -142,6 +172,21 @@
         5
       ],
       "text": "Smart Stimulator",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "k8p1jH49XNuOcFI4",
+      "documentCollection": "Item",
+      "documentId": "OppCharmHexCoin1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Gambler_Coin.webp",
+      "range": [
+        14,
+        14
+      ],
+      "text": "Hex Coin",
       "type": "document",
       "weight": 1
     },

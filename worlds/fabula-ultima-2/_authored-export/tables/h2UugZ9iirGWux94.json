@@ -16,7 +16,7 @@
     }
   },
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d4",
+  "formula": "1d7",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
   "name": "Fafnir Castle - Accessory",
   "ownership": {
@@ -56,6 +56,21 @@
       "weight": 1
     },
     {
+      "_id": "Ja5c9EXAOBNZPO8S",
+      "documentCollection": "Item",
+      "documentId": "OppCharmSaintRo1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Apis_Bead.webp",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Saint's Rosary",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "lkuisyartqVWTuuh",
       "documentCollection": "Item",
       "documentId": "PCoOu6WTIe1wGgpG",
@@ -71,6 +86,21 @@
       "weight": 1
     },
     {
+      "_id": "qIukNGY28zdGsKkR",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMoonPen1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Blue_Moon_Charm.webp",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Moonstone Pendant",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "z6HV2ceWckNZy8D7",
       "documentCollection": "Item",
       "documentId": "GtDJyikCuScbp7CI",
@@ -82,6 +112,21 @@
         3
       ],
       "text": "Alchemist Vial",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zTOWwooerz3NDxPY",
+      "documentCollection": "Item",
+      "documentId": "OppCharmHexCoin1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Gambler_Coin.webp",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Hex Coin",
       "type": "document",
       "weight": 1
     }

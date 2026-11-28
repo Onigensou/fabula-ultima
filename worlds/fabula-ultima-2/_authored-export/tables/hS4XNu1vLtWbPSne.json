@@ -16,7 +16,7 @@
     }
   },
   "folder": "DAg9RfuNcR9huljS",
-  "formula": "1d9",
+  "formula": "1d11",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "The Wyrmwood - Treasure",
   "ownership": {
@@ -37,6 +37,21 @@
         4
       ],
       "text": "Hornet",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "4cqEWvVHziTEqHFW",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMendRib1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Big_Red_Ribbon.webp",
+      "range": [
+        11,
+        11
+      ],
+      "text": "Ribbon",
       "type": "document",
       "weight": 1
     },
@@ -67,6 +82,21 @@
         8
       ],
       "text": "Bikini Armor",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "CikCWxml9mwLdU0f",
+      "documentCollection": "Item",
+      "documentId": "OppCharmDoomBel1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Instrument/Icon-Rune_Bell.webp",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Doomsayer's Bell",
       "type": "document",
       "weight": 1
     },

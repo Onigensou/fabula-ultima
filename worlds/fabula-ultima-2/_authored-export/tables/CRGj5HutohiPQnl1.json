@@ -16,7 +16,7 @@
     }
   },
   "folder": "DAg9RfuNcR9huljS",
-  "formula": "1d7",
+  "formula": "1d10",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
   "name": "The Wyrmwood - Accessory",
   "ownership": {
@@ -86,6 +86,21 @@
       "weight": 1
     },
     {
+      "_id": "CQbtnV8RAcZVDuu4",
+      "documentCollection": "Item",
+      "documentId": "OppCharmSaintRo1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Apis_Bead.webp",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Saint's Rosary",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "DKtf2UEKRpvPvrns",
       "documentCollection": "Item",
       "documentId": "eeg3n5d911imUDE0",
@@ -101,6 +116,21 @@
       "weight": 1
     },
     {
+      "_id": "e11tZTGpOe57iFgg",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMoonPen1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Blue_Moon_Charm.webp",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Moonstone Pendant",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "k1CeFF5j2zQYhyqC",
       "documentCollection": "Item",
       "documentId": "6vnqLdS9ER3gWiSc",
@@ -112,6 +142,21 @@
         1
       ],
       "text": "Bandit Gloves",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ogTUOGRtDGrMeFmH",
+      "documentCollection": "Item",
+      "documentId": "OppCharmHexCoin1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Gambler_Coin.webp",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Hex Coin",
       "type": "document",
       "weight": 1
     },

@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d15",
+  "formula": "1d17",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "Valley of the Dragon - Treasure",
   "ownership": {
@@ -97,6 +97,21 @@
       "weight": 1
     },
     {
+      "_id": "GU2g8Vbw4FRMmTiE",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMendRib1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Big_Red_Ribbon.webp",
+      "range": [
+        17,
+        17
+      ],
+      "text": "Ribbon",
+      "type": "document",
+      "weight": 1
+    },
+    {
       "_id": "HFZkHixRhUQPTIHI",
       "documentCollection": "Item",
       "documentId": "DzXNAIk2nGsnrNmU",
@@ -138,6 +153,21 @@
         8
       ],
       "text": "Shooting Star Crystal",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "MqPKaeNbLXo3OOda",
+      "documentCollection": "Item",
+      "documentId": "OppCharmDoomBel1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Instrument/Icon-Rune_Bell.webp",
+      "range": [
+        16,
+        16
+      ],
+      "text": "Doomsayer's Bell",
       "type": "document",
       "weight": 1
     },

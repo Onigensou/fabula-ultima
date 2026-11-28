@@ -442,6 +442,14 @@
           {
             "id": "SpFnHat000000001",
             "price": 1500
+          },
+          {
+            "id": "OppCharmDoomBel1",
+            "price": 2000
+          },
+          {
+            "id": "OppCharmMendRib1",
+            "price": 2000
           }
         ],
         "previous": null

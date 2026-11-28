@@ -8,6 +8,89 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "8tbYqNrK8IQW2jOU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795853230444,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.species_override",
+          "mode": 5,
+          "priority": 20,
+          "value": "UNDEAD"
+        },
+        {
+          "key": "affinity_8",
+          "mode": 0,
+          "priority": null,
+          "value": "VU"
+        }
+      ],
+      "description": "<p>Convert <strong>Healing </strong>into <strong>Damage </strong>and gain the <strong>Undead </strong>type</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "8tbYqNrK8IQW2jOU",
+          "originalParentId": "7JMVyQcRdSbAx6Sf",
+          "originalUuid": "Actor.7JMVyQcRdSbAx6Sf.ActiveEffect.8tbYqNrK8IQW2jOU"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-zombie",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "bakedSummonStatus": true,
+          "directorPermanent": true,
+          "uncleansable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png",
+      "name": "Zombie",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "bspDC7hFRTYuwdhf"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"

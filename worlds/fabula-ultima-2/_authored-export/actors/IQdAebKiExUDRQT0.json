@@ -528,6 +528,7 @@
               "from_resource": "",
               "menu_label": "",
               "summon_act_this_round": "false",
+              "summon_clone_statuses": "Zombie",
               "summon_clone_suffix": "(Reanimated)",
               "summon_clone_target": "true",
               "summon_count": "1",

@@ -1145,7 +1145,7 @@
       "system": {
         "props": {
           "action_command": "",
-          "action_keywords": "pierce, chain 4 seek",
+          "action_keywords": "pierce, chain 4 seek, ignore_provoke",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "8120",
           "animation_damage_timing_options": "offset",
@@ -1358,7 +1358,7 @@
           "cost": "-",
           "damage_bonus": "48",
           "defense_target_type": "mdef",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature.</p><p>The strike takes on the Asura's current Aspect:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\">Disarmed</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\">Silence</a>d.</p></li></ul>",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature.</p><p>The strike takes on the Asura's current Aspect:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\">Disarmed</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\">Silence</a>d. Can target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a> creatures.</p></li></ul>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -1564,8 +1564,15 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
-          "description": "<p>The Asura's blades are aspected to air.</p>",
+          "changes": [
+            {
+              "key": "can_target_flying_with",
+              "mode": 0,
+              "priority": 20,
+              "value": ""
+            }
+          ],
+          "description": "<p>The Asura's blades are aspected to air.</p><p>Elemental Slash can target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a> creatures.</p>",
           "disabled": false,
           "duration": {
             "combat": null,
@@ -2217,7 +2224,7 @@
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_source_skill": "Elemental Slash",
+              "reaction_source_skill": "Elemental Slash, Elemental Slash: Overflow",
               "reaction_status_filter": "",
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_will_deal_damage",
@@ -2246,7 +2253,7 @@
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_source_skill": "Elemental Slash",
+              "reaction_source_skill": "Elemental Slash, Elemental Slash: Overflow",
               "reaction_status_filter": "",
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_will_deal_damage",
@@ -2275,7 +2282,7 @@
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_source_skill": "Elemental Slash",
+              "reaction_source_skill": "Elemental Slash, Elemental Slash: Overflow",
               "reaction_status_filter": "",
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_will_deal_damage",
@@ -2304,7 +2311,7 @@
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_source_skill": "Elemental Slash",
+              "reaction_source_skill": "Elemental Slash, Elemental Slash: Overflow",
               "reaction_status_filter": "",
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_will_deal_damage",
@@ -2331,7 +2338,7 @@
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_source_skill": "Elemental Slash",
+              "reaction_source_skill": "Elemental Slash, Elemental Slash: Overflow",
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_deals_damage",
               "requires_skill": ""
@@ -2357,7 +2364,7 @@
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_source_skill": "Elemental Slash",
+              "reaction_source_skill": "Elemental Slash, Elemental Slash: Overflow",
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_deals_damage",
               "requires_skill": ""
@@ -2383,7 +2390,7 @@
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_source_skill": "Elemental Slash",
+              "reaction_source_skill": "Elemental Slash, Elemental Slash: Overflow",
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_deals_damage",
               "requires_skill": ""
@@ -2642,7 +2649,7 @@
           "cost": "-",
           "damage_bonus": "48",
           "defense_target_type": "def",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature.</p><p>The strike takes on the Asura's current Aspect:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\">Disarmed</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\">Silence</a>d.</p></li></ul>",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature.</p><p>The strike takes on the Asura's current Aspect:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\">Disarmed</a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\">Silence</a>d. Can target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a> creatures.</p></li></ul>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -3700,6 +3707,19 @@
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
+        },
+        "8": {
+          "$deleted": false,
+          "action_pattern_condition": "formula",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Sword Enchant - Air",
+          "action_pattern_priority": "9",
+          "action_pattern_string": "ENEMY_COUNT_FLYING > 0 && ENEMY_COUNT_GROUNDED == 0 && AE_COUNT_AIR_ASPECT == 0",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "0"
         }
       },
       "activation": "4",
@@ -3780,7 +3800,7 @@
       "condition_obscure": "NA",
       "condition_oil": "NA",
       "condition_panic": "NA",
-      "condition_paralyzed": "NA",
+      "condition_paralyzed": "IM",
       "condition_petrify": "NA",
       "condition_poisoned": "NA",
       "condition_shaken": "NA",

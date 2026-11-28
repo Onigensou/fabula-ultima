@@ -16,7 +16,7 @@
     }
   },
   "folder": "IxpkbdLoQodYFW6Y",
-  "formula": "1d18",
+  "formula": "1d20",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/treas.png",
   "name": "Bandits Hideout - Treasure",
   "ownership": {
@@ -82,6 +82,21 @@
         11
       ],
       "text": "Heartseeker",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "g0xluZqCHsDq8NPs",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMendRib1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/FF%20Brave%20Exvius/Icon-Big_Red_Ribbon.webp",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Ribbon",
       "type": "document",
       "weight": 1
     },
@@ -262,6 +277,21 @@
         12
       ],
       "text": "Adversity",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "vuBknS0g5ZluRldS",
+      "documentCollection": "Item",
+      "documentId": "OppCharmDoomBel1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Instrument/Icon-Rune_Bell.webp",
+      "range": [
+        19,
+        19
+      ],
+      "text": "Doomsayer's Bell",
       "type": "document",
       "weight": 1
     },

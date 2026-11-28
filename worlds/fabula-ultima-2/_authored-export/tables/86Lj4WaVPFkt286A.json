@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d19",
+  "formula": "1d22",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/neck.png",
   "name": "Valley of the Dragon - Accessory",
   "ownership": {
@@ -21,6 +21,21 @@
   },
   "replacement": true,
   "results": [
+    {
+      "_id": "1VMvmCG6xHTpftjm",
+      "documentCollection": "Item",
+      "documentId": "OppCharmMoonPen1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Blue_Moon_Charm.webp",
+      "range": [
+        21,
+        21
+      ],
+      "text": "Moonstone Pendant",
+      "type": "document",
+      "weight": 1
+    },
     {
       "_id": "5ecmSXxBwhrLokXh",
       "documentCollection": "Item",
@@ -33,6 +48,21 @@
         17
       ],
       "text": "Jumping Boots",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "5v1xzMnfGQT9VyRy",
+      "documentCollection": "Item",
+      "documentId": "OppCharmHexCoin1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Gambler_Coin.webp",
+      "range": [
+        20,
+        20
+      ],
+      "text": "Hex Coin",
       "type": "document",
       "weight": 1
     },
@@ -123,6 +153,21 @@
         1
       ],
       "text": "Clockwork Heart",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ikHHEgxUJGzqm6cO",
+      "documentCollection": "Item",
+      "documentId": "OppCharmSaintRo1",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Ys9-Apis_Bead.webp",
+      "range": [
+        22,
+        22
+      ],
+      "text": "Saint's Rosary",
       "type": "document",
       "weight": 1
     },
