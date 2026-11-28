@@ -42,6 +42,17 @@ export function actionIgnoresProvoke(...sources) {
   return sources.some((s) => keywordsIgnoreProvoke(keywordsOf(s)));
 }
 
+// Random-target actions ignore Provoke too (user rule 2026-11-28): a move that does not
+// declare its target outright — a "One Random …" skill_target, a roulette weapon, or a
+// drawn Chain (random / seek / volley) — might or might not hit the provoker, so no pin.
+// (Hit-everyone moves already include the provoker; a declared single target keeps the pin.)
+const DRAWN_CHAIN = new Set(["random", "seek", "volley"]);
+export function targetsAtRandom({ skillTarget = "", hasRoulette = false, chainMode = "" } = {}) {
+  if (hasRoulette) return true;
+  if (DRAWN_CHAIN.has(String(chainMode ?? "").toLowerCase())) return true;
+  return /\brandom\b/i.test(String(skillTarget ?? ""));
+}
+
 // The kind an action presents to the Provoked pin, after the bypass: the given
 // kind ("attack" / "spell"), or null when the action ignores Provoke (null = no
 // attacker-side pin, exactly as for a heal or buff).
