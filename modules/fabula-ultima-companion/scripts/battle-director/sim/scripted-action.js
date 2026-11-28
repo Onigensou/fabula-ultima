@@ -314,8 +314,17 @@ export async function scriptedBundleFor(director, snap) {
     }
     SimMode.recordDeclaration(turnKey, sig);
     if (directive.once) SimMode.exhaustScript(directive);
-    SimMode.note("scripted", `${baseName(actorDoc.name)} → Attack on ${targetUuids.length} target(s)`);
-    return { command: "Attack", attackMode: "main", targetUuids };
+    // The hand the brain would swing with (main → off → virtual), so a character with
+    // no weapon in the main hand — Blanche's two shields → the Twin Shields virtual
+    // attack — doesn't abort COMPUTE with "no weapon in queue". `attackMode` on the
+    // directive overrides it.
+    let attackMode = directive.attackMode || null;
+    if (!attackMode) {
+      try { attackMode = (await import("./player-brain.js")).resolveAttackMode(actorDoc); } catch { attackMode = null; }
+    }
+    attackMode ||= "main";
+    SimMode.note("scripted", `${baseName(actorDoc.name)} → Attack (${attackMode}) on ${targetUuids.length} target(s)`);
+    return { command: "Attack", attackMode, targetUuids };
   }
 
   // `create: true` — CREATE the named item on the spot, paying IP (an Elemental

@@ -811,6 +811,8 @@ async function normalizeScripts(scripts) {
       cover: !!d.cover,
       // A main-hand Attack on `targets` instead of casting (skill is a label too).
       attack: !!d.attack,
+      // With attack: the hand to swing ("main" | "off" | "virtual:N"); omit = the brain's pick.
+      attackMode: d.attackMode ? String(d.attackMode) : null,
       // Only inside a free-action frame; an ordinary turn goes to the brain.
       free: !!d.free,
     });
