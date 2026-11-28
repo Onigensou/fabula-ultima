@@ -93,7 +93,8 @@ def("lance", { boss: "guard", status: "approved", icon: "deva", name: "Mudra Lan
 
 // ───────── Missile Fist (summon, detonation, break)
 const FIST_ANGLE = (C) => tv(C, "fistAngle");
-def("fist", { boss: "fist", status: "approved", icon: "fistA", fists: true, name: "Missile Fist", tag: "Action · summons three Missile Fists", changes: [],
+const FIST_THREE = { id: "fist-three", re: "Three Missile Fists, 2 hits each (your pick 2026-11-28)", text: "She now summons three fists. Two still form at her shoulders; the third forms above her head and launches a beat after them to its own hover spot. Everything else as approved." };
+def("fist", { boss: "fist", status: "changes", icon: "fistA", fists: true, name: "Missile Fist", tag: "Action · summons three Missile Fists", changes: [FIST_THREE],
   intro: "She raises a hand and three fists burn into being, two at her shoulders and one above her head,, then rocket out to their spots on her side of the field and hover there, each showing its two-pip fuse.",
   rules: "The fists are summoned actors on her side. In the game they take their own turns: a pip drops on each, and they detonate on the turn after. Fuse pips are a stand-in for the summon's countdown display.",
   tune: [T("form", "Forming (ms)", 900, 300, 2000, 50), T("fly", "Flight to hover spot (ms)", 800, 300, 1800, 50), T("arc", "Flight arc height (px)", 110, 0, 240, 10), T("fistAngle", "Fist angle at rest (deg, 0 = at the party)", 0, -90, 90, 5)],

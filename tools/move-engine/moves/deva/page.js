@@ -76,7 +76,7 @@ function build({ out, version = "test", publish = false } = {}) {
   rep("<title>Nox Legion Actions</title>", publish ? "<title>Deva Action Animations</title>" : "<title>Deva Action Animations (move-engine test)</title>");
   rep(/<div class="eyebrow">[^<]*<\/div>/, `<div class="eyebrow">Battle Director · Deva · animation mockup ${version} · move-engine</div>`);
   rep("<h1>Nox Legion Actions</h1>", "<h1>Deva · Action Animations</h1>");
-  rep(/<p>Every active move[^]*?<\/p>/, `<p>Her whole kit, rebuilt on move-engine (the same move files the game builds from) in her own arena, Valley_Battlemap007, on the 3D battle stage with in-game battler sizes. She now faces the party. Thirteen moves are approved and frozen; v20 makes your Fury slider tuning the default on Fists of Fury and Fists of Focus. Approve each move, write a note, pause anywhere to comment on that moment, drag any slider, then press Send feedback.</p>`);
+  rep(/<p>Every active move[^]*?<\/p>/, `<p>Her whole kit, rebuilt on move-engine (the same move files the game builds from) in her own arena, Valley_Battlemap007, on the 3D battle stage with in-game battler sizes. She now faces the party. Every move but the Missile Fist summon is approved and frozen; v20 makes your Fury slider tuning the default on Fists of Fury and Fists of Focus. Approve each move, write a note, pause anywhere to comment on that moment, drag any slider, then press Send feedback.</p>`);
   rep("Valley_Battlemap004 · 3D stage", "Valley_Battlemap007 · 3D stage");
   rep(`<p class="muted" style="margin:0">Damage, heal and MP numbers are the game's own look. The real scripts won't draw text.</p>`,
     `<p class="muted" style="margin:0">Damage and MP numbers and the hit counter are the game's own look. The status tags (Shaken, Slow, Blind, Cursed, Miss) and the fuse pips are stand-ins; the real scripts won't draw text.</p>`);
@@ -104,6 +104,6 @@ module.exports = { build, gameCheck, ACTORS, PRESET, SFX, CLIPS, ASSETS };
 if (require.main === module) {
   const a = process.argv.slice(2), pub = a.includes("--publish"), vi = a.indexOf("--version");
   const out = a.find((x) => !x.startsWith("--") && a[a.indexOf(x) - 1] !== "--version") || path.join(__dirname, "..", "..", "out", "deva", "deva-anim.html");
-  const r = build({ out, publish: pub, version: vi >= 0 ? a[vi + 1] : pub ? "v20" : "test" });
+  const r = build({ out, publish: pub, version: vi >= 0 ? a[vi + 1] : pub ? "v21" : "test" });
   console.log("ok", r.out, (fs.statSync(r.out).size / 1e3).toFixed(0) + " KB +", r.files.length, "asset files");
 }

@@ -45,7 +45,7 @@ async function play(from = 0) {
 
 // ───────── UI: groups → moves
 CUR = "slap";
-const STATUS_TXT = { approved: "approved · frozen", changes: "v20 tuning · needs review", "": "needs review" };
+const STATUS_TXT = { approved: "approved · frozen", changes: "v21 change · needs review", "": "needs review" };
 function pickSkill(k) { CUR = k; resetStage(); GATE_AT = null; TOTAL = null; renderAll(); }
 function renderSkills() { const box = $("skills"); box.innerHTML = "";
   for (const [g, gname] of Object.entries(GROUPS)) { const keys = SKL.filter((k) => SK[k].boss === g); if (!keys.length) continue;
