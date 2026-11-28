@@ -1128,7 +1128,8 @@ function scopeMatches(R, row, ev, src) {
   if (subjectScope === "ally" && (!ev.subject || ev.subject.side !== R.side || ev.subject === R)) return false;
   if (subjectScope === "enemy" && (!ev.subject || ev.subject.side === R.side)) return false;
   const skill = s(row.reaction_source_skill);
-  if (skill && key(skill) !== key(ev.skillName)) return false;
+  // Comma list = any of the named skills (engine: source-skill-filter.js).
+  if (skill && !skill.split(",").map(key).filter(Boolean).includes(key(ev.skillName))) return false;
   const cause = norm(row.reaction_cause_filter);
   if (cause && cause !== norm(ev.cause)) return false;
   const res = norm(row.reaction_resource_filter);

@@ -24,6 +24,7 @@ import { readTimedStrikeConfig, strikeDamage, finisherDamage } from "./timed-str
 import { resolveOutgoingDamageParts } from "./skill-formulas.js";
 import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock, shouldReverseHeal, isHealReversedActor, isReviveKillImmune, rowIgnoresUndead } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
+import { sourceSkillMatches } from "./source-skill-filter.js";
 import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
 // The amount selector lives in its own leaf module so remote-pick can render it
 // on a player's client without dragging the effect engine along. Re-exported
@@ -1242,8 +1243,9 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
   //     = any (no-op for every existing row). Lets a follow-up reaction key off a
   //     SPECIFIC named skill ("after you use Crossfire …") as DATA, with no
   //     skill-name branch in the engine. Primarily for creature_completes_skill.
+  //     A comma list names several skills; any of them passes (source-skill-filter.js).
   const wantSkill = String(row.reaction_source_skill ?? "").trim().toLowerCase();
-  if (wantSkill && String(payload?.sourceSkillName ?? "").trim().toLowerCase() !== wantSkill) {
+  if (wantSkill && !sourceSkillMatches(wantSkill, payload?.sourceSkillName)) {
     log(`passive ${item.name}: source_skill filter failed — want="${wantSkill}" got="${payload?.sourceSkillName}"`);
     return false;
   }

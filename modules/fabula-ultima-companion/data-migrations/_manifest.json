@@ -873,6 +873,10 @@
     {
       "key": "2026-11-28-adaptive-defense-miss-source",
       "path": "data-migrations/2026-11-28-adaptive-defense-miss-source.js"
+    },
+    {
+      "key": "2026-11-28-asura-update",
+      "path": "data-migrations/2026-11-28-asura-update.js"
     }
   ]
 }

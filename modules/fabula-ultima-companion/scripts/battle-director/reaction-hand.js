@@ -68,6 +68,7 @@ import { deckDeal, deckReturn, deckPlay, deckSetHand, deckSetAllyHand } from "./
 import { flyComet, preloadLandingCue } from "./reaction-landing.js";
 import { makeDraggable, sendHome, discardGhost, abortDrag, isDragging, isTucked, preloadDragCues, handCardHome, handCardScale } from "./reaction-drag.js";
 import { massiveJoinTables } from "./massive-keyword.js";
+import { sourceSkillNames } from "./source-skill-filter.js";
 
 const MIRROR_ROOT_ID = "fud-bf-mirror-root";
 const STYLE_ID = "fud-rxh-style";
@@ -240,8 +241,11 @@ const CHECK = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" strok
 function fromText(r) {
   if (r.from) return r.from;
   const { item, row } = rowOf(r);
-  const src = String(row?.reaction_source_skill ?? "").trim();
-  return src && src.toLowerCase() !== String(item?.name ?? "").trim().toLowerCase() ? src : null;
+  // A comma list names several skills (source-skill-filter.js): no "From" when the
+  // carrier itself is one of them, else the names joined.
+  const names = sourceSkillNames(row?.reaction_source_skill);
+  const own = String(item?.name ?? "").trim().toLowerCase();
+  return names.length && !names.some((n) => n.toLowerCase() === own) ? names.join(" / ") : null;
 }
 function typeText(r) {
   if (r.type) return r.type;
@@ -389,10 +393,15 @@ function rowOf(r) {
 
 // The skill a row is scoped to (reaction_source_skill), as its owner knows it.
 function sourceSkillOf(row, actor) {
-  const name = String(row?.reaction_source_skill ?? "").trim();
-  if (!name) return null;
-  const want = name.toLowerCase();
-  const item = actor?.items?.find?.((i) => String(i.name ?? "").trim().toLowerCase() === want) ?? null;
+  // A comma list (source-skill-filter.js): the first listed skill the owner knows.
+  const names = sourceSkillNames(row?.reaction_source_skill);
+  if (!names.length) return null;
+  let name = names[0], item = null;
+  for (const n of names) {
+    const want = n.toLowerCase();
+    item = actor?.items?.find?.((i) => String(i.name ?? "").trim().toLowerCase() === want) ?? null;
+    if (item) { name = n; break; }
+  }
   return { name, item, short: item ? shortSkillName(item, actor) : name };
 }
 const isOwnRow = (row) => { const s = String(row?.reaction_source ?? "").trim().toLowerCase(); return s === "self" || !s; };

@@ -56,6 +56,7 @@ import { buildUltimaMenuSpec } from "./domination.js";
 import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
 import { potionTargetText } from "../polymorph/polymorph-potions.js";
+import { provokePinKind } from "./provoke-bypass.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, snapshotEligibleTargetsFromDCombat,
          attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate, applyAreaGate, targetsKnockedOut,
          targetsKnockedOutAlly, mergeUndeadRevivePool } from "./snapshot.js";
@@ -704,7 +705,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   // free (distinct from "can only target"/Provoked, which restricts the whole pool).
   let attackerActorDoc = null;
   try { attackerActorDoc = await fromUuid(snap.actorUuid); } catch {}
-  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, currentWeapon?.range, attackerActorDoc, "attack")
+  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, currentWeapon?.range, attackerActorDoc, provokePinKind("attack", currentWeapon))
     .map((e) => e.tokenUuid);
 
   // Multi-pass (two-weapon) deliberately picks only ONE target for the FIRST
@@ -916,7 +917,7 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel, gran
 
   // "Must include X" taunt (must_be_targeted_by) — pin any candidate that forces
   // inclusion for this attack's range (Apple o' Archer). Spare slots stay free.
-  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, range, actor, "attack")
+  const mandatoryTokenUuids = collectForcedIncludeTargets(filtered, range, actor, provokePinKind("attack", attackItem))
     .map((e) => e.tokenUuid);
 
   // Target count. NPC attacks read the same `skill_target` text as skills
@@ -1191,7 +1192,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   // spell, while an "any"-scoped taunt still does. Defaults to "any" (non-weapon
   // action) so only universal taunts apply here.
   const sourceRange = String(source?.system?.props?.skill_range ?? "").trim().toLowerCase() || "any";
-  const mandatoryTokenUuids = collectForcedIncludeTargets(targetList, sourceRange, actor, pinActionKindForSkill(source))
+  const mandatoryTokenUuids = collectForcedIncludeTargets(targetList, sourceRange, actor, provokePinKind(pinActionKindForSkill(source), source))
     .map((e) => e.tokenUuid);
   // The locked target is pinned like a taunt: always in, spare slots stay free.
   if (lockedTargetTokenUuid && !mandatoryTokenUuids.includes(lockedTargetTokenUuid)) {
