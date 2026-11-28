@@ -120,7 +120,7 @@ async function getSkillEffectsExtras() {
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
 import { computeActionProfile, projectProfileToActionResult, resolveChosenChainRows, actionKeywordsForActionResult } from "./action-profile.js";
 import { classifyActionIntent, resolveActionTags, INVENTORY_ACTION_TAG } from "./skill-intent.js";
-import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
+import { isAutopilotEnabled, isAiControlledDeclarer, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { countsForSideWipe } from "./battle-end/outcome-inference.js";
@@ -3402,7 +3402,7 @@ const Declare = {
     // gate applies: a free action is declared by the REACTOR on someone else's
     // turn, so asking "is the current combatant a summon?" would answer for the
     // wrong creature and hand a PLAYER's free action to the AI.
-    if ((isAutopilotEnabled() && isAiControlledTurn(director)) || isAutomatedSummonTurn(director, snap)) {
+    if ((isAutopilotEnabled() && isAiControlledDeclarer(director, snap)) || isAutomatedSummonTurn(director, snap)) {
       try {
         const autoBundle = await autopilotDecideAction(director, snap);
         if (!stillInEntry(director, STATES.DECLARE, declareEpoch)) {
@@ -3611,7 +3611,7 @@ const Declare = {
       let deciding = false;
       const onSwitch = async (setting) => {
         if (deciding || !/bd(Enemy|Summon)Autopilot$/.test(String(setting?.key ?? ""))) return;
-        if (!((isAutopilotEnabled() && isAiControlledTurn(director)) || isAutomatedSummonTurn(director, snap))) return;
+        if (!((isAutopilotEnabled() && isAiControlledDeclarer(director, snap)) || isAutomatedSummonTurn(director, snap))) return;
         deciding = true;
         try {
           const bundle = await autopilotDecideAction(director, snap);

@@ -492,6 +492,37 @@ export function isAiControlledTurn(director) {
   } catch { return false; }
 }
 
+// Is the creature DECLARING right now AI-controlled? The DECLARE gate's question.
+//
+// On a normal turn the declarer IS the current combatant, so this is exactly
+// isAiControlledTurn. A FREE ACTION is different: it is declared by the REACTOR,
+// often on somebody else's turn. Asking about the current combatant there gave the
+// wrong creature's answer (real play 2026-11-28): Asura (AI) missed Blanche, her
+// Counter Pass opened on Asura's turn, and the autopilot picked "Muleta" FOR her
+// (first affordable allowed item in sheet order), so she never saw her Pases menu.
+// The mirror case broke too: an enemy's free action granted on a PC's turn opened
+// the GM's manual menu instead of running on autopilot.
+//
+// So when a free-action grant is live for `snap`, answer for snap's own combatant
+// (matched like isAutomatedSummonTurn: token uuid → token id → actor uuid). With
+// no grant, or no matching combatant, keep today's current-combatant answer.
+// `grant` defaults to the freeActions registry; tests pass it in.
+export function isAiControlledDeclarer(director, snap, grant = undefined) {
+  try {
+    if (SimMode.active) return true;
+    const g = grant === undefined ? (snap?.actorId ? freeActions.get(snap.actorId) : null) : grant;
+    if (g && snap) {
+      const list = director?.dCombat?.combatants ?? [];
+      const own = (snap.tokenUuid && list.find?.((c) => c.tokenDoc?.uuid && c.tokenDoc.uuid === snap.tokenUuid))
+        ?? (snap.tokenId && list.find?.((c) => c.tokenId && c.tokenId === snap.tokenId))
+        ?? (snap.actorUuid && list.find?.((c) => c.actorDoc?.uuid && c.actorDoc.uuid === snap.actorUuid))
+        ?? null;
+      if (own) return isAiControlledCombatant(own);
+    }
+    return isAiControlledTurn(director);
+  } catch { return false; }
+}
+
 // ── Public: TURN_START — pick WHO acts ────────────────────────────────────────
 // eligible = DirectorCombatant[] on the enemy side (already filtered by caller).
 // Returns the chosen combatant id (with a thinking pause + pip), or null to let
