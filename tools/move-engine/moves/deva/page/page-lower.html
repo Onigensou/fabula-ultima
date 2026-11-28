@@ -1,0 +1,37 @@
+  <div class="lower">
+    <section class="card">
+      <h2>What changed in {{VERSION}}</h2>
+      <ol class="plan">
+        <li><b>Your Fury tuning is the default</b><span>On both Fists of Fury and Fists of Focus: her afterimage every 60 ms, opacity 0.35, fade 540 ms; punch shake 3 px, 55 ms per jab, rocking 1.5°.</span></li>
+        <li><b>Unchanged from v19</b><span>The punch shake, the form-coloured afterimages, the wind-up and the final punch with its impact frame.</span></li>
+        <li><b>SE_EXPLODE2 removed</b><span>The final hit no longer plays the explosion sound, on both moves.</span></li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>Review status</h2>
+      <ol class="plan">
+        <li><b>Approved (frozen)</b><span>Double Slap, Stance Change, Vajra Fist, Mudra Lance, Missile Fist, its detonation and break, Form Change, Enlightenment, Ground Slam, Surya Palm, Rahu's Eclipse, Kala Strike.</span></li>
+        <li><b>Needs review</b><span>Fists of Fury and Fists of Focus (v20 tuning).</span></li>
+        <li><b>The game</b><span>Nothing changes in the game until you approve the whole kit. Fury and Focus still play the v1.0.575 version there.</span></li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Game readiness</h2>
+      <ol class="plan">
+        <li><b>Not buildable yet</b><span>move-engine's check refuses the move files: the energy fists (Vajra, Mudra hand, Kala, the barrage) are sprite() props. Other page-only pieces: the status tags, the fuse pips and fist cracks, the spin's walk-sprite swaps and the form art swap.</span></li>
+        <li><b>Already host-neutral</b><span>Shockwave ring, Kala's target mark and the Enlightenment orb draw on the stage canvases; targets come from the action (PARTY / moveTarget), rolls are seeded.</span></li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>How to review</h2>
+      <ol class="plan">
+        <li><b>Play each move</b><span>Approve it, ask for changes or reject it, and write a note. Each move also lists what changed since the last round.</span></li>
+        <li><b>Pause &amp; comment (C)</b><span>Pins the exact moment; Space pauses and resumes.</span></li>
+        <li><b>Tune</b><span>Every number is a slider; the selects pick the variant (targets, stance, form, how the party breaks the fists).</span></li>
+        <li><b>Send feedback</b><span>One button in the side panel.</span></li>
+      </ol>
+    </section>
+  </div>
+  <footer>Deva animation mockup {{VERSION}} · 2026-11-28 · built on move-engine (tools/move-engine/moves/deva) on Valley_Battlemap007. Effects: RPG Maker MV, Ragnarok Online, Guilty Gear Strive and Disgaea 4 clips from your library, pixelfx fu/rahu-eclipse; sounds from your Soundboard.</footer>
+</div>

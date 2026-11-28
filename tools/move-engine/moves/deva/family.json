@@ -1,0 +1,24 @@
+{
+ "name": "deva",
+ "note": "Deva (Valley elite) action animations, ported 2026-11-28 from the Deva mockup v16 (artifact C7wZxC2jSAo15AAsJfQxRb). Page: page.js (node moves/deva/page.js <out> [--publish --version vN]). NOT game-buildable yet: sprite() energy fists + page DOM stand-ins (see head.js). Fists of Fury / Focus ship from tools/anim-studio/lib/deva-shots (v1.0.575), not from here.",
+ "page": "page.js",
+ "mockupActors": { "caster": "deva", "target": "keren" },
+ "game": { "scene": "Valley_Battlemap007", "caster": "Deva" },
+ "moves": {
+  "slap": { "label": "Double Slap (approved v1)", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "fist": { "label": "Missile Fist · summon (approved v1)", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "boom": { "label": "Missile Fist · detonation (approved v1)", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "brk": { "label": "Missile Fist · break (approved v1)", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "stance": { "label": "Stance Change", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "vajra": { "label": "Vajra Fist", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "lance": { "label": "Mudra Lance", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "form": { "label": "Form Change", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "enl": { "label": "Enlightenment (v4.4 form swap)", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "slam": { "label": "Ground Slam", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "surya": { "label": "Surya Palm", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "rahu": { "label": "Rahu's Eclipse", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "kala": { "label": "Kala Strike", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "fury": { "label": "Fists of Fury (shipped reference)", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null },
+  "focus": { "label": "Fists of Focus (shipped reference)", "files": ["head", "deva"], "pageTune": {}, "gameOutcome": null }
+ }
+}
