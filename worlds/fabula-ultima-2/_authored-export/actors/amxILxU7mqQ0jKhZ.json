@@ -1676,8 +1676,7 @@
           "version": "4.8.4"
         },
         "fabula-ultima-companion": {
-          "moveEngine": "1.3.0",
-          "notNormalAttack": true
+          "moveEngine": "1.3.0"
         }
       },
       "folder": null,
@@ -1689,7 +1688,7 @@
       "sort": 100000,
       "system": {
         "props": {
-          "action_command": "attack",
+          "action_command": "",
           "action_keywords": "",
           "active_effect_config_table": {},
           "ae_chance_percent": "",
@@ -1762,7 +1761,7 @@
           "skill_information": "",
           "skill_range": "Melee",
           "skill_target": "All Enemies",
-          "skill_type": "Attack",
+          "skill_type": "Active",
           "type_damage": "Dark",
           "use_optional_params": false,
           "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvFistsOfFocus01"
@@ -1789,8 +1788,7 @@
           "version": "4.8.4"
         },
         "fabula-ultima-companion": {
-          "moveEngine": "1.3.0",
-          "notNormalAttack": true
+          "moveEngine": "1.3.0"
         }
       },
       "folder": null,
@@ -1802,7 +1800,7 @@
       "sort": 100000,
       "system": {
         "props": {
-          "action_command": "attack",
+          "action_command": "",
           "action_keywords": "chain 12",
           "active_effect_config_table": {},
           "ae_chance_percent": "",
@@ -1853,7 +1851,7 @@
           "skill_information": "",
           "skill_range": "Melee",
           "skill_target": "All Enemies",
-          "skill_type": "Attack",
+          "skill_type": "Active",
           "type_damage": "Light",
           "use_optional_params": false,
           "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvFistsOfFury001"
@@ -1926,8 +1924,7 @@
           "version": "4.8.4"
         },
         "fabula-ultima-companion": {
-          "moveEngine": "1.3.0",
-          "notNormalAttack": true
+          "moveEngine": "1.3.0"
         }
       },
       "folder": null,
@@ -1939,7 +1936,7 @@
       "sort": 100000,
       "system": {
         "props": {
-          "action_command": "attack",
+          "action_command": "",
           "action_keywords": "overflow",
           "active_effect_config_table": {},
           "ae_chance_percent": "",
@@ -2023,7 +2020,7 @@
           "skill_information": "",
           "skill_range": "Melee",
           "skill_target": "All Enemies",
-          "skill_type": "Attack",
+          "skill_type": "Active",
           "type_damage": "Earth",
           "use_optional_params": false,
           "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvGroundSlam0001"

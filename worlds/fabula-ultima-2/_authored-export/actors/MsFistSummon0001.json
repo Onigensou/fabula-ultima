@@ -99,6 +99,7 @@
     },
     "fabula-ultima-companion": {
       "defeatStyle": "consumed",
+      "fieldObject": true,
       "idleAnimation": {
         "float": true
       },

@@ -1036,7 +1036,7 @@
       "sword_ef": "100",
       "tactic_notes": "",
       "thrown_ef": "100",
-      "token_option_persist": true,
+      "token_option_persist": false,
       "traits": "Aggressive, Hostile, Bad-Tempered",
       "ultima_point": "0",
       "unique": false,
