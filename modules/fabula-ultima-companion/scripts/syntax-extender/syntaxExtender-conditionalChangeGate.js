@@ -1820,7 +1820,10 @@ function getBaseValueForChange(actor, change) {
       // Opportunity-luck toggle, written by a mode-5 change. Seeded so that
       // DISABLING its effect actually clears it instead of leaving the last
       // value stranded on the actor forever.
-      foundry.utils.setProperty(actor, "flags.fabula-ultima-companion.opp_lucky", 0);
+      // Same for every gear-granted opportunity (charm accessories 2026-11-28).
+      for (const o of ["lucky", "misfortune", "calamity", "succor", "calm", "sooth"]) {
+        foundry.utils.setProperty(actor, `flags.fabula-ultima-companion.opp_${o}`, 0);
+      }
       // Damage-class affinities (Ghostly Sheet: immune to Strike). Same mode-5
       // stranding as opp_lucky, and worse on equip-gated gear: `equipment-swap`
       // syncs an item's AE `disabled` to its own isEquipped, so on UNEQUIP the
