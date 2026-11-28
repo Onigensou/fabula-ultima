@@ -24,7 +24,7 @@ import { requestTargeting } from "./target-picker.js";
 // The shared pre-picker target resolution — the same question the autopilot asks
 // before it chooses an action. See target-survey.js's header for why the count
 // and the pick must come from one place.
-import { surveyActionTargets } from "./target-survey.js";
+import { surveyActionTargets, restoresHp } from "./target-survey.js";
 import { postActionCard, BattlefieldActionCard, composeActionCardRenderPayload, ownerUserIdForActor } from "./action-card.js";
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
@@ -129,6 +129,7 @@ import { holdsStaysDown } from "./stays-down.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
 import { volleyShotContext } from "./chain-strikes.js";
+import { computeDrawnChainPreview, extendChainPreview, isDrawnChainPreviewSpec } from "./chain-preview.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
 import { beginHitCounter, endHitCounter } from "./hit-counter.js";
 import { emitBattlerPose, emitFollowUpsPending } from "./battler-pose.js";
@@ -2002,6 +2003,20 @@ function queuePostResolveTrigger(director, config) {
     director.ctx._postResolveTriggers = [];
   }
   director.ctx._postResolveTriggers.push(config);
+}
+
+// ── Random-target Chain card (chain-preview.js) ─────────────────────────────
+// A Chain whose strikes draw their targets (seek / random / volley) shows ranges
+// on its card instead of strike 1's verdict. Priced once at COMPUTE, through the
+// same per-target pipeline as the card; the card only paints it. A failure leaves
+// the card as it is today.
+async function attachChainPreview(director) {
+  const ar = director?.ctx?.actionResult;
+  if (!ar?.chain || !isDrawnChainPreviewSpec(ar.chain)) return;
+  try {
+    const chainPreview = await computeDrawnChainPreview({ ar });
+    if (chainPreview) director.ctx.actionResult = freezeActionResult({ ...ar, chainPreview });
+  } catch (e) { warn("COMPUTE: random-target Chain preview threw — the card shows strike 1 as before", e); }
 }
 
 // ── Chain N helpers for resolveAction (plan = ar.chainPlan, ct = one target) ──
@@ -4132,6 +4147,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
       mode: "exact", count: eligibleForPicker.length,
       lockSelection: true,
       titleText: lockedTitle, cancelLabel, secondaryAction, remote,
+      healWarn: !!skill && restoresHp(skill),
     });
   } else {
     const titleText = (_presetShown?.prompt ? `${attackerSnap.name}: ${_presetShown.prompt}` : null)
@@ -4146,6 +4162,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
       count: showLockedPool ? Math.max(1, count) : count,
       titleText, card: _presetShown?.card ?? null, cancelLabel, secondaryAction, randomizeCount,
       mandatoryTokenUuids: mandatoryPins, remote,
+      healWarn: !!skill && restoresHp(skill),   // "Heal hurts" chips (heal-warning.js)
     });
   }
 
@@ -5841,6 +5858,7 @@ const Compute = {
         // picked option says it (Bind and Summon: "Skill • 30 MP").
         ...(dynamicPickCost && !preCostOverride && !arForProfile.rawCost ? { rawCost: dynamicPickCost } : {}),
       });
+      if (_chainDraw) await attachChainPreview(director);
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
@@ -5996,6 +6014,7 @@ const Compute = {
             onHitEffectRefs: attackGrant.onHitEffectRefs ?? null,
             sourceItemUuid: attackGrant.sourceItemUuid ?? null } } : {}),
         });
+        if (_chainDraw) await attachChainPreview(director);
         director.enqueue({ type: INTENTS.INTERNAL_DONE });
         return;
       }
@@ -7281,6 +7300,12 @@ const Confirm = {
         }
       }
     } catch (e) { warn("CONFIRM: force add_target pre-splice threw", e); }
+    // Random-target Chain card: a creature the splice just added has no range yet.
+    let cardChainPreview = ar.chainPreview ?? null;
+    if (cardChainPreview) {
+      try { cardChainPreview = await extendChainPreview(cardChainPreview, director.ctx.actionResult ?? ar, cardTargets ?? []); }
+      catch (e) { warn("CONFIRM: random-target Chain preview extend threw", e); }
+    }
 
     // Critical-hit cut-in — fire it AS the action card (with the roll result)
     // appears, NOT at RESOLVE. Fire-and-forget so the ~2s cinematic plays
@@ -7381,6 +7406,7 @@ const Confirm = {
         attackerActor,
         targets: cardTargets,
         perTargetResults: cardPerTargets,
+        chainPreview: cardChainPreview,
         cardReactions,
         // GM-side callback the Barrage (creature_performs_action) pill's "Apply"
         // runs on the POST-ROLL card. Fires the reaction's add_target chain
@@ -9634,7 +9660,18 @@ const Animation = {
     }
 
     const casterTokenUuid    = ar?.attacker?.tokenUuid ?? null;
-    const targetTokenUuids   = (ar?.targets ?? []).map((t) => t.tokenUuid).filter(Boolean);
+    let targetTokenUuids     = (ar?.targets ?? []).map((t) => t.tokenUuid).filter(Boolean);
+    // Random / Volley Chains now keep every target on the CARD (random-target Chain
+    // card), but the animation still plays on the creatures the strikes went to —
+    // the set the card used to be trimmed to (re-draws included). Seek keeps the
+    // whole field, as it always did.
+    if ((ar?.chain?.mode === "random" || ar?.chain?.mode === "volley") && ar?.chainPlan && !ar.chainPlan.single) {
+      const struck = [];
+      for (const s of ar.chainPlan.strikes ?? []) for (const o of s?.outcomes ?? []) {
+        if (o?.tokenUuid && o.kind !== "skip" && !struck.includes(o.tokenUuid)) struck.push(o.tokenUuid);
+      }
+      if (struck.length) targetTokenUuids = struck;
+    }
 
     // JRPG cinematic etiquette — fade the Dominance Crests out on every client
     // while the animation plays (restored in onExit/onAbort, which fire on

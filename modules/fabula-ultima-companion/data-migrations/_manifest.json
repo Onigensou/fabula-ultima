@@ -857,6 +857,14 @@
     {
       "key": "2026-11-28-berserker-gear",
       "path": "data-migrations/2026-11-28-berserker-gear.js"
+    },
+    {
+      "key": "2026-11-28-crysta-heal-reversal-exempt",
+      "path": "data-migrations/2026-11-28-crysta-heal-reversal-exempt.js"
+    },
+    {
+      "key": "2026-11-28-botc-minion-zombie",
+      "path": "data-migrations/2026-11-28-botc-minion-zombie.js"
     }
   ]
 }

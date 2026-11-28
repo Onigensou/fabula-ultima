@@ -45,7 +45,7 @@ import { pickItem } from "./item-picker.js";
 import { getLinkedSkillUuid, gatherConsumables, gatherCreatables, readActorIp } from "./item-resource.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
-import { resolveTargetPlan } from "./target-survey.js";
+import { resolveTargetPlan, restoresHp } from "./target-survey.js";
 import { applyNoxMassiveGate } from "./massive-keyword.js";
 import { applyStealLockExclusion } from "./steal-lock.js";
 import { isNoxServant } from "./nox-servant.js";
@@ -1091,7 +1091,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     const selfEligible = [{ tokenUuid: snap.tokenUuid, tokenId: snap.tokenId, name: snap.name }];
     const r = await raceCancel(
       requestTargeting({
-        director, eligible: selfEligible, mode: "exact", count: 1, lockSelection: true,
+        director, eligible: selfEligible, mode: "exact", count: 1, lockSelection: true, healWarn: restoresHp(source),
         titleText: `${snap.name}: ${source.name} (self)`, externalCancel: cancelSentinel,
       }),
       cancelSentinel,
@@ -1219,7 +1219,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   if (plan.mode === "all") {
     const r = await raceCancel(
       requestTargeting({
-        director, eligible: targetList, mode: "exact", count: targetList.length, lockSelection: true,
+        director, eligible: targetList, mode: "exact", count: targetList.length, lockSelection: true, healWarn: restoresHp(source),
         titleText: `${snap.name}: ${source.name} (all ${categoryLabel})`, externalCancel: cancelSentinel,
       }),
       cancelSentinel,
@@ -1236,6 +1236,8 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
       mode: plan.mode,
       count: plan.count,
       mandatoryTokenUuids,
+      // An HP heal: rows it would hurt (Zombie / known Undead) get a "Heal hurts" chip.
+      healWarn: restoresHp(source),
       titleText: `${snap.name}: pick target${plan.count > 1 ? "s" : ""} for ${source.name}`,
       externalCancel: cancelSentinel,
     }),

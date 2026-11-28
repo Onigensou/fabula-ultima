@@ -56,6 +56,9 @@ export const STATUS_CUES = Object.freeze({
   "armor break": "armorbreak", "magic break": "magicbreak",
   berserk: "berserk",       // red rage aura (Jill Temper Tantrum, 2026-11-16): lasts exactly as long as the status
   crippled: "armorbreak",   // Rakshasa's own DEF cut (×0.5, kept apart for its fight): same DEF cue
+  // 2026-11-28 (approved mockup): the Zombie STATUS (miasma + grade tint; a creature Undead by
+  // species gets nothing, the cue follows the status) and Bleed (a pierced heart by the head).
+  zombie: "zombie", bleed: "bleed",
   // Spell Fencer rhythm (2026-11-23, spell-fencer-cues.js). "Resonance ready" is not a status: status-cues.js adds it from the
   // Resonance charge count (chargeKey "resonance", 2+).
   "next spell": "sfspell", "next attack": "sfattack", "rhapsody turn": "sfbraid",

@@ -4470,10 +4470,43 @@ export function applyHealReceiving(targetActor, amount) {
 // Wraith's own Devour Soul self-heal). Revives (set_resource) are a separate
 // rule (isReviveTargetUndead / A2), and Soul Tithe fragment refunds write HP
 // directly — neither passes through here.
+//
+// Species exemption (2026-11-28, user-approved for Crysta): an actor flagged
+// `flags.fabula-ultima-companion.healReversalExempt` is NOT reversed for being
+// Undead by species — so she heals normally and is no revive-kill target — but a
+// Zombie STATUS on her still reverses (the status is the reason then, not her
+// species). Mirrors `reviveKillImmune`. Summons / token copies inherit actor flags.
+export function isHealReversalExempt(actor) {
+  const v = actor?.flags?.["fabula-ultima-companion"]?.healReversalExempt;
+  return v === true || String(v ?? "").trim().toLowerCase() === "true";
+}
+/** Undead by RULES species (own prop or an AE species_override), exemption ignored. */
+export function isUndeadBySpecies(actor) {
+  return !!actor && String(speciesOf(actor)).replace(/_/g, " ").trim().toLowerCase() === "undead";
+}
+/** Carries the Zombie status (by status id or AE name). */
+export function hasZombieStatus(actor) {
+  return !!actor && actorHasNamedStatus(actor, "zombie");
+}
 export function isHealReversedActor(actor) {
   if (!actor) return false;
-  if (String(speciesOf(actor)).replace(/_/g, " ").trim().toLowerCase() === "undead") return true;
-  return actorHasNamedStatus(actor, "zombie");
+  if (isUndeadBySpecies(actor) && !isHealReversalExempt(actor)) return true;
+  return hasZombieStatus(actor);
+}
+
+// WHY a positive HP heal on `actor` lands as damage, for the card / picker wording
+// (2026-11-28): "zombie" (the Zombie status — visible on the token), "effect" (an
+// effect such as False Idol's field reverses every HP gain), "undead" (the creature's
+// own species — the party may not know it yet), or null (the heal heals). Same rule
+// as shouldReverseHeal, reason order Zombie → effect → species. Note the Zombie AE
+// itself stamps species_override UNDEAD, so the Zombie test must come first.
+export function healReversalReason(actor, { row = null } = {}) {
+  if (!actor) return null;
+  if (isRecoveryReversedByEffect(actor, "hp") && (rowIgnoresUndead(row) || !hasZombieStatus(actor))) return "effect";
+  if (rowIgnoresUndead(row)) return null;
+  if (hasZombieStatus(actor)) return "zombie";
+  if (isUndeadBySpecies(actor) && !isHealReversalExempt(actor)) return "undead";
+  return null;
 }
 
 // Revive-kill immunity (2026-11-20, user: "Nidhogg must not die instantly to

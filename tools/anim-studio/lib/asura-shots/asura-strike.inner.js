@@ -53,8 +53,14 @@ const BEHIND = { x: FAR + DIR * cfg.behind * KP, y: PC.y + 20 * KP };
 // the four cuts over the foes on the board.
 const keyOfUuid = (u) => PARTY.find((k) => TOK[k].token && TOK[k].token.document && TOK[k].token.document.uuid === u) || null;
 const STRIKES = Array.isArray(oni.strikes) ? oni.strikes : [];
-const HITS = ELS.map((el, i) => {
+// Each cut and burst wears ITS strike's element. The damage goes Bolt, Fire, Ice, Air (the skill's
+// chainElements; strike 1 is the card's Bolt), which is not the ignite order above (cfg.order), so the
+// element comes from the strike itself, else from cfg.strikeOrder.
+const SORD = Array.isArray(cfg.strikeOrder) && cfg.strikeOrder.length ? cfg.strikeOrder : ELS;
+const HITS = SORD.map((el0, i) => {
   const s = STRIKES[i], o = s && s.outcomes ? (s.outcomes.find((x) => x && x.kind !== 'lost') || s.outcomes[0]) : null;
+  const oe = o && typeof o.element === 'string' ? o.element.toLowerCase() : '';
+  const el = EL[oe] ? oe : el0;
   const k = (o && keyOfUuid(o.tokenUuid)) || (PARTY.length ? PARTY[i % PARTY.length] : null);
   const kind = o ? o.kind : 'hit';
   return { el, k, kind, pierce: !!(o && o.pierce), landed: !o || kind === 'hit' || kind === 'absorb' || kind === 'immune' || kind === 'block' };

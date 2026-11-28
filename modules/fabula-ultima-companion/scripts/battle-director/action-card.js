@@ -34,8 +34,9 @@ import { resourceLabel, RESOURCE_REGISTRY } from "./resources.js";
 import { plateSettled } from "./director-player-hud.js";
 import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
+import { formatRange, chainAccuracyRange, isDrawnChainPreviewSpec, extendChainPreview } from "./chain-preview.js";
 import { lookupTerm, lookupLinkTerm } from "./keyword-registry.js";
-import { absorbKeywordValue, normalizeKeywordLabel } from "./keyword-value.js";
+import { absorbKeywordValue, absorbKeywordLinkTail, normalizeKeywordLabel } from "./keyword-value.js";
 import { DAMAGE as DAMAGE_TYPE_STYLE } from "../linked-text/lt-terms.js";
 import { formatHitChance, isConcealedRoll } from "./check.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
@@ -838,6 +839,8 @@ export function ensureStyles() {
     .fud-bf-card .fud-kw-term.is-keyword .fud-kw-label {
       text-transform: uppercase; letter-spacing: .3px; font-size: 12px;
     }
+    /* "Transform 【Zarg's Bow - Light】": the lead-in's Item sits after the label, as written. */
+    .fud-bf-card .fud-kw-term.is-keyword .fud-kw-detail { margin-left: 4px; font-size: 12px; font-weight: 600; color: #4a3a22; }
     .fud-bf-card .fud-kw-term .fud-kw-bullet {
       color: #c98a2a; font-size: 9px; line-height: 1;
       transform: translateY(-1px); flex-shrink: 0;
@@ -934,6 +937,35 @@ export function ensureStyles() {
       text-align: right;
     }
 
+    /* Random-target Chain card (seek / random / volley — paintChainRangeCard).
+       Values from the approved mockup "Random-target Chain HUD", round 7. The
+       Damage row keeps today's layout (range centred, element word right); the
+       "×N hit" badge, in the +HR pill's style, sits on the box's bottom-right
+       border. Each Result row shows its own range, blinking slowly. */
+    .fud-bf-card fieldset.fud-bf-section.fud-bf-dmg.is-chain-range { position: relative; margin-bottom: 14px; }
+    .fud-bf-card .fud-bf-dmg.is-chain-range .fud-bf-chain-hits {
+      position: absolute; right: 10px; bottom: -10px; z-index: 2; white-space: nowrap;
+      font-size: 10.5px; font-weight: 800; font-style: normal;
+      padding: 2px 6px; border-radius: 999px;
+      border: 1px solid #cfa057; color: #8a4b22; background: #f7ecd9;
+    }
+    .fud-bf-card .fud-bf-dmg-element.is-multi { cursor: help; }
+    .fud-bf-card .fud-bf-acc.is-chain-range .total { white-space: nowrap; }
+    .fud-bf-card .fud-bf-target-row .t-result.chain-range {
+      font-weight: 900;
+      animation: fud-chain-swing var(--fud-chain-blink, 1.15s) ease-in-out infinite alternate;
+    }
+    .fud-bf-card .fud-bf-target-row .t-result.chain-range .t-num { font-size: 18px; }
+    .fud-bf-card .fud-bf-target-row .t-result.chain-range small {
+      display: block; font-size: 9.5px; font-weight: 800; letter-spacing: 0.3px;
+      text-transform: uppercase; color: #2a8a3a; text-shadow: none; margin-top: 1px;
+    }
+    .fud-bf-card .fud-bf-target-row .t-result.chain-range small.im { color: #5a6a85; }
+    @keyframes fud-chain-swing { from { opacity: 1; } to { opacity: 0.3; } }
+    @media (prefers-reduced-motion: reduce) {
+      .fud-bf-card .fud-bf-target-row .t-result.chain-range { animation: none; opacity: 0.75; }
+    }
+
     /* Running-number direction cues — set by animateCardNumber() after a
        reaction bumps/reduces Accuracy or Damage. An INCREASE rises into place
        with a bright over-shoot; a DECREASE drops in desaturated and settles
@@ -1017,6 +1049,21 @@ export function ensureStyles() {
     .fud-bf-card .fud-bf-target-row .t-result.heal       { color: #2a8a3a; font-weight: 800; text-shadow: 0 0 6px rgba(42,138,58,0.25); }
     .fud-bf-card .fud-bf-target-row .t-result.restore-mp { color: #1e6cff; font-weight: 800; text-shadow: 0 0 6px rgba(30,108,255,0.25); }
     .fud-bf-card .fud-bf-target-row .t-result.shield     { color: #1f8a9e; font-weight: 800; text-shadow: 0 0 6px rgba(31,138,158,0.25); }
+    /* A heal that lands as DAMAGE (Zombie / Undead / False Idol), approved mockup 2026-11-28:
+       red like a damage result, small verb + large number, a reason pill, a red row wash. */
+    .fud-bf-card .fud-bf-target-row .t-result.rev        { color: #b40000; font-weight: 900; }
+    .fud-bf-card .fud-bf-target-row .t-result.rev .vb    { font-size: 10.5px; letter-spacing: .3px; }
+    /* The wash runs to the fieldset border (its 9px side padding): the list is a scroll box
+       (overflow-y auto), so it takes the 9px itself and the rows bleed into it, no scrollbar. */
+    .fud-bf-card .fud-bf-target-list:has(> .is-heal-rev) { margin: 0 -9px; padding: 0 9px; }
+    .fud-bf-card .fud-bf-target-row.is-heal-rev { background: linear-gradient(90deg, rgba(180,0,0,.1), rgba(180,0,0,.03)); box-shadow: inset 3px 0 0 #b40000;
+      margin: 0 -9px; padding-left: 9px; padding-right: 9px; }
+    .fud-bf-card .fud-bf-target-row.is-heal-rev .t-def { opacity: 1; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .fud-bf-card .fud-bf-target-row.is-heal-rev .t-def .t-hp { opacity: .6; }
+    .fud-bf-card .t-revpill { display: inline-flex; align-items: center; gap: 3px; font-size: 9.5px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase;
+      padding: 1px 6px 1px 2px; border-radius: 999px; border: 1px solid #8e2a8a; color: #6e1f66; background: rgba(154,59,143,.12); line-height: 1.2; }
+    .fud-bf-card .t-revpill img { width: 13px; height: 13px; border-radius: 3px; image-rendering: pixelated; border: 0; }
+    .fud-bf-card .t-revpill.ud { border-color: #5a5a5a; color: #3a3a3a; background: rgba(58,50,40,.08); padding-left: 6px; }
     .fud-bf-card .fud-bf-target-row .t-affinity {
       display: inline-flex; align-items: center;
       margin-left: 6px;
@@ -2967,10 +3014,14 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
     // Render an explicit "no heal" label so the card doesn't show a
     // green number that contradicts what actually happens.
     if (r.vismagusSuppressed) return "NO HEAL · VISMAGUS";
-    const amt = Math.max(0, r.grantAmount);
     // Undead / Zombie heal reversal (A1): the heal lands as damage. Checked
-    // before the FULL test — a full-HP undead still takes the hit.
-    if (r.healReversed) return `UNDEAD · HIT <span class="t-num">${amt}</span>`;
+    // before the FULL test — a full-HP undead still takes the hit. Printed like a
+    // damage result, "DAMAGE 40" in red (approved mockup 2026-11-28); the reason
+    // (Zombie / Undead) is the pill beside the HP. A natural Undead the party hasn't
+    // Studied (healWarnHidden) previews as a normal heal: healMaskAmount.
+    const revShown = isHealRevShown(r);
+    const amt = Math.max(0, (r.healReversed && !revShown && typeof r.healMaskAmount === "number") ? r.healMaskAmount : r.grantAmount);
+    if (revShown) return `<span class="vb">DAMAGE</span> <span class="t-num">${amt}</span>`;
     // Target already at cap → the restore lands nothing. Say so explicitly
     // instead of a green number that contradicts what happens (shields have no
     // cap, so they always show the amount).
@@ -2993,7 +3044,16 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
   // Damage skill — HIT/MISS/AB/IM/NO-EFFECT logic, with affinity baked into
   // the verb so the result line reads the outcome on its own (VU → "WEAK",
   // RS → "RESIST") without relying on the separate affinity pill.
-  if (!r.hit) return "MISS";
+  // A Pierce miss is not a MISS: it still deals half (action-profile.js
+  // pierceMiss), so it reads "PIERCE ½ n" — after affinity, like a hit.
+  if (!r.hit && !r.pierceMiss) return "MISS";
+  if (!r.hit && r.pierceMiss) {
+    const n = Math.max(0, Number(r.damage) || 0);
+    if (r.affinity === "AB") return `ABSORB <span class="t-num">${n}</span>`;
+    if (r.affinity === "IM") return "IMMUNED";
+    if (n <= 0) return "NO EFFECT";
+    return `PIERCE ½ <span class="t-num">${n}</span>${r.resource === "mp" ? ` <span class="t-unit">MP</span>` : ""}`;
+  }
   // Incoming damage NULLIFIED by a defender reaction (Ninja Log's adjust_damage
   // → 0). This is a HIT that deals 0 — NOT a miss (on-hit riders still apply) —
   // so credit the soak instead of the generic "NO EFFECT" / affinity verb, and
@@ -3016,17 +3076,41 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
   return `HIT ${big(r.damage)}${unit}`;
 }
 
+// A reversed heal the card says out loud (Zombie status, an effect, or a Studied Undead).
+export function isHealRevShown(r) {
+  return !!(r && r.healReversed && typeof r.grantAmount === "number" && !r.vismagusSuppressed && !r.healWarnHidden);
+}
+const HEAL_REV_ZOMBIE_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png";
+function healRevIcon() { return lookupTerm("Zombie")?.icon || HEAL_REV_ZOMBIE_ICON; }
+// The reason pill on a shown reversed-heal row: Zombie (the status, with its icon) or Undead.
+export function healRevPillHTML(r) {
+  if (!isHealRevShown(r)) return "";
+  if (r.healReversedReason === "zombie") return `<span class="t-revpill"><img src="${escapeHtml(healRevIcon())}" alt="">Zombie</span>`;
+  if (r.healReversedReason === "effect") return "";
+  return `<span class="t-revpill ud">Undead</span>`;
+}
+// No Result summary line under a reversed heal: the red DAMAGE row says it
+// (user 2026-11-28, "over-clarification").
+
 export function resultClsFor(r) {
   // Fickle: one neutral hue for every row. The normal classes are outcome
   // colours (muted for a miss, gold for vulnerable) — any of them would read the
   // result off the card without a word being printed.
   if (typeof r.hitChance === "number" && typeof r.grantAmount !== "number") return "fickle";
-  if (!r.hit) return "miss";
+  if (!r.hit && !r.pierceMiss) return "miss";
+  // A Pierce miss lands half: coloured by its affinity like a hit, never as a crit.
+  if (!r.hit) {
+    if (r.affinity === "AB") return "absorb";
+    if (r.affinity === "IM" || !(Number(r.damage) > 0)) return "miss";
+    if (r.affinity === "VU") return "weak";
+    if (r.affinity === "RS") return "resist";
+    return "hit";
+  }
   // Nullified hit (Ninja Log) — muted, same as IM/miss, since 0 landed.
   if (r.damageOverride && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) return "miss";
   if (typeof r.grantAmount === "number") {
     if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
-    if (r.healReversed) return "hit";        // Undead / Zombie: the heal hurts
+    if (isHealRevShown(r)) return "rev";     // Undead / Zombie: the heal hurts (red, like damage)
     if (r.grantResource === "mp")     return "restore-mp";
     if (r.grantResource === "shield") return "shield";
     return "heal";
@@ -3220,13 +3304,14 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     // through this same pipeline so a multi-target redirect shows one row per
     // covered ally, all reading as the reactor.
     const rf = r.redirectedFrom;
-    const rowClass = rf ? "fud-bf-target-row is-redirected" : "fud-bf-target-row";
+    const revPill = healRevPillHTML(r);
+    const rowClass = (rf ? "fud-bf-target-row is-redirected" : "fud-bf-target-row") + (isHealRevShown(r) ? " is-heal-rev" : "");
     const redirectMarker = rf
       ? ` <small class="t-redirect-from" title="Redirected from ${escapeHtml(String(rf.name ?? "?"))}">🔄</small>`
       : "";
     return `<div class="${rowClass}"${rowDataAttrs}${tipAttrs}>
       <span class="t-name">${escapeHtml(r.name)}${redirectMarker}${aff ? ` ${aff}` : ""}</span>
-      <span class="t-def">${defLabel}</span>
+      <span class="t-def">${isHealRevShown(r) ? `<span class="t-hp">${defLabel}</span>${revPill}` : defLabel}</span>
       <span class="t-result ${cls}">${label}</span>
     </div>`;
   }).join("");
@@ -3280,6 +3365,8 @@ function appendTargetRow(root, r, kind, payload) {
         + `<span class="t-result ${cls}">${label}</span>`;
     }
     list.appendChild(div);
+    // Random-target Chain card: the new row reads as a range, never a verdict.
+    paintChainRangeCard(root);
     // REPLACE these arrays; never push into them. They come straight off the
     // action result, which `freezeActionResult` deep-freezes — so `push` throws
     // in strict mode. The throw was swallowed by the catch below, AFTER the DOM
@@ -3845,7 +3932,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
           // (WEAK / RESIST / NO EFFECT / HEALS) stay in sync everywhere.
           const shim = {
             hit: r.newHit, crit: r.newCrit, affinity: r.newAffinity,
-            damage: r.newDamage, resource: r.resource,
+            damage: r.newDamage, resource: r.resource, pierceMiss: !!r.newPierceMiss,
             ...(rConcealed ? { hitChance: r.newHitChance } : {}),
           };
           const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
@@ -3897,7 +3984,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     // Verdict — re-derive (keep it authoritative alongside the DEF/hover).
     const resultSpan = rowEl.querySelector(".t-result");
     if (resultSpan) {
-      const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage,
+      const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage, pierceMiss: !!d.pierceMiss,
         ...(dConcealed ? { hitChance: d.hitChance } : {}) };
       resultSpan.className = `t-result ${resultClsFor(shim)}`;
       resultSpan.innerHTML = resultLabelFor(shim);
@@ -4346,6 +4433,10 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     acc?.classList?.toggle("is-gm-edited", !!delta.gmRollEdited);
     dmg?.classList?.toggle("is-gm-edited", !!delta.gmDamageEdited);
   }
+  // Random-target Chain card LAST among the paints: every section above writes
+  // strike 1's verdict / number back, and this puts the ranges over them. A
+  // delta that priced a creature the card just gained carries the grown preview.
+  paintChainRangeCard(rootEl, delta.chainPreview ?? undefined, { roll: delta.accuracyRoll ?? null });
   // Re-fit last: a delta can add a target row, inject a reaction pill or rebuild
   // the whole target surface, any of which changes what the growing regions need.
   // Runs on the GM card and on every mirror, since both come through here.
@@ -5618,11 +5709,15 @@ function chipIconHTML(icon) {
 // the SAME keyword chips this card does — they carry the shared `fud-kw-term`
 // styling and tooltip wiring, so a chip looks and behaves identically wherever
 // it appears. Pure render, no behaviour change for BD.
-export function keywordChipHTML({ key, label, icon }) {
+export function keywordChipHTML({ key, label, icon, detail = null }) {
+  // `detail` = the Item a keyword lead-in names ("Transform 【Zarg's Bow - Light】"),
+  // shown as written after the label; brackets added when the text has none.
+  const d = String(detail ?? "").trim();
+  const detailHTML = d ? `<span class="fud-kw-detail">${escapeHtml(d.startsWith("【") ? d : `【${d}】`)}</span>` : "";
   return `<span class="fud-kw-term is-keyword" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}">`
     + `<span class="fud-kw-bullet" aria-hidden="true">◆</span>`
     + `${chipIconHTML(icon)}`
-    + `<span class="fud-kw-label">${escapeHtml(label)}</span></span>`;
+    + `<span class="fud-kw-label">${escapeHtml(label)}</span>${detailHTML}</span>`;
 }
 
 // Status term — icon + bold/underline label, inline in the prose.
@@ -5687,6 +5782,27 @@ export function parseEffectDescription(html) {
       // A keyword INSIDE a sentence ("Generates no Resonance this turn") still gets its badge (unchanged), but the word
       // also stays in the prose as a clickable term: removing the anchor left a hole in the sentence. A keyword that IS
       // its line ("Chain 2", "Unleash") is lifted as before.
+      //
+      // A keyword that OPENS its line with a value or an Item after it is a lead-in, not
+      // prose — checked FIRST, or the inline test (which sees the words after it) keeps the
+      // keyword in the body and the card shows it twice (user 2026-11-28):
+      //   "Chain 3: call down three bolts…"      → chip CHAIN 3, body "Call down three bolts…"
+      //   "Transform 【Zarg's Bow - Light】"      → chip TRANSFORM 【Zarg's Bow - Light】, line gone
+      if (entry?.kind === "keyword") {
+        const key = entry.key ?? uuid;
+        const value = absorbKeywordValue(a, root);
+        const detail = value ? null : absorbKeywordLinkTail(a, root);
+        if (value || detail) {
+          const chipLabel = value ? `${label} ${value}` : normalizeKeywordLabel(label);
+          const dedup = `${key}|${chipLabel}|${detail ?? ""}`;
+          if (!seenKw.has(dedup)) {
+            seenKw.add(dedup);
+            keywords.push({ key, label: chipLabel, icon: entry.icon ?? null, ...(detail ? { detail } : {}) });
+          }
+          a.remove();
+          continue;
+        }
+      }
       if (entry?.kind === "keyword" && isInlineKeyword(a)) {
         const key = entry.key ?? uuid, chipLabel = normalizeKeywordLabel(label), dedup = `${key}|${chipLabel}`;
         if (!seenKw.has(dedup)) { seenKw.add(dedup); keywords.push({ key, label: chipLabel, icon: entry.icon ?? null }); }
@@ -5735,6 +5851,10 @@ export function parseEffectDescription(html) {
     }
     for (const ul of Array.from(root.querySelectorAll("ul, ol"))) {
       if (!ul.querySelector("li")) ul.remove();
+    }
+    // A lead-in line lifted whole (keyword + Item) leaves an empty <p>.
+    for (const p of Array.from(root.querySelectorAll("p"))) {
+      if (!p.textContent.replace(/[\s ]/g, "") && !p.querySelector("img, .fud-bf-effect-chip, .fud-kw-term")) p.remove();
     }
 
     const bodyHtml = root.innerHTML.trim();
@@ -5919,7 +6039,10 @@ function rerenderActionCardBody(root, kind, payload) {
   }
   if (!card?.body) return null;
   bodyEl.innerHTML = card.body;
-  return card.body;
+  // The body came back as the builders draw it: re-apply the random-target
+  // Chain ranges (no-op for any other card).
+  paintChainRangeCard(root, undefined, { roll: payload?.roll ?? null });
+  return bodyEl.innerHTML;
 }
 
 // Single source of truth for the kind→builder dispatch. Shared by the spawn
@@ -5965,6 +6088,9 @@ const ACTION_CARD_RENDER_KEYS = [
   "attackMode", "passIndex", "totalPasses",
   // Chain N (chain-plan.js): { count, mode, strikeTargets? } — the header badge.
   "chain",
+  // Random-target Chain card (chain-preview.js): the ranges a seek / random /
+  // volley Chain shows instead of strike 1's verdict. Plain data.
+  "chainPreview",
   // Guard / Study / Hinder / Item:
   "coverTarget", "target", "tier", "previousBest", "improved", "dl", "success",
   "itemCandidates", "ip",
@@ -6123,6 +6249,8 @@ export function projectActionResultForRender(ar) {
         tokenUuid: r.tokenUuid ?? null,
         name: r.name ?? null,
         hit: r.hit, crit: r.crit, isCrit: r.isCrit,
+        // A Pierce miss deals half; without this the mirror's repaint reads MISS.
+        pierceMiss: !!r.pierceMiss,
         damage: r.damage, affinity: r.affinity ?? null,
         resource: r.resource ?? null,
         // Fickle: without this the mirror's repaint calls resultLabelFor with no
@@ -6138,6 +6266,9 @@ export function projectActionResultForRender(ar) {
         resourceMax: r.resourceMax ?? null,
         vismagusSuppressed: r.vismagusSuppressed ?? null,
         healReversed: r.healReversed ?? null,
+        healReversedReason: r.healReversedReason ?? null,
+        healWarnHidden: r.healWarnHidden ?? null,
+        healMaskAmount: r.healMaskAmount ?? null,
         damageOverride: r.damageOverride
           ? { from: r.damageOverride.from ?? null, to: r.damageOverride.to ?? null }
           : null,
@@ -7498,6 +7629,9 @@ export function fitActionCardToViewport(rootEl) {
     ? rootEl
     : rootEl?.querySelector?.(".fud-bf-card");
   if (!card) return;
+  // The random-target Chain card's range font needs layout, so it fits here —
+  // the one call every client makes once the card is in the document.
+  fitChainRangeDamage(card);
   try {
     const regions = [
       card.querySelector(".fud-bf-target-list"),
@@ -7632,7 +7766,11 @@ function chainBulletHTML(chain, targets) {
     let tip = chain.mode === "volley"
       ? `Chain ${n} Volley: ${n} shots on one card — each rolls its own Accuracy Check; damage bonuses are shared across the shots.`
       : `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
-    if (Array.isArray(chain.strikeTargets) && chain.strikeTargets.length) {
+    // A drawn Chain (seek / random / volley) never names its picks: who each
+    // strike lands on is the draw, decided on Confirm (random-target Chain card).
+    if (isDrawnChainPreviewSpec(chain)) {
+      if (chain.mode === "seek") tip += " A strike on a creature already at 0 HP seeks another target.";
+    } else if (Array.isArray(chain.strikeTargets) && chain.strikeTargets.length) {
       const nameOf = new Map((Array.isArray(targets) ? targets : []).map((t) => [t?.tokenUuid, t?.name ?? "?"]));
       const counts = new Map();
       for (const list of chain.strikeTargets) for (const u of list ?? []) counts.set(u, (counts.get(u) ?? 0) + 1);
@@ -7655,6 +7793,186 @@ function withChainBullet(subtitle, chain, targets) {
     return `${s.slice(0, -6)}<span class="dot">•</span>${bullet}</div>`;
   }
   return `${s}<div class="fud-bf-subtitle">${bullet}</div>`;
+}
+
+// ── Random-target Chain card ─────────────────────────────────────────────────
+// A Chain whose strikes draw their targets (seek / random / volley) shows the
+// RANGES chain-preview.js priced at COMPUTE instead of strike 1's roll and
+// verdict (approved mockup "Random-target Chain HUD", round 7, 2026-11-28):
+//   Accuracy — the dice-and-bonus range; the crit / fumble note in the hover.
+//   Damage   — one strike's range, centred where today's number sits; the
+//              element word on the right ("Multi-Type" + hover for mixed
+//              elements); no +HR pill; "×N hit" on the box's bottom-right border.
+//   Rows     — every card target keeps its row and shows its own range in the
+//              action's element colour, blinking slowly. No HIT / MISS.
+// It is a PAINT over the card the builders drew, so every path that repaints the
+// card (the mutation delta, an Invoke, a body re-render, every mirror) calls it
+// last and the ranges survive. The preview rides on the card element itself
+// (data-fud-chain-preview), so a repaint needs nothing but the card. After
+// Confirm the card closes; the strike reveal is unchanged.
+const CHAIN_PREVIEW_ATTR = "data-fud-chain-preview";
+const CHAIN_MULTI_INK = { color: "#3a3228", glow: "rgba(58,50,40,0.22)" };
+
+function chainPreviewColour(preview) {
+  if (preview?.mixed) return CHAIN_MULTI_INK;
+  const el = String(preview?.element ?? "physical").toLowerCase();
+  return { color: ELEMENT_COLOR[el] ?? ELEMENT_COLOR.physical, glow: ELEMENT_GLOW[el] ?? ELEMENT_GLOW.physical };
+}
+
+// Swap an element for a fresh copy, so a running-number tween started on the old
+// one (animateCardNumber keeps writing frames to the node it was given) can never
+// write a single number over the range painted here.
+function freshNode(el) {
+  if (!el) return el;
+  const copy = el.cloneNode(true);
+  copy.classList.remove("fud-num-up", "fud-num-down");
+  el.replaceWith(copy);
+  return copy;
+}
+
+// The range font steps down from 30 px (never below 16) while it would come
+// within 6 px of the element word. Needs layout, so it runs once the card is in
+// the document (fitActionCardToViewport calls it on every client).
+export function fitChainRangeDamage(rootEl) {
+  try {
+    const scope = rootEl?.querySelectorAll ? rootEl : null;
+    if (!scope) return;
+    const sets = [...(scope.matches?.("fieldset.fud-bf-dmg.is-chain-range") ? [scope] : []),
+      ...scope.querySelectorAll("fieldset.fud-bf-dmg.is-chain-range")];
+    for (const fs of sets) {
+      const num = fs.querySelector(".fud-bf-dmg-number"), del = fs.querySelector(".fud-bf-dmg-element");
+      if (!num || !del || !num.isConnected) continue;
+      let size = 30;
+      num.style.fontSize = `${size}px`;
+      while (size > 16 && num.getBoundingClientRect().right + 6 > del.getBoundingClientRect().left) {
+        size -= 1;
+        num.style.fontSize = `${size}px`;
+      }
+      num.dataset.fudFit = String(size);
+    }
+  } catch (e) { warn("fitChainRangeDamage threw", e); }
+}
+
+// Paint (or re-paint) the random-target Chain card on `rootEl` (the root, a
+// mirror wrapper or the card). `preview` undefined = the one already on the card.
+// `roll` (optional) = the current roll, so a Bond's bonus moves the accuracy range.
+export function paintChainRangeCard(rootEl, preview = undefined, { roll = null } = {}) {
+  const card = rootEl?.classList?.contains?.("fud-bf-card") ? rootEl : rootEl?.querySelector?.(".fud-bf-card");
+  if (!card) return;
+  try {
+    if (preview === undefined) {
+      try { preview = JSON.parse(card.getAttribute(CHAIN_PREVIEW_ATTR) || "null"); } catch { preview = null; }
+    } else if (preview) {
+      card.setAttribute(CHAIN_PREVIEW_ATTR, JSON.stringify(preview));
+    }
+    if (!preview || preview.v !== 1) return;
+    const col = chainPreviewColour(preview);
+    const strikeNoun = preview.mode === "volley" ? "shot" : "strike";
+
+    // ── Accuracy: the range the dice can make ─────────────────────────────
+    const accDiv = card.querySelector(".fud-bf-acc");
+    if (accDiv) {
+      const acc = chainAccuracyRange(roll) ?? preview.accuracy ?? null;
+      accDiv.classList.remove("is-crit", "is-fumble");
+      accDiv.classList.add("is-chain-range");
+      for (const el of accDiv.querySelectorAll(".die-result, .float-banner, .fud-bf-opportunity")) el.remove();
+      const dice = [...accDiv.querySelectorAll(".die-block")].map((b) => ({
+        attr: b.querySelector(".attr")?.textContent?.trim() ?? "", size: b.querySelector(".die-size")?.textContent?.trim() ?? "",
+      }));
+      const bonusText = accDiv.querySelector(".fud-bf-acc-row .bonus")?.textContent?.trim() ?? "";
+      const note = `Each ${strikeNoun} rolls its own. Any of them can be a critical (matching dice, 6 or more) or a fumble (1 + 1).`;
+      const tip = [
+        dice.map((d) => `<b>${escapeHtml(d.attr)}:</b> 1${escapeHtml(d.size)}`).join(" &nbsp; "),
+        bonusText ? `<b>Check Bonus:</b> ${escapeHtml(bonusText)}` : "",
+        acc ? `<b>Possible total:</b> <b>${acc.min}</b> to <b>${acc.max}</b>` : "",
+        note,
+      ].filter(Boolean).map((l) => `<p>${l}</p>`).join("");
+      let total = accDiv.querySelector(".fud-bf-acc-row .total");
+      if (total && acc) {
+        total = freshNode(total);
+        total.textContent = formatRange(acc.min, acc.max);
+        total.setAttribute("data-fud-equip-desc", `<p>${note}</p>`);
+        total.setAttribute("data-fud-equip-desc-name", "Accuracy Check");
+        total.style.cursor = "help";
+      }
+      const accFs = accDiv.closest("fieldset");
+      if (accFs) accFs.setAttribute("data-fud-equip-desc", tip);
+    }
+
+    // ── Damage: one strike's range, today's row ───────────────────────────
+    const dmgFs = card.querySelector("fieldset.fud-bf-dmg");
+    if (dmgFs && preview.damage) {
+      dmgFs.classList.add("is-chain-range");
+      let num = dmgFs.querySelector(".fud-bf-dmg-number");
+      if (num) {
+        num = freshNode(num);
+        num.textContent = formatRange(preview.damage.min, preview.damage.max);   // drops the +HR pill too
+        num.style.color = col.color;
+        num.style.textShadow = `0 0 15px ${col.glow}`;
+      }
+      const elEl = dmgFs.querySelector(".fud-bf-dmg-element");
+      if (elEl) {
+        if (preview.mixed) {
+          elEl.textContent = "Multi-Type";
+          elEl.classList.add("is-multi");
+          elEl.setAttribute("tabindex", "0");
+          const lines = (preview.elements ?? []).map((e, i) => {
+            const k = String(e ?? "").toLowerCase();
+            return `<li>${cap(strikeNoun)} ${i + 1} · <b style="color:${ELEMENT_COLOR[k] ?? ELEMENT_COLOR.physical};">${escapeHtml(displayElement(k))}</b></li>`;
+          }).join("");
+          elEl.setAttribute("data-fud-equip-desc",
+            `<ul style="margin:2px 0 0;padding:0;list-style:none;">${lines}</ul>`
+            + (preview.pierce ? `<p style="margin-top:5px;opacity:.85;">Pierce: a miss deals ½.</p>` : ""));
+          elEl.setAttribute("data-fud-equip-desc-name", "Multi-Type");
+        } else {
+          elEl.textContent = displayElement(preview.element ?? "physical");
+          elEl.classList.remove("is-multi");
+          elEl.removeAttribute("tabindex");
+          elEl.removeAttribute("data-fud-equip-desc");
+        }
+        elEl.style.color = col.color;
+      }
+      let badge = dmgFs.querySelector(".fud-bf-chain-hits");
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "fud-bf-chain-hits";
+        dmgFs.appendChild(badge);
+      }
+      badge.textContent = `×${preview.count} hit`;
+      dmgFs.setAttribute("data-fud-equip-desc",
+        `<p><b>One ${strikeNoun}, before the target:</b> ${escapeHtml(formatRange(preview.damage.min, preview.damage.max))}</p>`
+        + `<p>The High Roll is already in the range. Each ${strikeNoun} rolls its own.</p>`
+        + `<p style="opacity:.85;">Not in the range: critical hits, bonuses for every hit landing`
+        + `${preview.pierce ? ", and Pierce's half damage on a miss" : ""}.</p>`);
+      dmgFs.setAttribute("data-fud-equip-desc-name", "Damage Preview");
+    }
+
+    // ── Rows: every target, its own range ─────────────────────────────────
+    for (const rowEl of card.querySelectorAll(".fud-bf-target-row")) {
+      if (rowEl.classList.contains("is-unstudied") || rowEl.classList.contains("is-none")) continue;
+      const res = rowEl.querySelector(".t-result");
+      if (!res) continue;
+      // The affinity pill renders only on a hit: it would tell strike 1's verdict.
+      for (const pill of rowEl.querySelectorAll(".t-affinity")) pill.remove();
+      const uuid = rowEl.getAttribute("data-fud-target-token-uuid") ?? "";
+      const p = preview.perTarget?.[uuid] ?? null;
+      const name = rowEl.querySelector(".t-name")?.childNodes?.[0]?.textContent?.trim() || p?.name || "";
+      const fresh = freshNode(res);
+      fresh.className = "t-result chain-range";
+      fresh.style.color = col.color;
+      fresh.style.textShadow = `0 0 8px ${col.glow}`;
+      if (!p) { fresh.innerHTML = `<span class="t-num">—</span>`; continue; }
+      const numHtml = p.min != null ? `<span class="t-num">${escapeHtml(formatRange(p.min, p.max))}</span>` : "";
+      const notes = (p.heals?.length ? `<small>${escapeHtml(p.heals.join(", "))} heals</small>` : "")
+        + (p.zero?.length ? `<small class="im">${escapeHtml(p.zero.join(", "))} 0</small>` : "");
+      fresh.innerHTML = numHtml + notes;
+      rowEl.setAttribute("data-fud-equip-desc",
+        `<p><b>One ${strikeNoun} on ${escapeHtml(name)}:</b></p>`
+        + (p.why ?? []).map((l) => `<p>${escapeHtml(l)}</p>`).join(""));
+      rowEl.setAttribute("data-fud-equip-desc-name", name);
+    }
+    if (card.isConnected) fitChainRangeDamage(card);
+  } catch (e) { warn("paintChainRangeCard threw", e); }
 }
 
 function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, kind = null }) {
@@ -7714,6 +8032,11 @@ function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, k
   const root = document.createElement("div");
   root.id = rootId;
   root.innerHTML = innerHTML;
+  // Random-target Chain card: ranges instead of strike 1's verdict. Painted here,
+  // the one template every card (host and local mirror render) comes out of.
+  if (payload?.chainPreview && isDrawnChainPreviewSpec(payload?.chain)) {
+    paintChainRangeCard(root, payload.chainPreview, { roll: payload.roll ?? null });
+  }
   return { root, initialPending };
 }
 
@@ -9396,6 +9719,8 @@ export async function postActionCard({ director, kind, payload }) {
               newHit: !!entry.hit,
               newCrit: !!entry.crit,
               newDamage: entry.damage,
+              // A Pierce miss still deals half: the row must not read MISS.
+              newPierceMiss: !!entry.pierceMiss,
               // Fickle: the concealed odds, re-derived against the PROTECTOR's
               // defence. These delta payloads enumerate their fields, so a
               // concealed row that crossed the wire without this would repaint
@@ -9422,6 +9747,10 @@ export async function postActionCard({ director, kind, payload }) {
               grantAmount: entry.grantAmount, grantResource: entry.grantResource,
               resourceCur: entry.resourceCur, resourceMax: entry.resourceMax,
               vismagusSuppressed: !!entry.vismagusSuppressed,
+              // A heal that lands as damage keeps its DAMAGE label through the repaint
+              // (without these a recompute turned "DAMAGE 40" back into a heal label).
+              ...(entry.healReversed ? { healReversed: true, healReversedReason: entry.healReversedReason ?? null,
+                healWarnHidden: !!entry.healWarnHidden, healMaskAmount: entry.healMaskAmount ?? null } : {}),
               studied: entry.studied, hit: entry.hit, crit: entry.crit,
               ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
             });
@@ -9445,6 +9774,7 @@ export async function postActionCard({ director, kind, payload }) {
               to: entry.defenseOverride.to,
               via: entry.defenseOverride.via,
               hit: !!entry.hit, crit: !!entry.crit, damage: entry.damage,
+              pierceMiss: !!entry.pierceMiss,
               affinity: entry.affinity ?? null,
               ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
             });
@@ -9641,6 +9971,7 @@ export async function postActionCard({ director, kind, payload }) {
                 name: entry.name ?? origEntry.name ?? "",
                 hit: entry.hit,
                 crit: entry.crit,
+                pierceMiss: !!entry.pierceMiss,
                 affinity: entry.affinity ?? null,
                 damage: entry.damage,
                 resource: entry.resource ?? null,
@@ -9779,6 +10110,15 @@ export async function postActionCard({ director, kind, payload }) {
           } catch (e) {
             warn("recomputeTargetPreviews: re-gate threw — pending reactions stay as offered", e);
             delta.staleReactions = [];
+          }
+          // Random-target Chain card: a creature the mutation brought onto the
+          // card (Protect's protector, an added target) is priced before the
+          // paint, and the grown preview rides the delta to every mirror.
+          if (payload?.chainPreview && mutTargets.length) {
+            try {
+              const grown = await extendChainPreview(payload.chainPreview, liveAr ?? base, mutTargets);
+              if (grown !== payload.chainPreview) { payload.chainPreview = grown; delta.chainPreview = grown; }
+            } catch (e) { warn("recomputeTargetPreviews: random-target Chain preview extend threw", e); }
           }
           const wireDelta = toWireSafe(delta) ?? delta;
           applyCardTargetMutationDelta(root, wireDelta);
