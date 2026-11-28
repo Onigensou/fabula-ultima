@@ -759,6 +759,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // reduction / efficiency / affinity take their turn on it.
       const shareBase = massiveShare(outBase, massiveCount);
       if (shareBase !== outBase) damageModParts.push({ source: `Massive (÷${massiveCount})`, amount: shareBase - outBase });
+      const outgoingPartCount = damageModParts.length;   // the parts after this are the target's own
       rawDamage = pierceMiss ? Math.ceil(shareBase / 2) : shareBase;
 
       // Target actor for the incoming layer (DR + weapon efficiency), fetched
@@ -992,6 +993,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         element: reactionElement ?? primary.element, resource: primary.resource, damageClass: "primary",
         breakdown: damageModParts, preAffinity: rawDamage, affinity: affinityCode,
         value: damageVal,
+        // The hit before the target (HR + base, the attacker's multipliers, volley
+        // share, Massive split): what the random-target Chain card's Damage box
+        // shows as a range (chain-preview.js). Internal; flattenRow does not copy it.
+        outgoing: shareBase,
+        incomingBreakdown: damageModParts.slice(outgoingPartCount),
         // Reaction-fold artifacts (was on _parity) so flattenRow + the headline
         // breakdown can rebuild from effects alone. overrideElement is null unless
         // a reaction overrode the element — flatten emits `element` only when set,
@@ -1759,7 +1765,7 @@ export async function actionKeywordsForActionResult(ar) {
 // card-reaction candidates (their appliesToTargetUuids should already be refreshed
 // via skill-effects.refreshReactionSubjects). Returns the projected delta
 // (perTargetResults, damage, hitTokenUuids, …) or null on hard failure.
-export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null, defenseOverrides = null, damageOverrides = null, gmHitOverrides = null, gmDamage = null } = {}) {
+export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null, defenseOverrides = null, damageOverrides = null, gmHitOverrides = null, gmDamage = null, withProfile = false } = {}) {
   if (!ar) return null;
   try {
     // A GM-forced verdict is decided inside buildPerTarget (so damage derives
@@ -1796,6 +1802,10 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
       acceptedReactions, accuracyOverride, gmHitOverrides, gmDamage, defenseOverrides,
     });
     const delta = projectProfileToActionResult(profile, ar, snaps);
+    // The random-target Chain preview (chain-preview.js) reads each row's primary
+    // damage effect (`outgoing` / `preAffinity` / `value` / `breakdown`), which the
+    // flat rows do not carry. Off by default; the card's wire projection drops `_profile`.
+    if (withProfile && delta) delta._profile = profile;
     if (Array.isArray(delta?.perTargetResults)) {
       for (let i = 0; i < delta.perTargetResults.length; i++) {
         const rf = snaps[i]?.redirectedFrom;

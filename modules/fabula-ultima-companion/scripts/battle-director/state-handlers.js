@@ -129,6 +129,7 @@ import { holdsStaysDown } from "./stays-down.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
 import { volleyShotContext } from "./chain-strikes.js";
+import { computeDrawnChainPreview, extendChainPreview, isDrawnChainPreviewSpec } from "./chain-preview.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
 import { beginHitCounter, endHitCounter } from "./hit-counter.js";
 import { emitBattlerPose, emitFollowUpsPending } from "./battler-pose.js";
@@ -2002,6 +2003,20 @@ function queuePostResolveTrigger(director, config) {
     director.ctx._postResolveTriggers = [];
   }
   director.ctx._postResolveTriggers.push(config);
+}
+
+// ── Random-target Chain card (chain-preview.js) ─────────────────────────────
+// A Chain whose strikes draw their targets (seek / random / volley) shows ranges
+// on its card instead of strike 1's verdict. Priced once at COMPUTE, through the
+// same per-target pipeline as the card; the card only paints it. A failure leaves
+// the card as it is today.
+async function attachChainPreview(director) {
+  const ar = director?.ctx?.actionResult;
+  if (!ar?.chain || !isDrawnChainPreviewSpec(ar.chain)) return;
+  try {
+    const chainPreview = await computeDrawnChainPreview({ ar });
+    if (chainPreview) director.ctx.actionResult = freezeActionResult({ ...ar, chainPreview });
+  } catch (e) { warn("COMPUTE: random-target Chain preview threw — the card shows strike 1 as before", e); }
 }
 
 // ── Chain N helpers for resolveAction (plan = ar.chainPlan, ct = one target) ──
@@ -5841,6 +5856,7 @@ const Compute = {
         // picked option says it (Bind and Summon: "Skill • 30 MP").
         ...(dynamicPickCost && !preCostOverride && !arForProfile.rawCost ? { rawCost: dynamicPickCost } : {}),
       });
+      if (_chainDraw) await attachChainPreview(director);
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
@@ -5996,6 +6012,7 @@ const Compute = {
             onHitEffectRefs: attackGrant.onHitEffectRefs ?? null,
             sourceItemUuid: attackGrant.sourceItemUuid ?? null } } : {}),
         });
+        if (_chainDraw) await attachChainPreview(director);
         director.enqueue({ type: INTENTS.INTERNAL_DONE });
         return;
       }
@@ -7281,6 +7298,12 @@ const Confirm = {
         }
       }
     } catch (e) { warn("CONFIRM: force add_target pre-splice threw", e); }
+    // Random-target Chain card: a creature the splice just added has no range yet.
+    let cardChainPreview = ar.chainPreview ?? null;
+    if (cardChainPreview) {
+      try { cardChainPreview = await extendChainPreview(cardChainPreview, director.ctx.actionResult ?? ar, cardTargets ?? []); }
+      catch (e) { warn("CONFIRM: random-target Chain preview extend threw", e); }
+    }
 
     // Critical-hit cut-in — fire it AS the action card (with the roll result)
     // appears, NOT at RESOLVE. Fire-and-forget so the ~2s cinematic plays
@@ -7381,6 +7404,7 @@ const Confirm = {
         attackerActor,
         targets: cardTargets,
         perTargetResults: cardPerTargets,
+        chainPreview: cardChainPreview,
         cardReactions,
         // GM-side callback the Barrage (creature_performs_action) pill's "Apply"
         // runs on the POST-ROLL card. Fires the reaction's add_target chain

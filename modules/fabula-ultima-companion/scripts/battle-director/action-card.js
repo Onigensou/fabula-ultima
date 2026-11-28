@@ -5965,6 +5965,9 @@ const ACTION_CARD_RENDER_KEYS = [
   "attackMode", "passIndex", "totalPasses",
   // Chain N (chain-plan.js): { count, mode, strikeTargets? } — the header badge.
   "chain",
+  // Random-target Chain card (chain-preview.js): the ranges a seek / random /
+  // volley Chain shows instead of strike 1's verdict. Plain data.
+  "chainPreview",
   // Guard / Study / Hinder / Item:
   "coverTarget", "target", "tier", "previousBest", "improved", "dl", "success",
   "itemCandidates", "ip",
