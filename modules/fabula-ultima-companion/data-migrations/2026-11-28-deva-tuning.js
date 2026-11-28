@@ -35,6 +35,15 @@ const SHELL = {
       effect_table: { "0": { $deleted: false, effect_kind: "adjust_damage", effect_label: "fs_cap", damage_stage: "incoming", damage_operation: "cap", damage_amount: "1" } } } } },
 };
 
+// round 2: damage_bonus [from, to] (+4 each), the Physical / Light links, the form lines
+const DMG_FROM = { "Vajra Fist": [52, 56], "Mudra Lance": [52, 56], "Double Slap": [36, 40], "Ground Slam": [45, 49], "Fists of Fury": [42, 46],
+  "Surya Palm": [78, 82], "Fists of Focus": [18, 22], "Kala Strike": [38, 42] };
+const PHYS = link("Item.XpKZuGo3VmT0TlTu", "Physical"), LIGHT = link("Item.IQaK3IzvfFp4I1xB", "Light");
+const LINES = {
+  "Ground Slam": { text: "Steel, and more steel. ...Then let me show you how it's swung.", switch: "Deva Fury Line", speaker: "Deva", hold: 2600 },
+  "Rahu's Eclipse": { text: "So fond of your little spells. Let's see you cast them empty.", switch: "Deva Focus Line", speaker: "Deva", hold: 2600 },
+  "Enlightenment": { text: "You think you've read me? ...Look again, I am one who walks the balance path", switch: "Deva Enlightenment Line", speaker: "Deva", hold: 3200 },
+};
 function actorsNamed(re, id) {
   const out = []; for (const a of game.actors) if (a.id === id || re.test(a.name ?? "")) out.push(a);
   for (const s of game.scenes) for (const t of s.tokens) if (!t.actorLink && t.actor && re.test(t.actor.name ?? "")) out.push(t.actor);
@@ -67,6 +76,28 @@ export async function migrate(game, log = () => {}) {
     if (Object.keys(upd).length) { await it.update(upd); out.push(`~ ${a.name}${a.isToken ? " (token)" : ""} / Double Slap: ${Object.keys(upd).map((x) => x.replace("system.props.", "")).join(", ")}`); }
     const al = a.system?.props?.attack_list?.[it.id];
     if (al && al.attack_description !== SLAP_TEXT) { await a.update({ [`system.props.attack_list.${it.id}.attack_description`]: SLAP_TEXT }); out.push(`~ ${a.name}${a.isToken ? " (token)" : ""}: sheet entry Double Slap text`); }
+  }
+  // 4. Round 2 (user 2026-11-28): Fists of Fury + Detonate Physical → Light; +4 damage on every Deva attack (Detonate
+//    stays 60, the user's call); form lines (bossLine, once per playthrough) before her first move in each form.
+  for (const a of actorsNamed(/^deva$/i, DEVA)) {
+    for (const it of a.items) {
+      const bump = DMG_FROM[it.name]; const P = it.system?.props ?? {}, upd = {};
+      if (bump && String(P.damage_bonus) === String(bump[0])) upd["system.props.damage_bonus"] = String(bump[1]);
+      else if (bump && String(P.damage_bonus) !== String(bump[1])) out.push(`= ${a.name} / ${it.name}: damage ${P.damage_bonus} is not the expected ${bump[0]} — left`);
+      if (it.name === "Fists of Fury" && P.type_damage === "Physical") upd["system.props.type_damage"] = "Light";
+      if (it.name === "Fists of Focus") for (const [k, r] of Object.entries(P.effect_table ?? {})) if (r?.effect_label === "fo_drain" && r.damage_amount === "3 * (HR + 18)") upd[`system.props.effect_table.${k}.damage_amount`] = "3 * (HR + 22)";
+      if (["Fists of Fury", "Missile Fist"].includes(it.name) && String(P.description ?? "").includes(PHYS)) upd["system.props.description"] = String(P.description).split(PHYS).join(LIGHT);
+      const line = LINES[it.name]; if (line && JSON.stringify(it.getFlag(M, "bossLine")) !== JSON.stringify(line)) upd[`flags.${M}.bossLine`] = line;
+      if (Object.keys(upd).length) { await it.update(upd); out.push(`~ ${a.name}${a.isToken ? " (token)" : ""} / ${it.name}: ${Object.keys(upd).map((x) => x.replace("system.props.", "").replace(`flags.${M}.`, "")).join(", ")}`); }
+    }
+    const fe = a.system?.props?.attack_list?.DvFistsOfFury001;
+    if (fe && String(fe.attack_description ?? "").includes(PHYS)) { await a.update({ "system.props.attack_list.DvFistsOfFury001.attack_description": String(fe.attack_description).split(PHYS).join(LIGHT) }); out.push(`~ ${a.name}: sheet entry Fists of Fury → Light`); }
+  }
+  for (const a of actorsNamed(/^missile fist$/i, FIST)) {
+    const it = a.items.find((i) => i.name === "Detonate"); if (!it) continue; const P = it.system?.props ?? {}, upd = {};
+    for (const [k, r] of Object.entries(P.effect_table ?? {})) if (r?.effect_label === "fd_hit" && r.damage_element === "physical") upd[`system.props.effect_table.${k}.damage_element`] = "light";
+    if (String(P.description ?? "").includes(PHYS)) upd["system.props.description"] = String(P.description).split(PHYS).join(LIGHT);
+    if (Object.keys(upd).length) { await it.update(upd); out.push(`~ ${a.name}${a.isToken ? " (token)" : ""} / Detonate: Light`); }
   }
   if (!out.length) out.push("= Deva tuning already applied (or no Deva in the world)");
   for (const l of out) log(l);
