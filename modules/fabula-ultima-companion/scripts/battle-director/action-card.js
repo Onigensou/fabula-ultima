@@ -5263,7 +5263,8 @@ export function buildItemCard({ attacker, attackerActor, itemCandidates, ip }) {
     const isCreate = c.mode === "create";
     const cost = isCreate ? c.ipCost : null;
     const qty  = !isCreate ? (c.isUnique ? "∞" : (c.quantity ?? 0)) : null;
-    const disabled = isCreate && cost > curIp;
+    // "Out of battle only" (to-do #13) greys the row like an unaffordable recipe.
+    const disabled = (isCreate && cost > curIp) || !!c.outOfBattleOnly;
     const key = isCreate ? c.key : c.id;
     const desc = describeCandidateForTooltip(c);
     const descAttr = desc

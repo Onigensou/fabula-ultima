@@ -38,6 +38,7 @@ import { playRoundBanner, hideRoundBanner } from "./director-round-banner.js";
 import { resolveInitiativeGroupCheck } from "./director-initiative.js";
 import { applyEquipmentSwap } from "./equipment-swap.js";
 import { gatherConsumables, gatherCreatables, readActorIp, consumeOne, spendIp, getLinkedSkillUuid } from "./item-resource.js";
+import { isOutOfBattleOnlyItem } from "./field-only-items.js";
 import { saveDirectorState, installItemDeletionTracker, clearAllDirectorStateFlags } from "./persistence.js";
 import { computeBattleEndRewards } from "./battle-end/battle-end-rewards.js";
 // Phase B.1 Skill engine
@@ -4860,6 +4861,14 @@ const Target = {
       const consumable = await fromUuid(bundle.skillUuid).catch(() => null);
       if (!consumable) {
         ui.notifications?.warn("Chosen item could not be resolved.");
+        director.enqueue({ type: INTENTS.TARGET_BACK });
+        return;
+      }
+      // "Out of battle only" (to-do #13). The menu already greys it out; this
+      // is the one gate every other route (sim, scripted test, Copycat, a
+      // crafted intent) passes through as well.
+      if (isOutOfBattleOnlyItem(consumable)) {
+        ui.notifications?.warn(`${consumable.name} can only be used out of battle.`);
         director.enqueue({ type: INTENTS.TARGET_BACK });
         return;
       }

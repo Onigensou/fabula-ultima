@@ -370,9 +370,15 @@ async function unavailableCommands(snap, actorUuid) {
     }
   } catch (e) { warn("composeAction: skill availability check threw — leaving Skill/Spell open", e); }
   try {
-    const [use, create] = await Promise.all([gatherConsumables(actor), gatherCreatables(actor)]);
+    const [allUse, allCreate] = await Promise.all([gatherConsumables(actor), gatherCreatables(actor)]);
+    // "Out of battle only" rows are shown greyed in the picker but never count
+    // as something to do (to-do #13).
+    const use = allUse.filter((c) => !c.outOfBattleOnly);
+    const create = allCreate.filter((c) => !c.outOfBattleOnly);
     const ip = Number(readActorIp(actor)?.current ?? 0) || 0;
-    if (!use.length && !create.length) out.push({ label: "Item", reason: "No items to use and no recipes to craft.", tag: "None" });
+    if (!use.length && !create.length && (allUse.length || allCreate.length)) {
+      out.push({ label: "Item", reason: "Your items can only be used out of battle.", tag: "Field only" });
+    } else if (!use.length && !create.length) out.push({ label: "Item", reason: "No items to use and no recipes to craft.", tag: "None" });
     else if (!use.length && !create.some((c) => Number(c.ipCost) <= ip)) {
       out.push({ label: "Item", reason: `No items to use, and not enough IP to craft (IP ${ip}).`, tag: "Low IP" });
     }

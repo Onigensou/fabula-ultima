@@ -131,5 +131,19 @@ console.log("\n— NPC template (HUD text props) —");
   eq("skill sync with default arg unchanged", reg.ensureManagedProps(makeBody()).added.length, reg.MANAGED_PROPS.length);
 }
 
+console.log("\n— gear template (out_of_battle_only, to-do #13) —");
+{
+  eq("gear template is managed", reg.MANAGED_PROP_TEMPLATES.includes("ZoiV53VaLzeRsEps"), true);
+  const gear = reg.propsForTemplate("ZoiV53VaLzeRsEps");
+  eq("the gear key", gear.map((p) => p.key), ["out_of_battle_only"]);
+  eq("it is a checkbox", gear[0].type, "checkbox");
+  eq("no default (stamps nothing)", [gear[0].defaultValue, gear[0].defaultChecked], [undefined, false]);
+  const body = makeBody();
+  const r = reg.ensureManagedProps(body, gear);
+  eq("adds exactly the 1", r.added, ["out_of_battle_only"]);
+  const again = reg.ensureManagedProps(body, gear);
+  eq("second run: zero writes", [again.changed, again.added], [false, []]);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

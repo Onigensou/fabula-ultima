@@ -14,6 +14,7 @@ import { pickFromList } from "./list-picker.js";
 import { log, warn } from "./logger.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { previewPlateCost } from "./director-player-hud.js";
+import { OUT_OF_BATTLE_LABEL } from "./field-only-items.js";
 
 // Does a consumable survive a `disable_action_intent` filter? FAIL-OPEN: a
 // consumable is blocked ONLY when we can POSITIVELY prove it's non-harmful —
@@ -75,7 +76,9 @@ function metaSecondary(c) {
 // Consumable → row. The value object IS pickItem's return contract for "use".
 function useRow(c) {
   const qty = c.isUnique ? "∞" : (c.quantity ?? 0);
-  const intentDisabled = c._intentDisabled || null;
+  // "Out of battle only" (to-do #13) outranks an intent block: it is the
+  // reason that never changes during this battle.
+  const intentDisabled = (c.outOfBattleOnly ? OUT_OF_BATTLE_LABEL : null) || c._intentDisabled || null;
   return {
     value: { mode: "use", key: c.id, cost: 0, uuid: c.uuid, name: c.name },
     imageUrl: safeImg(c.img, "icons/svg/potion.svg"),
@@ -92,7 +95,7 @@ function useRow(c) {
 // Recipe → row. Disabled + danger badge when its IP cost exceeds current IP.
 function createRow(c, curIp) {
   const unaffordable = Number(c.ipCost) > curIp;
-  const intentDisabled = c._intentDisabled || null;
+  const intentDisabled = (c.outOfBattleOnly ? OUT_OF_BATTLE_LABEL : null) || c._intentDisabled || null;
   return {
     value: { mode: "create", key: c.key, cost: c.ipCost, uuid: c.itemUuid, name: c.name },
     imageUrl: safeImg(c.img, "icons/svg/item-bag.svg"),
