@@ -1021,6 +1021,9 @@ export function ensureStyles() {
        red like a damage result, small verb + large number, a reason pill, a red row wash. */
     .fud-bf-card .fud-bf-target-row .t-result.rev        { color: #b40000; font-weight: 900; }
     .fud-bf-card .fud-bf-target-row .t-result.rev .vb    { font-size: 10.5px; letter-spacing: .3px; }
+    /* The wash runs to the fieldset border (its 9px side padding): the list is a scroll box
+       (overflow-y auto), so it takes the 9px itself and the rows bleed into it, no scrollbar. */
+    .fud-bf-card .fud-bf-target-list:has(> .is-heal-rev) { margin: 0 -9px; padding: 0 9px; }
     .fud-bf-card .fud-bf-target-row.is-heal-rev { background: linear-gradient(90deg, rgba(180,0,0,.1), rgba(180,0,0,.03)); box-shadow: inset 3px 0 0 #b40000;
       margin: 0 -9px; padding-left: 9px; padding-right: 9px; }
     .fud-bf-card .fud-bf-target-row.is-heal-rev .t-def { opacity: 1; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
@@ -9469,6 +9472,10 @@ export async function postActionCard({ director, kind, payload }) {
               grantAmount: entry.grantAmount, grantResource: entry.grantResource,
               resourceCur: entry.resourceCur, resourceMax: entry.resourceMax,
               vismagusSuppressed: !!entry.vismagusSuppressed,
+              // A heal that lands as damage keeps its DAMAGE label through the repaint
+              // (without these a recompute turned "DAMAGE 40" back into a heal label).
+              ...(entry.healReversed ? { healReversed: true, healReversedReason: entry.healReversedReason ?? null,
+                healWarnHidden: !!entry.healWarnHidden, healMaskAmount: entry.healMaskAmount ?? null } : {}),
               studied: entry.studied, hit: entry.hit, crit: entry.crit,
               ...(typeof entry.hitChance === "number" ? { hitChance: entry.hitChance } : {}),  // Fickle
             });

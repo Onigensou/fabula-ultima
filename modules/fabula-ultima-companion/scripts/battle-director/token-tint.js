@@ -244,8 +244,8 @@ void main(void) {
 const BLUR_H_FRAG = `
 varying vec2 vTextureCoord;
 uniform sampler2D uSampler;
-uniform vec4 inputSize;
-uniform vec4 inputClamp;
+uniform highp vec4 inputSize;   // highp: must match the filter vertex shader
+uniform highp vec4 inputClamp;
 uniform vec2 uStep;
 void main(void) {
   float s = 0.0, w = 0.0;
@@ -262,8 +262,8 @@ const GLOW_FRAG = `
 varying vec2 vTextureCoord;
 uniform sampler2D uSampler;
 uniform sampler2D uGraded;
-uniform vec4 inputSize;
-uniform vec4 inputClamp;
+uniform highp vec4 inputSize;   // highp: must match the filter vertex shader
+uniform highp vec4 inputClamp;
 uniform vec2 uStep;
 uniform vec3 uRim;
 uniform float uGlowA;
