@@ -132,6 +132,16 @@ export const DEFEAT_STYLES = {
     shake: { px: 4, ms: 200 },
     sfx: DEATH_SFX,
   },
+  // The creature's own death animation already played (a creature_defeated play_animation on
+  // itself, e.g. the Missile Fist's shatter, whose last frame has it gone): the body just goes,
+  // no second death effect and no death sound.
+  consumed: {
+    label: "Consumed (its own animation)",
+    totalMs: 60,
+    body: { delayMs: 0, fadeMs: 1, tintTo: null },
+    shake: null,
+    sfx: null,
+  },
   // Bolt: a strike from above, then the body flickers out.
   flicker: {
     label: "Flicker (bolt)",
