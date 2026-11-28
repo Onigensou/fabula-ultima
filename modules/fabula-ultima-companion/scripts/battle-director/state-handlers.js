@@ -2662,12 +2662,36 @@ async function maybeRunRecoveryChecks(director, snap) {
     if (snap.tokenUuid) actor = (await fromUuid(snap.tokenUuid).catch(() => null))?.actor ?? null;
     if (!actor && snap.actorUuid) actor = await fromUuid(snap.actorUuid).catch(() => null);
     if (!actor || !recoveryStatusesOn(actor).length) return false;
-    const rc = await runRecoveryChecks(actor, { name: snap.name });
+    const rc = await runRecoveryChecks(actor, { name: snap.name, ask: recoveryCheckAsk(director, actor, snap.name) });
     return rc.blocked;
   } catch (e) {
     warn("Recovery check: maybeRunRecoveryChecks threw", e);
     return false;
   }
+}
+
+// The player rolls their own Stunned / Sleep check, like Grappled's break-free: the attribute-pair prompt, locked to the
+// status's pair, no Cancel (the check is not optional), sent to the creature's player racing a GM copy (GM-local with no
+// online owner). Monsters, and the sim (nobody to answer), keep the automatic roll: returns null for them.
+function recoveryCheckAsk(director, actor, name) {
+  if (!game.user?.isGM || SimMode.active || !actor?.hasPlayerOwner) return null;
+  return async ({ status, spec }) => {
+    const pickSpec = {
+      titleText: `${name}: ${status}`,
+      subtitle: `Turn-start Check: ${spec.attr1} + ${spec.attr2} vs DL ${spec.dl}. Pass and ${escapeHtmlMin(status)} ends, you act. Fail and the turn is lost.`,
+      defaults: { A1: spec.attr1, A2: spec.attr2 }, includeDL: false, lockPair: true, noCancel: true,
+    };
+    const interrupt = director?._battleEndInterruptPromise ?? null;
+    const owner = ownerUserIdForActor(actor), channel = director?.intentChannel ?? null;
+    let p;
+    if (owner && channel) {
+      const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+      p = remotePick({ channel, targetUserId: owner, combatId: director?.combatId ?? null, kind: REMOTE_PICK_KINDS.ATTRIBUTE_PAIR,
+        spec: { ...pickSpec, combatId: director?.combatId ?? null, tag: "STATUS CHECK", label: `${name}: ${status}` },
+        externalCancel: interrupt, onTimeoutValue: { ok: true } });
+    } else p = pickAttributePair({ director, tag: "STATUS CHECK", ...pickSpec, externalCancel: interrupt });
+    await (interrupt ? Promise.race([p, interrupt]) : p);
+  };
 }
 
 // Minimal HTML escape for chat flavor (actor names are trusted-ish but
@@ -9448,7 +9472,7 @@ const FreeActionWindow = {
         const turnless = Number(comb?.turnsPerRound) === 0;
         let skip = true;
         if (turnless) {
-          const rc = await runRecoveryChecks(perfActor, { name: reactorTokenDoc.name ?? perfActor.name, spendOnFail: true });
+          const rc = await runRecoveryChecks(perfActor, { name: reactorTokenDoc.name ?? perfActor.name, spendOnFail: true, ask: recoveryCheckAsk(director, perfActor, reactorTokenDoc.name ?? perfActor.name) });
           skip = rc.blocked;
         }
         if (skip) {

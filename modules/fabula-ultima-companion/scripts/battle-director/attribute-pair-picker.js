@@ -211,6 +211,7 @@ function ensureStyles() {
       background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
       color: #221b14;
     }
+    .fud-app-card .fud-app-attr-btn.is-locked { opacity: .28; cursor: not-allowed; }
     .fud-app-card .fud-app-btn.cancel {
       background: linear-gradient(180deg, #e5d6c5, #c9b294);
       color: var(--fud-ink, #3a3228);
@@ -241,6 +242,8 @@ const DL_PRESETS = Object.freeze([5, 7, 10, 13, 16, 20]);
 //   `defaults`    — optional { A1, A2 } to preselect; same keys as ATTRS
 //   `includeDL`   — when true, also surface a DL input row
 //   `defaultDL`   — initial DL value (only meaningful when includeDL)
+//   `lockPair`    — only the `defaults` pair can be picked (a status's own check, e.g. Stunned MIG + WLP)
+//   `noCancel`    — no Cancel button / Escape: the check is not optional (it still resolves on confirm)
 //
 // Returns Promise<{ ok, cancelled, A1, A2, dl? }>.
 // `dl` is included only when includeDL was true (clamped to ≥ 1).
@@ -260,6 +263,8 @@ export async function pickAttributePair({
   // pair over their shoulder, so a rule like Break Free's has to be enforced here.
   requireAnyOf = null,
   externalCancel = null,
+  lockPair = false,
+  noCancel = false,
 } = {}) {
   // Sim harness: this is the GM's judgement call on a Hinder check (RAW Core
   // p.71 — the GM picks the pair that matches the described approach). With
@@ -280,8 +285,9 @@ export async function pickAttributePair({
   const prior = _overlays.get(overlayKey);
   if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(overlayKey); }
 
+  const locked = (row, key) => lockPair && (row === 1 ? defaults?.A1 : defaults?.A2) !== key;
   const a1Buttons = ATTRS.map((a) => `
-    <div class="fud-app-attr-btn ${defaults?.A1 === a.key ? "is-selected" : ""}"
+    <div class="fud-app-attr-btn ${defaults?.A1 === a.key ? "is-selected" : ""}${locked(1, a.key) ? " is-locked" : ""}"
          data-fud-row="1" data-fud-attr="${a.key}"
          role="button" tabindex="0" title="${escapeHtml(a.hint)}">
       <i class="fa-solid ${a.icon}" aria-hidden="true"></i>
@@ -289,7 +295,7 @@ export async function pickAttributePair({
     </div>
   `).join("");
   const a2Buttons = ATTRS.map((a) => `
-    <div class="fud-app-attr-btn ${defaults?.A2 === a.key ? "is-selected" : ""}"
+    <div class="fud-app-attr-btn ${defaults?.A2 === a.key ? "is-selected" : ""}${locked(2, a.key) ? " is-locked" : ""}"
          data-fud-row="2" data-fud-attr="${a.key}"
          role="button" tabindex="0" title="${escapeHtml(a.hint)}">
       <i class="fa-solid ${a.icon}" aria-hidden="true"></i>
@@ -333,7 +339,7 @@ export async function pickAttributePair({
       </div>
       ${dlRowHTML}
       <div class="fud-app-btn-row">
-        <div class="fud-app-btn cancel" data-fud-action="cancel" role="button" tabindex="0">Cancel</div>
+        ${noCancel ? "" : `<div class="fud-app-btn cancel" data-fud-action="cancel" role="button" tabindex="0">Cancel</div>`}
         <div class="fud-app-btn confirm is-disabled" data-fud-action="confirm" role="button" tabindex="0">Confirm</div>
       </div>
     </div>
@@ -420,6 +426,7 @@ export async function pickAttributePair({
         ev.stopPropagation();
         const row = Number(attrBtn.dataset.fudRow);
         const attr = attrBtn.dataset.fudAttr;
+        if (attrBtn.classList.contains("is-locked")) return;
         if (row && attr) setRow(row, attr);
         return;
       }
@@ -441,6 +448,7 @@ export async function pickAttributePair({
       ev.stopPropagation();
       const action = actionBtn.dataset.fudAction;
       if (action === "cancel") {
+        if (noCancel) return;
         finish(buildResult(false));
       } else if (action === "confirm") {
         if (actionBtn.classList.contains("is-disabled")) {

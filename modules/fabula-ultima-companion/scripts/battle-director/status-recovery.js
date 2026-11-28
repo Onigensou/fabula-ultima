@@ -67,7 +67,9 @@ async function spendCharge(eff) {
  * does not act). `spendOnFail` = a turn-less summon: a failed check spends a charge.
  * `roll` is injectable for tests.
  */
-export async function runRecoveryChecks(actor, { name = null, spendOnFail = false, roll = rollCheck, chat = true } = {}) {
+// `ask` (optional): async ({ status, spec }) => void — called before each status's roll so a player rolls their own
+// check (state-handlers: the attribute-pair prompt, Grappled's pattern). Whatever it returns, the check is rolled.
+export async function runRecoveryChecks(actor, { name = null, spendOnFail = false, roll = rollCheck, chat = true, ask = null } = {}) {
   const out = { checked: 0, blocked: false, results: [] };
   const list = recoveryStatusesOn(actor);
   if (!list.length) return out;
@@ -76,6 +78,7 @@ export async function runRecoveryChecks(actor, { name = null, spendOnFail = fals
     const spec = recoveryCheckOf(eff);
     const status = String(eff.name ?? "Status");
     let success = false, total = 0, removed = false, check = null;
+    if (typeof ask === "function") { try { await ask({ status, spec }); } catch (e) { warn(`status-recovery: the prompt for ${status} on ${who} threw — rolling anyway`, e); } }
     try {
       check = await roll({ actor, A1: spec.attr1, A2: spec.attr2 });
       success = !!checkVsThreshold(check, spec.dl).success;
